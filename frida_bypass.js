@@ -1,102 +1,71 @@
 /**
- * Frida v4 - Dump code around SetCACert string references.
- * The SetCACert string at exe+0x39316B1 is referenced by the
- * ProtoSSLSetCACert function. Find the code that calls it.
- * 
- * Also: since debug strings are stripped, let's find the cert
- * verification by looking for the RSA signature check pattern.
- * 
+ * Frida v5 - Dump code at known SSL addresses and patch cert verify.
  * Run: frida -n FIFA17.exe -l frida_bypass.js
  */
-console.log("[*] FIFA 17 ProtoSSL Bypass v4");
+console.log("[*] FIFA 17 ProtoSSL Bypass v5");
 
-var mod = Process.enumerateModules()[0];
-var base = mod.base;
-console.log("[*] " + mod.name + " base=" + base + " size=" + mod.size);
+var base = Process.enumerateModules()[0].base;
+console.log("[*] Base: " + base);
 
-// Known addresses from previous scans
-var setCACertStr = base.add(0x393169d); // "SetCACert" 
-var installedCAStr = base.add(0x39316b1); // "installed CA cert"
+// Known offsets from earlier Frida/DLL analysis:
+// +0x6124140 = cert verify function
+// +0x6127020 = cert process function  
+// +0x61262DC = State 3 (Certificate handler)
+// +0x612E7A4 = error handler
 
-// Dump the string area to see context
-console.log("\n[*] Strings around SetCACert:");
-console.log(hexdump(base.add(0x3931680), {length: 256, header: true, ansi: false}));
+var addrs = [
+    {name: "cert_verify", off: 0x6124140},
+    {name: "cert_process", off: 0x6127020},
+    {name: "state3_cert", off: 0x61262DC},
+    {name: "error_handler", off: 0x612E7A4},
+];
 
-// Find code that references "installed CA cert" string (exe+0x39316B1)
-// Search for LEA instructions with RIP-relative addressing to this address
-console.log("\n[*] Searching for code referencing 'installed CA cert' at " + installedCAStr);
-
-// The code is likely in the Denuvo-decrypted region around exe+0x6120000
-// (from NEXT_SESSION_PLAN.md: SSL state machine at +0x6126213)
-// Search that specific region
-var searchStart = base.add(0x6100000);
-var searchSize = 0x100000; // 1MB
-
-console.log("[*] Searching code region " + searchStart + " to " + searchStart.add(searchSize));
-
-var targetOffset = installedCAStr.sub(base);
-console.log("[*] Target string offset from base: " + targetOffset);
-
-try {
-    var code = Memory.readByteArray(searchStart, searchSize);
-    var view = new Uint8Array(code);
-    var found = 0;
-    
-    for (var i = 0; i < view.length - 7; i++) {
-        // LEA reg, [rip+disp32]
-        if (view[i+1] !== 0x8D) continue;
-        var prefix = view[i];
-        if (prefix !== 0x48 && prefix !== 0x4C) continue;
-        var modrm = view[i+2];
-        if ((modrm & 0xC7) !== 0x05) continue;
+addrs.forEach(function(a) {
+    var addr = base.add(a.off);
+    console.log("\n[*] " + a.name + " at " + addr + " (exe+" + a.off.toString(16) + "):");
+    try {
+        var bytes = Memory.readByteArray(addr, 64);
+        console.log(hexdump(addr, {length: 64, header: true, ansi: false}));
         
-        var disp = (view[i+3] | (view[i+4] << 8) | (view[i+5] << 16) | (view[i+6] << 24));
-        if (disp > 0x7FFFFFFF) disp -= 0x100000000;
-        
-        var instrAddr = searchStart.add(i);
-        var refTarget = instrAddr.add(7).add(disp);
-        
-        // Check if it references our target string
-        if (refTarget.equals(installedCAStr)) {
-            console.log("\n[+] FOUND: Code at " + instrAddr + " references 'installed CA cert'");
-            console.log("[+] Offset from exe base: " + instrAddr.sub(base));
-            
-            // Dump 128 bytes before and 64 bytes after
-            console.log("\n[*] Code context (256 bytes around reference):");
-            console.log(hexdump(instrAddr.sub(128), {length: 256, header: true, ansi: false}));
-            found++;
+        // Check if it looks like code (not all zeros or 0xCC)
+        var view = new Uint8Array(bytes);
+        var nonZero = 0;
+        for (var i = 0; i < 16; i++) if (view[i] !== 0 && view[i] !== 0xCC) nonZero++;
+        if (nonZero < 4) {
+            console.log("  [!] Looks like uninitialized/encrypted code");
+        } else {
+            console.log("  [+] Looks like valid code");
+            // Try to disassemble
+            try {
+                var insns = Instruction.parse(addr);
+                console.log("  First instruction: " + insns.mnemonic + " " + insns.opStr);
+            } catch(e2) {}
         }
-        
-        // Also check for SetCACert references
-        if (refTarget.equals(setCACertStr)) {
-            console.log("\n[+] FOUND: Code at " + instrAddr + " references 'SetCACert'");
-            console.log("[+] Offset: " + instrAddr.sub(base));
-            console.log(hexdump(instrAddr.sub(64), {length: 128, header: true, ansi: false}));
-            found++;
-        }
+    } catch(e) {
+        console.log("  [-] Cannot read: " + e);
     }
+});
+
+// Now try to patch cert_verify to return 0
+// xor eax, eax (31 C0) + ret (C3) = 3 bytes
+var certVerify = base.add(0x6124140);
+console.log("\n[*] Attempting to patch cert_verify at " + certVerify);
+try {
+    var origBytes = Memory.readByteArray(certVerify, 3);
+    var orig = new Uint8Array(origBytes);
+    console.log("[*] Original bytes: " + orig[0].toString(16) + " " + orig[1].toString(16) + " " + orig[2].toString(16));
     
-    if (found === 0) {
-        console.log("[-] No code references found in this region");
-        console.log("[*] Trying broader search...");
-        
-        // Try the region around the known cert verify address +0x6124140
-        var searchStart2 = base.add(0x6120000);
-        var code2 = Memory.readByteArray(searchStart2, 0x20000);
-        var view2 = new Uint8Array(code2);
-        
-        // Just dump the cert verify function area
-        console.log("\n[*] Dumping code at known cert verify offset +0x6124140:");
-        console.log(hexdump(base.add(0x6124140), {length: 128, header: true, ansi: false}));
-        
-        console.log("\n[*] Dumping code at known cert process offset +0x6127020:");
-        console.log(hexdump(base.add(0x6127020), {length: 128, header: true, ansi: false}));
-        
-        console.log("\n[*] Dumping code at known State 3 (Certificate) offset +0x61262DC:");
-        console.log(hexdump(base.add(0x61262DC), {length: 128, header: true, ansi: false}));
+    // Check if it's valid code
+    if (orig[0] === 0 && orig[1] === 0 && orig[2] === 0) {
+        console.log("[-] Code not decrypted yet, cannot patch");
+    } else {
+        Memory.protect(certVerify, 16, 'rwx');
+        Memory.writeByteArray(certVerify, [0x31, 0xC0, 0xC3]); // xor eax,eax; ret
+        console.log("[+] PATCHED cert_verify: " + orig[0].toString(16) + " " + orig[1].toString(16) + " " + orig[2].toString(16) + " -> 31 C0 C3");
+        console.log("[+] Certificate verification is now BYPASSED!");
     }
 } catch(e) {
-    console.log("[-] Error: " + e);
+    console.log("[-] Patch failed: " + e);
 }
 
-console.log("\n[*] Done.");
+console.log("\n[*] Done. Try connecting now.");
