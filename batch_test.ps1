@@ -1,5 +1,5 @@
-# Batch v9: All patches include the 3 bAllowAnyCert + error CALL NOP as baseline
-# Then vary how we force the cert_process success path
+# Batch v10: Diagnostic + new approaches
+# Game stays running between tests (restart only on crash)
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -9,7 +9,7 @@ $resultsFile = "$repoRoot\batch-results.log"
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KS7 {
+public class KS8 {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -17,105 +17,147 @@ public class KS7 {
     public static void Q() { keybd_event(0x51,0x10,0,UIntPtr.Zero); System.Threading.Thread.Sleep(50); keybd_event(0x51,0x10,KUP,UIntPtr.Zero); }
 }
 "@
-function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS7]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
-function FEnter { if(Focus){[KS7]::Enter()} }
-function FQ { if(Focus){[KS7]::Q()} }
+function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS8]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
+function FEnter { if(Focus){[KS8]::Enter()} }
+function FQ { if(Focus){[KS8]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 function Launch-Game { Start-Process $gameExe; for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}; Start-Sleep 10;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 10;FEnter;Start-Sleep 2 }
 function Run-Frida($code) { $tmp="$repoRoot\tf.js"; Set-Content $tmp "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}" -Encoding UTF8; $p=Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"; $p|Wait-Process -Timeout 10 -EA SilentlyContinue; if(!$p.HasExited){$p|Stop-Process -Force}; $o=(Get-Content "$repoRoot\fo.txt" -Raw -EA SilentlyContinue); Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -EA SilentlyContinue; return $o }
 
-# BASELINE that goes into every patch:
-# 3x bAllowAnyCert JNE->JMP + 1x NOP error CALL
 $baseline = @'
 Memory.protect(b.add(0x612522d),1,"rwx");b.add(0x612522d).writeU8(0xEB);
 Memory.protect(b.add(0x612753d),1,"rwx");b.add(0x612753d).writeU8(0xEB);
 Memory.protect(b.add(0x6127c29),1,"rwx");b.add(0x6127c29).writeU8(0xEB);
 Memory.protect(b.add(0x612644e),5,"rwx");b.add(0x612644e).writeByteArray([0x90,0x90,0x90,0x90,0x90]);
+Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);
 '@
 
 $patches = @(
-    # Force eax=1 at cert_process result check
-    @{ name="V01_xor_inc_eax"; desc="baseline + xor eax,eax; inc eax at +0x61262F5"
-       patch="$baseline`nMemory.protect(b.add(0x61262F5),4,'rwx');b.add(0x61262F5).writeByteArray([0x31,0xC0,0xFF,0xC0]);" },
-    # NOP the JLE only
-    @{ name="V02_NOP_JLE"; desc="baseline + NOP JLE at +0x61262F7"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);" },
-    # Force eax=0x40 (64) - cert_process might return byte count
-    @{ name="V03_mov_eax_64"; desc="baseline + mov eax,0x40 at +0x61262F5"
-       patch="$baseline`nMemory.protect(b.add(0x61262F5),4,'rwx');b.add(0x61262F5).writeByteArray([0xB0,0x40,0x90,0x90]);" },
-    # NOP the cert_finalize call at +0x6126334 (it might reset state)
-    @{ name="V04_NOP_finalize"; desc="baseline + NOP JLE + NOP cert_finalize CALL at +0x6126334"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x6126334),5,'rwx');b.add(0x6126334).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" },
-    # NOP the success function call at +0x6126311 (maybe it's crashing)
-    @{ name="V05_NOP_success_fn"; desc="baseline + NOP JLE + NOP success fn CALL at +0x6126311"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x6126311),5,'rwx');b.add(0x6126311).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" },
-    # Skip entire State 3 - just set state=4 directly
-    @{ name="V06_skip_state3"; desc="baseline + at State 3 check, set state=4 and skip"
-       patch="$baseline`nMemory.protect(b.add(0x61262E3),5,'rwx');b.add(0x61262E3).writeByteArray([0xC7,0x83,0x8C,0x00,0x00]);Memory.protect(b.add(0x61262E8),8,'rwx');b.add(0x61262E8).writeByteArray([0x00,0x04,0x00,0x00,0x00,0xEB,0x62,0x90]);" },
-    # NOP cert_receive call but keep cert_process
-    @{ name="V07_NOP_cert_receive"; desc="baseline + NOP JLE + NOP cert_receive CALL at +0x61262E8"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x61262E8),5,'rwx');b.add(0x61262E8).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" },
-    # NOP cert_process call but keep cert_receive
-    @{ name="V08_NOP_cert_process"; desc="baseline + NOP JLE + NOP cert_process CALL at +0x61262F0"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x61262F0),5,'rwx');b.add(0x61262F0).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" },
-    # NOP both cert_receive AND cert_process, force state=4
-    @{ name="V09_NOP_both_calls"; desc="baseline + NOP JLE + NOP both cert calls"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x61262E8),5,'rwx');b.add(0x61262E8).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x61262F0),5,'rwx');b.add(0x61262F0).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" },
-    # Make cert_process return 1 + NOP JLE
-    @{ name="V10_cert_process_ret1_NOP_JLE"; desc="baseline + cert_process ret 1 + NOP JLE"
-       patch="$baseline`nMemory.protect(b.add(0x6127020),6,'rwx');b.add(0x6127020).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0xC3]);Memory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);" },
-    # Baseline only (control test)
-    @{ name="V11_baseline_only"; desc="baseline only (3x bAllowAnyCert + NOP error CALL)"
-       patch="$baseline" },
-    # Everything: baseline + NOP JLE + NOP finalize + NOP success fn
-    @{ name="V12_everything"; desc="baseline + NOP JLE + NOP finalize + NOP success fn + NOP cert_finalize error"
-       patch="$baseline`nMemory.protect(b.add(0x61262F7),2,'rwx');b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x6126334),5,'rwx');b.add(0x6126334).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x6126311),5,'rwx');b.add(0x6126311).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x6127a1b),5,'rwx');b.add(0x6127a1b).writeByteArray([0x90,0x90,0x90,0x90,0x90]);" }
+    # T1: Baseline with 15s wait + timeout diagnostic (server has 10s timeout logging)
+    @{ name="T01_baseline_15s_wait"; desc="baseline (5 patches), wait 15s for timeout diagnostic"
+       patch=$baseline; wait=20 },
+
+    # T2: Baseline + hook send() to see if game sends ANY data on the socket
+    @{ name="T02_hook_send"; desc="baseline + hook Winsock send() to log all outgoing data"
+       patch=@"
+$baseline
+var ws2=Process.getModuleByName('ws2_32.dll');
+var sendFn=ws2.getExportByName('send');
+Interceptor.attach(sendFn,{onEnter:function(args){
+  var len=args[2].toInt32();
+  if(len>0&&len<2000){
+    var b0=args[1].readU8();
+    send('send() len='+len+' first_byte=0x'+b0.toString(16));
+  }
+}});
+"@; wait=15 },
+
+    # T3: Baseline + hook recv() to see if game tries to read
+    @{ name="T03_hook_recv"; desc="baseline + hook Winsock recv() to log all incoming reads"
+       patch=@"
+$baseline
+var ws2=Process.getModuleByName('ws2_32.dll');
+var recvFn=ws2.getExportByName('recv');
+Interceptor.attach(recvFn,{
+  onEnter:function(args){this.buf=args[1];this.len=args[2].toInt32();},
+  onLeave:function(ret){
+    var n=ret.toInt32();
+    if(n>0){send('recv() got '+n+' bytes, first=0x'+this.buf.readU8().toString(16));}
+    else{send('recv() returned '+n);}
+  }
+});
+"@; wait=15 },
+
+    # T4: Baseline + dump iState after connection to see what state the game is in
+    @{ name="T04_dump_iState"; desc="baseline + dump iState from struct after connection"
+       patch=@"
+$baseline
+// Wait 5 seconds then check iState
+setTimeout(function(){
+  var pattern='77 69 6E 74 65 72 31 35 2E 67 6F 73 72 65 64 69 72 65 63 74 6F 72 2E 65 61 2E 63 6F 6D';
+  Process.enumerateRanges('rw-').forEach(function(range){
+    if(range.size<0x200)return;
+    try{
+      Memory.scanSync(range.base,range.size,pattern).forEach(function(match){
+        var strHost=match.address;
+        try{if(strHost.add(0x100).readU16()!==2)return;}catch(e){return;}
+        // Read iState candidates
+        [-232,-196,-160,-124,-116].forEach(function(off){
+          try{var v=strHost.add(off).readU32();send('strHost'+off+'='+v);}catch(e){}
+        });
+        // Also read bytes at +0x8C from various struct base guesses
+        [-0x74,-0x7C,-0x84,-0x108].forEach(function(off){
+          try{var v=strHost.add(off).readU32();send('strHost'+off+' (0x'+(-off).toString(16)+')='+v);}catch(e){}
+        });
+      });
+    }catch(e){}
+  });
+},5000);
+"@; wait=15 },
+
+    # T5: No patches at all (control - should get ECONNRESET)
+    @{ name="T05_no_patches"; desc="NO patches (control test)"
+       patch="send('no patches applied');"; wait=15 }
 )
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH v9 ($timestamp) === $($patches.Count) patches (all include baseline)`n" -Encoding UTF8
-Write-Host "=== BATCH v9 - $($patches.Count) patches ===" -ForegroundColor Cyan
+Set-Content $resultsFile "=== BATCH v10 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
+Write-Host "=== BATCH v10 - $($patches.Count) tests ===" -ForegroundColor Cyan
 
-# Each test needs a fresh game since patches can't be cleanly reverted
-foreach ($p in $patches) {
-    $n = [array]::IndexOf($patches, $p) + 1
-    Write-Host "`n[$n/$($patches.Count)] $($p.name)" -ForegroundColor Yellow
+# Launch game once
+Kill-All
+$sj = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
+Start-Sleep 2; Launch-Game; Write-Host "Ready." -ForegroundColor Green
+
+$n=0
+foreach($p in $patches){
+    $n++; Write-Host "[$n/$($patches.Count)] $($p.name)" -ForegroundColor Yellow
     
-    Kill-All
-    $sj = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-    Start-Sleep 2
-    Launch-Game
+    if(-not(Get-Process -Name FIFA17 -EA SilentlyContinue)){
+        Write-Host "  CRASHED - relaunching" -ForegroundColor Red
+        Add-Content $resultsFile "[$n] $($p.name) | CRASHED | $($p.desc)`n"
+        Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue;Kill-All
+        $sj=Start-Job -ScriptBlock{param($r);node "$r\server-standalone\server.mjs" 2>&1} -ArgumentList $repoRoot
+        Start-Sleep 2;Launch-Game
+    }
     
-    Receive-Job $sj 2>&1 | Out-Null
-    $fo = Run-Frida $p.patch
+    # Restart server between tests to get clean output
+    Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
+    Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
     Start-Sleep 1
-    FQ
-    Start-Sleep 15
+    $sj=Start-Job -ScriptBlock{param($r);node "$r\server-standalone\server.mjs" 2>&1} -ArgumentList $repoRoot
+    Start-Sleep 2
     
-    $so = (Receive-Job $sj 2>&1 | Out-String).Trim()
+    $fo=Run-Frida $p.patch
+    Start-Sleep 1; FQ
     
-    $r = "UNKNOWN"
-    if ($so -match "PLAINTEXT Blaze") { $r = "PLAINTEXT_BLAZE" }
-    if ($so -match "Phase=.*received") { $r = "RECEIVED_DATA" }
-    if ($so -match "Record: type=0x16") { $r = "TLS_HANDSHAKE" }
-    if ($so -match "GetServerInstance") { $r = "BLAZE_REQUEST" }
-    if ($so -match "ClientKeyExchange") { $r = "CLIENT_KEY_EXCHANGE" }
-    if ($so -match "Encrypted Finished") { $r = "TLS_COMPLETE" }
-    if ($so -match "Decrypted") { $r = "DECRYPTED" }
-    if ($so -match "ECONNRESET") { $r = "ECONNRESET" }
-    if ($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected") { $r = "HANGING" }
-    if ($so -eq "") { $r = "NO_CONNECTION" }
-    if (-not (Get-Process -Name FIFA17 -EA SilentlyContinue)) { $r += "+CRASHED" }
+    $waitTime = if($p.wait){$p.wait}else{15}
+    Start-Sleep $waitTime
     
-    $color = switch -Regex ($r) { "PLAINTEXT|BLAZE|CLIENT_KEY|TLS_COMPLETE|DECRYPTED|RECEIVED" {"Green"} "HANGING" {"Yellow"} default {"Red"} }
+    $so=(Receive-Job $sj 2>&1|Out-String).Trim()
+    
+    $r="UNKNOWN"
+    if($so -match "TIMEOUT: No data"){$r="TIMEOUT_NO_DATA"}
+    if($so -match "PLAINTEXT Blaze"){$r="PLAINTEXT_BLAZE"}
+    if($so -match "Phase=.*received"){$r="RECEIVED_DATA"}
+    if($so -match "Record: type=0x16"){$r="TLS_HANDSHAKE"}
+    if($so -match "GetServerInstance"){$r="BLAZE_REQUEST"}
+    if($so -match "ClientKeyExchange"){$r="CLIENT_KEY_EXCHANGE"}
+    if($so -match "ECONNRESET"){$r="ECONNRESET"}
+    if($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected" -and $so -notmatch "TIMEOUT"){$r="HANGING"}
+    if($so -eq ""){$r="NO_CONNECTION"}
+    if(-not(Get-Process -Name FIFA17 -EA SilentlyContinue)){$r+="+CRASHED"}
+    
+    $color=switch -Regex($r){"PLAINTEXT|BLAZE|CLIENT_KEY|TLS_COMPLETE|DECRYPTED|RECEIVED"{"Green"}"HANGING|TIMEOUT"{"Yellow"}default{"Red"}}
     Write-Host "  -> $r" -ForegroundColor $color
     
-    $ss = if ($so.Length -gt 400) { $so.Substring($so.Length-400) } else { $so }
-    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nSERVER: $ss`n" -Encoding UTF8
+    $ss=if($so.Length -gt 500){$so.Substring($so.Length-500)}else{$so}
+    $ff=if($fo -and $fo.Length -gt 300){$fo.Substring($fo.Length-300)}else{$fo}
+    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nFRIDA: $ff`nSERVER: $ss`n" -Encoding UTF8
     
-    Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
+    FEnter; Start-Sleep 2
 }
 
-Kill-All
+Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
 Write-Host "`n=== DONE ===" -ForegroundColor Green
-git add batch-results.log; git commit -m "Batch v9 $timestamp"; git push 2>&1
+git add batch-results.log;git commit -m "Batch v10 $timestamp";git push 2>&1
