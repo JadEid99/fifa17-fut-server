@@ -387,17 +387,20 @@ static void PatchSSL() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    // Start quickly - the CA cert might be loaded early
     Sleep(2000);
     PatchSSL();
     
-    // Keep re-scanning every 2 seconds for 60 seconds
-    // to catch certs loaded after our initial scan
-    for (int pass = 0; pass < 30; pass++) {
-        Sleep(2000);
+    // Hook connect() to replace the CA cert right before the SSL connection
+    // This ensures we catch the cert even if it's loaded just before connecting
+    HMODULE ws2 = LoadLibraryA("WS2_32.dll");
+    if (!ws2) { Log("Failed to load WS2_32.dll"); return 0; }
+    
+    // We can't easily hook connect() without a hooking library.
+    // Instead, keep scanning aggressively every 500ms
+    for (int pass = 0; pass < 120; pass++) {
+        Sleep(500);
         MEMORY_BASIC_INFORMATION mbi;
         BYTE* scanAddr = NULL;
-        int replaced = 0;
         while (VirtualQuery(scanAddr, &mbi, sizeof(mbi))) {
             if (mbi.State == MEM_COMMIT && 
                 (mbi.Protect & (PAGE_READWRITE | PAGE_READONLY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))) {
@@ -415,7 +418,6 @@ static DWORD WINAPI PatchThread(LPVOID) {
                         if (memcmp(base + j, g_ourCACert, 20) == 0) { j += cs - 1; continue; }
                         BYTE oid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
                         if (!FindPattern(base + j, cs, oid, 8)) continue;
-                        // ONLY replace EA certs
                         BYTE ea[] = {0x45, 0x6C, 0x65, 0x63, 0x74, 0x72, 0x6F, 0x6E, 0x69, 0x63, 0x20, 0x41, 0x72, 0x74, 0x73};
                         if (!FindPattern(base + j, cs, ea, 15)) continue;
                         DWORD op;
@@ -423,8 +425,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                             SIZE_T copyLen = (cs < g_ourCACertLen) ? cs : g_ourCACertLen;
                             memcpy(base + j, g_ourCACert, copyLen);
                             VirtualProtect(base + j, cs, op, &op);
-                            replaced++;
-                            Log("Pass %d: replaced CA cert at 0x%p size=%llu", pass, base + j, (unsigned long long)cs);
+                            Log("Pass %d: REPLACED EA CA cert at 0x%p size=%llu", pass, base + j, (unsigned long long)cs);
                         }
                         j += cs - 1;
                     }
