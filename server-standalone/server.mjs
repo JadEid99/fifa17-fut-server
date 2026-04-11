@@ -164,6 +164,22 @@ function startRawRedirector() {
         console.log('[Redirector-Raw] Attempting SSLv3 handshake...');
         handleSSLv3Handshake(socket, data);
       }
+      // Check if this is a plaintext Blaze packet (no TLS wrapper)
+      // Blaze packets have a 12-byte header. The component field at offset 2-3
+      // for redirector is 0x0005, and command at offset 4-5 is 0x0001.
+      else if (allData.length >= HEADER_SIZE) {
+        const header = decodeHeader(allData);
+        if (header && header.component === 0x0005 && header.command === 0x0001) {
+          console.log('[Redirector-Raw] Detected PLAINTEXT Blaze GetServerInstance!');
+          setupRedirectorHandler(socket);
+          // Re-emit the data so the handler processes it
+          socket.emit('data', allData);
+        } else if (header) {
+          console.log(`[Redirector-Raw] Plaintext Blaze: comp=0x${header.component.toString(16)} cmd=0x${header.command.toString(16)}`);
+          setupRedirectorHandler(socket);
+          socket.emit('data', allData);
+        }
+      }
     });
 
     socket.on('close', () => console.log(`[Redirector-Raw] Disconnected: ${addr}`));
