@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 16:17:02) ===
+﻿=== TEST RESULTS (2026-04-11 16:20:28) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:65435
+[Redirector-Raw] Client connected: 127.0.0.1:65468
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 57 b5 d1  ....o...k..i.W..
-  0010: 5e a7 58 01 23 8d 4f e9 60 51 5d 7f 2c de 97 e4  ^.X.#.O.`Q].,...
-  0020: d5 71 64 97 16 cb 9e 8e 39 50 e2 00 00 10 00 9d  .qd.....9P......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 58 83 13  ....o...k..i.X..
+  0010: 2a 31 b2 a2 12 29 4f 9d 9b 5e 0e 43 f2 03 8f 00  *1...)O..^.C....
+  0020: c0 35 e1 93 e3 06 eb e1 09 ca b7 00 00 10 00 9d  .5..............
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,17 +23,17 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da57b5d15ea758...
+[SSL] ClientHello: version=0x303 random=69da5883132a31b2...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:65435
+[Redirector-Raw] Disconnected: 127.0.0.1:65468
 
 --- DLL LOG ---
-[16:15:54.558] === FIFA 17 SSL Bypass v25 (replace CA modulus in ProtoSSLCACertT linked list) ===
-[16:15:54.558] PID: 99032
+[16:19:20.755] === FIFA 17 SSL Bypass v25 (replace CA modulus in ProtoSSLCACertT linked list) ===
+[16:19:20.755] PID: 93056
 
 
 --- END ---
