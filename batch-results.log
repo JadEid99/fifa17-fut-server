@@ -1,84 +1,79 @@
-﻿=== BATCH v6 (2026-04-11 18:50:19) === 11 patches
+﻿=== BATCH v7 (2026-04-11 19:02:32) === 12 patches
 
-[1] A1_JNE_to_JMP_7C29 | ECONNRESET | Change JNE to JMP at +0x6127C29 (always skip cert error)
+[1] RSA_6138680_ret0 | ECONNRESET | +0x6138680 ret 0
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51893
+[Redirector-Raw] Disconnected: 127.0.0.1:52467
 
-[2] A2_NOP_CMP_JNE_7C22 | ECONNRESET | NOP the CMP+JNE at +0x6127C22 (9 bytes)
+[2] RSA_6138680_ret1 | ECONNRESET | +0x6138680 ret 1
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51924
+[Redirector-Raw] Disconnected: 127.0.0.1:52494
 
-[3] A3_NOP_error_call_7C2E | ECONNRESET | NOP the error handler CALL at +0x6127C2E
+[3] NOP_call_61270B5 | ECONNRESET | NOP CALL to +0x6138680 at +0x61270B5
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51944
+[Redirector-Raw] Disconnected: 127.0.0.1:52530
 
-[4] A4_NOP_error_call_AND_state_7C2E | ECONNRESET | NOP error CALL + error state writes at +0x6127C2E
+[4] NOP_call_612720A | ECONNRESET | NOP CALL to +0x6138680 at +0x612720A
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51968
+[Redirector-Raw] Disconnected: 127.0.0.1:52559
 
-[5] B1_JMP_7C29_AND_NOP_644E | HANGING | JMP at +7C29 AND NOP error CALL at +644E
-SERVER: lo: version=0x303 random=69da7ca8f15e95ff...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-
-[6] B2_NOP_CMP_7C22_AND_NOP_644E | ECONNRESET | NOP CMP+JNE at +7C22 AND NOP error CALL at +644E
-SERVER: lo: version=0x303 random=69da7cd02569e7af...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-
-[7] B3_NOP_all_error_calls | ECONNRESET+CRASHED | NOP error CALL at +7C2E AND +644E AND state writes
+[5] fn_7AA0_ret0 | ECONNRESET | +0x6127AA0 ret 0
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:52050
+[Redirector-Raw] Disconnected: 127.0.0.1:52591
 
-[8] C1_NOP_both_JNE_7C20_7C29 | CRASHED | NOP JNE at +7C20 AND +7C29
-
-[8] C1_NOP_both_JNE_7C20_7C29 | ECONNRESET | NOP JNE at +7C20 AND +7C29
+[6] fn_7AA0_ret1 | ECONNRESET | +0x6127AA0 ret 1
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:52142
+[Redirector-Raw] Disconnected: 127.0.0.1:52610
 
-[9] C2_JMP_7C20_AND_NOP_644E | NO_CONNECTION | JMP at +7C20 AND NOP error CALL at +644E
+[7] fn_E180_ret0 | NO_CONNECTION | +0x612E180 ret 0
 SERVER: 
 
-[10] D1_NOP_finalize_error_7A1B | ECONNRESET | NOP error CALL in cert_finalize at +7A1B
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:52218
+[8] fn_E960_ret0 | NO_CONNECTION | +0x612E960 ret 0
+SERVER: 
 
-[11] D2_NOP_finalize_AND_receive_errors | HANGING | NOP error CALLs in both cert_finalize and cert_receive
-SERVER: lo: version=0x303 random=69da7dc2fa7da096...
+[9] fn_7714C70_ret0 | NO_CONNECTION+CRASHED | +0x7714C70 ret 0
+SERVER: 
+
+[10] RSA_ret0_NOP644E | CRASHED | +0x6138680 ret 0 + NOP error CALL +644E
+
+[10] RSA_ret0_NOP644E | HANGING | +0x6138680 ret 0 + NOP error CALL +644E
+SERVER: lo: version=0x303 random=69da8036fb35e227...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[11] fn7AA0_ret1_NOP644E | ECONNRESET | +0x6127AA0 ret 1 + NOP error CALL +644E
+SERVER: lo: version=0x303 random=69da8053cb126572...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[12] E180_E960_ret0_NOP644E | ECONNRESET | E180+E960 ret 0 + NOP +644E
+SERVER: [Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:52757
 
