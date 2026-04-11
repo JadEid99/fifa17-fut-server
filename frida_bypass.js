@@ -1,45 +1,89 @@
 /**
- * Frida v7 - Patch cert_verify AND cert_process to return 0.
- * Also hook to log when they're called.
+ * Frida v8 - Hook Winsock send() to catch the SSL alert being sent,
+ * then trace the call stack to find the cert verification function.
  * 
- * Run with server already running:
- *   1. Start server: node server-standalone\server.mjs
- *   2. Launch FIFA 17, wait 20s
- *   3. frida -n FIFA17.exe -l frida_bypass.js
- *   4. Trigger connection in game
+ * When the game rejects our cert, it sends: 15 03 00 00 02 02 2A
+ * (SSL Alert, fatal, bad_certificate)
+ * 
+ * By hooking send() and checking for this pattern, we can get a
+ * stack trace that leads us to the cert verification code.
+ * 
+ * Run: frida -n FIFA17.exe -l frida_bypass.js
+ * Then trigger a connection.
  */
-console.log("[*] FIFA 17 ProtoSSL Bypass v7");
+console.log("[*] FIFA 17 ProtoSSL Bypass v8 - trace SSL alert");
 
-var base = Process.enumerateModules()[0].base;
-var certVerify = base.add(0x6124140);
-
-// Read original bytes first
-var origBytes = [];
-for (var i = 0; i < 16; i++) origBytes.push(certVerify.add(i).readU8());
-console.log("[*] cert_verify at " + certVerify);
-console.log("[*] Original: " + origBytes.map(function(b){return b.toString(16).padStart(2,'0')}).join(' '));
-
-// Instead of patching the function start, use Interceptor to hook it
-// This is safer - Frida manages the hook properly
-try {
-    Interceptor.attach(certVerify, {
-        onEnter: function(args) {
-            console.log("[!] cert_verify called! args: " + args[0] + ", " + args[1] + ", " + args[2]);
-        },
-        onLeave: function(retval) {
-            console.log("[!] cert_verify returning: " + retval + " -> forcing 0");
-            retval.replace(ptr(0));
-        }
-    });
-    console.log("[+] Hooked cert_verify - will force return 0");
-} catch(e) {
-    console.log("[-] Hook failed: " + e.message);
-    console.log("[*] Falling back to direct patch...");
-    Memory.protect(certVerify, 16, 'rwx');
-    certVerify.writeU8(0x31);
-    certVerify.add(1).writeU8(0xC0);
-    certVerify.add(2).writeU8(0xC3);
-    console.log("[+] Direct patch applied");
+// Hook Winsock send()
+var ws2 = Module.findBaseAddress("ws2_32.dll");
+if (!ws2) {
+    ws2 = Module.findBaseAddress("WS2_32.dll");
+}
+if (!ws2) {
+    ws2 = Module.findBaseAddress("WS2_32.DLL");
 }
 
-console.log("[*] Ready. Trigger a connection in the game now.");
+var sendAddr = Module.findExportByName("ws2_32.dll", "send");
+var connectAddr = Module.findExportByName("ws2_32.dll", "connect");
+
+if (sendAddr) {
+    console.log("[+] send() at " + sendAddr);
+    
+    Interceptor.attach(sendAddr, {
+        onEnter: function(args) {
+            this.socket = args[0];
+            this.buf = args[1];
+            this.len = args[2].toInt32();
+            
+            // Check if this is an SSL alert (starts with 0x15)
+            if (this.len >= 7) {
+                var b0 = this.buf.readU8();
+                if (b0 === 0x15) { // SSL Alert
+                    var bytes = [];
+                    for (var i = 0; i < Math.min(this.len, 16); i++) {
+                        bytes.push(this.buf.add(i).readU8().toString(16).padStart(2, '0'));
+                    }
+                    console.log("\n[!] SSL ALERT sent! " + bytes.join(' '));
+                    console.log("[!] Stack trace:");
+                    console.log(Thread.backtrace(this.context, Backtracer.ACCURATE)
+                        .map(DebugSymbol.fromAddress).join('\n'));
+                }
+            }
+            
+            // Also log all sends to port 42230
+            if (this.len > 0 && this.len < 2000) {
+                var b0 = this.buf.readU8();
+                // Log TLS records (type 0x14-0x17 or 0x15)
+                if (b0 >= 0x14 && b0 <= 0x17) {
+                    var bytes = [];
+                    for (var i = 0; i < Math.min(this.len, 8); i++) {
+                        bytes.push(this.buf.add(i).readU8().toString(16).padStart(2, '0'));
+                    }
+                    console.log("[send] TLS record: " + bytes.join(' ') + " (" + this.len + " bytes)");
+                }
+            }
+        }
+    });
+} else {
+    console.log("[-] send() not found");
+}
+
+if (connectAddr) {
+    console.log("[+] connect() at " + connectAddr);
+    
+    Interceptor.attach(connectAddr, {
+        onEnter: function(args) {
+            var sockaddr = args[1];
+            var family = sockaddr.readU16();
+            if (family === 2) { // AF_INET
+                var port = (sockaddr.add(2).readU8() << 8) | sockaddr.add(3).readU8();
+                var ip = sockaddr.add(4).readU8() + "." + sockaddr.add(5).readU8() + "." + 
+                         sockaddr.add(6).readU8() + "." + sockaddr.add(7).readU8();
+                console.log("[connect] " + ip + ":" + port);
+            }
+        }
+    });
+} else {
+    console.log("[-] connect() not found");
+}
+
+console.log("[*] Hooks installed. Trigger a connection now.");
