@@ -1,118 +1,51 @@
 /**
- * Frida script to bypass ProtoSSL cert verification in FIFA 17.
+ * Frida script v2 - search for known strings we've confirmed exist.
  * 
- * Run AFTER the game has loaded (wait ~20 seconds):
- *   frida -n FIFA17.exe -l frida_bypass.js
+ * From v7 DLL logs: "installed CA cert" was found at 0x1439316B1
+ * That's exe_base + 0x39316B1
  * 
- * This finds the cert verification error string and patches the
- * calling function to skip verification entirely.
+ * Run: frida -n FIFA17.exe -l frida_bypass.js
  */
 
-console.log("[*] FIFA 17 ProtoSSL Bypass");
+console.log("[*] FIFA 17 ProtoSSL Bypass v2");
 
-// Step 1: Find "x509 cert untrusted" string in memory
-var targetStr = "x509 cert untrusted";
-var strAddr = null;
+var mod = Process.enumerateModules()[0];
+console.log("[*] Main module: " + mod.name + " base=" + mod.base + " size=" + mod.size);
 
-Process.enumerateRanges('r--').forEach(function(range) {
-    if (strAddr) return;
-    try {
-        Memory.scanSync(range.base, range.size, 
-            "78 35 30 39 20 63 65 72 74 20 75 6E 74 72 75 73 74 65 64"
-        ).forEach(function(match) {
-            strAddr = match.address;
-        });
-    } catch(e) {}
-});
+// Search for strings we KNOW exist from DLL logs
+var searches = [
+    {name: "installed CA cert", hex: "69 6E 73 74 61 6C 6C 65 64 20 43 41 20 63 65 72 74"},
+    {name: "cert untrusted", hex: "63 65 72 74 20 75 6E 74 72 75 73 74 65 64"},
+    {name: "cert invalid", hex: "63 65 72 74 20 69 6E 76 61 6C 69 64"},
+    {name: "no CA available", hex: "6E 6F 20 43 41 20 61 76 61 69 6C 61 62 6C 65"},
+    {name: "signature hash", hex: "73 69 67 6E 61 74 75 72 65 20 68 61 73 68"},
+    {name: "VerifyCert", hex: "56 65 72 69 66 79 43 65 72 74"},
+    {name: "SetCACert", hex: "53 65 74 43 41 43 65 72 74"},
+    {name: "AllowAnyCert", hex: "41 6C 6C 6F 77 41 6E 79 43 65 72 74"},
+    {name: "bAllowAnyCert", hex: "62 41 6C 6C 6F 77 41 6E 79"},
+    {name: "ncrt", hex: "6E 63 72 74"},
+    {name: "protossl:", hex: "70 72 6F 74 6F 73 73 6C 3A"},
+    {name: "_ServerCert:", hex: "5F 53 65 72 76 65 72 43 65 72 74 3A"},
+];
 
-if (!strAddr) {
-    console.log("[-] Could not find 'x509 cert untrusted' string. Is Denuvo unpacked?");
-    // Try waiting and scanning again
-} else {
-    console.log("[+] Found string at: " + strAddr);
-}
-
-// Step 2: Find "certificate not issued to this host" - this is the hostname check
-var hostCheckStr = null;
-Process.enumerateRanges('r--').forEach(function(range) {
-    if (hostCheckStr) return;
-    try {
-        Memory.scanSync(range.base, range.size,
-            "63 65 72 74 69 66 69 63 61 74 65 20 6E 6F 74 20 69 73 73 75 65 64"
-        ).forEach(function(match) {
-            hostCheckStr = match.address;
-        });
-    } catch(e) {}
-});
-
-if (hostCheckStr) {
-    console.log("[+] Found 'certificate not issued' at: " + hostCheckStr);
-}
-
-// Step 3: Find code that references these strings
-// In x64, LEA with RIP-relative: 48 8D xx [4-byte displacement]
-// or just 4C 8D / 8D with various prefixes
-if (strAddr) {
-    console.log("[*] Searching for code referencing the cert error strings...");
-    
-    var found = false;
-    Process.enumerateRanges('r-x').forEach(function(range) {
-        if (found) return;
-        if (range.size > 0x10000000) return; // skip huge ranges
+searches.forEach(function(s) {
+    var found = [];
+    Process.enumerateRanges('r--').forEach(function(range) {
+        if (found.length >= 3) return;
         try {
-            var buf = Memory.readByteArray(range.base, range.size);
-            var view = new Uint8Array(buf);
-            
-            for (var i = 0; i < view.length - 7; i++) {
-                // Check for LEA with RIP-relative addressing
-                // 48 8D 0D/15/05/3D xx xx xx xx (LEA rcx/rdx/rax/rdi, [rip+disp])
-                // 4C 8D 05/0D/15 xx xx xx xx (LEA r8/r9/r10, [rip+disp])
-                var prefix = view[i];
-                var opcode = view[i+1];
-                if ((prefix !== 0x48 && prefix !== 0x4C) || opcode !== 0x8D) continue;
-                
-                var modrm = view[i+2];
-                if ((modrm & 0xC7) !== 0x05) continue; // must be [rip+disp32]
-                
-                var disp = view[i+3] | (view[i+4] << 8) | (view[i+5] << 16) | (view[i+6] << 24);
-                if (disp > 0x7FFFFFFF) disp = disp - 0x100000000;
-                
-                var instrAddr = range.base.add(i);
-                var targetAddr = instrAddr.add(7).add(disp);
-                
-                if (targetAddr.equals(strAddr)) {
-                    console.log("[+] Code references 'x509 cert untrusted' at: " + instrAddr);
-                    
-                    // This instruction is inside _ProtoSSLUpdateRecvServerCert
-                    // The bAllowAnyCert check is earlier in the function.
-                    // Let's find the function start by looking backwards for common prologue
-                    
-                    // Dump 256 bytes before this instruction
-                    console.log("[*] Code before the error string reference:");
-                    console.log(hexdump(instrAddr.sub(256), {length: 256, header: true, ansi: false}));
-                    
-                    // Also dump 64 bytes after
-                    console.log("[*] Code at and after the reference:");
-                    console.log(hexdump(instrAddr, {length: 64, header: true, ansi: false}));
-                    
-                    found = true;
-                    break;
-                }
-                
-                if (hostCheckStr && targetAddr.equals(hostCheckStr)) {
-                    console.log("[+] Code references 'certificate not issued' at: " + instrAddr);
-                    console.log(hexdump(instrAddr.sub(128), {length: 192, header: true, ansi: false}));
-                    found = true;
-                    break;
-                }
-            }
+            Memory.scanSync(range.base, range.size, s.hex).forEach(function(match) {
+                found.push({addr: match.address, prot: range.protection});
+            });
         } catch(e) {}
     });
-    
-    if (!found) {
-        console.log("[-] Could not find code referencing the error strings");
-        console.log("[*] The strings might be in Denuvo-decrypted memory with different protection");
+    if (found.length > 0) {
+        found.forEach(function(f) {
+            var offset = f.addr.sub(mod.base);
+            console.log("[+] '" + s.name + "' at " + f.addr + " (exe+" + offset + ") prot=" + f.prot);
+        });
+    } else {
+        console.log("[-] '" + s.name + "' NOT FOUND");
     }
-}
+});
 
-console.log("[*] Script complete. Check output above.");
+console.log("\n[*] Done.");
