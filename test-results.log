@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 12:32:28) ===
+﻿=== TEST RESULTS (2026-04-11 12:38:24) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:64701
+[Redirector-Raw] Client connected: 127.0.0.1:64778
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 22 d3 dd  ....o...k..i."..
-  0010: 6a 3c 0d a2 fc 74 5c ef 64 47 34 28 df 19 1b 03  j<...t\.dG4(....
-  0020: 09 cf 2a 2d 5c df 23 05 ff 5c 9c 00 00 10 00 9d  ..*-\.#..\......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 24 42 fd  ....o...k..i.$B.
+  0010: 68 e3 04 89 4f 6f 05 a5 04 ec 25 1f a4 98 01 e8  h...Oo....%.....
+  0020: a6 5a 7c e8 a1 a3 6e 16 c1 25 3c 00 00 10 00 9d  .Z|...n..%<.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,19 +23,19 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da22d3dd6a3c0d...
+[SSL] ClientHello: version=0x303 random=69da2442fd68e304...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0035
 [SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:64701
-[Redirector-Raw] Client connected: 127.0.0.1:64720
+[Redirector-Raw] Disconnected: 127.0.0.1:64778
+[Redirector-Raw] Client connected: 127.0.0.1:64788
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 23 32 55  ....o...k..i.#2U
-  0010: 94 a3 94 3d f6 c4 85 86 8c 70 6f 40 96 b1 4a b5  ...=.....po@..J.
-  0020: f7 af f8 20 af 28 9f c7 e6 11 52 00 00 10 00 9d  ... .(....R.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 24 96 31  ....o...k..i.$.1
+  0010: 5f 04 54 64 52 c5 9f 82 e4 bb 6e 4f 5b b8 dc 18  _.TdR.....nO[...
+  0020: 97 2d f9 9a 68 7d d1 a4 70 b0 78 00 00 10 00 9d  .-..h}..p.x.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -43,20 +43,47 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da23325594a394...
+[SSL] ClientHello: version=0x303 random=69da2496315f0454...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0035
 [SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:64720
+[Redirector-Raw] Disconnected: 127.0.0.1:64788
 
 --- DLL LOG ---
-[12:30:21.476] === FIFA 17 SSL Bypass v6 (aggressive cert scan) ===
-[12:30:21.476] Process ID: 91416
-[12:30:21.476] Main exe: D:\Games\FIFA 17\FIFA17.exe at 0000000140000000
-[12:30:21.476] Phase 1: Initial scan...
-[12:30:21.670] Initial scan: 0 certs replaced
+[12:36:31.389] === FIFA 17 SSL Bypass v7 (safe diagnostics) ===
+[12:36:31.389] PID: 91580
+[12:36:31.389] Phase 1: initial cert scan...
+[12:36:31.579] Phase 1 done: 0 replaced
+[12:36:43.754] --- 5s heartbeat: loop=5, replaced=0 ---
+[12:36:43.754] Searching for 'Online Technology Group' strings...
+[12:36:43.755]   OTG at 0000000000541FEE (offset +335854 in region 00000000004F0000)
+[12:36:43.758]   OTG at 00000000027CE84E (offset +2126 in region 00000000027CE000)
+[12:36:51.383]   OTG at 00007FFD4DAC93B0 (offset +944 in region 00007FFD4DAC9000)
+[12:36:51.383]   OTG at 00007FFD4DAC9475 (offset +1141 in region 00007FFD4DAC9000)
+[12:36:51.383]   OTG at 00007FFD4DAC9698 (offset +1688 in region 00007FFD4DAC9000)
+[12:36:51.394]   OTG at 00007FFD4DAC98FF (offset +2303 in region 00007FFD4DAC9000)
+[12:36:51.496] OTG strings found: 6
+[12:36:57.810] --- 15s heartbeat: loop=6, replaced=0 ---
+[12:36:57.810] Searching for 'installed CA cert' string...
+[12:36:57.811]   SetCACert at 0000000000541FEE (offset +335854 in region 00000000004F0000)
+[12:36:57.814]   SetCACert at 00000000027CE84E (offset +2126 in region 00000000027CE000)
+[12:37:05.580]   SetCACert at 00000001439316B1 (offset +4089521 in region 000000014354B000)
+[12:37:11.244]   SetCACert at 00007FFD4DAC96B0 (offset +1712 in region 00007FFD4DAC9000)
+[12:37:11.244]   SetCACert at 00007FFD4DAC9997 (offset +2455 in region 00007FFD4DAC9000)
+[12:37:11.354] SetCACert strings found: 5
+[12:37:20.515] --- 30s heartbeat: loop=7, replaced=0 ---
+[12:37:20.515] 30s OTG search...
+[12:37:20.530]   OTG at 0000000027E12450 (offset +4203600 in region 0000000027A10000)
+[12:37:20.530]   OTG at 0000000027E1F4F0 (offset +4257008 in region 0000000027A10000)
+[12:37:20.530]   OTG at 0000000027E23D37 (offset +4275511 in region 0000000027A10000)
+[12:37:33.048]   OTG at 00007FFD4DAC93B0 (offset +944 in region 00007FFD4DAC9000)
+[12:37:33.048]   OTG at 00007FFD4DAC9475 (offset +1141 in region 00007FFD4DAC9000)
+[12:37:33.048]   OTG at 00007FFD4DAC9698 (offset +1688 in region 00007FFD4DAC9000)
+[12:37:33.048]   OTG at 00007FFD4DAC98FF (offset +2303 in region 00007FFD4DAC9000)
+[12:37:33.153] 30s OTG strings: 7
+[12:37:42.088] --- 60s heartbeat: loop=8, replaced=0 ---
 
 
 --- END ---
