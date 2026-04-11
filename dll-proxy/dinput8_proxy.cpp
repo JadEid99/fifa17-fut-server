@@ -319,12 +319,17 @@ static void PatchSSL() {
                     BYTE caTrue[] = {0x30, 0x03, 0x01, 0x01, 0xFF};
                     BYTE* caMatch = FindPattern(regionBase + i, certSize, caTrue, 5);
                     
-                    Log("  Heap cert #%d at 0x%p size=%llu CA=%s: %.80s",
-                        heapCerts, regionBase + i, (unsigned long long)certSize,
-                        caMatch ? "YES" : "no", txt);
+                    // Check if this is an EA cert (contains "Electronic Arts")
+                    BYTE eaStr[] = {0x45, 0x6C, 0x65, 0x63, 0x74, 0x72, 0x6F, 0x6E, 0x69, 0x63, 0x20, 0x41, 0x72, 0x74, 0x73};
+                    BYTE* eaMatch = FindPattern(regionBase + i, certSize, eaStr, 15);
                     
-                    if (caMatch && certSize >= g_ourCACertLen) {
-                        Log("  -> REPLACING CA cert at 0x%p!", regionBase + i);
+                    Log("  Heap cert #%d at 0x%p size=%llu CA=%s EA=%s: %.80s",
+                        heapCerts, regionBase + i, (unsigned long long)certSize,
+                        caMatch ? "YES" : "no", eaMatch ? "YES" : "no", txt);
+                    
+                    // ONLY replace if it's an EA CA cert
+                    if (caMatch && eaMatch && certSize >= g_ourCACertLen) {
+                        Log("  -> REPLACING EA CA cert at 0x%p!", regionBase + i);
                         DWORD oldProt;
                         if (VirtualProtect(regionBase + i, certSize, PAGE_READWRITE, &oldProt)) {
                             memcpy(regionBase + i, g_ourCACert, g_ourCACertLen);
@@ -410,6 +415,9 @@ static DWORD WINAPI PatchThread(LPVOID) {
                         if (memcmp(base + j, g_ourCACert, 20) == 0) { j += cs - 1; continue; }
                         BYTE oid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
                         if (!FindPattern(base + j, cs, oid, 8)) continue;
+                        // ONLY replace EA certs
+                        BYTE ea[] = {0x45, 0x6C, 0x65, 0x63, 0x74, 0x72, 0x6F, 0x6E, 0x69, 0x63, 0x20, 0x41, 0x72, 0x74, 0x73};
+                        if (!FindPattern(base + j, cs, ea, 15)) continue;
                         DWORD op;
                         if (VirtualProtect(base + j, cs, PAGE_READWRITE, &op)) {
                             SIZE_T copyLen = (cs < g_ourCACertLen) ? cs : g_ourCACertLen;
