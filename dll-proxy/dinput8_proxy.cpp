@@ -117,10 +117,18 @@ static const SIZE_T g_ourCACertLen = 712;
 
 static const BYTE g_otgPattern[] = "Online Technology Group";
 static const SIZE_T g_otgPatternLen = 23;
+
+// Use "OTG3 Certificate Authority" to identify the CA cert specifically
+// (server certs have different CN like "winter15.gosredirector.ea.com")
+static const BYTE g_caPattern[] = "OTG3 Certificate Authority";
+static const SIZE_T g_caPatternLen = 26;
+
 static int g_certReplacements = 0;
 
 
-// Scan for DER certs containing "Online Technology Group" and replace with ours
+// Scan for DER certs containing "OTG3 Certificate Authority" (CA cert only) and replace
+// The CA cert is self-signed so "Online Technology Group" appears TWICE (issuer + subject).
+// Server certs only have it once (in the issuer field).
 static int ScanAndReplaceCerts() {
     int replaced = 0;
     MEMORY_BASIC_INFORMATION mbi;
@@ -143,32 +151,40 @@ static int ScanAndReplaceCerts() {
                     SIZE_T cs = len + 4;
                     if (j + cs > size) continue;
                     
-                    // Must contain "Online Technology Group"
-                    int hasOTG = 0;
+                    // Count occurrences of "Online Technology Group"
+                    int otgCount = 0;
                     for (SIZE_T k = 0; k + g_otgPatternLen <= cs; k++) {
-                        if (memcmp(base + j + k, g_otgPattern, g_otgPatternLen) == 0) { hasOTG = 1; break; }
+                        if (memcmp(base + j + k, g_otgPattern, g_otgPatternLen) == 0) {
+                            otgCount++;
+                            k += g_otgPatternLen - 1;
+                        }
                     }
-                    if (!hasOTG) { j += 3; continue; }
+                    // CA cert: OTG appears 2+ times (issuer + subject)
+                    // Server cert: OTG appears 1 time (issuer only)
+                    if (otgCount < 2) { if (otgCount == 0) j += 3; else j += cs - 1; continue; }
                     
-                    // Skip if already our cert (check first 20 bytes)
+                    // Skip if already our cert
                     if (memcmp(base + j, g_ourCACert, 20) == 0) {
                         j += cs - 1; continue;
                     }
                     
-                    Log("FOUND EA cert at %p size=%llu", base + j, (unsigned long long)cs);
+                    Log("FOUND EA CA cert at %p size=%llu (OTG x%d)", base + j, (unsigned long long)cs, otgCount);
+                    
+                    // Log first 16 bytes for identification
+                    char hex[64]; int hlen = 0;
+                    for (int h = 0; h < 8; h++) hlen += sprintf(hex+hlen, "%02X ", base[j+h]);
+                    Log("  Header: %s", hex);
                     
                     DWORD op;
                     if (VirtualProtect(base + j, cs, PAGE_READWRITE, &op)) {
-                        // Write our cert (712 bytes) into the slot
                         memcpy(base + j, g_ourCACert, g_ourCACertLen);
-                        // Zero remaining bytes if slot is bigger
                         if (cs > g_ourCACertLen) {
                             memset(base + j + g_ourCACertLen, 0, cs - g_ourCACertLen);
                         }
                         VirtualProtect(base + j, cs, op, &op);
                         replaced++;
                         g_certReplacements++;
-                        Log("REPLACED at %p (total: %d)", base + j, g_certReplacements);
+                        Log("REPLACED CA cert at %p (total: %d)", base + j, g_certReplacements);
                     }
                     j += cs - 1;
                 }
@@ -182,7 +198,7 @@ static int ScanAndReplaceCerts() {
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v9 (712-byte CA cert, fits in 764-byte slot) ===");
+        Log("=== FIFA 17 SSL Bypass v10 (CA-only replacement, OTG count >= 2) ===");
         Log("PID: %lu, CA cert: %llu bytes", GetCurrentProcessId(), (unsigned long long)g_ourCACertLen);
         
         int totalReplaced = 0;
