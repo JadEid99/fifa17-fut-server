@@ -93,8 +93,8 @@ static bool g_dumpDone = false;
 // in padded format (the Subject.strCommon field of the CA cert node).
 // Then find the RSA modulus after it and replace.
 static int FindAndReplaceCAModulus() {
-    static const char otg3[] = "OTG3 Certificate Authority";
-    static const SIZE_T otg3Len = 26;
+    static const char otg3[] = "Redwood City";
+    static const SIZE_T otg3Len = 12;
     int replaced = 0;
     
     MEMORY_BASIC_INFORMATION mbi;
@@ -115,27 +115,21 @@ static int FindAndReplaceCAModulus() {
                     // Check this is NOT inside a DER cert (should be padded with nulls)
                     if (j + otg3Len + 2 < size && base[j + otg3Len + 1] != 0x00) continue;
                     
-                    // Check "Electronic Arts" is nearby before (part of same struct)
-                    bool hasEA = false;
-                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j && !hasEA; scan++) {
-                        if (memcmp(base + scan, "Electronic Arts", 15) == 0) hasEA = true;
+                    // Check "Online Technology Group" is nearby (part of CA cert identity)
+                    bool hasOTG = false;
+                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j + 0x200 && scan + 23 < size && !hasOTG; scan++) {
+                        if (memcmp(base + scan, "Online Technology Group", 23) == 0) hasOTG = true;
                     }
-                    if (!hasEA) continue;
+                    if (!hasOTG) continue;
                     
-                    // Check NO "winter15" nearby (this should be CA cert, not server cert)
-                    bool hasWinter = false;
-                    for (SIZE_T scan = j; scan < j + 0x400 && scan + 8 < size && !hasWinter; scan++) {
-                        if (memcmp(base + scan, "winter15", 8) == 0) hasWinter = true;
+                    // Skip if "Global Online Studio" is nearby (server cert, not CA cert)
+                    bool isServerCert = false;
+                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j + 0x200 && scan + 20 < size && !isServerCert; scan++) {
+                        if (memcmp(base + scan, "Global Online Studio", 20) == 0) isServerCert = true;
                     }
-                    // Note: CA and server cert structs may be adjacent, so winter15
-                    // could be in the NEXT struct. Only skip if winter15 is BEFORE OTG3.
-                    bool winterBefore = false;
-                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j && !winterBefore; scan++) {
-                        if (memcmp(base + scan, "winter15", 8) == 0) winterBefore = true;
-                    }
-                    if (winterBefore) continue; // this OTG3 is in the server cert's issuer
+                    if (isServerCert) continue;
                     
-                    Log("CA CERT NODE: OTG3 at %p", base + j);
+                    Log("CA CERT NODE: Redwood at %p", base + j);
                     
                     // Dump 512 bytes after OTG3 to find the modulus
                     // Dump first 3 unique instances
