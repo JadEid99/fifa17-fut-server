@@ -118,24 +118,52 @@ static int FindAndPatchStruct() {
                     Log("REAL ProtoSSLRefT: strHost at %p", strHost);
                     Log("  pSock?=%p pHost?=%p", (void*)val_m10, (void*)val_m08);
                     
-                    // Dump bytes around the expected bAllowAnyCert location
-                    // Source says: strHost(+0x20) -> PeerAddr(+0x120) -> iState(+0x130) -> iClosed(+0x134) -> pSecure(+0x138) -> bAllowAnyCert(+0x140)
-                    // From strHost: bAllowAnyCert = +0x120
-                    // But FIFA 17 struct may differ. Dump +0x100 to +0x160
-                    char hex[256]; int hlen = 0;
+                    // From v23 analysis, the struct at the real ProtoSSLRefT has:
+                    // +0x100: sockaddr_in PeerAddr (16 bytes)
+                    // +0x110: iState (4 bytes, value=4)
+                    // +0x114: iClosed (4 bytes, value=0)
+                    // +0x118: pSecure (8 bytes, pointer)
+                    // +0x120: unknown pointer (8 bytes)
+                    // +0x128: parsed cert data starts ("US"...)
+                    //
+                    // bAllowAnyCert must be BEFORE the parsed cert data.
+                    // In newer DirtySDK it might be at +0x108 to +0x10F area.
+                    // Or it could be a flag embedded in the iState/iClosed area.
+                    //
+                    // v23 showed that corrupting +0x120 (a pointer) caused the game
+                    // to hang instead of rejecting the cert — meaning the verification
+                    // code crashed on the bad pointer and never returned an error.
+                    // That's not a clean bypass.
+                    //
+                    // Let's try +0x10C — a byte in the padding between PeerAddr and iState.
+                    // If that doesn't work, we'll try others.
+                    
+                    char hex[256]; int hlen;
+                    hlen = 0;
                     for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x100+h]);
                     Log("  +0x100: %s", hex);
                     hlen = 0;
-                    for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x120+h]);
-                    Log("  +0x120: %s", hex);
-                    hlen = 0;
-                    for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x140+h]);
-                    Log("  +0x140: %s", hex);
+                    for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x110+h]);
+                    Log("  +0x110: %s", hex);
                     
-                    // Set ONLY the byte at +0x120 to 0x01 (bAllowAnyCert from source)
-                    BYTE oldVal = strHost[0x120];
-                    strHost[0x120] = 0x01;
-                    Log("  SET strHost[+0x120] from 0x%02X to 0x01", oldVal);
+                    // Try +0x10C (between PeerAddr end and iState)
+                    BYTE old10C = strHost[0x10C];
+                    BYTE old10D = strHost[0x10D];
+                    BYTE old10E = strHost[0x10E];
+                    BYTE old10F = strHost[0x10F];
+                    BYTE old116 = strHost[0x116];
+                    BYTE old117 = strHost[0x117];
+                    
+                    // Only set bytes that are currently 0x00 (safe to change)
+                    if (old10C == 0x00) strHost[0x10C] = 0x01;
+                    if (old10D == 0x00) strHost[0x10D] = 0x01;
+                    if (old10E == 0x00) strHost[0x10E] = 0x01;
+                    if (old10F == 0x00) strHost[0x10F] = 0x01;
+                    if (old116 == 0x00) strHost[0x116] = 0x01;
+                    if (old117 == 0x00) strHost[0x117] = 0x01;
+                    
+                    Log("  SET +0x10C=%02X->01, +0x10D=%02X->01, +0x10E=%02X->01, +0x10F=%02X->01, +0x116=%02X->01, +0x117=%02X->01",
+                        old10C, old10D, old10E, old10F, old116, old117);
                     
                     patched++;
                     g_patched++;
