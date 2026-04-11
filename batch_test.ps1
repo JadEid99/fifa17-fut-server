@@ -1,5 +1,5 @@
-# Batch v10: Diagnostic + new approaches
-# Game stays running between tests (restart only on crash)
+# Batch v11: Test single-record TLS response (server change)
+# Just one test - the server now sends all handshake messages in one TLS record
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -9,7 +9,7 @@ $resultsFile = "$repoRoot\batch-results.log"
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KS8 {
+public class KS9 {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -17,9 +17,9 @@ public class KS8 {
     public static void Q() { keybd_event(0x51,0x10,0,UIntPtr.Zero); System.Threading.Thread.Sleep(50); keybd_event(0x51,0x10,KUP,UIntPtr.Zero); }
 }
 "@
-function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS8]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
-function FEnter { if(Focus){[KS8]::Enter()} }
-function FQ { if(Focus){[KS8]::Q()} }
+function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS9]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
+function FEnter { if(Focus){[KS9]::Enter()} }
+function FQ { if(Focus){[KS9]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 function Launch-Game { Start-Process $gameExe; for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}; Start-Sleep 10;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 10;FEnter;Start-Sleep 2 }
 function Run-Frida($code) { $tmp="$repoRoot\tf.js"; Set-Content $tmp "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}" -Encoding UTF8; $p=Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"; $p|Wait-Process -Timeout 10 -EA SilentlyContinue; if(!$p.HasExited){$p|Stop-Process -Force}; $o=(Get-Content "$repoRoot\fo.txt" -Raw -EA SilentlyContinue); Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -EA SilentlyContinue; return $o }
@@ -33,81 +33,37 @@ Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0
 '@
 
 $patches = @(
-    # T1: Baseline with 15s wait + timeout diagnostic (server has 10s timeout logging)
-    @{ name="T01_baseline_15s_wait"; desc="baseline (5 patches), wait 15s for timeout diagnostic"
+    # T1: Single-record server + baseline patches + 20s wait
+    @{ name="T01_single_record_baseline"; desc="Server sends all handshake in 1 TLS record + baseline patches"
        patch=$baseline; wait=20 },
-
-    # T2: Baseline + hook send() to see if game sends ANY data on the socket
-    @{ name="T02_hook_send"; desc="baseline + hook Winsock send() to log all outgoing data"
-       patch=@"
-$baseline
-var ws2=Process.getModuleByName('ws2_32.dll');
-var sendFn=ws2.getExportByName('send');
-Interceptor.attach(sendFn,{onEnter:function(args){
-  var len=args[2].toInt32();
-  if(len>0&&len<2000){
-    var b0=args[1].readU8();
-    send('send() len='+len+' first_byte=0x'+b0.toString(16));
-  }
-}});
-"@; wait=15 },
-
-    # T3: Baseline + hook recv() to see if game tries to read
-    @{ name="T03_hook_recv"; desc="baseline + hook Winsock recv() to log all incoming reads"
+    # T2: Single-record server + NO patches (test if single record alone fixes it)
+    @{ name="T02_single_record_no_patches"; desc="Server sends all handshake in 1 TLS record, NO Frida patches"
+       patch="send('no patches');"; wait=15 },
+    # T3: Single-record server + baseline + hook recv to see if game reads our response
+    @{ name="T03_single_record_hook_recv"; desc="Single record + baseline + hook recv()"
        patch=@"
 $baseline
 var ws2=Process.getModuleByName('ws2_32.dll');
 var recvFn=ws2.getExportByName('recv');
 Interceptor.attach(recvFn,{
-  onEnter:function(args){this.buf=args[1];this.len=args[2].toInt32();},
+  onEnter:function(args){this.buf=args[1];this.len=args[2].toInt32();this.sock=args[0];},
   onLeave:function(ret){
     var n=ret.toInt32();
-    if(n>0){send('recv() got '+n+' bytes, first=0x'+this.buf.readU8().toString(16));}
-    else{send('recv() returned '+n);}
+    if(n>0){
+      var first=this.buf.readU8();
+      send('recv(sock='+this.sock+') got '+n+' bytes, first=0x'+first.toString(16));
+    }
   }
 });
-"@; wait=15 },
-
-    # T4: Baseline + dump iState after connection to see what state the game is in
-    @{ name="T04_dump_iState"; desc="baseline + dump iState from struct after connection"
-       patch=@"
-$baseline
-// Wait 5 seconds then check iState
-setTimeout(function(){
-  var pattern='77 69 6E 74 65 72 31 35 2E 67 6F 73 72 65 64 69 72 65 63 74 6F 72 2E 65 61 2E 63 6F 6D';
-  Process.enumerateRanges('rw-').forEach(function(range){
-    if(range.size<0x200)return;
-    try{
-      Memory.scanSync(range.base,range.size,pattern).forEach(function(match){
-        var strHost=match.address;
-        try{if(strHost.add(0x100).readU16()!==2)return;}catch(e){return;}
-        // Read iState candidates
-        [-232,-196,-160,-124,-116].forEach(function(off){
-          try{var v=strHost.add(off).readU32();send('strHost'+off+'='+v);}catch(e){}
-        });
-        // Also read bytes at +0x8C from various struct base guesses
-        [-0x74,-0x7C,-0x84,-0x108].forEach(function(off){
-          try{var v=strHost.add(off).readU32();send('strHost'+off+' (0x'+(-off).toString(16)+')='+v);}catch(e){}
-        });
-      });
-    }catch(e){}
-  });
-},5000);
-"@; wait=15 },
-
-    # T5: No patches at all (control - should get ECONNRESET)
-    @{ name="T05_no_patches"; desc="NO patches (control test)"
-       patch="send('no patches applied');"; wait=15 }
+"@; wait=15 }
 )
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH v10 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
-Write-Host "=== BATCH v10 - $($patches.Count) tests ===" -ForegroundColor Cyan
+Set-Content $resultsFile "=== BATCH v11 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
+Write-Host "=== BATCH v11 - $($patches.Count) tests ===" -ForegroundColor Cyan
 
-# Launch game once
 Kill-All
-$sj = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; Launch-Game; Write-Host "Ready." -ForegroundColor Green
+Launch-Game
 
 $n=0
 foreach($p in $patches){
@@ -116,13 +72,10 @@ foreach($p in $patches){
     if(-not(Get-Process -Name FIFA17 -EA SilentlyContinue)){
         Write-Host "  CRASHED - relaunching" -ForegroundColor Red
         Add-Content $resultsFile "[$n] $($p.name) | CRASHED | $($p.desc)`n"
-        Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue;Kill-All
-        $sj=Start-Job -ScriptBlock{param($r);node "$r\server-standalone\server.mjs" 2>&1} -ArgumentList $repoRoot
-        Start-Sleep 2;Launch-Game
+        Kill-All; Launch-Game
     }
     
-    # Restart server between tests to get clean output
-    Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
+    # Restart server for clean output
     Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
     Start-Sleep 1
     $sj=Start-Job -ScriptBlock{param($r);node "$r\server-standalone\server.mjs" 2>&1} -ArgumentList $repoRoot
@@ -135,14 +88,15 @@ foreach($p in $patches){
     Start-Sleep $waitTime
     
     $so=(Receive-Job $sj 2>&1|Out-String).Trim()
+    Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
     
     $r="UNKNOWN"
     if($so -match "TIMEOUT: No data"){$r="TIMEOUT_NO_DATA"}
     if($so -match "PLAINTEXT Blaze"){$r="PLAINTEXT_BLAZE"}
     if($so -match "Phase=.*received"){$r="RECEIVED_DATA"}
-    if($so -match "Record: type=0x16"){$r="TLS_HANDSHAKE"}
+    if($so -match "Handshake type: 0x10"){$r="CLIENT_KEY_EXCHANGE"}
     if($so -match "GetServerInstance"){$r="BLAZE_REQUEST"}
-    if($so -match "ClientKeyExchange"){$r="CLIENT_KEY_EXCHANGE"}
+    if($so -match "Encrypted Finished"){$r="TLS_COMPLETE"}
     if($so -match "ECONNRESET"){$r="ECONNRESET"}
     if($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected" -and $so -notmatch "TIMEOUT"){$r="HANGING"}
     if($so -eq ""){$r="NO_CONNECTION"}
@@ -158,6 +112,6 @@ foreach($p in $patches){
     FEnter; Start-Sleep 2
 }
 
-Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
+Kill-All
 Write-Host "`n=== DONE ===" -ForegroundColor Green
-git add batch-results.log;git commit -m "Batch v10 $timestamp";git push 2>&1
+git add batch-results.log;git commit -m "Batch v11 $timestamp";git push 2>&1
