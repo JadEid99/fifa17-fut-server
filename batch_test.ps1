@@ -56,7 +56,6 @@ function Launch-Game {
     Start-Sleep 5; Send-Enter
     Start-Sleep 5; Send-Enter
     Start-Sleep 5; Send-Enter
-    Start-Sleep 3; Send-Enter
     # Wait for first connection attempt to finish
     Start-Sleep 10
     # Dismiss the failure dialog
@@ -109,77 +108,107 @@ function Wrap-Revert($code) {
 }
 
 $patches = @(
+    # --- DIAGNOSTIC: Dump State 3 code to find cert verify calls ---
     @{
-        name = "P01_JNE_to_JMP_6126440"
-        desc = "JNE->JMP at +0x6126440"
-        patch = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0xEB);'
-        revert = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0x75);'
+        name = "D01_dump_state3"
+        desc = "Dump 256 bytes at State 3 (+0x61262DC)"
+        patch = @'
+var a = b.add(0x61262DC);
+var h = "";
+for (var i = 0; i < 256; i++) {
+    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
+    if ((i+1)%32===0) { send("S3 +"+(0x61262DC+i-31).toString(16)+": "+h); h=""; }
+}
+// Find all CALL instructions
+for (var i = 0; i < 256; i++) {
+    if (a.add(i).readU8()===0xE8) {
+        var d=a.add(i+1).readS32();
+        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
+    }
+}
+'@
+        revert = ''
     },
+    # --- DIAGNOSTIC: Dump code before State 3 (cert receive handler) ---
+    @{
+        name = "D02_dump_before_state3"
+        desc = "Dump 256 bytes before State 3 (+0x61261DC)"
+        patch = @'
+var a = b.add(0x61261DC);
+var h = "";
+for (var i = 0; i < 256; i++) {
+    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
+    if ((i+1)%32===0) { send("PRE3 +"+(0x61261DC+i-31).toString(16)+": "+h); h=""; }
+}
+for (var i = 0; i < 256; i++) {
+    if (a.add(i).readU8()===0xE8) {
+        var d=a.add(i+1).readS32();
+        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
+    }
+}
+'@
+        revert = ''
+    },
+    # --- DIAGNOSTIC: Dump cert_process function ---
+    @{
+        name = "D03_dump_cert_process"
+        desc = "Dump 128 bytes at cert_process (+0x6127020)"
+        patch = @'
+var a = b.add(0x6127020);
+var h = "";
+for (var i = 0; i < 128; i++) {
+    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
+    if ((i+1)%32===0) { send("CP +"+(0x6127020+i-31).toString(16)+": "+h); h=""; }
+}
+for (var i = 0; i < 128; i++) {
+    if (a.add(i).readU8()===0xE8) {
+        var d=a.add(i+1).readS32();
+        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
+    }
+}
+'@
+        revert = ''
+    },
+    # --- DIAGNOSTIC: Dump cert_verify function ---
+    @{
+        name = "D04_dump_cert_verify"
+        desc = "Dump 128 bytes at cert_verify (+0x6124140)"
+        patch = @'
+var a = b.add(0x6124140);
+var h = "";
+for (var i = 0; i < 128; i++) {
+    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
+    if ((i+1)%32===0) { send("CV +"+(0x6124140+i-31).toString(16)+": "+h); h=""; }
+}
+for (var i = 0; i < 128; i++) {
+    if (a.add(i).readU8()===0xE8) {
+        var d=a.add(i+1).readS32();
+        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
+    }
+}
+'@
+        revert = ''
+    },
+    # --- PATCH: NOP CALL at +0x612644E (known working - prevents disconnect) ---
     @{
         name = "P02_NOP_call_612644E"
-        desc = "NOP CALL at +0x612644E"
+        desc = "NOP CALL at +0x612644E (baseline - prevents disconnect)"
         patch = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
         revert = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);'
     },
+    # --- PATCH: NOP CALL + NOP error state writes (v17 approach) ---
     @{
-        name = "P03_error_handler_ret0"
-        desc = "Error handler +0x612E770 ret 0"
-        patch = 'Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]);'
-        revert = 'Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]);'
+        name = "P13_NOP_call_AND_state_writes"
+        desc = "NOP CALL+state writes at +0x612644E/6126453/612645C"
+        patch = 'Memory.protect(b.add(0x612644E),21,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+        revert = 'Memory.protect(b.add(0x612644E),21,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00,0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01,0x40,0x88,0xBB,0x21,0x0C,0x00,0x00]);'
     },
+    # --- PATCH: All disconnects ret (known working) + NOP error state writes ---
     @{
-        name = "P04_disconnect_5D0_ret"
-        desc = "Disconnect +0x612D5D0 ret"
-        patch = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3);'
-        revert = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48);'
-    },
-    @{
-        name = "P05_disconnect_730_ret"
-        desc = "Disconnect caller +0x612D730 ret"
-        patch = 'Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0xC3);'
-        revert = 'Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0x48);'
-    },
-    @{
-        name = "P06_NOP_call_AND_disconnect"
-        desc = "NOP CALL +0x612644E AND disconnect ret"
-        patch = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3);'
-        revert = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48);'
-    },
-    @{
-        name = "P07_JMP_AND_disconnect"
-        desc = "JMP +0x6126440 AND disconnect ret"
-        patch = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0xEB); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3);'
-        revert = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0x75); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48);'
-    },
-    @{
-        name = "P08_NOP_both_JNE"
-        desc = "NOP both JNE at +0x6126440 and +0x6126449"
-        patch = 'Memory.protect(b.add(0x6126440),2,"rwx"); b.add(0x6126440).writeByteArray([0x90,0x90]); Memory.protect(b.add(0x6126449),2,"rwx"); b.add(0x6126449).writeByteArray([0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x6126440),2,"rwx"); b.add(0x6126440).writeByteArray([0x75,0x21]); Memory.protect(b.add(0x6126449),2,"rwx"); b.add(0x6126449).writeByteArray([0x75,0x18]);'
-    },
-    @{
-        name = "P09_NOP_disconnect_call_E7B8"
-        desc = "NOP disconnect CALL at +0x612E7B8"
-        patch = 'Memory.protect(b.add(0x612E7B8),5,"rwx"); b.add(0x612E7B8).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x612E7B8),5,"rwx"); b.add(0x612E7B8).writeByteArray([0xE8,0x13,0xEE,0xFF,0xFF]);'
-    },
-    @{
-        name = "P10_NOP_E7B8_AND_E7C0"
-        desc = "NOP both CALLs at +0x612E7B8 and +0x612E7C0"
-        patch = 'Memory.protect(b.add(0x612E7B8),13,"rwx"); b.add(0x612E7B8).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x612E7B8),13,"rwx"); b.add(0x612E7B8).writeByteArray([0xE8,0x13,0xEE,0xFF,0xFF,0xEB,0x09,0xBC,0xE8,0x7B,0xD3,0xFF,0xFF]);'
-    },
-    @{
-        name = "P11_all_disconnects_ret"
-        desc = "All disconnect functions ret (5D0 + 730 + E770)"
-        patch = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0xC3); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]);'
-        revert = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0x48); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]);'
-    },
-    @{
-        name = "P12_kitchen_sink"
-        desc = "JMP+NOP_CALL+disconnect_ret+error_ret0 (everything)"
-        patch = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0xEB); Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]);'
-        revert = 'Memory.protect(b.add(0x6126440),1,"rwx"); b.add(0x6126440).writeU8(0x75); Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]); Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]);'
+        name = "P14_all_disc_ret_AND_NOP_state"
+        desc = "All disconnects ret + NOP state writes"
+        patch = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0xC3); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]); Memory.protect(b.add(0x6126453),14,"rwx"); b.add(0x6126453).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+        revert = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0x48); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]); Memory.protect(b.add(0x6126453),14,"rwx"); b.add(0x6126453).writeByteArray([0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01,0x40,0x88,0xBB,0x21,0x0C]);'
     }
 )
 
