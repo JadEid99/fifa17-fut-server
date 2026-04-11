@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 13:19:26) ===
+﻿=== TEST RESULTS (2026-04-11 13:23:18) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:65051
+[Redirector-Raw] Client connected: 127.0.0.1:65080
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 2e 32 df  ....o...k..i..2.
-  0010: 6b 28 4a 37 ef 82 71 7a 19 36 45 c7 f4 de 5f 9b  k(J7..qz.6E..._.
-  0020: f2 85 34 36 76 4a 5b f7 ed df d2 00 00 10 00 9d  ..46vJ[.........
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 2f 1f f3  ....o...k..i./..
+  0010: cc e0 0d cd 18 a0 2b 0e 75 de e7 2c 55 8a df 8d  ......+.u..,U...
+  0020: fa a3 17 83 3b 83 34 0d 62 c5 fb 00 00 10 00 9d  ....;.4.b.......
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,17 +23,30 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da2e32df6b284a...
+[SSL] ClientHello: version=0x303 random=69da2f1ff3cce00d...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:65051
+[SSL] Phase=waiting_client_response, received 7 bytes
+  0000: 15 03 00 00 02 02 2a
+file:///C:/Users/Jad/fifa17-fut-server/server-standalone/server.mjs:299
+      const slice = data.subarray(i, Math.min(i + 16, data.length));
+                                  ^
+System.Management.Automation.RemoteException
+ReferenceError: i is not defined
+    at Socket.<anonymous> (file:///C:/Users/Jad/fifa17-fut-server/server-standalone/server.mjs:299:35)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:191:23)
+System.Management.Automation.RemoteException
+Node.js v20.19.5
 
 --- DLL LOG ---
-[13:18:55.212] === FIFA 17 DLL Proxy v12 (no patching, SSLv3+RC4 server) ===
-[13:18:55.212] PID: 65356
+[13:22:51.566] === FIFA 17 DLL Proxy v12 (no patching, SSLv3+RC4 server) ===
+[13:22:51.566] PID: 68120
 
 
 --- END ---
