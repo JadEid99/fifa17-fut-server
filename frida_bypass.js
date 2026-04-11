@@ -1,16 +1,10 @@
-/**
- * Frida v11 - Frida 17 compatible API.
- * Hook send() to catch SSL alert and get stack trace.
- */
-console.log("[*] v11");
-
+console.log("[*] v12");
 var ws2 = Process.getModuleByName("ws2_32.dll");
-var send = ws2.getExportByName("send");
-var connect = ws2.getExportByName("connect");
+var sendFn = ws2.getExportByName("send");
+var connectFn = ws2.getExportByName("connect");
+console.log("[+] send=" + sendFn + " connect=" + connectFn);
 
-console.log("[+] send=" + send + " connect=" + connect);
-
-Interceptor.attach(send, {
+Interceptor.attach(sendFn, {
     onEnter: function(args) {
         var buf = args[1];
         var len = args[2].toInt32();
@@ -25,7 +19,7 @@ Interceptor.attach(send, {
     }
 });
 
-Interceptor.attach(connect, {
+Interceptor.attach(connectFn, {
     onEnter: function(args) {
         var sa = args[1];
         if (sa.readU16() === 2) {
@@ -34,5 +28,4 @@ Interceptor.attach(connect, {
         }
     }
 });
-
-console.log("[*] Ready. Trigger connection.");
+console.log("[*] Ready.");
