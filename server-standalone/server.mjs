@@ -298,10 +298,24 @@ bT9J4z1OJr6cTA==
   let phase = 'waiting_client_response';
   let pendingBuf = Buffer.alloc(0);
 
+  // Add a timeout to detect if the game sends nothing
+  const clientTimeout = setTimeout(() => {
+    console.log('[SSL] TIMEOUT: No data received from client after 10 seconds');
+    console.log('[SSL] pendingBuf length:', pendingBuf.length);
+    if (pendingBuf.length > 0) {
+      console.log('[SSL] Pending data hex:');
+      for (let i = 0; i < Math.min(pendingBuf.length, 128); i += 16) {
+        const slice = pendingBuf.subarray(i, Math.min(i + 16, pendingBuf.length));
+        console.log(`  ${i.toString(16).padStart(4, '0')}: ${Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ')}`);
+      }
+    }
+  }, 10000);
+
   socket.removeAllListeners('data');
   socket.on('data', (data) => {
     pendingBuf = Buffer.concat([pendingBuf, data]);
-    console.log(`[SSL] Phase=${phase}, received ${data.length} bytes`);
+    console.log(`[SSL] Phase=${phase}, received ${data.length} bytes (total pending: ${pendingBuf.length})`);
+    clearTimeout(clientTimeout);
 
     // Hex dump
     for (let i = 0; i < Math.min(data.length, 256); i += 16) {
