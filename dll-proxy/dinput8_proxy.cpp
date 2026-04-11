@@ -1,16 +1,23 @@
 /**
- * dinput8.dll Proxy for FIFA 17 SSL Bypass - v7
+ * dinput8.dll Proxy for FIFA 17 SSL Bypass - v8
  * 
- * v6 findings: DLL thread died silently after initial scan.
- * Likely cause: GetModuleHandleExA or other API calls crashing
- * in Denuvo-protected process.
+ * v7 findings (CRITICAL):
+ * - "Online Technology Group" found at 6-7 memory locations
+ * - At 5s: 0x541FEE, 0x27CE84E, 0x7FFD4DAC93B0/9475/9698/98FF
+ * - At 30s: NEW heap copies at 0x27E12450/27E1F4F0/27E23D37
+ * - "installed CA cert" at 0x1439316B1 (main exe +0x39316B1)
+ * - BUT cert scan found 0 matches!
  * 
- * v7 changes:
- * - Remove all GetModuleHandleExA calls (suspected crash cause)
- * - Add SEH around the entire scan loop, not just inner scan
- * - Log at start of every major operation so we can see where it dies
- * - Simpler diagnostic: just count OTG string occurrences, no module lookup
- * - Add a heartbeat log every 5 seconds so we know the thread is alive
+ * The cert IS in memory but our DER cert scanner isn't matching it.
+ * Possible reasons:
+ * 1. The cert might not start with 0x30 0x82 (maybe stored differently)
+ * 2. The length field might be outside our 300-1500 range
+ * 3. CA:TRUE might not be present (maybe it's a leaf cert, not CA)
+ * 
+ * v8 approach: Instead of looking for complete DER certs, look for the
+ * "Online Technology Group" string and dump the surrounding bytes.
+ * This will tell us EXACTLY what format the cert is stored in.
+ * Then we can write a targeted replacement.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -72,6 +79,22 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
+// Log a hex dump of memory at addr, len bytes
+static void LogHexDump(const char* label, BYTE* addr, SIZE_T len) {
+    Log("%s at %p (%llu bytes):", label, addr, (unsigned long long)len);
+    for (SIZE_T i = 0; i < len; i += 16) {
+        char hex[64] = {0};
+        char ascii[20] = {0};
+        int hpos = 0;
+        for (SIZE_T j = i; j < i + 16 && j < len; j++) {
+            hpos += sprintf(hex + hpos, "%02X ", addr[j]);
+            ascii[j - i] = (addr[j] >= 32 && addr[j] < 127) ? (char)addr[j] : '.';
+        }
+        ascii[16] = 0;
+        Log("  %04llX: %-48s %s", (unsigned long long)i, hex, ascii);
+    }
+}
+
 // ============================================================
 // Our CA cert (804 bytes DER)
 // ============================================================
@@ -130,63 +153,116 @@ static const BYTE g_ourCACert[] = {
 };
 static const SIZE_T g_ourCACertLen = 804;
 
-// Search patterns
-static const BYTE g_otgPattern[] = "Online Technology Group"; // 23 bytes
+static const BYTE g_otgPattern[] = "Online Technology Group";
 static const SIZE_T g_otgPatternLen = 23;
-static const char g_setCACertStr[] = "installed CA cert";
-static const SIZE_T g_setCACertStrLen = 17;
 
 
 // ============================================================
-// Safe memory scan helper - wraps entire region scan in SEH
-// ============================================================
-
-// Scan a single memory region for a byte pattern. Returns count of matches.
-// Logs each match address. Entirely wrapped in SEH.
-static int ScanRegionForPattern(BYTE* base, SIZE_T size, const BYTE* pattern, SIZE_T patLen, const char* label, bool logEach) {
-    int count = 0;
-    __try {
-        for (SIZE_T j = 0; j + patLen <= size; j++) {
-            if (base[j] == pattern[0] && memcmp(base + j, pattern, patLen) == 0) {
-                count++;
-                if (logEach) {
-                    Log("  %s at %p (offset +%llu in region %p)", label, base + j, (unsigned long long)j, base);
-                }
-            }
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        // region became invalid mid-scan
-    }
-    return count;
-}
-
-// ============================================================
-// Strategy 1: Full memory scan for DER certs with "OTG" + CA:TRUE
+// Targeted analysis: find OTG strings and dump surrounding context
+// to understand the cert format
 // ============================================================
 
 static int g_certReplacements = 0;
 
-static int ScanAndReplaceCerts() {
-    BYTE caTrue[] = {0x30,0x03,0x01,0x01,0xFF};
-    int replaced = 0;
+// Find all OTG strings, dump 256 bytes before and 512 bytes after each one.
+// Look backwards for 0x30 0x82 to find the DER cert start.
+// This is the KEY diagnostic that will tell us the cert format.
+static void AnalyzeOTGLocations() {
+    MEMORY_BASIC_INFORMATION mbi;
+    BYTE* addr = NULL;
+    int found = 0;
     
+    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 100 &&
+            !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
+            (mbi.Protect & 0xFE)) {
+            
+            BYTE* base = (BYTE*)mbi.BaseAddress;
+            SIZE_T size = mbi.RegionSize;
+            
+            __try {
+                for (SIZE_T j = 0; j + g_otgPatternLen <= size; j++) {
+                    if (base[j] != 'O' || memcmp(base + j, g_otgPattern, g_otgPatternLen) != 0) continue;
+                    
+                    found++;
+                    BYTE* otgAddr = base + j;
+                    Log("=== OTG #%d at %p (region %p+%llu, protect=0x%lx) ===",
+                        found, otgAddr, base, (unsigned long long)j, mbi.Protect);
+                    
+                    // Dump 128 bytes BEFORE the OTG string (to find cert start)
+                    SIZE_T beforeLen = (j >= 128) ? 128 : j;
+                    if (beforeLen > 0) {
+                        LogHexDump("  BEFORE OTG", otgAddr - beforeLen, beforeLen);
+                    }
+                    
+                    // Dump 64 bytes starting from OTG
+                    SIZE_T afterLen = (j + 64 <= size) ? 64 : (size - j);
+                    LogHexDump("  AT OTG", otgAddr, afterLen);
+                    
+                    // Look backwards for 0x30 0x82 (DER SEQUENCE start)
+                    for (int back = 4; back <= 256 && j >= (SIZE_T)back; back++) {
+                        if (otgAddr[-back] == 0x30 && otgAddr[-back+1] == 0x82) {
+                            uint16_t derLen = (otgAddr[-back+2] << 8) | otgAddr[-back+3];
+                            SIZE_T totalLen = derLen + 4;
+                            Log("  Possible DER cert at %p (-%d from OTG), length field=%d, total=%llu",
+                                otgAddr - back, back, derLen, (unsigned long long)totalLen);
+                            
+                            // Check if CA:TRUE exists within this cert
+                            BYTE caTrue[] = {0x30,0x03,0x01,0x01,0xFF};
+                            bool hasCA = false;
+                            if (totalLen <= 2000) {
+                                for (SIZE_T k = 0; k + 5 <= totalLen; k++) {
+                                    if (memcmp(otgAddr - back + k, caTrue, 5) == 0) {
+                                        hasCA = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            Log("  CA:TRUE present: %s", hasCA ? "YES" : "NO");
+                            
+                            // Dump the first 64 bytes of this potential cert
+                            SIZE_T dumpLen = (totalLen < 64) ? totalLen : 64;
+                            LogHexDump("  DER cert start", otgAddr - back, dumpLen);
+                            break; // only report first match
+                        }
+                    }
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {
+                Log("  EXCEPTION scanning region %p", base);
+            }
+        }
+        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
+    }
+    Log("Total OTG locations analyzed: %d", found);
+}
+
+// ============================================================
+// Cert replacement: now with relaxed matching
+// Look for 0x30 0x82 with ANY length that contains OTG string
+// Don't require CA:TRUE (maybe EA's cert doesn't have it)
+// ============================================================
+
+static int ScanAndReplaceCerts() {
+    int replaced = 0;
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 1000 &&
             !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
-            (mbi.Protect & 0xFE)) { // any readable page
+            (mbi.Protect & 0xFE)) {
             
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0; j + 820 < size; j++) {
+                for (SIZE_T j = 0; j + 400 < size; j++) {
                     if (base[j] != 0x30 || base[j+1] != 0x82) continue;
                     
                     uint16_t len = (base[j+2] << 8) | base[j+3];
-                    if (len < 300 || len > 1500) continue;
+                    // Relaxed range: 200 to 2000 bytes
+                    if (len < 200 || len > 2000) continue;
                     SIZE_T cs = len + 4;
                     if (j + cs > size) continue;
                     
@@ -197,27 +273,20 @@ static int ScanAndReplaceCerts() {
                     }
                     if (!hasOTG) { j += 3; continue; }
                     
-                    // Must have CA:TRUE
-                    int hasCA = 0;
-                    for (SIZE_T k = 0; k + 5 <= cs; k++) {
-                        if (memcmp(base + j + k, caTrue, 5) == 0) { hasCA = 1; break; }
-                    }
-                    if (!hasCA) { j += cs - 1; continue; }
-                    
-                    // Skip our own cert (exact match)
+                    // Skip our own cert
                     if (cs == g_ourCACertLen && memcmp(base + j, g_ourCACert, g_ourCACertLen) == 0) {
                         j += cs - 1; continue;
                     }
                     
-                    Log("FOUND EA CA cert at %p size=%llu protect=0x%lx", base + j, (unsigned long long)cs, mbi.Protect);
+                    Log("MATCH: DER+OTG at %p size=%llu protect=0x%lx", base + j, (unsigned long long)cs, mbi.Protect);
                     
                     // Log first 32 bytes
-                    char hex[100];
-                    int hlen = 0;
+                    char hex[100]; int hlen = 0;
                     for (int h = 0; h < 16 && h < (int)cs; h++)
                         hlen += sprintf(hex + hlen, "%02X ", base[j+h]);
                     Log("  Bytes: %s", hex);
                     
+                    // Replace with our cert
                     DWORD op;
                     if (VirtualProtect(base + j, cs, PAGE_READWRITE, &op)) {
                         if (cs >= g_ourCACertLen) {
@@ -235,9 +304,7 @@ static int ScanAndReplaceCerts() {
                     }
                     j += cs - 1;
                 }
-            } __except(EXCEPTION_EXECUTE_HANDLER) {
-                // skip
-            }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
@@ -245,143 +312,73 @@ static int ScanAndReplaceCerts() {
     return replaced;
 }
 
-// ============================================================
-// Strategy 2: Count "Online Technology Group" strings in memory
-// (lightweight diagnostic - no module lookups)
-// ============================================================
-
-static int CountOTGStrings() {
-    int total = 0;
-    MEMORY_BASIC_INFORMATION mbi;
-    BYTE* addr = NULL;
-    
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 100 &&
-            !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
-            (mbi.Protect & 0xFE)) {
-            
-            total += ScanRegionForPattern((BYTE*)mbi.BaseAddress, mbi.RegionSize,
-                g_otgPattern, g_otgPatternLen, "OTG", true);
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
-    }
-    return total;
-}
 
 // ============================================================
-// Strategy 3: Count "installed CA cert" strings
-// ============================================================
-
-static int CountSetCACertStrings() {
-    int total = 0;
-    MEMORY_BASIC_INFORMATION mbi;
-    BYTE* addr = NULL;
-    
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 100 &&
-            !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
-            (mbi.Protect & 0xFE)) {
-            
-            total += ScanRegionForPattern((BYTE*)mbi.BaseAddress, mbi.RegionSize,
-                (const BYTE*)g_setCACertStr, g_setCACertStrLen, "SetCACert", true);
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
-    }
-    return total;
-}
-
-
-// ============================================================
-// Background Thread - with full SEH protection and heartbeat
+// Background Thread
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v7 (safe diagnostics) ===");
+        Log("=== FIFA 17 SSL Bypass v8 (targeted OTG analysis) ===");
         Log("PID: %lu", GetCurrentProcessId());
         
-        // Phase 1: Initial cert scan
-        Log("Phase 1: initial cert scan...");
+        // Phase 1: Initial cert scan with relaxed matching
+        Log("Phase 1: initial cert scan (relaxed)...");
         int r = ScanAndReplaceCerts();
         Log("Phase 1 done: %d replaced", r);
-        
-        // Phase 2: Loop with cert scan + periodic diagnostics
         int totalReplaced = r;
+        
         DWORD startTick = GetTickCount();
         int loopCount = 0;
-        bool did5s = false, did15s = false, did30s = false, did60s = false;
+        bool didAnalysis10s = false;
+        bool didAnalysis30s = false;
         
         while (true) {
             Sleep(200);
             loopCount++;
             DWORD elapsed = GetTickCount() - startTick;
-            
-            // Stop after 3 minutes
             if (elapsed > 180000) break;
             
-            // Cert replacement scan every iteration
+            // Cert scan every iteration
             __try {
                 r = ScanAndReplaceCerts();
                 totalReplaced += r;
                 if (r > 0) Log("Loop %d (%lus): replaced %d (total: %d)", loopCount, elapsed/1000, r, totalReplaced);
             } __except(EXCEPTION_EXECUTE_HANDLER) {
-                Log("Loop %d: cert scan EXCEPTION", loopCount);
+                Log("Loop %d: scan EXCEPTION", loopCount);
             }
             
-            // Heartbeat every 5 seconds
-            if (elapsed >= 5000 && !did5s) {
-                did5s = true;
-                Log("--- 5s heartbeat: loop=%d, replaced=%d ---", loopCount, totalReplaced);
-                
-                // Diagnostic: count OTG strings
-                Log("Searching for 'Online Technology Group' strings...");
+            // At 10 seconds: full OTG analysis with hex dumps
+            if (elapsed >= 10000 && !didAnalysis10s) {
+                didAnalysis10s = true;
+                Log("=== 10s ANALYSIS: dumping all OTG locations ===");
                 __try {
-                    int otg = CountOTGStrings();
-                    Log("OTG strings found: %d", otg);
+                    AnalyzeOTGLocations();
                 } __except(EXCEPTION_EXECUTE_HANDLER) {
-                    Log("OTG search EXCEPTION");
+                    Log("OTG analysis EXCEPTION");
                 }
             }
             
-            if (elapsed >= 15000 && !did15s) {
-                did15s = true;
-                Log("--- 15s heartbeat: loop=%d, replaced=%d ---", loopCount, totalReplaced);
-                
-                // Diagnostic: search for SetCACert string
-                Log("Searching for 'installed CA cert' string...");
+            // At 30 seconds: another analysis (new heap copies may exist)
+            if (elapsed >= 30000 && !didAnalysis30s) {
+                didAnalysis30s = true;
+                Log("=== 30s ANALYSIS: dumping all OTG locations ===");
                 __try {
-                    int scc = CountSetCACertStrings();
-                    Log("SetCACert strings found: %d", scc);
+                    AnalyzeOTGLocations();
                 } __except(EXCEPTION_EXECUTE_HANDLER) {
-                    Log("SetCACert search EXCEPTION");
+                    Log("30s OTG analysis EXCEPTION");
                 }
             }
             
-            if (elapsed >= 30000 && !did30s) {
-                did30s = true;
-                Log("--- 30s heartbeat: loop=%d, replaced=%d ---", loopCount, totalReplaced);
-                
-                // Another OTG search (Denuvo should be fully unpacked by now)
-                Log("30s OTG search...");
-                __try {
-                    int otg = CountOTGStrings();
-                    Log("30s OTG strings: %d", otg);
-                } __except(EXCEPTION_EXECUTE_HANDLER) {
-                    Log("30s OTG search EXCEPTION");
-                }
-            }
-            
-            if (elapsed >= 60000 && !did60s) {
-                did60s = true;
-                Log("--- 60s heartbeat: loop=%d, replaced=%d ---", loopCount, totalReplaced);
+            // Heartbeat every 30s
+            if (loopCount % 150 == 0) {
+                Log("Heartbeat: loop=%d, elapsed=%lus, replaced=%d", loopCount, elapsed/1000, totalReplaced);
             }
         }
         
         Log("=== Done. loops=%d, total_replaced=%d ===", loopCount, totalReplaced);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("FATAL: PatchThread top-level exception!");
+        Log("FATAL: PatchThread exception!");
     }
     return 0;
 }
