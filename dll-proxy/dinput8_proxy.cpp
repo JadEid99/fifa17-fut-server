@@ -261,9 +261,11 @@ static void InstallConnectHook() {
         InstallHook(g_connectAddr, (void*)HookedConnect, g_connectOrigBytes, (void**)&g_realConnect);
         Log("connect() hooked at 0x%p", g_connectAddr);
     }
+    // DON'T hook send() - it crashes the game because it's called too frequently
+    // Instead, we'll scan for the cert in the connect hook and also periodically
     if (g_sendAddr) {
-        InstallHook(g_sendAddr, (void*)HookedSend, g_sendOrigBytes, (void**)&g_realSend);
-        Log("send() hooked at 0x%p", g_sendAddr);
+        g_realSend = (send_t)g_sendAddr; // Just save the address, don't hook
+        Log("send() at 0x%p (not hooked)", g_sendAddr);
     }
 }
 
