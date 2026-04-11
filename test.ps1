@@ -18,8 +18,12 @@ Add-Content $resultsFile "--- GIT PULL ---`n$gitOutput`n"
 # Step 2: Kill FIFA 17 and any existing server
 Write-Host "`n[2/6] Stopping FIFA 17 and old servers..." -ForegroundColor Yellow
 Stop-Process -Name FIFA17 -Force -ErrorAction SilentlyContinue
-Stop-Process -Name node -Force -ErrorAction SilentlyContinue
-Start-Sleep 2
+# Kill ALL node processes to free ports
+Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+# Also kill by port
+$portProc = Get-NetTCPConnection -LocalPort 42230 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -ErrorAction SilentlyContinue
+if ($portProc) { Stop-Process -Id $portProc -Force -ErrorAction SilentlyContinue }
+Start-Sleep 3
 
 # Step 3: Build DLL
 Write-Host "`n[3/6] Building DLL..." -ForegroundColor Yellow

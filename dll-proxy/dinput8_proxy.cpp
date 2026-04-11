@@ -277,7 +277,75 @@ static void PatchSSL() {
         Log("  Cert #%d at +0x%llX size=%llu: %.100s", certsFound, (unsigned long long)i, (unsigned long long)certSize, txt);
         if (certsFound >= 20) break;
     }
-    Log("Found %d DER certs total", certsFound);
+    // === Also scan HEAP memory for DER certs ===
+    // The CA cert might be allocated on the heap, not in the module
+    Log("Scanning process heap for DER certificates...");
+    int heapCerts = 0;
+    
+    MEMORY_BASIC_INFORMATION mbi;
+    BYTE* addr = NULL;
+    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
+        if (mbi.State == MEM_COMMIT && (mbi.Protect & (PAGE_READWRITE | PAGE_READONLY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))) {
+            // Skip the game module (already scanned)
+            if ((BYTE*)mbi.BaseAddress >= baseAddr && (BYTE*)mbi.BaseAddress < baseAddr + moduleSize) {
+                addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+                continue;
+            }
+            
+            BYTE* regionBase = (BYTE*)mbi.BaseAddress;
+            SIZE_T regionSize = mbi.RegionSize;
+            
+            __try {
+                for (SIZE_T i = 0; i < regionSize - 10; i++) {
+                    if (regionBase[i] != 0x30 || regionBase[i+1] != 0x82) continue;
+                    uint16_t outerLen = (regionBase[i+2] << 8) | regionBase[i+3];
+                    if (outerLen < 200 || outerLen > 2000) continue;
+                    SIZE_T certSize = outerLen + 4;
+                    if (i + certSize > regionSize) continue;
+                    if (regionBase[i+4] != 0x30) continue;
+                    
+                    BYTE rsaOid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
+                    if (!FindPattern(regionBase + i, certSize, rsaOid, 8)) continue;
+                    
+                    heapCerts++;
+                    char txt[128] = {0};
+                    int tp = 0;
+                    for (SIZE_T j = 0; j < certSize && tp < 120; j++) {
+                        BYTE b = regionBase[i+j];
+                        if (b >= 0x20 && b < 0x7F) txt[tp++] = (char)b;
+                        else if (tp > 0 && txt[tp-1] != ' ') txt[tp++] = ' ';
+                    }
+                    
+                    BYTE caTrue[] = {0x30, 0x03, 0x01, 0x01, 0xFF};
+                    BYTE* caMatch = FindPattern(regionBase + i, certSize, caTrue, 5);
+                    
+                    Log("  Heap cert #%d at 0x%p size=%llu CA=%s: %.80s",
+                        heapCerts, regionBase + i, (unsigned long long)certSize,
+                        caMatch ? "YES" : "no", txt);
+                    
+                    if (caMatch && certSize >= g_ourCACertLen) {
+                        Log("  -> REPLACING CA cert at 0x%p!", regionBase + i);
+                        DWORD oldProt;
+                        if (VirtualProtect(regionBase + i, certSize, PAGE_READWRITE, &oldProt)) {
+                            memcpy(regionBase + i, g_ourCACert, g_ourCACertLen);
+                            if (certSize > g_ourCACertLen)
+                                memset(regionBase + i + g_ourCACertLen, 0, certSize - g_ourCACertLen);
+                            VirtualProtect(regionBase + i, certSize, oldProt, &oldProt);
+                            Log("  -> REPLACED!");
+                        }
+                    }
+                    
+                    i += certSize - 1;
+                    if (heapCerts >= 30) break;
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {
+                // Skip unreadable regions
+            }
+        }
+        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        if (heapCerts >= 30) break;
+    }
+    Log("Found %d heap DER certs", heapCerts);
     
     // === Strategy 2: Also patch the error handler (keep from previous approach) ===
     BYTE errorPattern[] = { 
