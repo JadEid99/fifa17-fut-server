@@ -1,238 +1,82 @@
-﻿=== BATCH v5 (2026-04-11 18:36:16) === 12 patches
+﻿=== BATCH v6 (2026-04-11 18:50:19) === 11 patches
 
-[1] DUMP_cert_process_512 | ECONNRESET | Dump 512 bytes of cert_process
-FRIDA:  00 00 00 31 f6 4c 8d 4c 24 30 4c 8d 05 '} data: None
-message: {'type': 'send', 'payload': 'CALL +6127062 -> +612e810'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127071 -> +612a560'} data: None
-message: {'type': 'send', 'payload': 'CALL +61270b5 -> +6138680'} data: None
-message: {'type': 'send', 'payload': 'CALL +612715a -> +7714c70'} data: None
-message: {'type': 'send', 'payload': 'CALL +612720a -> +6138680'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
+[1] A1_JNE_to_JMP_7C29 | ECONNRESET | Change JNE to JMP at +0x6127C29 (always skip cert error)
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51268
+[Redirector-Raw] Disconnected: 127.0.0.1:51893
 
-[2] DUMP_cert_receive_256 | ECONNRESET | Dump 256 bytes of cert_receive
-FRIDA: yload': 'CR +6127c20: 75 53 80 bb 20 0c 00 00 00 75 18 48 8b 0b e8 3d 6b 00 00 66 c7 83 1f 0c 00 00 00 01 c6 83 21 0c '} data: None
-message: {'type': 'send', 'payload': 'CALL +6127b64 -> +6127aa0'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127bf6 -> +612e810'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127c08 -> +612a560'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127c2e -> +612e770'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
+[2] A2_NOP_CMP_JNE_7C22 | ECONNRESET | NOP the CMP+JNE at +0x6127C22 (9 bytes)
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51283
+[Redirector-Raw] Disconnected: 127.0.0.1:51924
 
-[3] DUMP_cert_finalize_256 | ECONNRESET | Dump 256 bytes of cert_finalize
-FRIDA: yload': 'CF +6127ad0: 5c 24 30 48 83 c4 20 5f c3 33 79 4a 48 8b 0f 45 31 c9 45 31 c0 ba 0f a2 ff e6 c7 87 8c 00 00 00 '} data: None
-message: {'type': 'send', 'payload': 'CALL +6127a1b -> +612e770'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127a6a -> +612e180'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127ab0 -> +612e960'} data: None
-message: {'type': 'send', 'payload': 'CALL +6127abb -> +612a560'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
+[3] A3_NOP_error_call_7C2E | ECONNRESET | NOP the error handler CALL at +0x6127C2E
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51305
+[Redirector-Raw] Disconnected: 127.0.0.1:51944
 
-[4] DUMP_fn_E810_256 | ECONNRESET | Dump 256 bytes of +0x612E810
-FRIDA: , 'payload': 'CALL +612e853 -> +612a250'} data: None
-message: {'type': 'send', 'payload': 'CALL +612e867 -> +612f230'} data: None
-message: {'type': 'send', 'payload': 'CALL +612e8c0 -> +6123e30'} data: None
-message: {'type': 'send', 'payload': 'CALL +612e8dc -> +612a330'} data: None
-message: {'type': 'send', 'payload': 'CALL +612e8fc -> +5305724d'} data: None
-message: {'type': 'send', 'payload': 'CALL +612e90a -> +612d260'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
+[4] A4_NOP_error_call_AND_state_7C2E | ECONNRESET | NOP error CALL + error state writes at +0x6127C2E
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51326
+[Redirector-Raw] Disconnected: 127.0.0.1:51968
 
-[5] P_NOP_E810_call | ECONNRESET | NOP CALL to E810 inside cert_process
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
+[5] B1_JMP_7C29_AND_NOP_644E | HANGING | JMP at +7C29 AND NOP error CALL at +644E
+SERVER: lo: version=0x303 random=69da7ca8f15e95ff...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 
+[6] B2_NOP_CMP_7C22_AND_NOP_644E | ECONNRESET | NOP CMP+JNE at +7C22 AND NOP error CALL at +644E
+SERVER: lo: version=0x303 random=69da7cd02569e7af...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[7] B3_NOP_all_error_calls | ECONNRESET+CRASHED | NOP error CALL at +7C2E AND +644E AND state writes
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51339
+[Redirector-Raw] Disconnected: 127.0.0.1:52050
 
-[6] P_NOP_A560_call | ECONNRESET | NOP CALL to A560 inside cert_process
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
+[8] C1_NOP_both_JNE_7C20_7C29 | CRASHED | NOP JNE at +7C20 AND +7C29
 
+[8] C1_NOP_both_JNE_7C20_7C29 | ECONNRESET | NOP JNE at +7C20 AND +7C29
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51363
+[Redirector-Raw] Disconnected: 127.0.0.1:52142
 
-[7] P_E810_ret0 | ECONNRESET | Make +0x612E810 return 0
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51391
-
-[8] P_A560_ret0 | NO_CONNECTION+CRASHED | Make +0x612A560 return 0
-FRIDA:  dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-Process terminated
-
-Thank you for using Frida!
-
+[9] C2_JMP_7C20_AND_NOP_644E | NO_CONNECTION | JMP at +7C20 AND NOP error CALL at +644E
 SERVER: 
 
-[9] P_A560_ret1 | CRASHED | Make +0x612A560 return 1
-
-[9] P_A560_ret1 | ECONNRESET | Make +0x612A560 return 1
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
+[10] D1_NOP_finalize_error_7A1B | ECONNRESET | NOP error CALL in cert_finalize at +7A1B
 SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:51495
+[Redirector-Raw] Disconnected: 127.0.0.1:52218
 
-[10] C_NOP_JLE_NOP644E_E810ret0 | CRASHED | NOP JLE + NOP error CALL + E810 ret 0
-
-[10] C_NOP_JLE_NOP644E_E810ret0 | HANGING | NOP JLE + NOP error CALL + E810 ret 0
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: lo: version=0x303 random=69da7a2c65a0726a...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-
-[11] C_NOP_JLE_NOP644E_A560ret0 | ECONNRESET | NOP JLE + NOP error CALL + A560 ret 0
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: lo: version=0x303 random=69da7a51bb0c38f3...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-
-[12] C_NOP_JLE_NOP644E_A560ret1 | CRASHED | NOP JLE + NOP error CALL + A560 ret 1
-
-[12] C_NOP_JLE_NOP644E_A560ret1 | HANGING | NOP JLE + NOP error CALL + A560 ret 1
-FRIDA:    ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: lo: version=0x303 random=69da7aa20175a155...
+[11] D2_NOP_finalize_AND_receive_errors | HANGING | NOP error CALLs in both cert_finalize and cert_receive
+SERVER: lo: version=0x303 random=69da7dc2fa7da096...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
