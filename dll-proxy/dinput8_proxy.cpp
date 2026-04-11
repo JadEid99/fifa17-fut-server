@@ -412,7 +412,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Instead, keep scanning aggressively every 500ms
     for (int pass = 0; pass < 120; pass++) {
         Sleep(500);
-        if (pass % 10 == 0) Log("Re-scan pass %d/120...", pass);
+        if (pass % 20 == 0) Log("Re-scan pass %d/120...", pass);
         int passReplaced = 0;
         MEMORY_BASIC_INFORMATION mbi;
         BYTE* scanAddr = NULL;
