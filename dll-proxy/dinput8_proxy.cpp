@@ -123,11 +123,15 @@ static const BYTE g_ourCACert[] = {
 static const SIZE_T g_ourCACertLen = 804;
 
 // ============================================================
-// Winsock hook - connect()
+// Winsock hooks - connect() and send()
 // ============================================================
 
 typedef int (WINAPI *connect_t)(SOCKET, const struct sockaddr*, int);
+typedef int (WINAPI *send_t)(SOCKET, const char*, int, int);
 static connect_t g_realConnect = NULL;
+static send_t g_realSend = NULL;
+static SOCKET g_sslSocket = INVALID_SOCKET;
+static int g_certReplaced = 0;
 
 // Scan and replace EA CA cert in all process memory
 static void ReplaceEACert() {
@@ -191,11 +195,26 @@ static int WINAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
         struct sockaddr_in* addr = (struct sockaddr_in*)name;
         int port = ntohs(addr->sin_port);
         if (port == 42230) {
-            Log("connect() to port 42230 detected! Replacing EA CA cert NOW...");
-            ReplaceEACert();
+            Log("connect() to port 42230 detected! socket=%llu", (unsigned long long)s);
+            g_sslSocket = s;
+            g_certReplaced = 0;
         }
     }
     return g_realConnect(s, name, namelen);
+}
+
+// Hooked send function - intercept ClientHello and replace cert
+static int WINAPI HookedSend(SOCKET s, const char* buf, int len, int flags) {
+    if (s == g_sslSocket && !g_certReplaced && len > 5) {
+        // Check if this is a TLS ClientHello (0x16 0x03)
+        if ((unsigned char)buf[0] == 0x16 && (unsigned char)buf[1] == 0x03) {
+            Log("send() ClientHello detected on SSL socket! len=%d", len);
+            Log("Replacing EA CA cert NOW (cert should be loaded for handshake)...");
+            ReplaceEACert();
+            g_certReplaced = 1;
+        }
+    }
+    return g_realSend(s, buf, len, flags);
 }
 
 // ============================================================
@@ -203,8 +222,32 @@ static int WINAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
 // We overwrite the first bytes of WS2_32!connect with a JMP to our hook.
 // ============================================================
 
-static BYTE g_connectOrigBytes[14]; // Save original bytes
+static BYTE g_connectOrigBytes[14];
 static BYTE* g_connectAddr = NULL;
+static BYTE g_sendOrigBytes[14];
+static BYTE* g_sendAddr = NULL;
+
+static void InstallHook(BYTE* target, void* hook, BYTE* origBytes, void** trampoline) {
+    memcpy(origBytes, target, 14);
+    
+    BYTE* tramp = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!tramp) { Log("Can't alloc trampoline"); return; }
+    
+    memcpy(tramp, target, 14);
+    tramp[14] = 0xFF;
+    tramp[15] = 0x25;
+    *(uint32_t*)(tramp + 16) = 0;
+    *(uint64_t*)(tramp + 20) = (uint64_t)(target + 14);
+    *trampoline = tramp;
+    
+    DWORD oldProtect;
+    VirtualProtect(target, 14, PAGE_EXECUTE_READWRITE, &oldProtect);
+    target[0] = 0xFF;
+    target[1] = 0x25;
+    *(uint32_t*)(target + 2) = 0;
+    *(uint64_t*)(target + 6) = (uint64_t)hook;
+    VirtualProtect(target, 14, oldProtect, &oldProtect);
+}
 
 static void InstallConnectHook() {
     HMODULE ws2 = GetModuleHandleA("WS2_32.dll");
@@ -212,31 +255,16 @@ static void InstallConnectHook() {
     if (!ws2) { Log("Can't load WS2_32.dll"); return; }
     
     g_connectAddr = (BYTE*)GetProcAddress(ws2, "connect");
-    if (!g_connectAddr) { Log("Can't find connect()"); return; }
+    g_sendAddr = (BYTE*)GetProcAddress(ws2, "send");
     
-    g_realConnect = (connect_t)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    if (!g_realConnect) { Log("Can't alloc trampoline"); return; }
-    
-    // Copy original bytes to trampoline
-    memcpy(g_connectOrigBytes, g_connectAddr, 14);
-    memcpy((BYTE*)g_realConnect, g_connectAddr, 14);
-    // Add JMP back to original function + 14
-    BYTE* tramp = (BYTE*)g_realConnect;
-    tramp[14] = 0xFF;
-    tramp[15] = 0x25;
-    *(uint32_t*)(tramp + 16) = 0; // RIP-relative
-    *(uint64_t*)(tramp + 20) = (uint64_t)(g_connectAddr + 14);
-    
-    // Overwrite original function with JMP to our hook
-    DWORD oldProtect;
-    VirtualProtect(g_connectAddr, 14, PAGE_EXECUTE_READWRITE, &oldProtect);
-    g_connectAddr[0] = 0xFF;
-    g_connectAddr[1] = 0x25;
-    *(uint32_t*)(g_connectAddr + 2) = 0; // RIP-relative
-    *(uint64_t*)(g_connectAddr + 6) = (uint64_t)HookedConnect;
-    VirtualProtect(g_connectAddr, 14, oldProtect, &oldProtect);
-    
-    Log("connect() hooked via trampoline at 0x%p -> 0x%p", g_connectAddr, HookedConnect);
+    if (g_connectAddr) {
+        InstallHook(g_connectAddr, (void*)HookedConnect, g_connectOrigBytes, (void**)&g_realConnect);
+        Log("connect() hooked at 0x%p", g_connectAddr);
+    }
+    if (g_sendAddr) {
+        InstallHook(g_sendAddr, (void*)HookedSend, g_sendOrigBytes, (void**)&g_realSend);
+        Log("send() hooked at 0x%p", g_sendAddr);
+    }
 }
 
 // ============================================================
