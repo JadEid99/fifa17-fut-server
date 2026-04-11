@@ -1,4 +1,4 @@
-﻿=== BATCH v12 (2026-04-11 21:29:27) === 3 tests
+﻿=== BATCH v12 (2026-04-11 21:36:08) === 3 tests
 
 [1] T01_fresh_hook_all_winsock | TIMEOUT_NO_DATA | FRESH game + baseline + hook recv/WSARecv/select
 FRIDA:  . . .
@@ -11,17 +11,18 @@ message: {'type': 'send', 'payload': 'Hooked select'} data: None
 message: {'type': 'send', 'payload': 'Hooked WSAWaitForMultipleEvents'} data: None
 message: {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: irector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69daa1554380c887...
+SERVER: 
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69daa2e170ebc5b4...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
-[SSL] Sending ALL handshake messages in single record (782b)
-[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 
-[2] T02_fresh_no_patches_control | TIMEOUT_NO_DATA | FRESH game, NO patches (should get ECONNRESET)
+[2] T02_fresh_no_patches_control | ECONNRESET | FRESH game, NO patches (should get ECONNRESET)
 FRIDA: rumentation toolkit
    | (_| |
     > _  |   Commands:
@@ -36,13 +37,14 @@ Attaching...
 message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'no patches'} data: None
 message: {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: ] ClientHello: version=0x303 random=69daa1addc6f6183...
+SERVER: e...
+[SSL] ClientHello: version=0x303 random=69daa334241b9b81...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
-[SSL] Sending ALL handshake messages in single record (782b)
-[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Disconnected: 127.0.0.1:56850
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:56925
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 
@@ -61,12 +63,13 @@ FRIDA:    ____
 Attaching...
 message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: irector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69daa20136090223...
+SERVER: 
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69daa38245922fc3...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
-[SSL] Sending ALL handshake messages in single record (782b)
-[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
