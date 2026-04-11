@@ -66,8 +66,8 @@ $serverJob = Start-Job -ScriptBlock {
 } -ArgumentList $repoRoot
 
 Write-Host "Server started in background. Launch FIFA 17 manually and trigger a connection."
-Write-Host "Press ENTER after the game has tried to connect..." -ForegroundColor Green
-Read-Host
+Write-Host "Waiting 60 seconds for game to connect..." -ForegroundColor Green
+Start-Sleep 60
 
 # Step 6: Collect results
 Write-Host "`n[6/6] Collecting results..." -ForegroundColor Yellow

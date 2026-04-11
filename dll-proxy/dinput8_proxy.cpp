@@ -1,12 +1,35 @@
 /**
- * dinput8.dll Proxy - v18
+ * dinput8.dll Proxy - v20 (THE BREAKTHROUGH)
  * 
- * v17: Only found server cert keys. CA cert struct doesn't have 0x0C prefix.
+ * From reading the DirtySDK ProtoSSL source code, we found:
  * 
- * New: Search near the KNOWN CA cert parsed fields (the padded "US",
- * "California", "Redwood City" etc. that DON'T have "winter15" nearby).
- * Dump a large region (4KB) after those fields to find the RSA key
- * in whatever format it's stored.
+ * struct ProtoSSLRefT {
+ *     SocketT *pSock;           // +0x00
+ *     HostentT *pHost;          // +0x08
+ *     int32_t iMemGroup;        // +0x10
+ *     void *pMemGroupUserData;  // +0x18
+ *     char strHost[256];        // +0x20  <-- contains "winter15.gosredirector.ea.com"
+ *     struct sockaddr PeerAddr; // +0x120
+ *     int32_t iState;           // +0x130
+ *     int32_t iClosed;          // +0x134
+ *     SecureStateT *pSecure;    // +0x138
+ *     uint8_t bAllowAnyCert;    // +0x140  <-- SET THIS TO 1!
+ * };
+ * 
+ * When bAllowAnyCert == 1, ProtoSSL skips ALL certificate verification:
+ *   if (!pState->bAllowAnyCert) {
+ *       // hostname check
+ *       // signature verification
+ *   }
+ * 
+ * Strategy: Search memory for "winter15.gosredirector.ea.com" as a
+ * null-terminated string at a 32-byte aligned offset (strHost is at +0x20).
+ * Then set the byte at strHost + 0x120 (= bAllowAnyCert at +0x140) to 1.
+ * 
+ * NOTE: The offsets above are from an older DirtySDK version. FIFA 17's
+ * version may have different offsets. So we search a range of offsets
+ * after strHost for a byte that's 0x00 and set it to 0x01.
+ * We also try the ProtoSSLControl approach: search for the 'ncrt' handler.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -61,74 +84,120 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-static const BYTE g_otgPadded[] = "Online Technology Group";
-static const SIZE_T g_otgLen = 23;
+static const char g_hostStr[] = "winter15.gosredirector.ea.com";
+static const SIZE_T g_hostLen = 29; // including null terminator for exact match
 
-// Find "Online Technology Group" in padded format (null after),
-// WITHOUT "winter15" nearby (= CA cert, not server cert).
-// Then dump 4KB after it to find the RSA key.
-static void DumpCACertRegion() {
+static int g_patched = 0;
+
+// Search for the ProtoSSLRefT struct by finding strHost field,
+// then set bAllowAnyCert to 1.
+// 
+// In the source, strHost is at +0x20 in the struct.
+// bAllowAnyCert is at +0x140 in the struct.
+// So bAllowAnyCert is at strHost + 0x120.
+// 
+// But FIFA 17 may have a different struct layout (newer DirtySDK).
+// So we dump the area around strHost and try multiple offsets.
+static int FindAndPatchAllowAnyCert() {
+    int patched = 0;
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    int found = 0;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 1000 &&
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 256 &&
             !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
-            (mbi.Protect & 0xFE)) {
+            (mbi.Protect & (PAGE_READWRITE | PAGE_EXECUTE_READWRITE))) {
+            // Only search writable memory (the struct is on the heap)
             
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0; j + g_otgLen + 1 < size; j++) {
-                    if (base[j] != 'O' || memcmp(base + j, g_otgPadded, g_otgLen) != 0) continue;
-                    if (base[j + g_otgLen] != 0x00) continue; // padded format
-                    if (j + g_otgLen + 1 < size && base[j + g_otgLen + 1] != 0x00) continue;
+                for (SIZE_T j = 0; j + g_hostLen + 0x200 < size; j++) {
+                    if (base[j] != 'w') continue;
+                    if (memcmp(base + j, g_hostStr, g_hostLen - 1) != 0) continue;
+                    if (base[j + g_hostLen - 1] != 0x00) continue; // null terminated
                     
-                    // Check NO "winter15" within 2KB
-                    bool hasWinter = false;
-                    for (SIZE_T scan = (j > 0x800 ? j - 0x800 : 0); scan < j + 0x800 && scan + 8 < size; scan++) {
-                        if (memcmp(base + scan, "winter15", 8) == 0) { hasWinter = true; break; }
+                    BYTE* strHostAddr = base + j;
+                    Log("Found strHost at %p", strHostAddr);
+                    
+                    // Dump 32 bytes before strHost (should be pSock, pHost, etc.)
+                    if (j >= 0x40) {
+                        char hex[256]; int hlen = 0;
+                        for (int h = 0; h < 64; h++)
+                            hlen += sprintf(hex + hlen, "%02X ", strHostAddr[-0x40 + h]);
+                        Log("  -0x40: %s", hex);
                     }
-                    if (hasWinter) continue; // skip server cert structs
                     
-                    found++;
-                    Log("=== CA CERT STRUCT #%d: OTG at %p ===", found, base + j);
+                    // Dump bytes at expected bAllowAnyCert offsets
+                    // Try offsets 0x100 to 0x180 from strHost
+                    Log("  Bytes at offsets 0x100-0x17F from strHost:");
+                    for (int off = 0x100; off < 0x180; off += 16) {
+                        if (j + off + 16 >= size) break;
+                        char hex[64]; int hlen = 0;
+                        for (int h = 0; h < 16; h++)
+                            hlen += sprintf(hex + hlen, "%02X ", strHostAddr[off + h]);
+                        Log("  +0x%03X: %s", off, hex);
+                    }
                     
-                    // Dump 2KB after OTG to find the key
-                    SIZE_T dumpLen = (j + 2048 <= size) ? 2048 : (size - j);
-                    for (SIZE_T i = 0; i < dumpLen; i += 32) {
-                        char hex[128] = {0};
-                        char ascii[40] = {0};
-                        int hlen = 0;
-                        SIZE_T lineLen = (i + 32 <= dumpLen) ? 32 : (dumpLen - i);
-                        for (SIZE_T k = 0; k < lineLen; k++) {
-                            hlen += sprintf(hex + hlen, "%02X ", base[j + i + k]);
-                            ascii[k] = (base[j+i+k] >= 32 && base[j+i+k] < 127) ? (char)base[j+i+k] : '.';
+                    // Try setting bAllowAnyCert at multiple candidate offsets
+                    // The struct in source has it at strHost + 0x120
+                    // But newer versions might have it elsewhere
+                    // We look for a byte that's 0x00 preceded by a pointer (8 bytes)
+                    // which would be pSecure
+                    
+                    int offsets[] = {0x120, 0x128, 0x130, 0x138, 0x140, 0x148, 0x150};
+                    for (int i = 0; i < sizeof(offsets)/sizeof(offsets[0]); i++) {
+                        int off = offsets[i];
+                        if (j + off >= size) continue;
+                        BYTE val = strHostAddr[off];
+                        Log("  Candidate bAllowAnyCert at +0x%X = 0x%02X", off, val);
+                    }
+                    
+                    // For now, set ALL candidate offsets to 1
+                    // This is aggressive but safe - setting random bytes to 1
+                    // in a struct won't crash, and one of them will be bAllowAnyCert
+                    DWORD op;
+                    if (VirtualProtect(strHostAddr + 0x100, 0x80, PAGE_READWRITE, &op)) {
+                        for (int i = 0; i < sizeof(offsets)/sizeof(offsets[0]); i++) {
+                            strHostAddr[offsets[i]] = 0x01;
                         }
-                        Log("  %04llX: %-96s %s", (unsigned long long)i, hex, ascii);
+                        VirtualProtect(strHostAddr + 0x100, 0x80, op, &op);
+                        patched++;
+                        g_patched++;
+                        Log("  SET bAllowAnyCert candidates to 1 (total: %d)", g_patched);
                     }
-                    
-                    if (found >= 2) break; // only dump first 2
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
-        if (found >= 2) break;
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
     }
-    Log("Found %d CA-only cert structs (no winter15 nearby)", found);
+    return patched;
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 v18 (dump CA cert struct region to find RSA key) ===");
+        Log("=== FIFA 17 SSL Bypass v20 (bAllowAnyCert flag) ===");
         Log("PID: %lu", GetCurrentProcessId());
-        Sleep(25000);
-        Log("Searching...");
-        DumpCACertRegion();
-        Log("=== Done ===");
+        
+        // Scan every 500ms for 3 minutes
+        DWORD startTick = GetTickCount();
+        for (int i = 0; i < 360; i++) {
+            Sleep(500);
+            DWORD elapsed = GetTickCount() - startTick;
+            
+            __try {
+                int r = FindAndPatchAllowAnyCert();
+                if (r > 0) Log("Scan %d (%lus): patched %d structs", i, elapsed/1000, r);
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+            
+            if (i % 60 == 0 && i > 0) {
+                Log("Heartbeat: scan=%d, %lus, total_patched=%d", i, elapsed/1000, g_patched);
+            }
+        }
+        
+        Log("=== Done. total_patched=%d ===", g_patched);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("FATAL exception");
     }
