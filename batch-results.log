@@ -1,183 +1,150 @@
-﻿=== BATCH TEST v2 (2026-04-11 18:00:22) === Patches: 7
+﻿=== BATCH v4 (2026-04-11 18:13:59) === 25 patches
 
-[1] D01_dump_state3 | ECONNRESET | Dump 256 bytes at State 3 (+0x61262DC)
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/   . . . .
-   . . . .   Connected to Local System (id=local)
-
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'S3 +61262dc: 83 bb 8c 00 00 00 03 75 68 48 89 d9 e8 53 18 00 00 48 89 d9 e8 2b 0d 00 00 85 c0 7e 36 44 8b 83 '} data: None
-message: {'type': 'send', 'payload': 'S3 +61262fc: f4 00 00 00 48 8b 8b c8 00 00 00 48 8d 93 1c 01 00 00 41 ff c0 e8 2a de ff ff 8b 83 f4 00 00 00 '} data: None
-message: {'type': 'send', 'payload': 'S3 +612631c: c7 83 8c 00 00 00 04 00 00 00 89 83 d8 00 00 00 eb 1f 55 79 1c 48 89 d9 e8 b7 16 00 00 85 c0 75 '} data: None
-message: {'type': 'send', 'payload': 'S3 +612633c: 10 89 bb d8 00 00 00 c7 83 8c 00 00 00 07 00 00 00 83 bb 8c 00 00 00 04 0f 85 bc 00 00 00 48 63 '} data: None
-message: {'type': 'send', 'payload': 'S3 +612635c: 83 d8 00 00 00 44 8b 83 d0 00 00 00 48 89 c2 48 03 93 c8 00 00 00 41 29 c0 0f 84 81 00 00 00 48 '} data: None
-message: {'type': 'send', 'payload': 'S3 +612637c: 8b 0b e8 8d 84 00 00 89 83 c4 00 00 00 85 c0 7e 11 e8 ce 41 00 00 03 83 00 01 00 00 89 83 04 01 '} data: None
-message: {'type': 'send', 'payload': 'S3 +612639c: 00 00 8b 83 c4 00 00 00 85 c0 7e 08 01 83 d8 00 00 00 85 c0 79 4a 83 f8 ff 75 09 83 bb d8 00 00 '} data: None
-message: {'type': 'send', 'payload': 'S3 +61263bc: 00 04 7f 3c 48 8b 0b 45 31 c9 45 31 c0 ba 6c 69 61 66 c7 83 8c 00 00 00 07 00 00 00 e8 c3 87 00 '} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61262e8 -> exe+0x6127b40'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61262f0 -> exe+0x6127020'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6126311 -> exe+0x6124140'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6126334 -> exe+0x61279f0'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x612637e -> exe+0x612e810'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x612638d -> exe+0x612a560'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61263d8 -> exe+0x612eba0'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[1] A01_cert_process_ret1 | ECONNRESET | cert_process ret 1
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:50169
+[Redirector-Raw] Disconnected: 127.0.0.1:50348
 
-[2] D02_dump_before_state3 | ECONNRESET | Dump 256 bytes before State 3 (+0x61261DC)
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'PRE3 +61261dc: 4b 40 e8 6d 40 00 00 8b 83 8c 00 00 00 85 c0 74 26 83 c0 fa 83 f8 01 76 1e e8 66 43 00 00 3b 83 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +61261fc: 04 01 00 00 78 11 c7 83 8c 00 00 00 07 00 00 00 c6 83 1c 0c 00 00 01 83 bb 8c 00 00 00 01 0f 85 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +612621c: 87 00 00 00 48 8b 0b 45 31 c9 45 31 c0 ba 0f a2 47 c3 8d 92 65 bf 2c b0 e8 67 89 00 00 89 c7 85 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +612623c: c0 7e 22 e8 1c 43 00 00 c7 83 8c 00 00 00 02 00 00 00 c6 83 21 0c 00 00 01 03 83 00 01 00 00 89 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +612625c: 83 04 01 00 00 85 ff 79 42 48 8b 0b 45 31 c9 45 31 c0 ba 0f 05 c3 90 c7 83 8c 00 00 00 07 00 00 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +612627c: 00 8d 92 5d 64 9e d5 e8 18 89 00 00 48 8b 0b 45 31 c9 45 31 c0 ba 73 65 72 68 89 83 90 00 00 00 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +612629c: e8 ff 88 00 00 89 83 94 00 00 00 31 ff 83 bb 8c 00 00 00 02 75 2a 48 89 d9 e8 86 18 00 00 85 c0 '} data: None
-message: {'type': 'send', 'payload': 'PRE3 +61262bc: 7e 1e 39 bb d8 00 00 00 75 16 89 bb d4 00 00 00 89 bb f4 00 00 00 c7 83 8c 00 00 00 03 00 00 00 '} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61261de -> exe+0x612a250'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61261f5 -> exe+0x612a560'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6126234 -> exe+0x612eba0'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x612623f -> exe+0x612a560'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6126283 -> exe+0x612eba0'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x612629c -> exe+0x612eba0'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x61262b5 -> exe+0x6127b40'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[2] A02_cert_process_ret64 | ECONNRESET | cert_process ret 0x40 (64)
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:50186
+[Redirector-Raw] Disconnected: 127.0.0.1:50357
 
-[3] D03_dump_cert_process | ECONNRESET | Dump 128 bytes at cert_process (+0x6127020)
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'CP +6127020: 48 89 5c 24 08 57 48 83 ec 20 48 89 cb bf 0f a2 4e c3 8d bf f2 5d b1 3c 48 63 83 f4 00 00 00 83 '} data: None
-message: {'type': 'send', 'payload': 'CP +6127040: f8 40 0f 8d 9a 00 00 00 48 8b 0b 48 8d 93 1c 01 00 00 41 b8 0f 05 4e c3 48 01 c2 45 8d 80 f2 fa '} data: None
-message: {'type': 'send', 'payload': 'CP +6127060: b1 3c e8 a9 77 00 00 89 83 c4 00 00 00 85 c0 7e 11 e8 ea 34 00 00 03 83 00 01 00 00 89 83 04 01 '} data: None
-message: {'type': 'send', 'payload': 'CP +6127080: 00 00 8b bb c4 00 00 00 83 ff 01 75 55 ff 83 f4 00 00 00 48 63 83 f4 00 00 00 80 bc 18 1a 01 00 '} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6127062 -> exe+0x612e810'} data: None
-message: {'type': 'send', 'payload': 'CALL exe+0x6127071 -> exe+0x612a560'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[3] B01_JLE_to_NOP_62F7 | ECONNRESET | NOP the JLE after cert_process test
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:50201
+[Redirector-Raw] Disconnected: 127.0.0.1:50365
 
-[4] D04_dump_cert_verify | ECONNRESET | Dump 128 bytes at cert_verify (+0x6124140)
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'CV +6124140: 48 89 5c 24 08 57 48 83 ec 20 49 63 d8 48 89 cf 49 89 d8 ff 15 9f d8 cf 02 c6 44 3b ff 00 48 8b '} data: None
-message: {'type': 'send', 'payload': 'CV +6124160: 5c 24 30 48 89 f8 48 83 c4 20 5f c3 cc cc cc cc 57 89 d0 48 89 cf ff c8 79 04 31 c0 5f c3 31 d2 '} data: None
-message: {'type': 'send', 'payload': 'CV +6124180: 4d 63 d1 45 85 c9 7e 3c 49 89 cb 4d 89 c1 48 89 5c 24 10 4d 29 c3 49 f7 d9 48 63 d8 4b 8d 04 01 '} data: None
-message: {'type': 'send', 'payload': 'CV +61241a0: 48 39 d8 7d 1a 41 0f b6 08 84 c9 74 12 43 88 0c 03 49 ff c0 ff c2 4b 8d 0c 01 4c 39 d1 7c dd 48 '} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-SERVER: 3c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[4] B02_TEST_to_XOR_62F5 | ECONNRESET | Change TEST eax,eax to XOR eax,eax (force zero=success)
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:50209
+[Redirector-Raw] Disconnected: 127.0.0.1:50374
 
-[5] P02_NOP_call_612644E | HANGING_NO_DISCONNECT | NOP CALL at +0x612644E (baseline - prevents disconnect)
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-SERVER: lo: version=0x303 random=69da70e749357b2c...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[5] B03_force_eax1_before_test | ECONNRESET | Insert MOV eax,1 before TEST (overwrite TEST+JLE)
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50383
+
+[6] C01_cert_receive_ret1 | ECONNRESET | cert_receive ret 1
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50392
+
+[7] D01_success_fn_ret0 | UNKNOWN | Success fn +0x6124140 ret 0
+SERVER: 69 61 6c 3e 30 3c 2f 69 73 74 72 69  istrial>0</istri
+  0350: 61 6c 3e 0a 3c 2f 73 65 72 76 65 72 69 6e 73 74  al>.</serverinst
+  0360: 61 6e 63 65 72 65 71 75 65 73 74 3e 0a           ancerequest>.
+
+[8] D02_success_fn_nop | ECONNRESET | NOP the CALL to success fn at +0x6126311
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50407
+
+[9] E01_cert_finalize_ret0 | ECONNRESET | cert_finalize ret 0
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50416
+
+[10] F01_NOP_JLE_AND_NOP_call644E | HANGING | NOP JLE at +0x61262F7 AND NOP error CALL at +0x612644E
+SERVER:  0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 
-[6] P13_NOP_call_AND_state_writes | ECONNRESET | NOP CALL+state writes at +0x612644E/6126453/612645C
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-SERVER: lo: version=0x303 random=69da710cb340c4bf...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[11] F02_force_eax1_AND_NOP_call644E | ECONNRESET | Force eax=1 at +0x61262F5 AND NOP error CALL
+SERVER:  0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 
-[7] P14_all_disc_ret_AND_NOP_state | ECONNRESET+CRASHED | All disconnects ret + NOP state writes
-FRIDA: ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
+[12] F03_NOP_JLE_AND_disconnect_ret | ECONNRESET | NOP JLE + disconnect ret
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50441
+
+[13] G01_NOP_state7_set_6263BC | ECONNRESET | NOP state=7 write at +0x61263BC area
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50449
+
+[14] H01_NOP_cert_process_call | ECONNRESET | NOP the CALL to cert_process at +0x61262F0
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50457
+
+[15] H02_NOP_cert_process_AND_force_state4 | ECONNRESET | NOP cert_process CALL + force state=4
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50465
+
+[16] I01_error_E770_ret0 | HANGING | Error handler +0x612E770 xor eax,eax;ret
+SERVER:  0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[17] I02_error_E810_ret0 | ECONNRESET | Function +0x612E810 xor eax,eax;ret
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50481
+
+[18] I03_fn_BB40_ret0 | HANGING | Function +0x612BB40 xor eax,eax;ret
+SERVER:  0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[19] J01_NOP_JLE_NOP_call644E_disc_ret | HANGING | NOP JLE + NOP error CALL + disconnect ret
+SERVER:  0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[20] J02_force_eax1_NOP_state7_disc_ret | ECONNRESET+CRASHED | Force eax=1 + NOP state7 + disconnect ret
 SERVER: [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:50229
+[Redirector-Raw] Disconnected: 127.0.0.1:50489
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50503
+
+[21] J03_replace_cert_process_AND_NOP_644E | CRASHED_BEFORE | cert_process ret 0x40 + NOP error CALL
+
+[21] J03_replace_cert_process_AND_NOP_644E | HANGING | cert_process ret 0x40 + NOP error CALL
+SERVER:  0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[22] J04_NOP_cert_process_force_state4_NOP_644E | ECONNRESET | Skip cert_process + force eax=1 + NOP error CALL
+SERVER:  0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[23] K01_NOP_JLE_only | ECONNRESET | Just NOP the JLE at +0x61262F7 (let cert_process run but ignore result)
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50585
+
+[24] K02_JLE_to_JG | ECONNRESET | Change JLE to JG at +0x61262F7 (invert condition)
+SERVER:  Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:50593
+
+[25] L01_NOP_all_state7 | NO_CONNECTION+CRASHED | NOP all state=7 writes in cert handler area
+SERVER: 
 
