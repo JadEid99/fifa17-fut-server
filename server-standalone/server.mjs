@@ -296,12 +296,6 @@ bT9J4z1OJr6cTA==
     }
 
     if (phase === 'waiting_client_response') {
-      const slice = data.subarray(i, Math.min(i + 16, data.length));
-      const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
-      console.log(`  ${i.toString(16).padStart(4, '0')}: ${hex}`);
-    }
-
-    if (phase === 'waiting_client_response') {
       // Parse records from the client
       let offset = 0;
       while (offset + 5 <= pendingBuf.length) {
