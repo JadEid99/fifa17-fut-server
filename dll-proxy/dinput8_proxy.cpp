@@ -326,8 +326,14 @@ static void PatchSSL() {
                         heapCerts, regionBase + i, (unsigned long long)certSize,
                         caMatch ? "YES" : "no", eaMatch ? "YES" : "no", txt);
                     
-                    // ONLY replace if it's an EA CA cert
+                    // ONLY replace if it's an EA CA cert AND not already our cert
                     if (caMatch && eaMatch && certSize >= g_ourCACertLen) {
+                        // Skip if this is already our cert
+                        if (memcmp(regionBase + i, g_ourCACert, g_ourCACertLen) == 0) {
+                            Log("  -> Skipping (this is our own cert)");
+                            i += certSize - 1;
+                            continue;
+                        }
                         // Log which module this cert is in
                         HMODULE hMod = NULL;
                         char modName[MAX_PATH] = "unknown";
