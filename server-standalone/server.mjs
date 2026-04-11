@@ -223,11 +223,12 @@ function handleSSLv3Handshake(socket, clientHelloRecord) {
   const serverRandom = crypto.randomBytes(32);
   serverRandom.writeUInt32BE(Math.floor(Date.now() / 1000), 0);
 
-  // Server cert with Aim4kill ProtoSSL bug applied:
-  // The algorithmIdentifier (2nd occurrence of sig OID) is patched from
-  // SHA1withRSA (..01 05) to RSA_PKCS_KEY (..01 01). This makes ProtoSSL
-  // hit the default case, set iHashSize=0, and memcmp(x,y,0)==0 always.
-  const certDerB64 = 'MIICrTCCAhYCFEPuJkoJqIs+1Hc7CaSyYdNeUYDTMA0GCSqGSIb3DQEBBQUAMIGgMSAwHgYDVQQLDBdPbmxpbmUgVGVjaG5vbG9neSBHcm91cDEeMBwGA1UECgwVRWxlY3Ryb25pYyBBcnRzLCBJbmMuMRUwEwYDVQQHDAxSZWR3b29kIENpdHkxEzARBgNVBAgMCkNhbGlmb3JuaWExCzAJBgNVBAYTAlVTMSMwIQYDVQQDDBpPVEczIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0yNjA0MTAxMjUzNTVaFw01MzA4MjYxMjUzNTVaMIGJMSYwJAYDVQQDDB13aW50ZXIxNS5nb3NyZWRpcmVjdG9yLmVhLmNvbTEdMBsGA1UECwwUR2xvYmFsIE9ubGluZSBTdHVkaW8xHjAcBgNVBAoMFUVsZWN0cm9uaWMgQXJ0cywgSW5jLjETMBEGA1UECAwKQ2FsaWZvcm5pYTELMAkGA1UEBhMCVVMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAK4Jk1ombSA0y8N7G5RO4GyclW4dEp6E3GwvS2kKnyLgSHarNqj6qY4f06sX+U+4i6Uqz7ukxFFAyormGJKDZxPMCAYO48lHTsbGhvRIimCePpqxMTGOxbBw63TvZfOWdFGNJwSnA8Hzqu8FmEW3qAwX9ZjUCrTaFowYC60L09V3AgMBAAEwDQYJKoZIhvcNAQEBBQADgYEAE4v8rraydetF9oMcQ403Pm3Dz2k/ZXklQtt3pz3o/Hx1GH8kFIdMMoucCiQTyxOF97K32x96LI+CKzYgX15WehvtNGZUALHFdBpYTFIEVbnOijBsHqcKS3bn6P75znZTgRRzJJO4GV0cDKa6DZyPJraz7wvPD92RVplAgrWiUPw=';
+  // Server cert with Aim4kill ProtoSSL bug v2: BOTH signature OIDs patched
+  // from SHA1withRSA (..01 05) to RSA_PKCS_KEY (..01 01).
+  // v1 only patched the second one, but newer ProtoSSL may check that both match.
+  // With both set to RSA_PKCS_KEY, _ParseObject returns ASN_OBJ_RSA_PKCS_KEY
+  // which hits the default case, sets iHashSize=0, memcmp(x,y,0)==0 always.
+  const certDerB64 = 'MIICrTCCAhYCFEPuJkoJqIs+1Hc7CaSyYdNeUYDTMA0GCSqGSIb3DQEBAQUAMIGgMSAwHgYDVQQLDBdPbmxpbmUgVGVjaG5vbG9neSBHcm91cDEeMBwGA1UECgwVRWxlY3Ryb25pYyBBcnRzLCBJbmMuMRUwEwYDVQQHDAxSZWR3b29kIENpdHkxEzARBgNVBAgMCkNhbGlmb3JuaWExCzAJBgNVBAYTAlVTMSMwIQYDVQQDDBpPVEczIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0yNjA0MTAxMjUzNTVaFw01MzA4MjYxMjUzNTVaMIGJMSYwJAYDVQQDDB13aW50ZXIxNS5nb3NyZWRpcmVjdG9yLmVhLmNvbTEdMBsGA1UECwwUR2xvYmFsIE9ubGluZSBTdHVkaW8xHjAcBgNVBAoMFUVsZWN0cm9uaWMgQXJ0cywgSW5jLjETMBEGA1UECAwKQ2FsaWZvcm5pYTELMAkGA1UEBhMCVVMwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAK4Jk1ombSA0y8N7G5RO4GyclW4dEp6E3GwvS2kKnyLgSHarNqj6qY4f06sX+U+4i6Uqz7ukxFFAyormGJKDZxPMCAYO48lHTsbGhvRIimCePpqxMTGOxbBw63TvZfOWdFGNJwSnA8Hzqu8FmEW3qAwX9ZjUCrTaFowYC60L09V3AgMBAAEwDQYJKoZIhvcNAQEBBQADgYEAE4v8rraydetF9oMcQ403Pm3Dz2k/ZXklQtt3pz3o/Hx1GH8kFIdMMoucCiQTyxOF97K32x96LI+CKzYgX15WehvtNGZUALHFdBpYTFIEVbnOijBsHqcKS3bn6P75znZTgRRzJJO4GV0cDKa6DZyPJraz7wvPD92RVplAgrWiUPw=';
   const certDerBuf = Buffer.from(certDerB64, 'base64');
   
   const keyPem = `-----BEGIN PRIVATE KEY-----
