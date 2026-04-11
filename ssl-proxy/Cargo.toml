@@ -1,0 +1,9 @@
+[package]
+name = "fifa17-ssl-proxy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+blaze-ssl-async = { version = "0.4", features = ["blaze-cert"] }
+tokio = { version = "1", features = ["full"] }
+rsa = "0.9"

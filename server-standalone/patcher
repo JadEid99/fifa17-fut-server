@@ -1,0 +1,112 @@
+node -e "
+const fs = require('fs');
+// Create a C# memory patcher that we compile and run
+const code = `
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+
+class Patcher {
+    [DllImport(\"kernel32.dll\")]
+    static extern IntPtr OpenProcess(int access, bool inherit, int pid);
+    [DllImport(\"kernel32.dll\")]
+    static extern bool ReadProcessMemory(IntPtr proc, IntPtr addr, byte[] buf, int size, out int read);
+    [DllImport(\"kernel32.dll\")]
+    static extern bool WriteProcessMemory(IntPtr proc, IntPtr addr, byte[] buf, int size, out int written);
+    [DllImport(\"kernel32.dll\")]
+    static extern bool VirtualProtectEx(IntPtr proc, IntPtr addr, int size, int newProt, out int oldProt);
+    [DllImport(\"kernel32.dll\")]
+    static extern bool CloseHandle(IntPtr handle);
+    
+    // NtQueryInformationProcess to get PEB
+    [DllImport(\"ntdll.dll\")]
+    static extern int NtQueryInformationProcess(IntPtr proc, int infoClass, byte[] info, int infoLen, out int retLen);
+
+    const int PROCESS_ALL_ACCESS = 0x1F0FFF;
+    const int PAGE_EXECUTE_READWRITE = 0x40;
+
+    static void Main(string[] args) {
+        var procs = Process.GetProcessesByName(\"FIFA17\");
+        if (procs.Length == 0) { Console.WriteLine(\"FIFA17 not running!\"); return; }
+        var proc = procs[0];
+        Console.WriteLine(\"Found FIFA17 PID: \" + proc.Id);
+        
+        IntPtr hProc = OpenProcess(PROCESS_ALL_ACCESS, false, proc.Id);
+        if (hProc == IntPtr.Zero) { Console.WriteLine(\"Failed to open process. Run as Administrator!\"); return; }
+        
+        // Search for 'bad certificate' string in process memory
+        byte[] searchBytes = Encoding.ASCII.GetBytes(\"bad certificate\\0\");
+        Console.WriteLine(\"Searching for 'bad certificate' string in process memory...\");
+        
+        // Get module base address
+        IntPtr baseAddr = proc.MainModule.BaseAddress;
+        int moduleSize = proc.MainModule.ModuleMemorySize;
+        Console.WriteLine(\"Module base: 0x\" + baseAddr.ToString(\"X\") + \" size: 0x\" + moduleSize.ToString(\"X\"));
+        
+        // Read the entire module into a buffer
+        byte[] moduleBytes = new byte[moduleSize];
+        int bytesRead;
+        ReadProcessMemory(hProc, baseAddr, moduleBytes, moduleSize, out bytesRead);
+        Console.WriteLine(\"Read \" + bytesRead + \" bytes from process memory\");
+        
+        // Find 'bad certificate' string
+        int strOffset = -1;
+        for (int i = 0; i < bytesRead - searchBytes.Length; i++) {
+            bool match = true;
+            for (int j = 0; j < searchBytes.Length; j++) {
+                if (moduleBytes[i + j] != searchBytes[j]) { match = false; break; }
+            }
+            if (match) { strOffset = i; break; }
+        }
+        
+        if (strOffset < 0) { Console.WriteLine(\"String not found in memory!\"); CloseHandle(hProc); return; }
+        
+        long strRVA = strOffset;
+        long strVA = baseAddr.ToInt64() + strRVA;
+        Console.WriteLine(\"Found 'bad certificate' at RVA=0x\" + strRVA.ToString(\"X\") + \" VA=0x\" + strVA.ToString(\"X\"));
+        
+        // Now search for LEA instructions that reference this string address
+        // In x64, LEA uses RIP-relative addressing: 48 8D xx yy yy yy yy
+        // where yy yy yy yy is the 32-bit signed offset from the next instruction
+        Console.WriteLine(\"Searching for code references to this string...\");
+        
+        int refsFound = 0;
+        for (int i = 0; i < bytesRead - 7; i++) {
+            // Look for LEA reg, [rip+offset] patterns
+            if (moduleBytes[i] == 0x48 && moduleBytes[i+1] == 0x8D) {
+                // Check if the ModR/M byte indicates RIP-relative (mod=00, rm=101)
+                byte modrm = moduleBytes[i+2];
+                if ((modrm & 0xC7) == 0x05) { // mod=00, rm=101 (RIP-relative)
+                    int offset = BitConverter.ToInt32(moduleBytes, i + 3);
+                    long targetRVA = i + 7 + offset; // RIP points to next instruction
+                    if (targetRVA == strRVA) {
+                        long refVA = baseAddr.ToInt64() + i;
+                        Console.WriteLine(\"  Found reference at RVA=0x\" + i.ToString(\"X\") + \" VA=0x\" + refVA.ToString(\"X\"));
+                        
+                        // Print surrounding bytes for context
+                        int start = Math.Max(0, i - 64);
+                        Console.Write(\"  Context (-64 to +32): \");
+                        for (int k = start; k < Math.Min(bytesRead, i + 32); k++) {
+                            if (k == i) Console.Write(\"[\");
+                            Console.Write(moduleBytes[k].ToString(\"X2\"));
+                            if (k == i + 6) Console.Write(\"]\");
+                            else Console.Write(\" \");
+                        }
+                        Console.WriteLine();
+                        refsFound++;
+                    }
+                }
+            }
+        }
+        Console.WriteLine(\"Total references found: \" + refsFound);
+        
+        CloseHandle(hProc);
+    }
+}
+`;
+fs.writeFileSync('C:/Users/Jad/fifa17-server/Patcher.cs', code);
+console.log('Patcher.cs created. Compile and run with:');
+console.log('  csc /out:C:\\Users\\Jad\\fifa17-server\\Patcher.exe C:\\Users\\Jad\\fifa17-server\\Patcher.cs');
+console.log('  C:\\Users\\Jad\\fifa17-server\\Patcher.exe');
+"

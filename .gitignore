@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.dmp
+*.obj
+*.lib
+*.exp
+*.pdb
+*.ilk
+server/node_modules/
+ssl-proxy/target/
+
+# Private keys and certs (generated locally)
+*.key
+*.pem
+*.der
+*.csr
+*.crt
+*.srl
+blaze-key.der
+blaze-cert.der
