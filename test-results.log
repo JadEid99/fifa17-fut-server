@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 12:08:27) ===
+﻿=== TEST RESULTS (2026-04-11 12:11:11) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,40 +10,15 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:64541
-[Redirector-Raw] Received 116 bytes
-[Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 1d 83 47  ....o...k..i...G
-  0010: a5 77 ad 77 7e 54 ec 6a 7a 88 82 59 34 10 f2 84  .w.w~T.jz..Y4...
-  0020: e6 d7 04 3c 12 8a 17 54 24 b1 a6 00 00 10 00 9d  ...<...T$.......
-  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
-  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
-  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
-  0070: 02 01 01 01                                      ....
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da1d8347a577ad...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0035
-[SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:64541
 
 --- DLL LOG ---
-=== FIFA 17 SSL Bypass (connect hook + CA replacement) ===
-Real connect at 0x00007FFD6EB11A50
-connect not found in IAT - trying all modules...
+=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===
+connect() hooked via trampoline at 0x00007FFD6EB11A50 -> 0x00007FFD61DC1000
 Initial CA cert scan...
 ReplaceEACert: replaced 0 certs
 ReplaceEACert: replaced 0 certs
 ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
+connect() to port 42230 detected! Replacing EA CA cert NOW...
 ReplaceEACert: replaced 0 certs
 ReplaceEACert: replaced 0 certs
 
