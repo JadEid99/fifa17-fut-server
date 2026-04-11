@@ -103,24 +103,24 @@ for ($i = 0; $i -lt $timeout; $i++) {
     Start-Sleep 1
 }
 
-# Launch sequence: loading(5s) -> language(enter) -> loading(5s) -> cutscene(enter) -> page(enter) -> settings(enter) -> connection test
-Write-Host "  5s - initial loading..."
-Start-Sleep 5
+# Launch sequence: loading(10s) -> language(enter) -> loading(5s) -> cutscene(enter) -> page(enter) -> settings(enter) -> connection test
+Write-Host "  10s - initial loading..."
+Start-Sleep 10
 Write-Host "  Enter - language selection"
 Send-EnterToFIFA
 Start-Sleep 5
 Write-Host "  Enter - skip cutscene"
 Send-EnterToFIFA
-Start-Sleep 2
+Start-Sleep 5
 Write-Host "  Enter - next page"
 Send-EnterToFIFA
-Start-Sleep 2
+Start-Sleep 5
 Write-Host "  Enter - select settings"
 Send-EnterToFIFA
-Start-Sleep 2
+Start-Sleep 5
 Write-Host "  Extra enters just in case..."
 Send-EnterToFIFA
-Start-Sleep 1
+Start-Sleep 3
 Send-EnterToFIFA
 
 Write-Host "  Waiting 30s for connection attempt..." -ForegroundColor Green
