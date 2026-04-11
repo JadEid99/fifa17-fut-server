@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 13:43:49) ===
+﻿=== TEST RESULTS (2026-04-11 13:47:38) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:65241
+[Redirector-Raw] Client connected: 127.0.0.1:65268
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 33 87 eb  ....o...k..i.3..
-  0010: c9 47 6c 94 95 ae d2 54 df 7b 48 24 21 59 6b 16  .Gl....T.{H$!Yk.
-  0020: 9b 2e b1 d2 92 31 5f aa 73 c0 8a 00 00 10 00 9d  .....1_.s.......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 34 7e 2d  ....o...k..i.4~-
+  0010: 5e bc 4a f8 22 06 09 c9 1f 4a 4d 2b 3f 64 1a c3  ^.J."....JM+?d..
+  0020: b7 4c 15 63 dc 99 d2 4e 7a c9 5b 00 00 10 00 9d  .L.c...Nz.[.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,32 +23,20 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da3387ebc9476c...
+[SSL] ClientHello: version=0x303 random=69da347e2d5ebc4a...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:65241
+[Redirector-Raw] Disconnected: 127.0.0.1:65268
 
 --- DLL LOG ---
-[13:41:39.384] === FIFA 17 SSL Bypass v17 (find ALL RSA keys near EA cert structs) ===
-[13:41:39.384] PID: 91316
-[13:42:04.398] Searching for all RSA keys...
-[13:42:04.415] RSA KEY #1 at 0000000027DCF860 (EA str at 0000000027DCF2B0, off=+0x5B0)  near:winter15
-[13:42:04.415]   Modulus: AE 09 93 5A 26 6D 20 34 CB C3 7B 1B 94 4E E0 6C 
-[13:42:04.415]   hasOTG3=1 hasWinter=1
-[13:42:04.415] RSA KEY #2 at 0000000027DCF860 (EA str at 0000000027DCF470, off=+0x3F0)  near:winter15
-[13:42:04.415]   Modulus: AE 09 93 5A 26 6D 20 34 CB C3 7B 1B 94 4E E0 6C 
-[13:42:04.415]   hasOTG3=1 hasWinter=1
-[13:42:04.415] RSA KEY #3 at 0000000027DE3D70 (EA str at 0000000027DE37C0, off=+0x5B0)  near:winter15
-[13:42:04.415]   Modulus: AE 09 93 5A 26 6D 20 34 CB C3 7B 1B 94 4E E0 6C 
-[13:42:04.426]   hasOTG3=1 hasWinter=1
-[13:42:04.426] RSA KEY #4 at 0000000027DE3D70 (EA str at 0000000027DE3980, off=+0x3F0)  near:winter15
-[13:42:04.426]   Modulus: AE 09 93 5A 26 6D 20 34 CB C3 7B 1B 94 4E E0 6C 
-[13:42:04.426]   hasOTG3=1 hasWinter=1
-[13:42:10.525] Total RSA key candidates found: 4
-[13:42:10.525] === Done ===
+[13:45:48.959] === FIFA 17 v18 (dump CA cert struct region to find RSA key) ===
+[13:45:48.960] PID: 99108
+[13:46:13.975] Searching...
+[13:46:19.262] Found 0 CA-only cert structs (no winter15 nearby)
+[13:46:19.262] === Done ===
 
 
 --- END ---
