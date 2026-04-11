@@ -1,0 +1,42 @@
+﻿=== TEST RESULTS (2026-04-11 11:18:59) ===
+
+--- SERVER OUTPUT ---
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+System.Management.Automation.RemoteException
+Error: listen EADDRINUSE: address already in use 0.0.0.0:42230
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1944:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 42230
+}
+System.Management.Automation.RemoteException
+Node.js v20.19.5
+
+--- DLL LOG ---
+=== FIFA 17 SSL Bypass DLL (CA Replacement) ===
+FIFA17.exe base=0x0000000140000000 size=0x11359000
+Waiting for Denuvo decryption...
+Scanning for DER certificates in game memory...
+Found 0 DER certs, replaced 0
+Found error handler at +0x612E7A4, patching JE->JMP
+Patched disconnect func to return 0
+All patches applied!
+
+
+--- END ---
