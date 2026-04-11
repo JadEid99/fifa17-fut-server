@@ -209,8 +209,8 @@ static void PatchSSL() {
     
     // Let's try all strategies:
     
-    Log("Waiting for Denuvo decryption...");
-    Sleep(5000);
+    Log("Waiting for Denuvo decryption (2s)...");
+    Sleep(2000);
     
     // === Find the "installed CA cert" string to locate SetCACert function ===
     // This string is in the .srdata section (not encrypted)
@@ -382,8 +382,49 @@ static void PatchSSL() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Sleep(5000);
+    // Start quickly - the CA cert might be loaded early
+    Sleep(2000);
     PatchSSL();
+    
+    // Keep re-scanning every 2 seconds for 60 seconds
+    // to catch certs loaded after our initial scan
+    for (int pass = 0; pass < 30; pass++) {
+        Sleep(2000);
+        MEMORY_BASIC_INFORMATION mbi;
+        BYTE* scanAddr = NULL;
+        int replaced = 0;
+        while (VirtualQuery(scanAddr, &mbi, sizeof(mbi))) {
+            if (mbi.State == MEM_COMMIT && 
+                (mbi.Protect & (PAGE_READWRITE | PAGE_READONLY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))) {
+                BYTE* base = (BYTE*)mbi.BaseAddress;
+                SIZE_T size = mbi.RegionSize;
+                __try {
+                    for (SIZE_T j = 0; j < size - 10; j++) {
+                        if (base[j] != 0x30 || base[j+1] != 0x82) continue;
+                        uint16_t len = (base[j+2] << 8) | base[j+3];
+                        if (len < 200 || len > 2000) continue;
+                        SIZE_T cs = len + 4;
+                        if (j + cs > size) continue;
+                        BYTE ca[] = {0x30, 0x03, 0x01, 0x01, 0xFF};
+                        if (!FindPattern(base + j, cs, ca, 5)) continue;
+                        if (memcmp(base + j, g_ourCACert, 20) == 0) { j += cs - 1; continue; }
+                        BYTE oid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
+                        if (!FindPattern(base + j, cs, oid, 8)) continue;
+                        DWORD op;
+                        if (VirtualProtect(base + j, cs, PAGE_READWRITE, &op)) {
+                            SIZE_T copyLen = (cs < g_ourCACertLen) ? cs : g_ourCACertLen;
+                            memcpy(base + j, g_ourCACert, copyLen);
+                            VirtualProtect(base + j, cs, op, &op);
+                            replaced++;
+                            Log("Pass %d: replaced CA cert at 0x%p size=%llu", pass, base + j, (unsigned long long)cs);
+                        }
+                        j += cs - 1;
+                    }
+                } __except(EXCEPTION_EXECUTE_HANDLER) {}
+            }
+            scanAddr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        }
+    }
     return 0;
 }
 
