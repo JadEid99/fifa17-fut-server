@@ -5,31 +5,38 @@
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
+$gameExe = "$gameDir\FIFA17.exe"
 $logFile = "$gameDir\fifa17_ssl_bypass.log"
 $resultsFile = "$repoRoot\test-results.log"
+
+# Helper: send Enter key to FIFA 17 window
+Add-Type -AssemblyName System.Windows.Forms
+function Send-EnterToFIFA {
+    $proc = Get-Process -Name FIFA17 -ErrorAction SilentlyContinue
+    if ($proc) {
+        $wshell = New-Object -ComObject WScript.Shell
+        $wshell.AppActivate($proc.Id) | Out-Null
+        Start-Sleep -Milliseconds 300
+        [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+    }
+}
 
 Write-Host "=== FIFA 17 FUT Server Test ===" -ForegroundColor Cyan
 
 # Step 1: Pull latest changes
-Write-Host "`n[1/6] Pulling latest changes..." -ForegroundColor Yellow
+Write-Host "`n[1/7] Pulling latest changes..." -ForegroundColor Yellow
 git pull 2>&1 | Tee-Object -Variable gitOutput
-Add-Content $resultsFile "--- GIT PULL ---`n$gitOutput`n"
 
 # Step 2: Kill FIFA 17 and any existing server
-Write-Host "`n[2/6] Stopping FIFA 17 and old servers..." -ForegroundColor Yellow
+Write-Host "`n[2/7] Stopping FIFA 17 and old servers..." -ForegroundColor Yellow
 Stop-Process -Name FIFA17 -Force -ErrorAction SilentlyContinue
-# Kill ALL node processes to free ports
 Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-# Also kill by port
 $portProc = Get-NetTCPConnection -LocalPort 42230 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -ErrorAction SilentlyContinue
 if ($portProc) { Stop-Process -Id $portProc -Force -ErrorAction SilentlyContinue }
 Start-Sleep 3
 
 # Step 3: Build DLL
-Write-Host "`n[3/6] Building DLL..." -ForegroundColor Yellow
-$env:Path += ";$env:USERPROFILE\.cargo\bin"
-
-# Find vcvars
+Write-Host "`n[3/7] Building DLL..." -ForegroundColor Yellow
 $vcvars = ""
 if (Test-Path "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
     $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
@@ -41,14 +48,12 @@ if (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC
 if ($vcvars -ne "") {
     $buildOutput = cmd /c "`"$vcvars`" && cd /d `"$repoRoot\dll-proxy`" && cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib 2>&1"
     Write-Host $buildOutput
-    Add-Content $resultsFile "--- BUILD ---`n$buildOutput`n"
 } else {
     Write-Host "ERROR: Visual Studio Build Tools not found!" -ForegroundColor Red
-    Add-Content $resultsFile "--- BUILD ---`nERROR: vcvars not found`n"
 }
 
 # Step 4: Deploy DLL and clean log
-Write-Host "`n[4/6] Deploying..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Deploying..." -ForegroundColor Yellow
 Remove-Item $logFile -Force -ErrorAction SilentlyContinue
 if (Test-Path "$repoRoot\dll-proxy\dinput8.dll") {
     Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
@@ -57,33 +62,62 @@ if (Test-Path "$repoRoot\dll-proxy\dinput8.dll") {
     Write-Host "ERROR: dinput8.dll not found after build!" -ForegroundColor Red
 }
 
-# Step 5: Start server and launch game
-Write-Host "`n[5/6] Starting server..." -ForegroundColor Yellow
+# Step 5: Start server
+Write-Host "`n[5/7] Starting server..." -ForegroundColor Yellow
 $serverJob = Start-Job -ScriptBlock {
     param($repoRoot)
     Set-Location $repoRoot
     node "$repoRoot\server-standalone\server.mjs" 2>&1
 } -ArgumentList $repoRoot
+Start-Sleep 2
 
-Write-Host "Server started in background. Launch FIFA 17 manually and trigger a connection."
-Write-Host "Waiting 60 seconds for game to connect..." -ForegroundColor Green
-Start-Sleep 60
+# Step 6: Launch FIFA 17 and auto-navigate menus
+Write-Host "`n[6/7] Launching FIFA 17 and navigating menus..." -ForegroundColor Yellow
+Start-Process $gameExe
+Write-Host "  Waiting for game to load..."
 
-# Step 6: Collect results
-Write-Host "`n[6/6] Collecting results..." -ForegroundColor Yellow
+# Wait for FIFA17 process to appear
+$timeout = 30
+for ($i = 0; $i -lt $timeout; $i++) {
+    if (Get-Process -Name FIFA17 -ErrorAction SilentlyContinue) { break }
+    Start-Sleep 1
+}
 
-# Get server output
+# Launch sequence: loading(5s) -> language(enter) -> loading(5s) -> cutscene(enter) -> page(enter) -> settings(enter) -> connection test
+Write-Host "  5s - initial loading..."
+Start-Sleep 5
+Write-Host "  Enter - language selection"
+Send-EnterToFIFA
+Start-Sleep 5
+Write-Host "  Enter - skip cutscene"
+Send-EnterToFIFA
+Start-Sleep 2
+Write-Host "  Enter - next page"
+Send-EnterToFIFA
+Start-Sleep 2
+Write-Host "  Enter - select settings"
+Send-EnterToFIFA
+Start-Sleep 2
+Write-Host "  Extra enters just in case..."
+Send-EnterToFIFA
+Start-Sleep 1
+Send-EnterToFIFA
+
+Write-Host "  Waiting 30s for connection attempt..." -ForegroundColor Green
+Start-Sleep 30
+
+# Step 7: Collect results
+Write-Host "`n[7/7] Collecting results..." -ForegroundColor Yellow
+
 $serverOutput = Receive-Job $serverJob 2>&1
 Stop-Job $serverJob -ErrorAction SilentlyContinue
 Remove-Job $serverJob -ErrorAction SilentlyContinue
 
-# Get DLL log
 $dllLog = ""
 if (Test-Path $logFile) {
     $dllLog = Get-Content $logFile -Raw
 }
 
-# Write results
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $results = @"
 === TEST RESULTS ($timestamp) ===
@@ -101,7 +135,6 @@ Set-Content $resultsFile $results -Encoding UTF8
 Write-Host $results
 Write-Host "`nResults saved to test-results.log" -ForegroundColor Green
 
-# Commit and push results
 git add test-results.log
 git commit -m "Test results $timestamp"
 git push 2>&1
