@@ -1,13 +1,22 @@
 /**
- * dinput8.dll Proxy - v23
+ * dinput8.dll Proxy - v25
  * 
- * v22 found 11 candidates and crashed by setting too many bytes.
- * The real ProtoSSLRefT struct is at 0x2A7CE278 — it has pointer-like
- * values at -0x10 and -0x08 (pSock and pHost).
+ * BREAKTHROUGH from reading DirtySDK source:
  * 
- * v23: Only patch structs that have pointer-like values before strHost.
- * Only set ONE byte at strHost + 0x120 (bAllowAnyCert offset from source).
- * If that doesn't work, try +0x118, +0x128, +0x130 one at a time.
+ * CA certs are stored in a GLOBAL LINKED LIST: _ProtoSSL_CACerts
+ * Each node is ProtoSSLCACertT with:
+ *   - Subject identity (padded string fields)
+ *   - Key exponent data + size
+ *   - Key modulus size + pointer (modulus appended after struct)
+ *   - pNext pointer
+ * 
+ * The modulus is allocated RIGHT AFTER the struct.
+ * From v15 dump, the CA struct has padded fields ending with
+ * "OTG3 Certificate Authority", then the modulus follows.
+ * 
+ * Strategy: Find "OTG3 Certificate Authority" in padded format,
+ * scan forward for the 128-byte RSA modulus, and replace it.
+ * The modulus is high-entropy data after the last string field.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -62,123 +71,135 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-static int g_patched = 0;
+// Our CA's RSA modulus (128 bytes)
+static const BYTE g_ourMod[] = {
+    0xcc,0xee,0xf0,0xa2,0xbe,0x51,0x6f,0x51,0x8f,0x17,0xac,0xf9,0xba,0x7a,0x82,0x04,
+    0x72,0xce,0xa4,0x7e,0xa7,0x89,0xc8,0xc2,0xc9,0x71,0x05,0x4d,0xb9,0xf3,0xab,0x5b,
+    0xfc,0x00,0x5a,0x94,0x86,0x5f,0xff,0xb3,0x0d,0x6b,0xc8,0xdc,0x98,0x6d,0x72,0x24,
+    0xd5,0xd2,0xca,0xd2,0x9f,0xe2,0xa4,0x5f,0xa5,0xa7,0x56,0x73,0x75,0x5e,0xf2,0xca,
+    0x92,0x3d,0x06,0x95,0xd5,0xf5,0x2f,0x08,0xf4,0x1b,0x56,0xa1,0x0d,0x04,0xce,0x80,
+    0x93,0x70,0xaf,0xa7,0x64,0xf9,0x0c,0x38,0x40,0x81,0x07,0x9c,0xfd,0x16,0x71,0xc5,
+    0xd7,0x18,0x58,0x2f,0xb6,0x2b,0xc5,0xd4,0x6d,0x4b,0x89,0xf3,0xf5,0xd4,0x04,0x12,
+    0x50,0x8c,0x50,0xb5,0x5f,0x5c,0x50,0x69,0x39,0x1c,0x5a,0x3e,0xa3,0xa2,0x7e,0x5d
+};
 
-static int FindAndPatchStruct() {
-    static const char host[] = "winter15.gosredirector.ea.com";
-    static const SIZE_T hostLen = 29;
-    int patched = 0;
+// Our CA's RSA exponent: 01 00 01 (65537)
+static const BYTE g_ourExp[] = {0x01, 0x00, 0x01};
+
+static int g_replaced = 0;
+
+// Find ProtoSSLCACertT nodes by looking for "OTG3 Certificate Authority"
+// in padded format (the Subject.strCommon field of the CA cert node).
+// Then find the RSA modulus after it and replace.
+static int FindAndReplaceCAModulus() {
+    static const char otg3[] = "OTG3 Certificate Authority";
+    static const SIZE_T otg3Len = 26;
+    int replaced = 0;
     
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x300 &&
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 512 &&
             mbi.Protect == PAGE_READWRITE) {
             
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0x20; j + hostLen + 0x200 < size; j++) {
-                    if (base[j] != 'w' || memcmp(base + j, host, hostLen) != 0) continue;
-                    if (base[j + hostLen] != 0x00) continue;
+                for (SIZE_T j = 0; j + otg3Len + 256 < size; j++) {
+                    if (base[j] != 'O' || memcmp(base + j, otg3, otg3Len) != 0) continue;
+                    if (base[j + otg3Len] != 0x00) continue; // padded
                     
-                    BYTE* strHost = base + j;
+                    // Check this is NOT inside a DER cert (should be padded with nulls)
+                    if (j + otg3Len + 2 < size && base[j + otg3Len + 1] != 0x00) continue;
                     
-                    // The REAL ProtoSSLRefT struct has pointers before strHost.
-                    // strHost is at +0x20 in the struct, so:
-                    //   struct_base + 0x00 = pSock (8 bytes, non-zero pointer)
-                    //   struct_base + 0x08 = pHost (8 bytes, pointer or null)
-                    //   struct_base + 0x10 = iMemGroup (4 bytes)
-                    //   struct_base + 0x18 = pMemGroupUserData (8 bytes, pointer)
-                    //   struct_base + 0x20 = strHost
+                    // Check "Electronic Arts" is nearby before (part of same struct)
+                    bool hasEA = false;
+                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j && !hasEA; scan++) {
+                        if (memcmp(base + scan, "Electronic Arts", 15) == 0) hasEA = true;
+                    }
+                    if (!hasEA) continue;
                     
-                    // Check if -0x10 and -0x08 look like pointers (high bytes non-zero)
-                    if (j < 0x20) continue;
+                    // Check NO "winter15" nearby (this should be CA cert, not server cert)
+                    bool hasWinter = false;
+                    for (SIZE_T scan = j; scan < j + 0x400 && scan + 8 < size && !hasWinter; scan++) {
+                        if (memcmp(base + scan, "winter15", 8) == 0) hasWinter = true;
+                    }
+                    // Note: CA and server cert structs may be adjacent, so winter15
+                    // could be in the NEXT struct. Only skip if winter15 is BEFORE OTG3.
+                    bool winterBefore = false;
+                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j && !winterBefore; scan++) {
+                        if (memcmp(base + scan, "winter15", 8) == 0) winterBefore = true;
+                    }
+                    if (winterBefore) continue; // this OTG3 is in the server cert's issuer
                     
-                    uint64_t val_m10 = *(uint64_t*)(strHost - 0x10);
-                    uint64_t val_m08 = *(uint64_t*)(strHost - 0x08);
+                    Log("CA CERT NODE: OTG3 at %p", base + j);
                     
-                    // At least one should look like a pointer (> 0x10000)
-                    bool hasPointers = (val_m10 > 0x10000 || val_m08 > 0x10000);
-                    if (!hasPointers) continue;
+                    // Scan forward from OTG3 for the RSA modulus.
+                    // After the CN field (32 bytes padded), there should be:
+                    // - more struct fields (key exp size, key exp data, key mod size)
+                    // - then the modulus (128 bytes of high-entropy data)
+                    // Look for 0x80 0x00 0x00 0x00 (key mod size = 128) followed by data
+                    // OR just look for a 128-byte high-entropy block
                     
-                    // Skip HTTP buffers
-                    bool isHTTP = false;
-                    for (int scan = -0x60; scan < 0 && !isHTTP; scan++) {
-                        if (j + scan >= 4) {
-                            if (memcmp(base + j + scan, "POST", 4) == 0) isHTTP = true;
-                            if (memcmp(base + j + scan, "HTTP", 4) == 0) isHTTP = true;
-                            if (memcmp(base + j + scan, "find", 4) == 0) isHTTP = true;
+                    for (int off = 32; off < 256; off += 4) {
+                        if (j + off + 132 >= size) break;
+                        BYTE* p = base + j + off;
+                        
+                        // Check for key size marker: 0x80 as int32
+                        if (p[0] == 0x80 && p[1] == 0x00 && p[2] == 0x00 && p[3] == 0x00) {
+                            BYTE* mod = p + 4;
+                            
+                            // Verify it's high-entropy (not zeros or ASCII)
+                            int nonZero = 0, highByte = 0;
+                            for (int k = 0; k < 32; k++) {
+                                if (mod[k] != 0) nonZero++;
+                                if (mod[k] > 0x7F) highByte++;
+                            }
+                            if (nonZero < 24 || highByte < 8) continue;
+                            
+                            // Skip if already our modulus
+                            if (memcmp(mod, g_ourMod, 128) == 0) continue;
+                            
+                            char hex[64]; int hlen = 0;
+                            for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", mod[h]);
+                            Log("  FOUND modulus at %p (+%d from OTG3): %s", mod, off+4, hex);
+                            
+                            // Replace!
+                            memcpy(mod, g_ourMod, 128);
+                            replaced++;
+                            g_replaced++;
+                            Log("  REPLACED with our CA modulus (total: %d)", g_replaced);
+                            
+                            // Also replace exponent if nearby
+                            // Exponent is usually 3 bytes (01 00 01) with a size field before it
+                            // Look backwards from the key size marker for exp size (03 00 00 00)
+                            for (int eback = 4; eback < 32; eback += 4) {
+                                BYTE* ep = p - eback;
+                                if (ep[0] == 0x03 && ep[1] == 0x00 && ep[2] == 0x00 && ep[3] == 0x00) {
+                                    // Found exp size = 3, exp data should be right after
+                                    BYTE* expData = ep + 4;
+                                    Log("  Exp at %p: %02X %02X %02X (size at %p)", expData, expData[0], expData[1], expData[2], ep);
+                                    // Our exponent is also 01 00 01, so no change needed if it matches
+                                    break;
+                                }
+                            }
+                            break; // found the modulus, done with this OTG3
                         }
                     }
-                    if (isHTTP) continue;
-                    
-                    Log("REAL ProtoSSLRefT: strHost at %p", strHost);
-                    Log("  pSock?=%p pHost?=%p", (void*)val_m10, (void*)val_m08);
-                    
-                    // From v23 analysis, the struct at the real ProtoSSLRefT has:
-                    // +0x100: sockaddr_in PeerAddr (16 bytes)
-                    // +0x110: iState (4 bytes, value=4)
-                    // +0x114: iClosed (4 bytes, value=0)
-                    // +0x118: pSecure (8 bytes, pointer)
-                    // +0x120: unknown pointer (8 bytes)
-                    // +0x128: parsed cert data starts ("US"...)
-                    //
-                    // bAllowAnyCert must be BEFORE the parsed cert data.
-                    // In newer DirtySDK it might be at +0x108 to +0x10F area.
-                    // Or it could be a flag embedded in the iState/iClosed area.
-                    //
-                    // v23 showed that corrupting +0x120 (a pointer) caused the game
-                    // to hang instead of rejecting the cert — meaning the verification
-                    // code crashed on the bad pointer and never returned an error.
-                    // That's not a clean bypass.
-                    //
-                    // Let's try +0x10C — a byte in the padding between PeerAddr and iState.
-                    // If that doesn't work, we'll try others.
-                    
-                    char hex[256]; int hlen;
-                    hlen = 0;
-                    for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x100+h]);
-                    Log("  +0x100: %s", hex);
-                    hlen = 0;
-                    for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", strHost[0x110+h]);
-                    Log("  +0x110: %s", hex);
-                    
-                    // Try +0x10C (between PeerAddr end and iState)
-                    BYTE old10C = strHost[0x10C];
-                    BYTE old10D = strHost[0x10D];
-                    BYTE old10E = strHost[0x10E];
-                    BYTE old10F = strHost[0x10F];
-                    BYTE old116 = strHost[0x116];
-                    BYTE old117 = strHost[0x117];
-                    
-                    // Only set bytes that are currently 0x00 (safe to change)
-                    if (old10C == 0x00) strHost[0x10C] = 0x01;
-                    if (old10D == 0x00) strHost[0x10D] = 0x01;
-                    if (old10E == 0x00) strHost[0x10E] = 0x01;
-                    if (old10F == 0x00) strHost[0x10F] = 0x01;
-                    if (old116 == 0x00) strHost[0x116] = 0x01;
-                    if (old117 == 0x00) strHost[0x117] = 0x01;
-                    
-                    Log("  SET +0x10C=%02X->01, +0x10D=%02X->01, +0x10E=%02X->01, +0x10F=%02X->01, +0x116=%02X->01, +0x117=%02X->01",
-                        old10C, old10D, old10E, old10F, old116, old117);
-                    
-                    patched++;
-                    g_patched++;
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
     }
-    return patched;
+    return replaced;
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v23 (surgical bAllowAnyCert at +0x120) ===");
+        Log("=== FIFA 17 SSL Bypass v25 (replace CA modulus in ProtoSSLCACertT linked list) ===");
         Log("PID: %lu", GetCurrentProcessId());
         
         DWORD startTick = GetTickCount();
@@ -187,15 +208,15 @@ static DWORD WINAPI PatchThread(LPVOID) {
             DWORD elapsed = GetTickCount() - startTick;
             
             __try {
-                int r = FindAndPatchStruct();
-                if (r > 0) Log("Scan %d (%lus): patched %d (total: %d)", i, elapsed/1000, r, g_patched);
+                int r = FindAndReplaceCAModulus();
+                if (r > 0) Log("Scan %d (%lus): replaced %d (total: %d)", i, elapsed/1000, r, g_replaced);
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
             
             if (i % 60 == 0 && i > 0) {
-                Log("Heartbeat: %d, %lus, patched=%d", i, elapsed/1000, g_patched);
+                Log("Heartbeat: %d, %lus, replaced=%d", i, elapsed/1000, g_replaced);
             }
         }
-        Log("=== Done. patched=%d ===", g_patched);
+        Log("=== Done. replaced=%d ===", g_replaced);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("FATAL");
     }
