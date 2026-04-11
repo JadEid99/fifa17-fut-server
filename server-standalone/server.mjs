@@ -194,12 +194,11 @@ function handleSSLv3Handshake(socket, clientHelloRecord) {
   // Parse ClientHello
   const clientVersion = (clientHelloRecord[hsStart + 4] << 8) | clientHelloRecord[hsStart + 5];
   const clientRandom = Buffer.from(clientHelloRecord.subarray(hsStart + 6, hsStart + 6 + 32));
-  // The record header uses 0x0300 (SSLv3) even though ClientHello body says 0x0303
-  // Node.js TLS uses 0x0303 in the record layer and the game accepted it!
-  // The game reads the ServerHello with 0x0303 record version fine.
-  const recordVersion = [0x03, 0x03]; // TLS 1.2 record layer - CONFIRMED WORKING
-  // ServerHello version: TLS 1.2
-  const replyVersion = [0x03, 0x03]; // TLS 1.2 in ServerHello body
+  // Use SSLv3 (0x0300) to match what the game's record layer uses
+  // and what blaze-ssl-async uses. Previous versions used 0x0303 (TLS 1.2)
+  // which may have been causing the rejection.
+  const recordVersion = [0x03, 0x00]; // SSLv3 record layer
+  const replyVersion = [0x03, 0x00]; // SSLv3 in ServerHello body
 
   console.log(`[SSL] ClientHello: version=0x${clientVersion.toString(16)} random=${clientRandom.toString('hex').substring(0, 16)}...`);
 
@@ -210,11 +209,12 @@ function handleSSLv3Handshake(socket, clientHelloRecord) {
   for (let i = 0; i < csLen; i += 2) cipherSuites.push((clientHelloRecord[sidEnd + 2 + i] << 8) | clientHelloRecord[sidEnd + 2 + i + 1]);
   console.log(`[SSL] Ciphers: ${cipherSuites.map(c => '0x' + c.toString(16).padStart(4, '0')).join(', ')}`);
 
-  // Pick cipher - try AES-256-CBC-SHA (0x0035) which is TLS 1.0 compatible
-  let selectedCipher = 0x0035; // AES-256-CBC-SHA
-  if (!cipherSuites.includes(0x0035)) {
-    if (cipherSuites.includes(0x002f)) selectedCipher = 0x002f; // AES-128-CBC-SHA
-    else if (cipherSuites.includes(0x0005)) selectedCipher = 0x0005; // RC4-SHA
+  // Pick cipher - use RC4-128-SHA (0x0005) which is what blaze-ssl-async uses
+  // and what SSLv3 ProtoSSL expects. Previous versions used AES-256-CBC which
+  // may not be supported by ProtoSSL's SSLv3 implementation.
+  let selectedCipher = 0x0005; // TLS_RSA_WITH_RC4_128_SHA
+  if (!cipherSuites.includes(0x0005)) {
+    if (cipherSuites.includes(0x0004)) selectedCipher = 0x0004; // RC4-MD5
     else selectedCipher = cipherSuites[0];
   }
   console.log(`[SSL] Selected cipher: 0x${selectedCipher.toString(16).padStart(4, '0')}`);
