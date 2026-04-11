@@ -1,6 +1,6 @@
-﻿=== BATCH v10 (2026-04-11 21:15:29) === 5 tests
+﻿=== BATCH v11 (2026-04-11 21:23:51) === 3 tests
 
-[1] T01_baseline_15s_wait | CLIENT_KEY_EXCHANGE | baseline (5 patches), wait 15s for timeout diagnostic
+[1] T01_single_record_baseline | TIMEOUT_NO_DATA | Server sends all handshake in 1 TLS record + baseline patches
 FRIDA:    -> Display information about 'object'
    . . . .       exit/quit -> Exit
    . . . .
@@ -10,93 +10,52 @@ FRIDA:    -> Display information about 'object'
 Attaching...
 message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: 
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9e15d8f7c1cc...
+SERVER: irector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9ffd5a2297c4...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sending ALL handshake messages in single record (782b)
+[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 
-[2] T02_hook_send | CLIENT_KEY_EXCHANGE | baseline + hook Winsock send() to log all outgoing data
-FRIDA:    -> Display information about 'object'
-   . . . .       exit/quit -> Exit
+[2] T02_single_record_no_patches | TIMEOUT_NO_DATA | Server sends all handshake in 1 TLS record, NO Frida patches
+FRIDA: /quit -> Exit
    . . . .
    . . . .   More info at https://frida.re/docs/home/
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9e3e67ed58a5...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] TIMEOUT: No data received from client after 10 seconds
-[SSL] pendingBuf length: 0
-
-[3] T03_hook_recv | CLIENT_KEY_EXCHANGE | baseline + hook Winsock recv() to log all incoming reads
-FRIDA:    -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9e61276469e7...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] TIMEOUT: No data received from client after 10 seconds
-[SSL] pendingBuf length: 0
-
-[4] T04_dump_iState | CLIENT_KEY_EXCHANGE | baseline + dump iState from struct after connection
-FRIDA: message: {'type': 'send', 'payload': 'strHost-116 (0x74)=16777216'} data: None
-message: {'type': 'send', 'payload': 'strHost-124 (0x7c)=0'} data: None
-message: {'type': 'send', 'payload': 'strHost-132 (0x84)=0'} data: None
-message: {'type': 'send', 'payload': 'strHost-264 (0x108)=0'} data: None
-
-SERVER: 
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9e85501cea76...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] TIMEOUT: No data received from client after 10 seconds
-[SSL] pendingBuf length: 0
-
-[5] T05_no_patches | CLIENT_KEY_EXCHANGE | NO patches (control test)
-FRIDA:  Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'no patches applied'} data: None
+message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'no patches'} data: None
 message: {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: 
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9ea991ec5cdd...
+SERVER: irector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69daa02f652d0fc5...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sending ALL handshake messages in single record (782b)
+[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[SSL] TIMEOUT: No data received from client after 10 seconds
+[SSL] pendingBuf length: 0
+
+[3] T03_single_record_hook_recv | TIMEOUT_NO_DATA | Single record + baseline + hook recv()
+FRIDA:    -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
+
+SERVER: irector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69daa0522dae6054...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ALL handshake messages in single record (782b)
+[SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
