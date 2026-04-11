@@ -9,15 +9,35 @@ $gameExe = "$gameDir\FIFA17.exe"
 $logFile = "$gameDir\fifa17_ssl_bypass.log"
 $resultsFile = "$repoRoot\test-results.log"
 
-# Helper: send Enter key to FIFA 17 window
-Add-Type -AssemblyName System.Windows.Forms
+# Helper: send Enter key to FIFA 17 using low-level keybd_event
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class KeySender {
+    [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+    public const byte VK_RETURN = 0x0D;
+    public const byte VK_SPACE = 0x20;
+    public const uint KEYEVENTF_KEYUP = 0x0002;
+    public static void PressEnter() {
+        keybd_event(VK_RETURN, 0x1C, 0, UIntPtr.Zero);
+        System.Threading.Thread.Sleep(50);
+        keybd_event(VK_RETURN, 0x1C, KEYEVENTF_KEYUP, UIntPtr.Zero);
+    }
+    public static void PressSpace() {
+        keybd_event(VK_SPACE, 0x39, 0, UIntPtr.Zero);
+        System.Threading.Thread.Sleep(50);
+        keybd_event(VK_SPACE, 0x39, KEYEVENTF_KEYUP, UIntPtr.Zero);
+    }
+}
+"@
+
 function Send-EnterToFIFA {
     $proc = Get-Process -Name FIFA17 -ErrorAction SilentlyContinue
-    if ($proc) {
-        $wshell = New-Object -ComObject WScript.Shell
-        $wshell.AppActivate($proc.Id) | Out-Null
-        Start-Sleep -Milliseconds 300
-        [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+    if ($proc -and $proc.MainWindowHandle -ne [IntPtr]::Zero) {
+        [KeySender]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+        Start-Sleep -Milliseconds 200
+        [KeySender]::PressEnter()
     }
 }
 
