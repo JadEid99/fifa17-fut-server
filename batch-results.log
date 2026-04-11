@@ -1,134 +1,102 @@
-﻿=== BATCH v8 (2026-04-11 19:24:32) === 9 patches
+﻿=== BATCH v9 (2026-04-11 20:54:52) === 12 patches (all include baseline)
 
-[1] DUMP_state_machine_start | ECONNRESET | Dump 256 bytes at SSL state machine start +0x6126213
-FRIDA: 39 bb '} data: None
-message: {'type': 'send', 'payload': 'SM +61262c0: d8 00 00 00 75 16 89 bb d4 00 00 00 89 bb f4 00 00 00 c7 83 8c 00 00 00 03 00 00 00 83 bb 8c 00 '} data: None
-message: {'type': 'send', 'payload': 'SM +61262e0: 00 00 03 75 68 48 89 d9 e8 53 18 00 00 48 89 d9 e8 2b 0d 00 00 85 c0 7e 36 44 8b 83 f4 00 00 00 '} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: ] ClientHello: version=0x303 random=69da840db43a3070...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:53524
-
-[2] SET_state_0_NOP644E | HANGING | NOP error CALL + set iState=0
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
+[1] V01_xor_inc_eax | HANGING | baseline + xor eax,eax; inc eax at +0x61262F5
 SERVER: or-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da842ac43e917c...
+[SSL] ClientHello: version=0x303 random=69da99393643dcfd...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 
-[3] SET_state_8_NOP644E | NO_CONNECTION | NOP error CALL + set iState=8
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[4] SET_state_9_NOP644E | NO_CONNECTION | NOP error CALL + set iState=9
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[5] SET_state_10_NOP644E | NO_CONNECTION | NOP error CALL + set iState=10
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[6] SET_state_neg1_NOP644E | NO_CONNECTION | NOP error CALL + set iState=-1
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[7] DUMP_around_state_checks | NO_CONNECTION | Dump code that checks iState for send/recv
-FRIDA: 6 at +6126463'} data: None
-message: {'type': 'send', 'payload': 'CMP [rbx+0x8C],6 at +61276e9'} data: None
-message: {'type': 'send', 'payload': 'CMP [rbx+0x8C],6 at +6127f2c'} data: None
-message: {'type': 'send', 'payload': 'CMP [rbx+0x8C],7 at +6128033'} data: None
-message: {'type': 'send', 'payload': 'Found 11 state checks'} data: None
-message: {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[8] SET_state_5_NOP644E | NO_CONNECTION | NOP error CALL + set iState=5
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
-SERVER: 
-
-[9] SET_state_6_NOP644E | ECONNRESET | NOP error CALL + set iState=6
-FRIDA: > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
-
+[2] V02_NOP_JLE | HANGING | baseline + NOP JLE at +0x61262F7
 SERVER: or-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da84f4985b0c0a...
+[SSL] ClientHello: version=0x303 random=69da9989cb192ed2...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[3] V03_mov_eax_64 | HANGING | baseline + mov eax,0x40 at +0x61262F5
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da99d98f7dcd75...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[4] V04_NOP_finalize | HANGING | baseline + NOP JLE + NOP cert_finalize CALL at +0x6126334
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9a299ff2f304...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[5] V05_NOP_success_fn | HANGING | baseline + NOP JLE + NOP success fn CALL at +0x6126311
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9a7848046a54...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[6] V06_skip_state3 | NO_CONNECTION+CRASHED | baseline + at State 3 check, set state=4 and skip
+SERVER: 
+
+[7] V07_NOP_cert_receive | HANGING | baseline + NOP JLE + NOP cert_receive CALL at +0x61262E8
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9b0e28fdf90f...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[8] V08_NOP_cert_process | HANGING | baseline + NOP JLE + NOP cert_process CALL at +0x61262F0
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9b5e24206974...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[9] V09_NOP_both_calls | HANGING | baseline + NOP JLE + NOP both cert calls
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9bae6a25e289...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[10] V10_cert_process_ret1_NOP_JLE | HANGING | baseline + cert_process ret 1 + NOP JLE
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9bfd6a0e4b72...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[11] V11_baseline_only | HANGING | baseline only (3x bAllowAnyCert + NOP error CALL)
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9c4d500cd0cb...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+
+[12] V12_everything | HANGING | baseline + NOP JLE + NOP finalize + NOP success fn + NOP cert_finalize error
+SERVER: or-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da9c9db58a36de...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
