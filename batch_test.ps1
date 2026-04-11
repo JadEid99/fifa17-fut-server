@@ -1,4 +1,4 @@
-# FIFA 17 SSL Bypass - Batch v5: Deep dive into cert_process internals
+# FIFA 17 SSL Bypass - Batch v6: Target bAllowAnyCert in cert_receive
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -8,7 +8,7 @@ $resultsFile = "$repoRoot\batch-results.log"
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KS3 {
+public class KS4 {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -16,128 +16,83 @@ public class KS3 {
     public static void Q() { keybd_event(0x51,0x10,0,UIntPtr.Zero); System.Threading.Thread.Sleep(50); keybd_event(0x51,0x10,KUP,UIntPtr.Zero); }
 }
 "@
-function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS3]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
-function FEnter { if(Focus){[KS3]::Enter()} }
-function FQ { if(Focus){[KS3]::Q()} }
+function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KS4]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
+function FEnter { if(Focus){[KS4]::Enter()} }
+function FQ { if(Focus){[KS4]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 function Launch-Game { Start-Process $gameExe; for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}; Start-Sleep 10;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 10;FEnter;Start-Sleep 2 }
 function Run-Frida($code) { $tmp="$repoRoot\tf.js"; Set-Content $tmp "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}" -Encoding UTF8; $p=Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"; $p|Wait-Process -Timeout 10 -EA SilentlyContinue; if(!$p.HasExited){$p|Stop-Process -Force}; $o=(Get-Content "$repoRoot\fo.txt" -Raw -EA SilentlyContinue); Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -EA SilentlyContinue; return $o }
 
-
-# cert_process at +0x6127020 calls:
-#   +0x612E810 (at offset +0x42 inside cert_process)
-#   +0x612A560 (at offset +0x51 inside cert_process)
-# We need to dump MORE of cert_process to find all internal calls,
-# especially the cert verification call.
+# From cert_receive dump at +0x6127B40:
+# +0x6127C20: 75 53           JNE +0x53 (skip error if bAllowAnyCert != 0)
+# +0x6127C22: 80 BB 20 0C 00 00 00  CMP BYTE [rbx+0xC20], 0
+# Wait - let me re-read. The dump shows:
+# +6127C20: 75 53 80 bb 20 0c 00 00 00 75 18 48 8b 0b e8 3d 6b 00 00 66 c7 83 1f 0c 00 00 00 01 c6 83 21 0c
+# So:
+# +7C20: 75 53 = JNE +0x53 (some earlier condition)
+# +7C22: 80 BB 20 0C 00 00 00 = CMP BYTE [rbx+0xC20], 0
+# +7C29: 75 18 = JNE +0x18 (if bAllowAnyCert != 0, skip error)
+# +7C2B: 48 8B 0B = MOV rcx, [rbx]
+# +7C2E: E8 3D 6B 00 00 = CALL +0x612E770 (error handler!)
+# +7C33: 66 C7 83 1F 0C 00 00 00 01 = MOV WORD [rbx+0xC1F], 0x0100 (set error state)
+# +7C3C: C6 83 21 0C ... = MOV BYTE [rbx+0xC21], ...
+#
+# So the bAllowAnyCert check is:
+#   CMP BYTE [rbx+0xC20], 0
+#   JNE skip_error  (if bAllowAnyCert != 0, skip)
+#   CALL error_handler
+#   set error state
+#
+# To bypass: either NOP the CMP+JNE or change JNE to JMP
 
 $patches = @(
-    # === DIAGNOSTIC: Dump 512 bytes of cert_process ===
-    @{ name="DUMP_cert_process_512"; desc="Dump 512 bytes of cert_process"
-       patch=@'
-var a=b.add(0x6127020);
-for(var r=0;r<16;r++){
-  var h="";var o=r*32;
-  for(var i=0;i<32;i++) h+=("0"+a.add(o+i).readU8().toString(16)).slice(-2)+" ";
-  send("CP +"+(0x6127020+o).toString(16)+": "+h);
-}
-for(var i=0;i<512;i++){
-  if(a.add(i).readU8()===0xE8){
-    var d=a.add(i+1).readS32();
-    send("CALL +"+(0x6127020+i).toString(16)+" -> +"+(0x6127020+i+5+d).toString(16));
-  }
-}
-'@
-       revert='' },
+    # === A: Patch bAllowAnyCert check in cert_receive ===
+    @{ name="A1_JNE_to_JMP_7C29"; desc="Change JNE to JMP at +0x6127C29 (always skip cert error)"
+       patch='Memory.protect(b.add(0x6127C29),1,"rwx");b.add(0x6127C29).writeU8(0xEB);'
+       revert='Memory.protect(b.add(0x6127C29),1,"rwx");b.add(0x6127C29).writeU8(0x75);' },
+    @{ name="A2_NOP_CMP_JNE_7C22"; desc="NOP the CMP+JNE at +0x6127C22 (9 bytes)"
+       patch='Memory.protect(b.add(0x6127C22),9,"rwx");b.add(0x6127C22).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C22),9,"rwx");b.add(0x6127C22).writeByteArray([0x80,0xBB,0x20,0x0C,0x00,0x00,0x00,0x75,0x18]);' },
+    @{ name="A3_NOP_error_call_7C2E"; desc="NOP the error handler CALL at +0x6127C2E"
+       patch='Memory.protect(b.add(0x6127C2E),5,"rwx");b.add(0x6127C2E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C2E),5,"rwx");b.add(0x6127C2E).writeByteArray([0xE8,0x3D,0x6B,0x00,0x00]);' },
+    @{ name="A4_NOP_error_call_AND_state_7C2E"; desc="NOP error CALL + error state writes at +0x6127C2E"
+       patch='Memory.protect(b.add(0x6127C2E),14,"rwx");b.add(0x6127C2E).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C2E),14,"rwx");b.add(0x6127C2E).writeByteArray([0xE8,0x3D,0x6B,0x00,0x00,0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01]);' },
 
-    # === DIAGNOSTIC: Dump cert_receive (+0x6127B40) ===
-    @{ name="DUMP_cert_receive_256"; desc="Dump 256 bytes of cert_receive"
-       patch=@'
-var a=b.add(0x6127B40);
-for(var r=0;r<8;r++){
-  var h="";var o=r*32;
-  for(var i=0;i<32;i++) h+=("0"+a.add(o+i).readU8().toString(16)).slice(-2)+" ";
-  send("CR +"+(0x6127B40+o).toString(16)+": "+h);
-}
-for(var i=0;i<256;i++){
-  if(a.add(i).readU8()===0xE8){
-    var d=a.add(i+1).readS32();
-    send("CALL +"+(0x6127B40+i).toString(16)+" -> +"+(0x6127B40+i+5+d).toString(16));
-  }
-}
-'@
-       revert='' },
+    # === B: Same patches + also NOP the State 5 error CALL ===
+    @{ name="B1_JMP_7C29_AND_NOP_644E"; desc="JMP at +7C29 AND NOP error CALL at +644E"
+       patch='Memory.protect(b.add(0x6127C29),1,"rwx");b.add(0x6127C29).writeU8(0xEB);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C29),1,"rwx");b.add(0x6127C29).writeU8(0x75);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+    @{ name="B2_NOP_CMP_7C22_AND_NOP_644E"; desc="NOP CMP+JNE at +7C22 AND NOP error CALL at +644E"
+       patch='Memory.protect(b.add(0x6127C22),9,"rwx");b.add(0x6127C22).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C22),9,"rwx");b.add(0x6127C22).writeByteArray([0x80,0xBB,0x20,0x0C,0x00,0x00,0x00,0x75,0x18]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+    @{ name="B3_NOP_all_error_calls"; desc="NOP error CALL at +7C2E AND +644E AND state writes"
+       patch='Memory.protect(b.add(0x6127C2E),14,"rwx");b.add(0x6127C2E).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x6126453),14,"rwx");b.add(0x6126453).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C2E),14,"rwx");b.add(0x6127C2E).writeByteArray([0xE8,0x3D,0x6B,0x00,0x00,0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);Memory.protect(b.add(0x6126453),14,"rwx");b.add(0x6126453).writeByteArray([0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01,0x40,0x88,0xBB,0x21,0x0C]);' },
 
-    # === DIAGNOSTIC: Dump cert_finalize (+0x61279F0) ===
-    @{ name="DUMP_cert_finalize_256"; desc="Dump 256 bytes of cert_finalize"
-       patch=@'
-var a=b.add(0x61279F0);
-for(var r=0;r<8;r++){
-  var h="";var o=r*32;
-  for(var i=0;i<32;i++) h+=("0"+a.add(o+i).readU8().toString(16)).slice(-2)+" ";
-  send("CF +"+(0x61279F0+o).toString(16)+": "+h);
-}
-for(var i=0;i<256;i++){
-  if(a.add(i).readU8()===0xE8){
-    var d=a.add(i+1).readS32();
-    send("CALL +"+(0x61279F0+i).toString(16)+" -> +"+(0x61279F0+i+5+d).toString(16));
-  }
-}
-'@
-       revert='' },
+    # === C: Also patch the first JNE at +7C20 ===
+    @{ name="C1_NOP_both_JNE_7C20_7C29"; desc="NOP JNE at +7C20 AND +7C29"
+       patch='Memory.protect(b.add(0x6127C20),2,"rwx");b.add(0x6127C20).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x6127C29),2,"rwx");b.add(0x6127C29).writeByteArray([0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C20),2,"rwx");b.add(0x6127C20).writeByteArray([0x75,0x53]);Memory.protect(b.add(0x6127C29),2,"rwx");b.add(0x6127C29).writeByteArray([0x75,0x18]);' },
+    @{ name="C2_JMP_7C20_AND_NOP_644E"; desc="JMP at +7C20 AND NOP error CALL at +644E"
+       patch='Memory.protect(b.add(0x6127C20),1,"rwx");b.add(0x6127C20).writeU8(0xEB);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127C20),1,"rwx");b.add(0x6127C20).writeU8(0x75);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
 
-    # === DIAGNOSTIC: Dump function at +0x612E810 (called from cert_process) ===
-    @{ name="DUMP_fn_E810_256"; desc="Dump 256 bytes of +0x612E810"
-       patch=@'
-var a=b.add(0x612E810);
-for(var r=0;r<8;r++){
-  var h="";var o=r*32;
-  for(var i=0;i<32;i++) h+=("0"+a.add(o+i).readU8().toString(16)).slice(-2)+" ";
-  send("E810 +"+(0x612E810+o).toString(16)+": "+h);
-}
-for(var i=0;i<256;i++){
-  if(a.add(i).readU8()===0xE8){
-    var d=a.add(i+1).readS32();
-    send("CALL +"+(0x612E810+i).toString(16)+" -> +"+(0x612E810+i+5+d).toString(16));
-  }
-}
-'@
-       revert='' },
-
-    # === PATCHES: Target internal calls within cert_process ===
-    # cert_process calls E810 at +0x6127062 and A560 at +0x6127071
-    @{ name="P_NOP_E810_call"; desc="NOP CALL to E810 inside cert_process"
-       patch='Memory.protect(b.add(0x6127062),5,"rwx");b.add(0x6127062).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
-       revert='Memory.protect(b.add(0x6127062),5,"rwx");b.add(0x6127062).writeByteArray([0xE8,0xA9,0x77,0x00,0x00]);' },
-    @{ name="P_NOP_A560_call"; desc="NOP CALL to A560 inside cert_process"
-       patch='Memory.protect(b.add(0x6127071),5,"rwx");b.add(0x6127071).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
-       revert='Memory.protect(b.add(0x6127071),5,"rwx");b.add(0x6127071).writeByteArray([0xE8,0xEA,0x34,0x00,0x00]);' },
-    @{ name="P_E810_ret0"; desc="Make +0x612E810 return 0"
-       patch='Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x31,0xC0,0xC3]);'
-       revert='Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x48,0x89,0x5C]);' },
-    @{ name="P_A560_ret0"; desc="Make +0x612A560 return 0"
-       patch='Memory.protect(b.add(0x612A560),3,"rwx");b.add(0x612A560).writeByteArray([0x31,0xC0,0xC3]);'
-       revert='Memory.protect(b.add(0x612A560),3,"rwx");b.add(0x612A560).writeByteArray([0x48,0x89,0x5C]);' },
-    @{ name="P_A560_ret1"; desc="Make +0x612A560 return 1"
-       patch='Memory.protect(b.add(0x612A560),6,"rwx");b.add(0x612A560).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0xC3]);'
-       revert='Memory.protect(b.add(0x612A560),6,"rwx");b.add(0x612A560).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
-
-    # === COMBO: NOP JLE in State3 + NOP error CALL in State5 + various ===
-    @{ name="C_NOP_JLE_NOP644E_E810ret0"; desc="NOP JLE + NOP error CALL + E810 ret 0"
-       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x31,0xC0,0xC3]);'
-       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x48,0x89,0x5C]);' },
-    @{ name="C_NOP_JLE_NOP644E_A560ret0"; desc="NOP JLE + NOP error CALL + A560 ret 0"
-       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612A560),3,"rwx");b.add(0x612A560).writeByteArray([0x31,0xC0,0xC3]);'
-       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);Memory.protect(b.add(0x612A560),3,"rwx");b.add(0x612A560).writeByteArray([0x48,0x89,0x5C]);' },
-    @{ name="C_NOP_JLE_NOP644E_A560ret1"; desc="NOP JLE + NOP error CALL + A560 ret 1"
-       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612A560),6,"rwx");b.add(0x612A560).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0xC3]);'
-       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);Memory.protect(b.add(0x612A560),6,"rwx");b.add(0x612A560).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' }
+    # === D: Patch cert_finalize error handler call ===
+    # cert_finalize calls +0x612E770 at +0x6127A1B
+    @{ name="D1_NOP_finalize_error_7A1B"; desc="NOP error CALL in cert_finalize at +7A1B"
+       patch='Memory.protect(b.add(0x6127A1B),5,"rwx");b.add(0x6127A1B).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127A1B),5,"rwx");b.add(0x6127A1B).writeByteArray([0xE8,0x50,0x6D,0x00,0x00]);' },
+    @{ name="D2_NOP_finalize_AND_receive_errors"; desc="NOP error CALLs in both cert_finalize and cert_receive"
+       patch='Memory.protect(b.add(0x6127A1B),5,"rwx");b.add(0x6127A1B).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x6127C2E),5,"rwx");b.add(0x6127C2E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127A1B),5,"rwx");b.add(0x6127A1B).writeByteArray([0xE8,0x50,0x6D,0x00,0x00]);Memory.protect(b.add(0x6127C2E),5,"rwx");b.add(0x6127C2E).writeByteArray([0xE8,0x3D,0x6B,0x00,0x00]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' }
 )
-
 
 # Main loop
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH v5 ($timestamp) === $($patches.Count) patches`n" -Encoding UTF8
-Write-Host "=== BATCH v5 - $($patches.Count) patches ===" -ForegroundColor Cyan
+Set-Content $resultsFile "=== BATCH v6 ($timestamp) === $($patches.Count) patches`n" -Encoding UTF8
+Write-Host "=== BATCH v6 - $($patches.Count) patches ===" -ForegroundColor Cyan
 Kill-All
 $sj = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
 Start-Sleep 2; Launch-Game; Write-Host "Ready." -ForegroundColor Green
@@ -153,7 +108,7 @@ foreach($p in $patches){
         Start-Sleep 2;Launch-Game
     }
     Receive-Job $sj 2>&1|Out-Null
-    $fo=Run-Frida $p.patch; Start-Sleep 1; FQ; Start-Sleep 12
+    $fo=Run-Frida $p.patch; Start-Sleep 1; FQ; Start-Sleep 15
     $so=(Receive-Job $sj 2>&1|Out-String).Trim()
     $r="UNKNOWN"
     if($so -match "Phase=.*received"){$r="RECEIVED_DATA"}
@@ -168,12 +123,10 @@ foreach($p in $patches){
     $color=switch -Regex($r){"RECEIVED|TLS_|DECRYPTED"{"Green"}"HANGING"{"Yellow"}default{"Red"}}
     Write-Host "  -> $r" -ForegroundColor $color
     $ss=if($so.Length -gt 300){$so.Substring($so.Length-300)}else{$so}
-    # For diagnostic dumps, include frida output
-    $ff=if($fo.Length -gt 500){$fo.Substring($fo.Length-500)}else{$fo}
-    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nFRIDA: $ff`nSERVER: $ss`n" -Encoding UTF8
+    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nSERVER: $ss`n" -Encoding UTF8
     if($p.revert){Run-Frida $p.revert|Out-Null;Start-Sleep 1}
     FEnter;Start-Sleep 2
 }
 Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
 Write-Host "`n=== DONE ===" -ForegroundColor Green
-git add batch-results.log;git commit -m "Batch v5 $timestamp";git push 2>&1
+git add batch-results.log;git commit -m "Batch v6 $timestamp";git push 2>&1
