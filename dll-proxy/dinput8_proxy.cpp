@@ -137,8 +137,11 @@ static int FindAndReplaceCAModulus() {
                     
                     Log("CA CERT NODE: OTG3 at %p", base + j);
                     
-                    // Dump 512 bytes after OTG3 to find the modulus (only first time)
-                    if (!g_dumpDone) {
+                    // Dump 512 bytes after OTG3 to find the modulus
+                    // Dump first 3 unique instances
+                    static int dumpCount = 0;
+                    if (dumpCount < 4) {
+                        dumpCount++;
                         for (int doff = 0; doff < 512; doff += 32) {
                             if (j + doff + 32 >= size) break;
                             char dhex[128]; int dhlen = 0;
@@ -149,7 +152,6 @@ static int FindAndReplaceCAModulus() {
                             }
                             Log("  +%03X: %s %s", doff, dhex, dasc);
                         }
-                        g_dumpDone = true;
                     }
                     
                     // Scan forward from OTG3 for the RSA modulus.
