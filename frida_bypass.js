@@ -1,35 +1,28 @@
-// Search the ENTIRE exe for CMP [reg+0x8C], value patterns
-// to find ProtoSSLSend/Recv which check ST_UNSECURE
-console.log("[*] Searching entire exe for iState checks...");
-var b = Process.getModuleByName("FIFA17.exe").base;
-var size = Process.getModuleByName("FIFA17.exe").size;
+console.log("[*] Fast scan for iState checks");
+var m = Process.getModuleByName("FIFA17.exe");
 
-// Search in 16MB chunks
-var found = 0;
+// Search for: 83 BB 8C 00 00 00 XX (CMP DWORD [rbx+0x8C], XX)
+// Use Memory.scanSync with wildcard for the value byte
+// Scan in chunks since the exe is huge
+
 var results = {};
-for (var chunk = 0; chunk < size && found < 100; chunk += 0x1000000) {
-    var scanSize = Math.min(0x1000000, size - chunk);
-    var start = b.add(chunk);
+var chunkSize = 16 * 1024 * 1024;
+for (var off = 0; off < m.size; off += chunkSize) {
+    var sz = Math.min(chunkSize, m.size - off);
     try {
-        for (var i = 0; i < scanSize - 7 && found < 100; i++) {
-            // 83 BB 8C 00 00 00 XX = CMP DWORD [rbx+0x8C], XX
-            if (start.add(i).readU8() === 0x83 && start.add(i+1).readU8() === 0xBB &&
-                start.add(i+2).readU8() === 0x8C && start.add(i+3).readU8() === 0x00 &&
-                start.add(i+4).readU8() === 0x00 && start.add(i+5).readU8() === 0x00) {
-                var val = start.add(i+6).readU8();
-                var addr = chunk + i;
-                if (!results[val]) results[val] = [];
-                results[val].push("0x" + addr.toString(16));
-                found++;
-            }
-        }
+        // Pattern: 83 BB 8C 00 00 00 ?? (7 bytes, last is wildcard)
+        var matches = Memory.scanSync(m.base.add(off), sz, "83 BB 8C 00 00 00");
+        matches.forEach(function(match) {
+            var val = match.address.add(6).readU8();
+            var addr = match.address.sub(m.base);
+            if (!results[val]) results[val] = [];
+            results[val].push(addr.toString());
+        });
     } catch(e) {}
 }
 
-// Print grouped by value
-var keys = Object.keys(results).sort(function(a,b){return a-b});
-for (var k = 0; k < keys.length; k++) {
-    var val = keys[k];
-    send("iState==" + val + " checked at: " + results[val].join(", "));
-}
-send("Total: " + found + " checks found");
+var keys = Object.keys(results).sort(function(a,b){return parseInt(a)-parseInt(b)});
+keys.forEach(function(val) {
+    send("iState==" + val + " (" + results[val].length + "x): " + results[val].slice(0,5).join(", "));
+});
+send("Done");
