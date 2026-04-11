@@ -322,16 +322,12 @@ foreach ($patch in $patches) {
     Write-Host "  RESULT: $result" -ForegroundColor $(if ($result -match "SUCCESS") { "Green" } elseif ($result -match "HANGING") { "Yellow" } else { "Red" })
     
     # Log result
-    $entry = @"
-
---- TEST $testNum: $($patch.name) ---
-DESC: $($patch.desc)
-RESULT: $result
-FRIDA: $fridaOutput
-SERVER (last 500 chars): $($serverOutput.Substring([Math]::Max(0, $serverOutput.Length - 500)))
----
-
-"@
+    $entry = "=== TEST ${testNum}: $($patch.name) ===`n"
+    $entry += "DESC: $($patch.desc)`n"
+    $entry += "RESULT: $result`n"
+    $entry += "FRIDA: $fridaOutput`n"
+    $entry += "SERVER: $($serverOutput.Substring([Math]::Max(0, $serverOutput.Length - 500)))`n"
+    $entry += "===`n"
     Add-Content $resultsFile $entry -Encoding UTF8
     
     # Kill game
