@@ -212,77 +212,72 @@ static void PatchSSL() {
     Log("Waiting for Denuvo decryption...");
     Sleep(5000);
     
-    // === Strategy 1: Find and replace DER certs in memory ===
-    // Search for any DER certificate (0x30 0x82) that contains the
-    // RSA public key OID (2a 86 48 86 f7 0d 01 01 01) and is
-    // between 400-1200 bytes (typical CA cert size).
-    
-    Log("Scanning for DER certificates in game memory...");
-    int certsFound = 0;
-    int certsReplaced = 0;
-    
-    for (SIZE_T i = 0; i < moduleSize - 10; i++) {
-        if (baseAddr[i] == 0x30 && baseAddr[i+1] == 0x82) {
-            uint16_t outerLen = (baseAddr[i+2] << 8) | baseAddr[i+3];
-            if (outerLen < 300 || outerLen > 1200) continue;
-            if (i + 4 >= moduleSize) continue;
-            if (baseAddr[i+4] != 0x30 || baseAddr[i+5] != 0x82) continue;
-            
-            uint16_t innerLen = (baseAddr[i+6] << 8) | baseAddr[i+7];
-            if (innerLen >= outerLen || innerLen < 100) continue;
-            if (baseAddr[i+8] != 0xA0 && baseAddr[i+8] != 0x02) continue;
-            
-            SIZE_T certSize = outerLen + 4;
-            if (i + certSize > moduleSize) continue;
-            
-            // Check for RSA OID
-            BYTE rsaOid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
-            BYTE* oidMatch = FindPattern(baseAddr + i, certSize, rsaOid, 8);
-            if (!oidMatch) continue;
-            
-            // This is a DER certificate with RSA!
-            certsFound++;
-            
-            // Check if it's a CA cert (has BasicConstraints CA:TRUE)
-            // or check for "Certificate Authority" in the cert
-            BYTE caTrue[] = {0x30, 0x03, 0x01, 0x01, 0xFF}; // BasicConstraints CA:TRUE
-            BYTE* caMatch = FindPattern(baseAddr + i, certSize, caTrue, 5);
-            
-            // Also check for the OTG3 issuer pattern
-            BYTE otg3[] = {0x4F, 0x54, 0x47, 0x33}; // "OTG3"
-            BYTE* otg3Match = FindPattern(baseAddr + i, certSize, otg3, 4);
-            
-            Log("  Cert #%d at +0x%llX size=%llu CA=%s OTG3=%s",
-                certsFound, (unsigned long long)i, (unsigned long long)certSize,
-                caMatch ? "YES" : "no", otg3Match ? "YES" : "no");
-            
-            // If this cert is a CA cert or has OTG3, try to replace it
-            if (caMatch || otg3Match) {
-                if (certSize >= g_ourCACertLen) {
-                    Log("  -> REPLACING with our CA cert (%llu bytes into %llu bytes slot)",
-                        (unsigned long long)g_ourCACertLen, (unsigned long long)certSize);
-                    DWORD oldProtect;
-                    if (VirtualProtect(baseAddr + i, certSize, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        memcpy(baseAddr + i, g_ourCACert, g_ourCACertLen);
-                        // Zero-fill the remaining space
-                        if (certSize > g_ourCACertLen) {
-                            memset(baseAddr + i + g_ourCACertLen, 0, certSize - g_ourCACertLen);
+    // === Find the "installed CA cert" string to locate SetCACert function ===
+    // This string is in the .srdata section (not encrypted)
+    const char* searchStr = "installed CA cert";
+    BYTE* strAddr = FindPattern(baseAddr, moduleSize, (const BYTE*)searchStr, strlen(searchStr));
+    if (strAddr) {
+        Log("Found 'installed CA cert' string at +0x%llX", (unsigned long long)(strAddr - baseAddr));
+        
+        // Now search for code that references this string address
+        // In x64, LEA uses RIP-relative: 48 8D xx [offset32]
+        // The offset = strAddr - (leaAddr + 7)
+        Log("Searching for code references to this string...");
+        for (SIZE_T i = 0; i < moduleSize - 7; i++) {
+            // Look for LEA with RIP-relative addressing
+            if ((baseAddr[i] == 0x48 || baseAddr[i] == 0x4C) && baseAddr[i+1] == 0x8D) {
+                BYTE modrm = baseAddr[i+2];
+                if ((modrm & 0xC7) == 0x05 || (modrm & 0xC7) == 0x0D || 
+                    (modrm & 0xC7) == 0x15 || (modrm & 0xC7) == 0x1D ||
+                    (modrm & 0xC7) == 0x25 || (modrm & 0xC7) == 0x2D ||
+                    (modrm & 0xC7) == 0x35 || (modrm & 0xC7) == 0x3D) {
+                    int32_t offset = *(int32_t*)(baseAddr + i + 3);
+                    BYTE* target = baseAddr + i + 7 + offset;
+                    if (target == strAddr) {
+                        Log("  LEA reference at +0x%llX", (unsigned long long)i);
+                        // Dump surrounding code
+                        char hex[512] = {0};
+                        SIZE_T start = (i > 64) ? i - 64 : 0;
+                        for (SIZE_T j = 0; j < 128 && start + j < moduleSize; j++) {
+                            sprintf(hex + j * 3, "%02X ", baseAddr[start + j]);
                         }
-                        VirtualProtect(baseAddr + i, certSize, oldProtect, &oldProtect);
-                        certsReplaced++;
-                        Log("  -> REPLACED!");
-                    } else {
-                        Log("  -> VirtualProtect failed: %d", GetLastError());
+                        Log("  Code context: %s", hex);
                     }
-                } else {
-                    Log("  -> Slot too small (%llu < %llu), can't replace",
-                        (unsigned long long)certSize, (unsigned long long)g_ourCACertLen);
                 }
             }
         }
+    } else {
+        Log("'installed CA cert' string NOT FOUND in module");
     }
     
-    Log("Found %d DER certs, replaced %d", certsFound, certsReplaced);
+    // === Also scan for DER certs with relaxed criteria ===
+    Log("Scanning for DER certificates (relaxed)...");
+    int certsFound = 0;
+    
+    for (SIZE_T i = 0; i < moduleSize - 10; i++) {
+        if (baseAddr[i] != 0x30 || baseAddr[i+1] != 0x82) continue;
+        uint16_t outerLen = (baseAddr[i+2] << 8) | baseAddr[i+3];
+        if (outerLen < 200 || outerLen > 2000) continue;
+        SIZE_T certSize = outerLen + 4;
+        if (i + certSize > moduleSize) continue;
+        if (baseAddr[i+4] != 0x30) continue;
+        
+        BYTE rsaOid[] = {0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01};
+        if (!FindPattern(baseAddr + i, certSize, rsaOid, 8)) continue;
+        
+        certsFound++;
+        // Extract some readable text
+        char txt[128] = {0};
+        int tp = 0;
+        for (SIZE_T j = 0; j < certSize && tp < 120; j++) {
+            BYTE b = baseAddr[i+j];
+            if (b >= 0x20 && b < 0x7F) txt[tp++] = (char)b;
+            else if (tp > 0 && txt[tp-1] != ' ') txt[tp++] = ' ';
+        }
+        Log("  Cert #%d at +0x%llX size=%llu: %.100s", certsFound, (unsigned long long)i, (unsigned long long)certSize, txt);
+        if (certsFound >= 20) break;
+    }
+    Log("Found %d DER certs total", certsFound);
     
     // === Strategy 2: Also patch the error handler (keep from previous approach) ===
     BYTE errorPattern[] = { 

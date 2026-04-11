@@ -15,9 +15,10 @@ Write-Host "`n[1/6] Pulling latest changes..." -ForegroundColor Yellow
 git pull 2>&1 | Tee-Object -Variable gitOutput
 Add-Content $resultsFile "--- GIT PULL ---`n$gitOutput`n"
 
-# Step 2: Kill FIFA 17 if running
-Write-Host "`n[2/6] Stopping FIFA 17..." -ForegroundColor Yellow
+# Step 2: Kill FIFA 17 and any existing server
+Write-Host "`n[2/6] Stopping FIFA 17 and old servers..." -ForegroundColor Yellow
 Stop-Process -Name FIFA17 -Force -ErrorAction SilentlyContinue
+Stop-Process -Name node -Force -ErrorAction SilentlyContinue
 Start-Sleep 2
 
 # Step 3: Build DLL
