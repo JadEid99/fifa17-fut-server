@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 13:03:47) ===
+﻿=== TEST RESULTS (2026-04-11 13:06:41) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:64910
+[Redirector-Raw] Client connected: 127.0.0.1:64939
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 2a 2a 4f  ....o...k..i.**O
-  0010: 3b 48 bc ca 8c b9 3d 05 c9 18 a4 49 ef f3 49 cb  ;H....=....I..I.
-  0020: 59 77 49 26 70 c4 70 81 b4 c6 44 00 00 10 00 9d  YwI&p.p...D.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 2b 2c 50  ....o...k..i.+,P
+  0010: e7 cb e5 53 b5 eb 97 d6 9a c6 c7 c6 d4 26 80 0f  ...S.........&..
+  0020: 21 98 0c 93 be 6d 00 24 53 76 39 00 00 10 00 9d  !....m.$Sv9.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,20 +23,17 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da2a2a4f3b48bc...
+[SSL] ClientHello: version=0x303 random=69da2b2c50e7cbe5...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0035
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:64910
+[Redirector-Raw] Disconnected: 127.0.0.1:64939
 
 --- DLL LOG ---
-[13:01:37.520] === FIFA 17 SSL Bypass v9 (712-byte CA cert, fits in 764-byte slot) ===
-[13:01:37.520] PID: 57284, CA cert: 712 bytes
-[13:02:05.059] FOUND EA cert at 0000000027E14477 size=689
-[13:02:05.059] REPLACED at 0000000027E14477 (total: 1)
-[13:02:10.450] Loop 9 (27s): replaced 1 (total: 1)
+[13:06:01.508] === FIFA 17 SSL Bypass v10 (CA-only replacement, OTG count >= 2) ===
+[13:06:01.508] PID: 101296, CA cert: 712 bytes
 
 
 --- END ---
