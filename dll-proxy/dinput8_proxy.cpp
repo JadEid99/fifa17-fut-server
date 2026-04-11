@@ -199,57 +199,44 @@ static int WINAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
 }
 
 // ============================================================
-// IAT Hook - patch the import table to redirect connect()
+// Trampoline hook for connect()
+// We overwrite the first bytes of WS2_32!connect with a JMP to our hook.
 // ============================================================
 
-static void HookConnectIAT() {
-    HMODULE gameModule = GetModuleHandleA("FIFA17.exe");
-    if (!gameModule) { Log("Can't find FIFA17.exe"); return; }
+static BYTE g_connectOrigBytes[14]; // Save original bytes
+static BYTE* g_connectAddr = NULL;
+
+static void InstallConnectHook() {
+    HMODULE ws2 = GetModuleHandleA("WS2_32.dll");
+    if (!ws2) ws2 = LoadLibraryA("WS2_32.dll");
+    if (!ws2) { Log("Can't load WS2_32.dll"); return; }
     
-    BYTE* base = (BYTE*)gameModule;
-    IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
-    IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
-    IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + 
-        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
+    g_connectAddr = (BYTE*)GetProcAddress(ws2, "connect");
+    if (!g_connectAddr) { Log("Can't find connect()"); return; }
     
-    // Get the real connect function
-    g_realConnect = (connect_t)GetProcAddress(GetModuleHandleA("WS2_32.dll"), "connect");
-    if (!g_realConnect) {
-        g_realConnect = (connect_t)GetProcAddress(GetModuleHandleA("ws2_32.dll"), "connect");
-    }
-    if (!g_realConnect) { Log("Can't find connect()"); return; }
+    g_realConnect = (connect_t)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!g_realConnect) { Log("Can't alloc trampoline"); return; }
     
-    Log("Real connect at 0x%p", g_realConnect);
+    // Copy original bytes to trampoline
+    memcpy(g_connectOrigBytes, g_connectAddr, 14);
+    memcpy((BYTE*)g_realConnect, g_connectAddr, 14);
+    // Add JMP back to original function + 14
+    BYTE* tramp = (BYTE*)g_realConnect;
+    tramp[14] = 0xFF;
+    tramp[15] = 0x25;
+    *(uint32_t*)(tramp + 16) = 0; // RIP-relative
+    *(uint64_t*)(tramp + 20) = (uint64_t)(g_connectAddr + 14);
     
-    // Walk the import table looking for WS2_32.dll
-    for (; imports->Name; imports++) {
-        const char* dllName = (const char*)(base + imports->Name);
-        if (_stricmp(dllName, "WS2_32.dll") != 0 && _stricmp(dllName, "ws2_32.dll") != 0)
-            continue;
-        
-        Log("Found WS2_32.dll in IAT");
-        
-        IMAGE_THUNK_DATA* origThunk = (IMAGE_THUNK_DATA*)(base + imports->OriginalFirstThunk);
-        IMAGE_THUNK_DATA* thunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
-        
-        for (; origThunk->u1.AddressOfData; origThunk++, thunk++) {
-            if (origThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG64) continue;
-            
-            IMAGE_IMPORT_BY_NAME* import = (IMAGE_IMPORT_BY_NAME*)(base + origThunk->u1.AddressOfData);
-            if (strcmp(import->Name, "connect") == 0) {
-                Log("Found connect in IAT at 0x%p, hooking...", &thunk->u1.Function);
-                DWORD oldProtect;
-                VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect);
-                thunk->u1.Function = (ULONGLONG)HookedConnect;
-                VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
-                Log("connect() hooked!");
-                return;
-            }
-        }
-    }
+    // Overwrite original function with JMP to our hook
+    DWORD oldProtect;
+    VirtualProtect(g_connectAddr, 14, PAGE_EXECUTE_READWRITE, &oldProtect);
+    g_connectAddr[0] = 0xFF;
+    g_connectAddr[1] = 0x25;
+    *(uint32_t*)(g_connectAddr + 2) = 0; // RIP-relative
+    *(uint64_t*)(g_connectAddr + 6) = (uint64_t)HookedConnect;
+    VirtualProtect(g_connectAddr, 14, oldProtect, &oldProtect);
     
-    Log("connect not found in IAT - trying all modules...");
-    // If not in FIFA17.exe IAT, try other loaded modules
+    Log("connect() hooked via trampoline at 0x%p -> 0x%p", g_connectAddr, HookedConnect);
 }
 
 // ============================================================
@@ -257,9 +244,9 @@ static void HookConnectIAT() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass (connect hook + CA replacement) ===");
-    Sleep(1000); // Brief wait for WS2_32.dll to load
-    HookConnectIAT();
+    Log("=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===");
+    Sleep(1000);
+    InstallConnectHook();
     
     // Also do an initial scan
     Log("Initial CA cert scan...");
