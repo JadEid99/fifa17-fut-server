@@ -1,14 +1,12 @@
 /**
- * dinput8.dll Proxy - v17
+ * dinput8.dll Proxy - v18
  * 
- * v16 found server cert keys but not the CA cert key.
- * The CA cert struct doesn't use "OTG3 Certificate Authority" as CN
- * in the same padded format, or it's stored differently.
+ * v17: Only found server cert keys. CA cert struct doesn't have 0x0C prefix.
  * 
- * New approach: Search for the 0x80 0x00 0x00 0x00 key-size marker
- * followed by 128 bytes of high-entropy data (RSA modulus).
- * Filter out our known server cert modulus.
- * Log ALL candidates so we can identify the CA's key.
+ * New: Search near the KNOWN CA cert parsed fields (the padded "US",
+ * "California", "Redwood City" etc. that DON'T have "winter15" nearby).
+ * Dump a large region (4KB) after those fields to find the RSA key
+ * in whatever format it's stored.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -63,34 +61,13 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-// Our CA's RSA modulus (128 bytes)
-static const BYTE g_ourCAModulus[] = {
-    0xcc,0xee,0xf0,0xa2,0xbe,0x51,0x6f,0x51,0x8f,0x17,0xac,0xf9,0xba,0x7a,0x82,0x04,
-    0x72,0xce,0xa4,0x7e,0xa7,0x89,0xc8,0xc2,0xc9,0x71,0x05,0x4d,0xb9,0xf3,0xab,0x5b,
-    0xfc,0x00,0x5a,0x94,0x86,0x5f,0xff,0xb3,0x0d,0x6b,0xc8,0xdc,0x98,0x6d,0x72,0x24,
-    0xd5,0xd2,0xca,0xd2,0x9f,0xe2,0xa4,0x5f,0xa5,0xa7,0x56,0x73,0x75,0x5e,0xf2,0xca,
-    0x92,0x3d,0x06,0x95,0xd5,0xf5,0x2f,0x08,0xf4,0x1b,0x56,0xa1,0x0d,0x04,0xce,0x80,
-    0x93,0x70,0xaf,0xa7,0x64,0xf9,0x0c,0x38,0x40,0x81,0x07,0x9c,0xfd,0x16,0x71,0xc5,
-    0xd7,0x18,0x58,0x2f,0xb6,0x2b,0xc5,0xd4,0x6d,0x4b,0x89,0xf3,0xf5,0xd4,0x04,0x12,
-    0x50,0x8c,0x50,0xb5,0x5f,0x5c,0x50,0x69,0x39,0x1c,0x5a,0x3e,0xa3,0xa2,0x7e,0x5d
-};
+static const BYTE g_otgPadded[] = "Online Technology Group";
+static const SIZE_T g_otgLen = 23;
 
-// Our server cert's modulus (first 16 bytes for identification)
-static const BYTE g_serverModStart[] = {
-    0xAE,0x09,0x93,0x5A,0x26,0x6D,0x20,0x34,0xCB,0xC3,0x7B,0x1B,0x94,0x4E,0xE0,0x6C
-};
-
-// Known server cert modulus from v16 logs (first 16 bytes)
-static const BYTE g_serverModV16[] = {
-    0x13,0x8B,0xFC,0xAE,0xB6,0xB2,0x75,0xEB,0x45,0xF6,0x83,0x1C,0x43,0x8D,0x37,0x3E
-};
-
-// Search for "Electronic Arts" in padded format (part of parsed cert struct)
-// then look for the 0x80 key size marker and RSA modulus nearby
-static void FindAllRSAKeys() {
-    static const char eaStr[] = "Electronic Arts";
-    static const SIZE_T eaLen = 15;
-    
+// Find "Online Technology Group" in padded format (null after),
+// WITHOUT "winter15" nearby (= CA cert, not server cert).
+// Then dump 4KB after it to find the RSA key.
+static void DumpCACertRegion() {
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
     int found = 0;
@@ -104,91 +81,53 @@ static void FindAllRSAKeys() {
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0; j + eaLen + 1 < size; j++) {
-                    if (base[j] != 'E' || memcmp(base + j, eaStr, eaLen) != 0) continue;
-                    // Must be padded format (null after string)
-                    if (j + eaLen >= size || base[j + eaLen] != ',') continue; // "Electronic Arts, Inc."
-                    // Check for null padding after the full string
-                    SIZE_T strEnd = j;
-                    while (strEnd < size && base[strEnd] != 0) strEnd++;
-                    if (strEnd - j > 40) continue; // too long
-                    if (strEnd + 1 >= size || base[strEnd + 1] != 0) continue; // not padded
+                for (SIZE_T j = 0; j + g_otgLen + 1 < size; j++) {
+                    if (base[j] != 'O' || memcmp(base + j, g_otgPadded, g_otgLen) != 0) continue;
+                    if (base[j + g_otgLen] != 0x00) continue; // padded format
+                    if (j + g_otgLen + 1 < size && base[j + g_otgLen + 1] != 0x00) continue;
                     
-                    // Found a padded "Electronic Arts" field. Search for key size marker nearby.
-                    // The key could be 0x100 to 0x600 bytes after this field
-                    for (int off = 0x80; off < 0x600; off += 4) {
-                        if (j + off + 4 + 128 >= size) break;
-                        BYTE* p = base + j + off;
-                        
-                        // Look for key size = 128 (0x80) as uint32 LE
-                        if (p[0] != 0x80 || p[1] != 0x00 || p[2] != 0x00 || p[3] != 0x00) continue;
-                        
-                        // Also check: 4 bytes before should be 0x0C 0x00 0x00 0x00 (type=12?)
-                        // From v15: the pattern was 0C 00 00 00 80 00 00 00 <modulus>
-                        if (off >= 4) {
-                            BYTE* pp = p - 4;
-                            if (pp[0] != 0x0C || pp[1] != 0x00 || pp[2] != 0x00 || pp[3] != 0x00) continue;
+                    // Check NO "winter15" within 2KB
+                    bool hasWinter = false;
+                    for (SIZE_T scan = (j > 0x800 ? j - 0x800 : 0); scan < j + 0x800 && scan + 8 < size; scan++) {
+                        if (memcmp(base + scan, "winter15", 8) == 0) { hasWinter = true; break; }
+                    }
+                    if (hasWinter) continue; // skip server cert structs
+                    
+                    found++;
+                    Log("=== CA CERT STRUCT #%d: OTG at %p ===", found, base + j);
+                    
+                    // Dump 2KB after OTG to find the key
+                    SIZE_T dumpLen = (j + 2048 <= size) ? 2048 : (size - j);
+                    for (SIZE_T i = 0; i < dumpLen; i += 32) {
+                        char hex[128] = {0};
+                        char ascii[40] = {0};
+                        int hlen = 0;
+                        SIZE_T lineLen = (i + 32 <= dumpLen) ? 32 : (dumpLen - i);
+                        for (SIZE_T k = 0; k < lineLen; k++) {
+                            hlen += sprintf(hex + hlen, "%02X ", base[j + i + k]);
+                            ascii[k] = (base[j+i+k] >= 32 && base[j+i+k] < 127) ? (char)base[j+i+k] : '.';
                         }
-                        
-                        BYTE* modulus = p + 4;
-                        
-                        // Check entropy - at least 12 of first 16 bytes should be non-zero
-                        int nonZero = 0;
-                        for (int k = 0; k < 16; k++) if (modulus[k] != 0) nonZero++;
-                        if (nonZero < 12) continue;
-                        
-                        found++;
-                        
-                        // Identify what cert this belongs to
-                        bool isServerKey = (memcmp(modulus, g_serverModV16, 16) == 0);
-                        bool isOurCA = (memcmp(modulus, g_ourCAModulus, 16) == 0);
-                        
-                        // Check for "winter15" nearby (server cert indicator)
-                        bool hasWinter = false;
-                        for (int scan = -0x400; scan < 0x400 && !hasWinter; scan += 32) {
-                            SIZE_T pos = j + scan;
-                            if (pos < size - 8 && memcmp(base + pos, "winter15", 8) == 0) hasWinter = true;
-                        }
-                        
-                        // Check for "OTG3 Cert" nearby (CA cert indicator)
-                        bool hasOTG3 = false;
-                        for (int scan = -0x400; scan < 0x400 && !hasOTG3; scan += 32) {
-                            SIZE_T pos = j + scan;
-                            if (pos < size - 10 && memcmp(base + pos, "OTG3 Cert", 9) == 0) hasOTG3 = true;
-                        }
-                        
-                        char hex[64]; int hlen = 0;
-                        for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", modulus[h]);
-                        
-                        Log("RSA KEY #%d at %p (EA str at %p, off=+0x%X) %s%s%s",
-                            found, modulus, base + j, off + 4,
-                            isServerKey ? "[SERVER]" : "",
-                            isOurCA ? "[OUR_CA]" : "",
-                            hasWinter ? " near:winter15" : "");
-                        Log("  Modulus: %s", hex);
-                        Log("  hasOTG3=%d hasWinter=%d", hasOTG3, hasWinter);
+                        Log("  %04llX: %-96s %s", (unsigned long long)i, hex, ascii);
                     }
                     
-                    j = strEnd; // skip past this string
+                    if (found >= 2) break; // only dump first 2
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
+        if (found >= 2) break;
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
     }
-    Log("Total RSA key candidates found: %d", found);
+    Log("Found %d CA-only cert structs (no winter15 nearby)", found);
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v17 (find ALL RSA keys near EA cert structs) ===");
+        Log("=== FIFA 17 v18 (dump CA cert struct region to find RSA key) ===");
         Log("PID: %lu", GetCurrentProcessId());
-        
-        // Wait 25 seconds then dump all keys
         Sleep(25000);
-        Log("Searching for all RSA keys...");
-        FindAllRSAKeys();
-        
+        Log("Searching...");
+        DumpCACertRegion();
         Log("=== Done ===");
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("FATAL exception");
