@@ -159,9 +159,11 @@ static int ScanAndReplaceCerts() {
                             k += g_otgPatternLen - 1;
                         }
                     }
-                    // CA cert: OTG appears 2+ times (issuer + subject)
-                    // Server cert: OTG appears 1 time (issuer only)
-                    if (otgCount < 2) { if (otgCount == 0) j += 3; else j += cs - 1; continue; }
+                    // CA cert has OTG in both issuer and subject (2+ times)
+                    // Server cert has OTG only in issuer (1 time) and is smaller (~689 bytes)
+                    // Also accept by size: EA CA cert is 764 bytes, server cert is ~689
+                    if (otgCount == 0) { j += 3; continue; }
+                    if (otgCount < 2 && cs < 720) { j += cs - 1; continue; } // skip small certs with 1 OTG
                     
                     // Skip if already our cert
                     if (memcmp(base + j, g_ourCACert, 20) == 0) {
@@ -198,7 +200,7 @@ static int ScanAndReplaceCerts() {
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v10 (CA-only replacement, OTG count >= 2) ===");
+        Log("=== FIFA 17 SSL Bypass v11 (CA by size>=720 or OTG>=2) ===");
         Log("PID: %lu, CA cert: %llu bytes", GetCurrentProcessId(), (unsigned long long)g_ourCACertLen);
         
         int totalReplaced = 0;
