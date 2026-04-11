@@ -1,44 +1,36 @@
 /**
- * Frida v9 - Hook send() to catch SSL alert + stack trace.
- * Run: frida -n FIFA17.exe -l frida_bypass.js
+ * Frida v10 - compatible API
  */
-console.log("[*] FIFA 17 ProtoSSL v9 - trace SSL alert");
+console.log("[*] v10");
 
-var sendAddr = Module.getExportByName("ws2_32.dll", "send");
-var connectAddr = Module.getExportByName("ws2_32.dll", "connect");
+var send = ptr(Module.findExportByName("ws2_32.dll", "send"));
+var connect = ptr(Module.findExportByName("ws2_32.dll", "connect"));
 
-console.log("[+] send() at " + sendAddr);
-console.log("[+] connect() at " + connectAddr);
+console.log("[+] send=" + send + " connect=" + connect);
 
-Interceptor.attach(sendAddr, {
+Interceptor.attach(send, {
     onEnter: function(args) {
-        this.buf = args[1];
-        this.len = args[2].toInt32();
-        
-        if (this.len >= 7) {
-            var b0 = this.buf.readU8();
-            if (b0 === 0x15) {
-                var bytes = [];
-                for (var i = 0; i < Math.min(this.len, 16); i++) {
-                    bytes.push(this.buf.add(i).readU8().toString(16).padStart(2, '0'));
-                }
-                console.log("\n[!] SSL ALERT: " + bytes.join(' '));
-                console.log(Thread.backtrace(this.context, Backtracer.ACCURATE)
-                    .map(DebugSymbol.fromAddress).join('\n'));
-            }
+        var buf = args[1];
+        var len = args[2].toInt32();
+        if (len >= 7 && buf.readU8() === 0x15) {
+            var hex = "";
+            for (var i = 0; i < Math.min(len, 16); i++)
+                hex += ("0" + buf.add(i).readU8().toString(16)).slice(-2) + " ";
+            console.log("\n[!] SSL ALERT: " + hex);
+            console.log(Thread.backtrace(this.context, Backtracer.ACCURATE)
+                .map(DebugSymbol.fromAddress).join("\n"));
         }
     }
 });
 
-Interceptor.attach(connectAddr, {
+Interceptor.attach(connect, {
     onEnter: function(args) {
         var sa = args[1];
         if (sa.readU16() === 2) {
-            var port = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
-            var ip = sa.add(4).readU8() + "." + sa.add(5).readU8() + "." + sa.add(6).readU8() + "." + sa.add(7).readU8();
-            console.log("[connect] " + ip + ":" + port);
+            var p = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
+            console.log("[connect] " + sa.add(4).readU8()+"."+sa.add(5).readU8()+"."+sa.add(6).readU8()+"."+sa.add(7).readU8() + ":" + p);
         }
     }
 });
 
-console.log("[*] Ready. Trigger connection now.");
+console.log("[*] Ready.");
