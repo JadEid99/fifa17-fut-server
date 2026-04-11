@@ -87,6 +87,7 @@ static const BYTE g_ourMod[] = {
 static const BYTE g_ourExp[] = {0x01, 0x00, 0x01};
 
 static int g_replaced = 0;
+static bool g_dumpDone = false;
 
 // Find ProtoSSLCACertT nodes by looking for "OTG3 Certificate Authority"
 // in padded format (the Subject.strCommon field of the CA cert node).
@@ -135,6 +136,21 @@ static int FindAndReplaceCAModulus() {
                     if (winterBefore) continue; // this OTG3 is in the server cert's issuer
                     
                     Log("CA CERT NODE: OTG3 at %p", base + j);
+                    
+                    // Dump 256 bytes after OTG3 to find the modulus (only first time)
+                    if (!g_dumpDone) {
+                        for (int doff = 0; doff < 256; doff += 32) {
+                            if (j + doff + 32 >= size) break;
+                            char dhex[128]; int dhlen = 0;
+                            char dasc[40] = {0};
+                            for (int h = 0; h < 32; h++) {
+                                dhlen += sprintf(dhex+dhlen, "%02X ", base[j+doff+h]);
+                                dasc[h] = (base[j+doff+h] >= 32 && base[j+doff+h] < 127) ? (char)base[j+doff+h] : '.';
+                            }
+                            Log("  +%03X: %s %s", doff, dhex, dasc);
+                        }
+                        g_dumpDone = true;
+                    }
                     
                     // Scan forward from OTG3 for the RSA modulus.
                     // After the CN field (32 bytes padded), there should be:
