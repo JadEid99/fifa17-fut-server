@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 11:51:50) ===
+﻿=== TEST RESULTS (2026-04-11 11:56:52) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:64410
+[Redirector-Raw] Client connected: 127.0.0.1:64466
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 19 a4 04  ....o...k..i....
-  0010: 2d 61 79 35 d2 50 4d be 9a f5 f5 93 00 b6 7f b5  -ay5.PM.........
-  0020: f6 ba c5 48 b5 65 ee 84 b8 47 60 00 00 10 00 9d  ...H.e...G`.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 1a d8 ed  ....o...k..i....
+  0010: 39 e6 2e a3 b4 d1 6a 81 d9 00 13 88 9f 8b d1 d8  9.....j.........
+  0020: 3a c7 d2 05 79 45 c9 02 98 a7 53 00 00 10 00 9d  :...yE....S.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,13 +23,13 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da19a4042d6179...
+[SSL] ClientHello: version=0x303 random=69da1ad8ed39e62e...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0035
 [SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:64410
+[Redirector-Raw] Disconnected: 127.0.0.1:64466
 
 --- DLL LOG ---
 === FIFA 17 SSL Bypass DLL (CA Replacement) ===
@@ -39,10 +39,10 @@ Found 'installed CA cert' string at +0x39316B1
 Searching for code references to this string...
 Scanning for DER certificates (relaxed)...
 Scanning process heap for DER certificates...
-  Heap cert #1 at 0x00000000024EE5D9 size=1010 CA=no EA=no: 0 0 W ~ | NY K w ;0 * H 0 1 0 U ZA1 0 U Western Cape1 0 U Durbanville1 0 U Thawt
-  Heap cert #2 at 0x00000000024EE9CB size=1191 CA=no EA=no: 0 0 8 5n j P0 * H 0^1 0 U US1 0 U Symantec Corporation100. U 'Symantec Time Stam
-  Heap cert #3 at 0x00000000024EEE72 size=1247 CA=no EA=YES: 0 0 &| D V | 0 * H 0 1 0 U US1 0 U Symantec Corporation1 0 U Symantec Trust Netw
-  Heap cert #4 at 0x00000000024EF351 size=1373 CA=no EA=no: 0 Y0 A =x vI` a} *0 * H 0 1 0 U US1 0 U VeriSign, Inc.1 0 U VeriSign Trust Netwo
+  Heap cert #1 at 0x00000000024035D9 size=1010 CA=no EA=no: 0 0 W ~ | NY K w ;0 * H 0 1 0 U ZA1 0 U Western Cape1 0 U Durbanville1 0 U Thawt
+  Heap cert #2 at 0x00000000024039CB size=1191 CA=no EA=no: 0 0 8 5n j P0 * H 0^1 0 U US1 0 U Symantec Corporation100. U 'Symantec Time Stam
+  Heap cert #3 at 0x0000000002403E72 size=1247 CA=no EA=YES: 0 0 &| D V | 0 * H 0 1 0 U US1 0 U Symantec Corporation1 0 U Symantec Trust Netw
+  Heap cert #4 at 0x0000000002404351 size=1373 CA=no EA=no: 0 Y0 A =x vI` a} *0 * H 0 1 0 U US1 0 U VeriSign, Inc.1 0 U VeriSign Trust Netwo
   Heap cert #5 at 0x00007FFD41655D70 size=550 CA=no EA=no: 0 "0 * H 0 6 / | X 0 } r _ D b"]/wP| 9 z < " A - N % o ) ( 6k/m I x O 3 W r c, D
   Heap cert #6 at 0x00007FFD41655FA0 size=550 CA=no EA=no: 0 "0 * H 0 Q uv \[ln `bn W@a 1r@f Q p a :I f Pk T2 d ^ C Z F I$ ozL #$3 UN w H Z
   Heap cert #7 at 0x00007FFD41656200 size=550 CA=no EA=no: 0 "0 * H 0 &T & 0 ? j E pU | BS TV i $ ) +/ yD. T S $4T " { F V v DyR4( OI a ~U 
@@ -54,9 +54,8 @@ Scanning process heap for DER certificates...
   Heap cert #13 at 0x00007FFD41657290 size=294 CA=no EA=no: 0 "0 * H 0 p ; N ( x^0 %_ L  >|Q `2k Bdy v T f kzb# < -f h& :, X& F >8 , (9 I B 
   Heap cert #14 at 0x00007FFD41657450 size=550 CA=no EA=no: 0 "0 * H 0 ] g Z ,  5 <u ` hZ q) v| %v X 46 X + w" 4d<" ^ uX y Y X h)m2 K H2O O 
   Heap cert #15 at 0x00007FFD41657760 size=294 CA=no EA=no: 0 "0 * H 0 ?nd ( J . > i l v)O `59 r2 )=L K< ,o `SE K U YV$ x ? qP - m| l 2 ao m
-  Heap cert #16 at 0x00007FFD62009370 size=804 CA=YES EA=YES: 0  0 6 u ` oL & ] P aZ0 * H 0 1 0 U Online Technology Group1 0 U Electronic Arts
-  -> REPLACING EA CA cert at 0x00007FFD62009370 (module: D:\Games\FIFA 17\DINPUT8.dll)!
-  -> REPLACED!
+  Heap cert #16 at 0x00007FFD61F59370 size=804 CA=YES EA=YES: 0  0 6 u ` oL & ] P aZ0 * H 0 1 0 U Online Technology Group1 0 U Electronic Arts
+  -> Skipping (this is our own cert)
   Heap cert #17 at 0x00007FFD6DF75990 size=1801 CA=YES EA=no: 0 0 r > G Z 80 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
   Heap cert #18 at 0x00007FFD6DF90870 size=1537 CA=YES EA=no: 0 0 tE xN J / ) 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Cor
 Found 18 heap DER certs
