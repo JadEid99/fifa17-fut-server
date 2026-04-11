@@ -66,10 +66,20 @@ function Launch-Game {
 
 function Run-Frida-Patch($scriptContent) {
     $tmp = "$repoRoot\temp_patch.js"
-    Set-Content $tmp $scriptContent -Encoding UTF8
-    # Frida 17: no --no-pause flag, use -e for eval or just -l
-    $output = & frida -n FIFA17.exe -l $tmp 2>&1 | Out-String
-    Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+    # Add process.exit() so Frida detaches after patching
+    $fullScript = $scriptContent + "`nsetTimeout(function(){},100);"
+    Set-Content $tmp $fullScript -Encoding UTF8
+    $output = ""
+    try {
+        # Use --timeout to auto-exit, pipe to get output
+        $proc = Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\frida_out.txt" -RedirectStandardError "$repoRoot\frida_err.txt"
+        $proc | Wait-Process -Timeout 10 -ErrorAction SilentlyContinue
+        if (!$proc.HasExited) { $proc | Stop-Process -Force }
+        $output = (Get-Content "$repoRoot\frida_out.txt" -Raw -ErrorAction SilentlyContinue) + (Get-Content "$repoRoot\frida_err.txt" -Raw -ErrorAction SilentlyContinue)
+    } catch {
+        $output = "ERROR: $_"
+    }
+    Remove-Item $tmp,"$repoRoot\frida_out.txt","$repoRoot\frida_err.txt" -Force -ErrorAction SilentlyContinue
     return $output
 }
 
