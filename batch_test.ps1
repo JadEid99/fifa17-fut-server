@@ -1,4 +1,4 @@
-# Batch v12: Fresh game restart + hook ALL Winsock functions
+# Batch v13: Surgical patch inside cert_process
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -8,7 +8,7 @@ $resultsFile = "$repoRoot\batch-results.log"
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KSA {
+public class KSB {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -16,63 +16,67 @@ public class KSA {
     public static void Q() { keybd_event(0x51,0x10,0,UIntPtr.Zero); System.Threading.Thread.Sleep(50); keybd_event(0x51,0x10,KUP,UIntPtr.Zero); }
 }
 "@
-function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KSA]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
-function FEnter { if(Focus){[KSA]::Enter()} }
-function FQ { if(Focus){[KSA]::Q()} }
+function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KSB]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
+function FEnter { if(Focus){[KSB]::Enter()} }
+function FQ { if(Focus){[KSB]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 function Launch-Game { Start-Process $gameExe; for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}; Start-Sleep 10;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 10;FEnter;Start-Sleep 2 }
 function Run-Frida($code) { $tmp="$repoRoot\tf.js"; Set-Content $tmp "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}" -Encoding UTF8; $p=Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"; $p|Wait-Process -Timeout 10 -EA SilentlyContinue; if(!$p.HasExited){$p|Stop-Process -Force}; $o=(Get-Content "$repoRoot\fo.txt" -Raw -EA SilentlyContinue); Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -EA SilentlyContinue; return $o }
 
-$baseline = @'
+# These patches are INSIDE cert_process - they don't break the state machine
+# because they only affect the return value, not the state transitions.
+$patches = @(
+    # P1: Change JNE at +0x61270C2 to JMP (always take success return path)
+    # Original: 75 1E (JNE +0x1E to +0x61270E2)
+    # Patched: EB 1E (JMP +0x1E to +0x61270E2) - always returns edi=1
+    @{ name="P1_JNE_to_JMP_70C2"; desc="cert_process: JNE->JMP at +0x61270C2 (force success return)"
+       fresh=$true
+       patch='Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);' },
+
+    # P2: Same but also patch the bAllowAnyCert checks (belt and suspenders)
+    @{ name="P2_JMP_70C2_plus_bAllowAnyCert"; desc="cert_process JMP + 3x bAllowAnyCert"
+       fresh=$true
+       patch=@'
+Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
 Memory.protect(b.add(0x612522d),1,"rwx");b.add(0x612522d).writeU8(0xEB);
 Memory.protect(b.add(0x612753d),1,"rwx");b.add(0x612753d).writeU8(0xEB);
 Memory.protect(b.add(0x6127c29),1,"rwx");b.add(0x6127c29).writeU8(0xEB);
-Memory.protect(b.add(0x612644e),5,"rwx");b.add(0x612644e).writeByteArray([0x90,0x90,0x90,0x90,0x90]);
+'@ },
+
+    # P3: Make the cert parser (+0x6138680) return 0 (no error) + JMP at 70C2
+    @{ name="P3_cert_parser_ret0_JMP_70C2"; desc="cert parser ret 0 + JMP at 70C2"
+       fresh=$true
+       patch=@'
+Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
+Memory.protect(b.add(0x6138680),6,"rwx");b.add(0x6138680).writeByteArray([0x31,0xC0,0xC3,0x90,0x90,0x90]);
+'@ },
+
+    # P4: JMP at 70C2 + bAllowAnyCert + also patch the JLE in State 3 caller
+    @{ name="P4_full_combo"; desc="JMP 70C2 + bAllowAnyCert + NOP JLE in State 3"
+       fresh=$true
+       patch=@'
+Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
+Memory.protect(b.add(0x612522d),1,"rwx");b.add(0x612522d).writeU8(0xEB);
+Memory.protect(b.add(0x612753d),1,"rwx");b.add(0x612753d).writeU8(0xEB);
+Memory.protect(b.add(0x6127c29),1,"rwx");b.add(0x6127c29).writeU8(0xEB);
 Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);
-'@
+'@ },
 
-$patches = @(
-    # T1: FRESH game + baseline + hook ALL winsock read functions
-    @{ name="T01_fresh_hook_all_winsock"; desc="FRESH game + baseline + hook recv/WSARecv/select"
+    # P5: Control - no patches (should get ECONNRESET)
+    @{ name="P5_control"; desc="No patches (control)"
        fresh=$true
-       patch=@"
-$baseline
-var ws2=Process.getModuleByName('ws2_32.dll');
-['recv','WSARecv','recvfrom','select','WSAWaitForMultipleEvents'].forEach(function(fn){
-  try{
-    var addr=ws2.getExportByName(fn);
-    Interceptor.attach(addr,{
-      onEnter:function(){this.fn=fn;},
-      onLeave:function(ret){send(fn+'() returned '+ret.toInt32());}
-    });
-    send('Hooked '+fn);
-  }catch(e){send('No '+fn);}
-});
-"@; wait=20 },
-
-    # T2: FRESH game + NO patches + see if we get ECONNRESET (verify fresh state)
-    @{ name="T02_fresh_no_patches_control"; desc="FRESH game, NO patches (should get ECONNRESET)"
-       fresh=$true
-       patch="send('no patches');"; wait=15 },
-
-    # T3: FRESH game + baseline only (verify baseline still prevents disconnect)
-    @{ name="T03_fresh_baseline_only"; desc="FRESH game + baseline patches"
-       fresh=$true
-       patch=$baseline; wait=20 }
+       patch="send('no patches');" }
 )
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH v12 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
-Write-Host "=== BATCH v12 - $($patches.Count) tests ===" -ForegroundColor Cyan
+Set-Content $resultsFile "=== BATCH v13 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
+Write-Host "=== BATCH v13 - $($patches.Count) tests ===" -ForegroundColor Cyan
 
 foreach($p in $patches){
     $n = [array]::IndexOf($patches, $p) + 1
     Write-Host "[$n/$($patches.Count)] $($p.name)" -ForegroundColor Yellow
     
-    if($p.fresh){
-        Write-Host "  Fresh game restart..." -ForegroundColor Gray
-        Kill-All; Launch-Game
-    }
+    if($p.fresh){ Kill-All; Launch-Game }
     
     Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
     Start-Sleep 1
@@ -81,9 +85,7 @@ foreach($p in $patches){
     
     $fo=Run-Frida $p.patch
     Start-Sleep 1; FQ
-    
-    $waitTime = if($p.wait){$p.wait}else{15}
-    Start-Sleep $waitTime
+    Start-Sleep 20
     
     $so=(Receive-Job $sj 2>&1|Out-String).Trim()
     Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
@@ -93,19 +95,19 @@ foreach($p in $patches){
     if($so -match "Phase=.*received"){$r="RECEIVED_DATA"}
     if($so -match "Handshake type: 0x10"){$r="CLIENT_KEY_EXCHANGE"}
     if($so -match "ECONNRESET"){$r="ECONNRESET"}
+    if($so -match "bad_certificate"){$r="BAD_CERT"}
     if($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected" -and $so -notmatch "TIMEOUT"){$r="HANGING"}
     if($so -eq ""){$r="NO_CONNECTION"}
     if(-not(Get-Process -Name FIFA17 -EA SilentlyContinue)){$r+="+CRASHED"}
     
-    $color=switch -Regex($r){"CLIENT_KEY|TLS_COMPLETE|RECEIVED"{"Green"}"HANGING|TIMEOUT"{"Yellow"}default{"Red"}}
+    $color=switch -Regex($r){"CLIENT_KEY|RECEIVED"{"Green"}"HANGING|TIMEOUT"{"Yellow"}default{"Red"}}
     Write-Host "  -> $r" -ForegroundColor $color
     
     $ss=if($so.Length -gt 500){$so.Substring($so.Length-500)}else{$so}
-    $ff=if($fo -and $fo.Length -gt 500){$fo.Substring($fo.Length-500)}else{$fo}
-    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nFRIDA: $ff`nSERVER: $ss`n" -Encoding UTF8
+    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nSERVER: $ss`n" -Encoding UTF8
     
     FEnter; Start-Sleep 2
 }
 
 Write-Host "`n=== DONE ===" -ForegroundColor Green
-git add batch-results.log;git commit -m "Batch v12 $timestamp";git push 2>&1
+git add batch-results.log;git commit -m "Batch v13 $timestamp";git push 2>&1
