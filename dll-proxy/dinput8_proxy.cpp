@@ -189,15 +189,17 @@ static void ReplaceEACert() {
     Log("ReplaceEACert: replaced %d certs", replaced);
 }
 
-// Hooked connect function
+static volatile int g_connectTriggered = 0;
+
+// Hooked connect function - just set a flag, don't scan here
 static int WINAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namelen) {
     if (name && name->sa_family == AF_INET) {
         struct sockaddr_in* addr = (struct sockaddr_in*)name;
         int port = ntohs(addr->sin_port);
         if (port == 42230) {
-            Log("connect() to port 42230 detected! socket=%llu", (unsigned long long)s);
             g_sslSocket = s;
-            g_certReplaced = 0;
+            g_connectTriggered = 1;
+            // Don't scan here - let the background thread handle it
         }
     }
     return g_realConnect(s, name, namelen);
@@ -282,9 +284,19 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("Initial CA cert scan...");
     ReplaceEACert();
     
-    // Keep scanning periodically (less aggressively)
-    for (int i = 0; i < 60; i++) {
-        Sleep(1000);
+    // Keep scanning periodically
+    for (int i = 0; i < 120; i++) {
+        Sleep(500);
+        if (g_connectTriggered && !g_certReplaced) {
+            Log("connect() to 42230 was triggered! Scanning for cert...");
+            ReplaceEACert();
+            g_certReplaced = 1;
+            // Scan a few more times quickly
+            for (int j = 0; j < 5; j++) {
+                Sleep(100);
+                ReplaceEACert();
+            }
+        }
         ReplaceEACert();
     }
     return 0;
