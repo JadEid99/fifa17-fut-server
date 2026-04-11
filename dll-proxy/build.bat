@@ -19,7 +19,7 @@ if "%VCVARS%"=="" (
 
 call "%VCVARS%"
 
-cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib ws2_32.lib psapi.lib
+cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib
 
 if exist dinput8.dll (
     echo.
