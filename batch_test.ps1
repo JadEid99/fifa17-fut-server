@@ -1,18 +1,15 @@
-# FIFA 17 SSL Bypass - Batch Test Runner v2
-# Keeps game running between tests. Uses Frida to apply/revert patches.
-# Usage: .\batch_test.ps1
-
+# FIFA 17 SSL Bypass - Batch Test v4
+# 30+ patches tested automatically
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
 $gameExe = "$gameDir\FIFA17.exe"
-$serverScript = "$repoRoot\server-standalone\server.mjs"
 $resultsFile = "$repoRoot\batch-results.log"
 
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KS {
+public class KS2 {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -29,15 +26,14 @@ public class KS {
 function Focus-FIFA {
     $p = Get-Process -Name FIFA17 -ErrorAction SilentlyContinue
     if ($p -and $p.MainWindowHandle -ne [IntPtr]::Zero) {
-        [KS]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
+        [KS2]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
         Start-Sleep -Milliseconds 300
         return $true
     }
     return $false
 }
-
-function Send-Enter { if (Focus-FIFA) { [KS]::Enter() } }
-function Send-Q { if (Focus-FIFA) { [KS]::Q() } }
+function Send-Enter { if (Focus-FIFA) { [KS2]::Enter() } }
+function Send-Q { if (Focus-FIFA) { [KS2]::Q() } }
 
 function Kill-All {
     Stop-Process -Name FIFA17 -Force -ErrorAction SilentlyContinue
@@ -56,253 +52,202 @@ function Launch-Game {
     Start-Sleep 5; Send-Enter
     Start-Sleep 5; Send-Enter
     Start-Sleep 5; Send-Enter
-    # Wait for first connection attempt to finish
-    Start-Sleep 10
-    # Dismiss the failure dialog
-    Send-Enter
+    Start-Sleep 10; Send-Enter  # dismiss first connection failure
     Start-Sleep 2
 }
 
-function Run-Frida-Patch($scriptContent) {
-    $tmp = "$repoRoot\temp_patch.js"
-    # Add process.exit() so Frida detaches after patching
-    $fullScript = $scriptContent + "`nsetTimeout(function(){},100);"
-    Set-Content $tmp $fullScript -Encoding UTF8
-    $output = ""
-    try {
-        # Use --timeout to auto-exit, pipe to get output
-        $proc = Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\frida_out.txt" -RedirectStandardError "$repoRoot\frida_err.txt"
-        $proc | Wait-Process -Timeout 10 -ErrorAction SilentlyContinue
-        if (!$proc.HasExited) { $proc | Stop-Process -Force }
-        $output = (Get-Content "$repoRoot\frida_out.txt" -Raw -ErrorAction SilentlyContinue) + (Get-Content "$repoRoot\frida_err.txt" -Raw -ErrorAction SilentlyContinue)
-    } catch {
-        $output = "ERROR: $_"
-    }
-    Remove-Item $tmp,"$repoRoot\frida_out.txt","$repoRoot\frida_err.txt" -Force -ErrorAction SilentlyContinue
-    return $output
+function Run-Frida($code) {
+    $tmp = "$repoRoot\tmp_frida.js"
+    $full = "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}"
+    Set-Content $tmp $full -Encoding UTF8
+    $proc = Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"
+    $proc | Wait-Process -Timeout 10 -ErrorAction SilentlyContinue
+    if (!$proc.HasExited) { $proc | Stop-Process -Force }
+    $out = (Get-Content "$repoRoot\fo.txt" -Raw -ErrorAction SilentlyContinue)
+    Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -ErrorAction SilentlyContinue
+    return $out
 }
 
 
 # ============================================================
-# Patches - each is a Frida script + a revert script
-# The Frida script patches bytes, then calls send() to signal done,
-# then the script exits so Frida detaches cleanly.
+# 30 patches covering every angle
 # ============================================================
-
-# Helper: wrap patch script to auto-exit after patching
-function Wrap-Script($code) {
-    return @"
-var b = Process.getModuleByName("FIFA17.exe").base;
-try {
-$code
-    send("OK");
-} catch(e) {
-    send("ERR: " + e.message);
-}
-"@
-}
-
-# Helper: wrap revert script
-function Wrap-Revert($code) {
-    return Wrap-Script $code
-}
+# Key addresses from code dumps:
+# State 3 cert handler: +0x61262DC
+#   CALL +0x6127B40 (cert_receive) at +0x61262E8
+#   CALL +0x6127020 (cert_process) at +0x61262F0
+#   TEST eax,eax / JLE (if <=0 goto error) at +0x61262F5
+#   CALL +0x6124140 (on success) at +0x6126311
+#   CALL +0x61279F0 (cert_finalize) at +0x6126334
+#   State=4 set at +0x612631C
+# Error path in state 3: +0x6126334 area, sets state=7
+# State 5 error: +0x6126440-0x6126463
+#   CALL +0x612E770 (error handler) at +0x612644E
+# Error handler: +0x612E770
+#   CALL +0x612D5D0 (disconnect) at +0x612E7B8
+#   CALL +0x612BB40 at +0x612E7C0
 
 $patches = @(
-    # --- DIAGNOSTIC: Dump State 3 code to find cert verify calls ---
-    @{
-        name = "D01_dump_state3"
-        desc = "Dump 256 bytes at State 3 (+0x61262DC)"
-        patch = @'
-var a = b.add(0x61262DC);
-var h = "";
-for (var i = 0; i < 256; i++) {
-    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
-    if ((i+1)%32===0) { send("S3 +"+(0x61262DC+i-31).toString(16)+": "+h); h=""; }
-}
-// Find all CALL instructions
-for (var i = 0; i < 256; i++) {
-    if (a.add(i).readU8()===0xE8) {
-        var d=a.add(i+1).readS32();
-        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
-    }
-}
-'@
-        revert = ''
-    },
-    # --- DIAGNOSTIC: Dump code before State 3 (cert receive handler) ---
-    @{
-        name = "D02_dump_before_state3"
-        desc = "Dump 256 bytes before State 3 (+0x61261DC)"
-        patch = @'
-var a = b.add(0x61261DC);
-var h = "";
-for (var i = 0; i < 256; i++) {
-    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
-    if ((i+1)%32===0) { send("PRE3 +"+(0x61261DC+i-31).toString(16)+": "+h); h=""; }
-}
-for (var i = 0; i < 256; i++) {
-    if (a.add(i).readU8()===0xE8) {
-        var d=a.add(i+1).readS32();
-        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
-    }
-}
-'@
-        revert = ''
-    },
-    # --- DIAGNOSTIC: Dump cert_process function ---
-    @{
-        name = "D03_dump_cert_process"
-        desc = "Dump 128 bytes at cert_process (+0x6127020)"
-        patch = @'
-var a = b.add(0x6127020);
-var h = "";
-for (var i = 0; i < 128; i++) {
-    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
-    if ((i+1)%32===0) { send("CP +"+(0x6127020+i-31).toString(16)+": "+h); h=""; }
-}
-for (var i = 0; i < 128; i++) {
-    if (a.add(i).readU8()===0xE8) {
-        var d=a.add(i+1).readS32();
-        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
-    }
-}
-'@
-        revert = ''
-    },
-    # --- DIAGNOSTIC: Dump cert_verify function ---
-    @{
-        name = "D04_dump_cert_verify"
-        desc = "Dump 128 bytes at cert_verify (+0x6124140)"
-        patch = @'
-var a = b.add(0x6124140);
-var h = "";
-for (var i = 0; i < 128; i++) {
-    h += ("0"+a.add(i).readU8().toString(16)).slice(-2)+" ";
-    if ((i+1)%32===0) { send("CV +"+(0x6124140+i-31).toString(16)+": "+h); h=""; }
-}
-for (var i = 0; i < 128; i++) {
-    if (a.add(i).readU8()===0xE8) {
-        var d=a.add(i+1).readS32();
-        send("CALL exe+"+(a.add(i).sub(b))+" -> exe+"+(a.add(i+5).add(d).sub(b)));
-    }
-}
-'@
-        revert = ''
-    },
-    # --- PATCH: NOP CALL at +0x612644E (known working - prevents disconnect) ---
-    @{
-        name = "P02_NOP_call_612644E"
-        desc = "NOP CALL at +0x612644E (baseline - prevents disconnect)"
-        patch = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x612644E),5,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);'
-    },
-    # --- PATCH: NOP CALL + NOP error state writes (v17 approach) ---
-    @{
-        name = "P13_NOP_call_AND_state_writes"
-        desc = "NOP CALL+state writes at +0x612644E/6126453/612645C"
-        patch = 'Memory.protect(b.add(0x612644E),21,"rwx"); b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x612644E),21,"rwx"); b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00,0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01,0x40,0x88,0xBB,0x21,0x0C,0x00,0x00]);'
-    },
-    # --- PATCH: All disconnects ret (known working) + NOP error state writes ---
-    @{
-        name = "P14_all_disc_ret_AND_NOP_state"
-        desc = "All disconnects ret + NOP state writes"
-        patch = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0xC3); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0xC3); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]); Memory.protect(b.add(0x6126453),14,"rwx"); b.add(0x6126453).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
-        revert = 'Memory.protect(b.add(0x612D5D0),1,"rwx"); b.add(0x612D5D0).writeU8(0x48); Memory.protect(b.add(0x612D730),1,"rwx"); b.add(0x612D730).writeU8(0x48); Memory.protect(b.add(0x612E770),3,"rwx"); b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]); Memory.protect(b.add(0x6126453),14,"rwx"); b.add(0x6126453).writeByteArray([0x66,0xC7,0x83,0x1F,0x0C,0x00,0x00,0x00,0x01,0x40,0x88,0xBB,0x21,0x0C]);'
-    }
+    # === GROUP A: Patch cert_process return value ===
+    @{ name="A01_cert_process_ret1"; desc="cert_process ret 1"
+       patch='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0xC3]);'
+       revert='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
+    @{ name="A02_cert_process_ret64"; desc="cert_process ret 0x40 (64)"
+       patch='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0xB8,0x40,0x00,0x00,0x00,0xC3]);'
+       revert='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
+
+    # === GROUP B: Patch the JLE after cert_process (force success branch) ===
+    # At +0x61262F5: TEST eax,eax then JLE. JLE is 7E xx. Change to JMP (EB) or NOP.
+    @{ name="B01_JLE_to_NOP_62F7"; desc="NOP the JLE after cert_process test"
+       patch='var a=b.add(0x61262F7);Memory.protect(a,2,"rwx");a.writeByteArray([0x90,0x90]);'
+       revert='var a=b.add(0x61262F7);Memory.protect(a,2,"rwx");a.writeByteArray([0x7E,0x36]);' },
+    @{ name="B02_TEST_to_XOR_62F5"; desc="Change TEST eax,eax to XOR eax,eax (force zero=success)"
+       patch='var a=b.add(0x61262F5);Memory.protect(a,2,"rwx");a.writeByteArray([0x31,0xC0]);'
+       revert='var a=b.add(0x61262F5);Memory.protect(a,2,"rwx");a.writeByteArray([0x85,0xC0]);' },
+    @{ name="B03_force_eax1_before_test"; desc="Insert MOV eax,1 before TEST (overwrite TEST+JLE)"
+       patch='var a=b.add(0x61262F5);Memory.protect(a,4,"rwx");a.writeByteArray([0xB8,0x01,0x00,0x00]);'
+       revert='var a=b.add(0x61262F5);Memory.protect(a,4,"rwx");a.writeByteArray([0x85,0xC0,0x7E,0x36]);' },
+
+    # === GROUP C: Patch cert_receive to skip but not crash ===
+    @{ name="C01_cert_receive_ret1"; desc="cert_receive ret 1"
+       patch='Memory.protect(b.add(0x6127B40),6,"rwx");b.add(0x6127B40).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0xC3]);'
+       revert='Memory.protect(b.add(0x6127B40),6,"rwx");b.add(0x6127B40).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
+
+    # === GROUP D: Patch the success-path function at +0x6124140 ===
+    @{ name="D01_success_fn_ret0"; desc="Success fn +0x6124140 ret 0"
+       patch='Memory.protect(b.add(0x6124140),6,"rwx");b.add(0x6124140).writeByteArray([0x31,0xC0,0xC3,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6124140),6,"rwx");b.add(0x6124140).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
+    @{ name="D02_success_fn_nop"; desc="NOP the CALL to success fn at +0x6126311"
+       patch='Memory.protect(b.add(0x6126311),5,"rwx");b.add(0x6126311).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6126311),5,"rwx");b.add(0x6126311).writeByteArray([0xE8,0x2A,0xDE,0xFF,0xFF]);' },
+
+    # === GROUP E: Patch cert_finalize ===
+    @{ name="E01_cert_finalize_ret0"; desc="cert_finalize ret 0"
+       patch='Memory.protect(b.add(0x61279F0),6,"rwx");b.add(0x61279F0).writeByteArray([0x31,0xC0,0xC3,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61279F0),6,"rwx");b.add(0x61279F0).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);' },
+
+    # === GROUP F: Combined - skip verify but keep parsing ===
+    @{ name="F01_NOP_JLE_AND_NOP_call644E"; desc="NOP JLE at +0x61262F7 AND NOP error CALL at +0x612644E"
+       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+    @{ name="F02_force_eax1_AND_NOP_call644E"; desc="Force eax=1 at +0x61262F5 AND NOP error CALL"
+       patch='Memory.protect(b.add(0x61262F5),4,"rwx");b.add(0x61262F5).writeByteArray([0xB8,0x01,0x00,0x00]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F5),4,"rwx");b.add(0x61262F5).writeByteArray([0x85,0xC0,0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+    @{ name="F03_NOP_JLE_AND_disconnect_ret"; desc="NOP JLE + disconnect ret"
+       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0xC3);'
+       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0x48);' },
+
+    # === GROUP G: Patch the error path in State 3 directly ===
+    # At +0x612632D: the error sets state=7. Find and NOP it.
+    @{ name="G01_NOP_state7_set_6263BC"; desc="NOP state=7 write at +0x61263BC area"
+       patch='Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);' },
+
+    # === GROUP H: Patch at the recv level - make recv handler skip cert check ===
+    @{ name="H01_NOP_cert_process_call"; desc="NOP the CALL to cert_process at +0x61262F0"
+       patch='Memory.protect(b.add(0x61262F0),5,"rwx");b.add(0x61262F0).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F0),5,"rwx");b.add(0x61262F0).writeByteArray([0xE8,0x2B,0x0D,0x00,0x00]);' },
+    @{ name="H02_NOP_cert_process_AND_force_state4"; desc="NOP cert_process CALL + force state=4"
+       patch='Memory.protect(b.add(0x61262F0),9,"rwx");b.add(0x61262F0).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F0),9,"rwx");b.add(0x61262F0).writeByteArray([0xE8,0x2B,0x0D,0x00,0x00,0x85,0xC0,0x7E,0x36]);' },
+
+    # === GROUP I: Patch the error handler function ===
+    @{ name="I01_error_E770_ret0"; desc="Error handler +0x612E770 xor eax,eax;ret"
+       patch='Memory.protect(b.add(0x612E770),3,"rwx");b.add(0x612E770).writeByteArray([0x31,0xC0,0xC3]);'
+       revert='Memory.protect(b.add(0x612E770),3,"rwx");b.add(0x612E770).writeByteArray([0x48,0x89,0x5C]);' },
+    @{ name="I02_error_E810_ret0"; desc="Function +0x612E810 xor eax,eax;ret"
+       patch='Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x31,0xC0,0xC3]);'
+       revert='Memory.protect(b.add(0x612E810),3,"rwx");b.add(0x612E810).writeByteArray([0x48,0x89,0x5C]);' },
+    @{ name="I03_fn_BB40_ret0"; desc="Function +0x612BB40 xor eax,eax;ret"
+       patch='Memory.protect(b.add(0x612BB40),3,"rwx");b.add(0x612BB40).writeByteArray([0x31,0xC0,0xC3]);'
+       revert='Memory.protect(b.add(0x612BB40),3,"rwx");b.add(0x612BB40).writeByteArray([0x48,0x89,0x5C]);' },
+
+    # === GROUP J: Aggressive combos ===
+    @{ name="J01_NOP_JLE_NOP_call644E_disc_ret"; desc="NOP JLE + NOP error CALL + disconnect ret"
+       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0xC3);'
+       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0x48);' },
+    @{ name="J02_force_eax1_NOP_state7_disc_ret"; desc="Force eax=1 + NOP state7 + disconnect ret"
+       patch='Memory.protect(b.add(0x61262F5),4,"rwx");b.add(0x61262F5).writeByteArray([0xB8,0x01,0x00,0x00]);Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0xC3);'
+       revert='Memory.protect(b.add(0x61262F5),4,"rwx");b.add(0x61262F5).writeByteArray([0x85,0xC0,0x7E,0x36]);Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);Memory.protect(b.add(0x612D5D0),1,"rwx");b.add(0x612D5D0).writeU8(0x48);' },
+    @{ name="J03_replace_cert_process_AND_NOP_644E"; desc="cert_process ret 0x40 + NOP error CALL"
+       patch='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0xB8,0x40,0x00,0x00,0x00,0xC3]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x6127020),6,"rwx");b.add(0x6127020).writeByteArray([0x48,0x89,0x5C,0x24,0x08,0x57]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+    @{ name="J04_NOP_cert_process_force_state4_NOP_644E"; desc="Skip cert_process + force eax=1 + NOP error CALL"
+       patch='Memory.protect(b.add(0x61262F0),9,"rwx");b.add(0x61262F0).writeByteArray([0xB8,0x01,0x00,0x00,0x00,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F0),9,"rwx");b.add(0x61262F0).writeByteArray([0xE8,0x2B,0x0D,0x00,0x00,0x85,0xC0,0x7E,0x36]);Memory.protect(b.add(0x612644E),5,"rwx");b.add(0x612644E).writeByteArray([0xE8,0x1D,0x83,0x00,0x00]);' },
+
+    # === GROUP K: Patch the Aim4kill cert + NOP verify ===
+    @{ name="K01_NOP_JLE_only"; desc="Just NOP the JLE at +0x61262F7 (let cert_process run but ignore result)"
+       patch='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);'
+       revert='Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x7E,0x36]);' },
+    @{ name="K02_JLE_to_JG"; desc="Change JLE to JG at +0x61262F7 (invert condition)"
+       patch='Memory.protect(b.add(0x61262F7),1,"rwx");b.add(0x61262F7).writeU8(0x7F);'
+       revert='Memory.protect(b.add(0x61262F7),1,"rwx");b.add(0x61262F7).writeU8(0x7E);' },
+
+    # === GROUP L: NOP all state=7 writes in the function ===
+    @{ name="L01_NOP_all_state7"; desc="NOP all state=7 writes in cert handler area"
+       patch='Memory.protect(b.add(0x612620E),7,"rwx");b.add(0x612620E).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612626D),7,"rwx");b.add(0x612626D).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);Memory.protect(b.add(0x612633C),7,"rwx");b.add(0x612633C).writeByteArray([0x90,0x90,0x90,0x90,0x90,0x90,0x90]);'
+       revert='Memory.protect(b.add(0x612620E),7,"rwx");b.add(0x612620E).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);Memory.protect(b.add(0x612626D),7,"rwx");b.add(0x612626D).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);Memory.protect(b.add(0x61263BE),7,"rwx");b.add(0x61263BE).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);Memory.protect(b.add(0x612633C),7,"rwx");b.add(0x612633C).writeByteArray([0xC7,0x83,0x8C,0x00,0x00,0x00,0x07]);' }
 )
 
 
 # ============================================================
-# Main
+# Main loop
 # ============================================================
-
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH TEST v2 ($timestamp) === Patches: $($patches.Count)`n" -Encoding UTF8
-Write-Host "=== BATCH TEST v2 - $($patches.Count) patches ===" -ForegroundColor Cyan
+Set-Content $resultsFile "=== BATCH v4 ($timestamp) === $($patches.Count) patches`n" -Encoding UTF8
+Write-Host "=== BATCH v4 - $($patches.Count) patches ===" -ForegroundColor Cyan
 
-# Kill old stuff, start server, launch game once
 Kill-All
 $serverJob = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
 Start-Sleep 2
-Write-Host "Launching game (one time)..." -ForegroundColor Yellow
+Write-Host "Launching game..." -ForegroundColor Yellow
 Launch-Game
-Write-Host "Game ready. Starting tests..." -ForegroundColor Green
+Write-Host "Game ready." -ForegroundColor Green
 
-$testNum = 0
-foreach ($patch in $patches) {
-    $testNum++
-    Write-Host "`n[$testNum/$($patches.Count)] $($patch.name): $($patch.desc)" -ForegroundColor Yellow
+$n = 0
+foreach ($p in $patches) {
+    $n++
+    Write-Host "[$n/$($patches.Count)] $($p.name)" -ForegroundColor Yellow
     
-    # Check game is still running
     if (-not (Get-Process -Name FIFA17 -ErrorAction SilentlyContinue)) {
-        Write-Host "  Game crashed! Relaunching..." -ForegroundColor Red
-        Add-Content $resultsFile "[$testNum] $($patch.name): GAME_CRASHED_BEFORE_TEST`n"
-        # Restart server too
-        Stop-Job $serverJob -ErrorAction SilentlyContinue
-        Remove-Job $serverJob -ErrorAction SilentlyContinue
+        Write-Host "  CRASHED - relaunching" -ForegroundColor Red
+        Add-Content $resultsFile "[$n] $($p.name) | CRASHED_BEFORE | $($p.desc)`n"
+        Stop-Job $serverJob -ErrorAction SilentlyContinue; Remove-Job $serverJob -ErrorAction SilentlyContinue
         Kill-All
         $serverJob = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-        Start-Sleep 2
-        Launch-Game
+        Start-Sleep 2; Launch-Game
     }
     
-    # Drain old server output
-    Receive-Job $serverJob 2>&1 | Out-Null
+    Receive-Job $serverJob 2>&1 | Out-Null  # drain
     
-    # Apply patch via Frida
-    Write-Host "  Applying patch..." -ForegroundColor Gray
-    $patchScript = Wrap-Script $patch.patch
-    $fridaOut = Run-Frida-Patch $patchScript
-    Write-Host "  Frida: $($fridaOut.Trim())" -ForegroundColor Gray
+    $fo = Run-Frida $p.patch
     Start-Sleep 1
+    Send-Q; Start-Sleep 12
     
-    # Trigger connection attempt #2 by pressing Q
-    Write-Host "  Pressing Q..." -ForegroundColor Gray
-    Send-Q
-    Start-Sleep 12
+    $so = (Receive-Job $serverJob 2>&1 | Out-String).Trim()
     
-    # Collect server output
-    $serverOut = (Receive-Job $serverJob 2>&1 | Out-String).Trim()
+    $r = "UNKNOWN"
+    if ($so -match "Phase=.*received") { $r = "RECEIVED_DATA" }
+    if ($so -match "Record: type=0x16") { $r = "TLS_HANDSHAKE_DATA" }
+    if ($so -match "Encrypted Finished") { $r = "TLS_COMPLETE" }
+    if ($so -match "Decrypted") { $r = "DECRYPTED" }
+    if ($so -match "ECONNRESET") { $r = "ECONNRESET" }
+    if ($so -match "15 03 00 00 02 02") { $r = "SSL_ALERT" }
+    if ($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected") { $r = "HANGING" }
+    if ($so -eq "") { $r = "NO_CONNECTION" }
+    if (-not (Get-Process -Name FIFA17 -ErrorAction SilentlyContinue)) { $r += "+CRASHED" }
     
-    # Classify result
-    $result = "UNKNOWN"
-    if ($serverOut -match "Phase=.*received") { $result = "RECEIVED_DATA" }
-    if ($serverOut -match "Encrypted Finished") { $result = "TLS_COMPLETE" }
-    if ($serverOut -match "Decrypted") { $result = "DECRYPTED" }
-    if ($serverOut -match "Record: type=0x16.*Handshake type: 0x10") { $result = "CLIENT_KEY_EXCHANGE" }
-    if ($serverOut -match "ECONNRESET") { $result = "ECONNRESET" }
-    if ($serverOut -match "15 03 00 00 02 02 2a") { $result = "BAD_CERT_ALERT" }
-    if ($serverOut -match "Waiting for ClientKeyExchange" -and $serverOut -notmatch "ECONNRESET" -and $serverOut -notmatch "Disconnected") { $result = "HANGING_NO_DISCONNECT" }
-    if ($serverOut -eq "") { $result = "NO_CONNECTION" }
+    $color = switch -Regex ($r) { "RECEIVED|TLS_|DECRYPTED" {"Green"} "HANGING" {"Yellow"} default {"Red"} }
+    Write-Host "  -> $r" -ForegroundColor $color
     
-    if (-not (Get-Process -Name FIFA17 -ErrorAction SilentlyContinue)) { $result += "+CRASHED" }
+    $sShort = if ($so.Length -gt 200) { $so.Substring($so.Length-200) } else { $so }
+    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nSERVER: $sShort`n" -Encoding UTF8
     
-    $color = if ($result -match "KEY_EXCHANGE|TLS_COMPLETE|DECRYPTED|RECEIVED") { "Green" } elseif ($result -match "HANGING") { "Yellow" } else { "Red" }
-    Write-Host "  RESULT: $result" -ForegroundColor $color
-    
-    # Log
-    Add-Content $resultsFile "[$testNum] $($patch.name) | $result | $($patch.desc)`nFRIDA: $($fridaOut.Trim())`nSERVER: $($serverOut.Substring([Math]::Max(0,$serverOut.Length-300)))`n" -Encoding UTF8
-    
-    # Revert patch
-    Write-Host "  Reverting..." -ForegroundColor Gray
-    $revertScript = Wrap-Revert $patch.revert
-    Run-Frida-Patch $revertScript | Out-Null
-    Start-Sleep 1
-    
-    # Dismiss failure dialog (press Enter)
-    Send-Enter
-    Start-Sleep 2
+    if ($p.revert) { Run-Frida $p.revert | Out-Null; Start-Sleep 1 }
+    Send-Enter; Start-Sleep 2
 }
 
-# Cleanup
-Stop-Job $serverJob -ErrorAction SilentlyContinue
-Remove-Job $serverJob -ErrorAction SilentlyContinue
-
-Write-Host "`n=== ALL TESTS COMPLETE ===" -ForegroundColor Green
-Write-Host "Results in batch-results.log" -ForegroundColor Green
-
-git add batch-results.log
-git commit -m "Batch v2 results $timestamp"
-git push 2>&1
-Write-Host "Pushed." -ForegroundColor Cyan
+Stop-Job $serverJob -ErrorAction SilentlyContinue; Remove-Job $serverJob -ErrorAction SilentlyContinue
+Write-Host "`n=== DONE ===" -ForegroundColor Green
+git add batch-results.log; git commit -m "Batch v4 results $timestamp"; git push 2>&1
