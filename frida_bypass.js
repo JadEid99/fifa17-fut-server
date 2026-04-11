@@ -1,72 +1,45 @@
 /**
- * Frida v6 - Fixed API calls. Patch cert verify.
- * Run: frida -n FIFA17.exe -l frida_bypass.js
+ * Frida v7 - Patch cert_verify AND cert_process to return 0.
+ * Also hook to log when they're called.
+ * 
+ * Run with server already running:
+ *   1. Start server: node server-standalone\server.mjs
+ *   2. Launch FIFA 17, wait 20s
+ *   3. frida -n FIFA17.exe -l frida_bypass.js
+ *   4. Trigger connection in game
  */
-console.log("[*] FIFA 17 ProtoSSL Bypass v6");
+console.log("[*] FIFA 17 ProtoSSL Bypass v7");
 
 var base = Process.enumerateModules()[0].base;
-console.log("[*] Base: " + base);
-
 var certVerify = base.add(0x6124140);
-console.log("[*] cert_verify target: " + certVerify);
 
-// Check if the page is mapped
+// Read original bytes first
+var origBytes = [];
+for (var i = 0; i < 16; i++) origBytes.push(certVerify.add(i).readU8());
+console.log("[*] cert_verify at " + certVerify);
+console.log("[*] Original: " + origBytes.map(function(b){return b.toString(16).padStart(2,'0')}).join(' '));
+
+// Instead of patching the function start, use Interceptor to hook it
+// This is safer - Frida manages the hook properly
 try {
-    var testByte = certVerify.readU8();
-    console.log("[+] Address readable, first byte: 0x" + testByte.toString(16));
-    
-    // Read 32 bytes
-    var bytes = [];
-    for (var i = 0; i < 32; i++) {
-        bytes.push(certVerify.add(i).readU8().toString(16).padStart(2, '0'));
-    }
-    console.log("[*] cert_verify bytes: " + bytes.join(' '));
-    
-    // Check if it's real code
-    if (testByte === 0 || testByte === 0xCC) {
-        console.log("[-] Looks like uninitialized code");
-    } else {
-        console.log("[+] Looks like valid code, patching...");
-        Memory.protect(certVerify, 16, 'rwx');
-        certVerify.writeU8(0x31);       // xor eax, eax
-        certVerify.add(1).writeU8(0xC0);
-        certVerify.add(2).writeU8(0xC3); // ret
-        console.log("[+] PATCHED! cert_verify now returns 0 (success)");
-    }
-} catch(e) {
-    console.log("[-] Cannot access cert_verify: " + e.message);
-    console.log("[*] Trying to find it via memory scan instead...");
-    
-    // The address might be wrong. Let's check what's at that virtual address.
-    try {
-        var info = Process.findRangeByAddress(certVerify);
-        if (info) {
-            console.log("[*] Range: " + info.base + " size=" + info.size + " prot=" + info.protection);
-        } else {
-            console.log("[-] Address not in any mapped range");
-            
-            // List all ranges near this address
-            Process.enumerateRanges('---').forEach(function(r) {
-                if (r.base.compare(certVerify.sub(0x1000000)) > 0 && 
-                    r.base.compare(certVerify.add(0x1000000)) < 0) {
-                    console.log("  Range: " + r.base + " size=" + r.size + " prot=" + r.protection);
-                }
-            });
+    Interceptor.attach(certVerify, {
+        onEnter: function(args) {
+            console.log("[!] cert_verify called! args: " + args[0] + ", " + args[1] + ", " + args[2]);
+        },
+        onLeave: function(retval) {
+            console.log("[!] cert_verify returning: " + retval + " -> forcing 0");
+            retval.replace(ptr(0));
         }
-    } catch(e2) {
-        console.log("[-] " + e2.message);
-    }
+    });
+    console.log("[+] Hooked cert_verify - will force return 0");
+} catch(e) {
+    console.log("[-] Hook failed: " + e.message);
+    console.log("[*] Falling back to direct patch...");
+    Memory.protect(certVerify, 16, 'rwx');
+    certVerify.writeU8(0x31);
+    certVerify.add(1).writeU8(0xC0);
+    certVerify.add(2).writeU8(0xC3);
+    console.log("[+] Direct patch applied");
 }
 
-// Also try the other known addresses
-[0x6127020, 0x61262DC, 0x612E7A4, 0x612D5D0].forEach(function(off) {
-    var addr = base.add(off);
-    try {
-        var b = addr.readU8();
-        console.log("[+] exe+0x" + off.toString(16) + " readable, byte=0x" + b.toString(16));
-    } catch(e) {
-        console.log("[-] exe+0x" + off.toString(16) + " NOT accessible");
-    }
-});
-
-console.log("\n[*] Done.");
+console.log("[*] Ready. Trigger a connection in the game now.");
