@@ -23,6 +23,11 @@ public class KeySender {
         System.Threading.Thread.Sleep(50);
         keybd_event(VK_RETURN, 0x1C, KEYEVENTF_KEYUP, UIntPtr.Zero);
     }
+    public static void PressQ() {
+        keybd_event(0x51, 0x10, 0, UIntPtr.Zero);
+        System.Threading.Thread.Sleep(50);
+        keybd_event(0x51, 0x10, KEYEVENTF_KEYUP, UIntPtr.Zero);
+    }
 }
 "@
 
@@ -32,6 +37,15 @@ function Send-EnterToFIFA {
         [KeySender]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
         Start-Sleep -Milliseconds 200
         [KeySender]::PressEnter()
+    }
+}
+
+function Send-QToFIFA {
+    $proc = Get-Process -Name FIFA17 -ErrorAction SilentlyContinue
+    if ($proc -and $proc.MainWindowHandle -ne [IntPtr]::Zero) {
+        [KeySender]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+        Start-Sleep -Milliseconds 200
+        [KeySender]::PressQ()
     }
 }
 
@@ -294,10 +308,10 @@ foreach ($patch in $patches) {
     }
     
     # Wait for connection attempt (game should auto-connect during launch)
-    # Send extra enters to trigger connection
-    Write-Host "  Triggering connection..."
-    Send-EnterToFIFA
-    Start-Sleep 10
+    # Send Q to open Ultimate Team which triggers connection attempt #2
+    Write-Host "  Triggering connection attempt #2 (pressing Q)..."
+    Send-QToFIFA
+    Start-Sleep 15
     
     # Collect server output
     $serverOutput = Receive-Job $serverJob 2>&1 | Out-String
