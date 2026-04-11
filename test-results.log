@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 12:16:20) ===
+﻿=== TEST RESULTS (2026-04-11 12:18:29) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -19,7 +19,7 @@ Initial CA cert scan...
 ReplaceEACert: replaced 0 certs
 ReplaceEACert: replaced 0 certs
 ReplaceEACert: replaced 0 certs
-connect() to port 42230 detected! socket=4152
+ReplaceEACert: replaced 0 certs
 
 
 --- END ---
