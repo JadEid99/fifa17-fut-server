@@ -1,11 +1,35 @@
-// Quick test: make +0x6138680 return 0 (this is called from cert_process)
-// This might be the RSA signature verification function
-console.log("[*] Patching +0x6138680 to return 0");
+// Search the ENTIRE exe for CMP [reg+0x8C], value patterns
+// to find ProtoSSLSend/Recv which check ST_UNSECURE
+console.log("[*] Searching entire exe for iState checks...");
 var b = Process.getModuleByName("FIFA17.exe").base;
-var a = b.add(0x6138680);
-var orig = [];
-for (var i = 0; i < 6; i++) orig.push(a.add(i).readU8());
-console.log("[*] Original: " + orig.map(function(x){return ("0"+x.toString(16)).slice(-2)}).join(" "));
-Memory.protect(a, 6, 'rwx');
-a.writeByteArray([0xB8, 0x00, 0x00, 0x00, 0x00, 0xC3]); // mov eax, 0; ret
-console.log("[+] Patched!");
+var size = Process.getModuleByName("FIFA17.exe").size;
+
+// Search in 16MB chunks
+var found = 0;
+var results = {};
+for (var chunk = 0; chunk < size && found < 100; chunk += 0x1000000) {
+    var scanSize = Math.min(0x1000000, size - chunk);
+    var start = b.add(chunk);
+    try {
+        for (var i = 0; i < scanSize - 7 && found < 100; i++) {
+            // 83 BB 8C 00 00 00 XX = CMP DWORD [rbx+0x8C], XX
+            if (start.add(i).readU8() === 0x83 && start.add(i+1).readU8() === 0xBB &&
+                start.add(i+2).readU8() === 0x8C && start.add(i+3).readU8() === 0x00 &&
+                start.add(i+4).readU8() === 0x00 && start.add(i+5).readU8() === 0x00) {
+                var val = start.add(i+6).readU8();
+                var addr = chunk + i;
+                if (!results[val]) results[val] = [];
+                results[val].push("0x" + addr.toString(16));
+                found++;
+            }
+        }
+    } catch(e) {}
+}
+
+// Print grouped by value
+var keys = Object.keys(results).sort(function(a,b){return a-b});
+for (var k = 0; k < keys.length; k++) {
+    var val = keys[k];
+    send("iState==" + val + " checked at: " + results[val].join(", "));
+}
+send("Total: " + found + " checks found");
