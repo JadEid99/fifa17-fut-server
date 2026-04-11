@@ -1,29 +1,43 @@
-console.log("[*] v18 - make JNE unconditional to skip error path cleanly");
+console.log("[*] v20 - dump State 3 (Certificate) code");
 var base = Process.getModuleByName("FIFA17.exe").base;
 
-// From the disassembly:
-// 6126440: 75 21  JNE +0x21 (to 0x6126463) - skip error if condition met
-// 6126442: ...    (check bAllowAnyCert or similar)
-// 6126449: 75 18  JNE +0x18 (to 0x6126463) - skip error if condition met
-// 612644B: ...    (load params)
-// 612644E: E8 ... CALL error handler
-// 6126453: ...    (set error state)
-// 6126463: ...    (continue state machine - check state == 6)
-//
-// Change 75 21 (JNE) to EB 21 (JMP) = always skip the error path
-// This is a 1-byte change: 0x75 -> 0xEB
+// State 3 (Certificate processing) is at exe+0x61262DC
+// This is where the cert is parsed and verified.
+// Dump 256 bytes starting from there.
 
-var jneAddr = base.add(0x6126440);
-var b = jneAddr.readU8();
-console.log("[*] Byte at exe+0x6126440: 0x" + b.toString(16));
+var state3 = base.add(0x61262DC);
+console.log("[*] State 3 (Certificate) at " + state3 + ":");
 
-if (b === 0x75) {
-    Memory.protect(jneAddr, 1, 'rwx');
-    jneAddr.writeU8(0xEB); // JMP (unconditional)
-    console.log("[+] Changed JNE to JMP at exe+0x6126440!");
-    console.log("[+] Error path is now ALWAYS skipped!");
-} else {
-    console.log("[-] Expected 0x75 (JNE), got 0x" + b.toString(16));
+for (var row = 0; row < 16; row++) {
+    var off = row * 16;
+    var hex = "";
+    for (var i = 0; i < 16; i++) {
+        hex += ("0" + state3.add(off + i).readU8().toString(16)).slice(-2) + " ";
+    }
+    console.log("  +" + (0x61262DC + off).toString(16) + ": " + hex);
 }
 
-console.log("[*] Trigger connection now.");
+// Also dump State 4 (ServerHelloDone) at +0x612634D
+var state4 = base.add(0x612634D);
+console.log("\n[*] State 4 (ServerHelloDone) at " + state4 + ":");
+for (var row = 0; row < 8; row++) {
+    var off = row * 16;
+    var hex = "";
+    for (var i = 0; i < 16; i++) {
+        hex += ("0" + state4.add(off + i).readU8().toString(16)).slice(-2) + " ";
+    }
+    console.log("  +" + (0x612634D + off).toString(16) + ": " + hex);
+}
+
+// Look for CALL instructions in State 3 that might be cert verify
+var addr = state3;
+for (var i = 0; i < 128; i++) {
+    if (addr.add(i).readU8() === 0xE8) {
+        var disp = addr.add(i+1).readS32();
+        var target = addr.add(i+5).add(disp);
+        var targetOff = target.sub(base);
+        console.log("\n[*] CALL at exe+" + addr.add(i).sub(base) + " -> exe+" + targetOff);
+    }
+}
+
+console.log("\n[*] Done.");
