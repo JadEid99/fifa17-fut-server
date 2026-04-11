@@ -137,9 +137,9 @@ static int FindAndReplaceCAModulus() {
                     
                     Log("CA CERT NODE: OTG3 at %p", base + j);
                     
-                    // Dump 256 bytes after OTG3 to find the modulus (only first time)
+                    // Dump 512 bytes after OTG3 to find the modulus (only first time)
                     if (!g_dumpDone) {
-                        for (int doff = 0; doff < 256; doff += 32) {
+                        for (int doff = 0; doff < 512; doff += 32) {
                             if (j + doff + 32 >= size) break;
                             char dhex[128]; int dhlen = 0;
                             char dasc[40] = {0};
