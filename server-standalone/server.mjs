@@ -428,14 +428,13 @@ bT9J4z1OJr6cTA==
   });
 
   // NOW send the handshake messages (listener is already set up above)
-  // Send all handshake messages in a SINGLE TLS record
-  // ProtoSSL's minimal implementation may expect all messages in one record
-  const allHandshakes = Buffer.concat([serverHelloMsg, certMsg, helloDoneMsg]);
-  const singleRecord = wrapRecord(0x16, recordVersion, allHandshakes);
+  // Send handshake messages as separate TLS records
+  const serverHelloRecord = wrapRecord(0x16, recordVersion, serverHelloMsg);
+  const certRecord = wrapRecord(0x16, recordVersion, certMsg);
+  const helloDoneRecord = wrapRecord(0x16, recordVersion, helloDoneMsg);
   
-  console.log(`[SSL] Sending ALL handshake messages in single record (${singleRecord.length}b)`);
-  console.log(`[SSL]   ServerHello: ${serverHelloMsg.length}b, Certificate: ${certMsg.length}b, ServerHelloDone: ${helloDoneMsg.length}b`);
-  socket.write(singleRecord);
+  console.log(`[SSL] Sending ServerHello (${serverHelloRecord.length}b) + Certificate (${certRecord.length}b) + ServerHelloDone (${helloDoneRecord.length}b)`);
+  socket.write(Buffer.concat([serverHelloRecord, certRecord, helloDoneRecord]));
   console.log(`[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...`);
 }
 
