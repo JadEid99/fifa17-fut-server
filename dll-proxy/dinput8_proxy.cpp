@@ -110,33 +110,18 @@ static int FindAndReplaceCAModulus() {
             __try {
                 for (SIZE_T j = 0; j + otg3Len + 256 < size; j++) {
                     if (base[j] != 'O' || memcmp(base + j, otg3, otg3Len) != 0) continue;
-                    if (base[j + otg3Len] != 0x00) continue; // padded
+                    // Check padded format
+                    if (j + otg3Len >= size || base[j + otg3Len] != 0x00) continue;
+                    if (j + otg3Len + 1 < size && base[j + otg3Len + 1] != 0x00) continue;
                     
-                    // Check this is NOT inside a DER cert (should be padded with nulls)
-                    if (j + otg3Len + 2 < size && base[j + otg3Len + 1] != 0x00) continue;
-                    
-                    // Check "Online Technology Group" is nearby (part of CA cert identity)
-                    bool hasOTG = false;
-                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j + 0x200 && scan + 23 < size && !hasOTG; scan++) {
-                        if (memcmp(base + scan, "Online Technology Group", 23) == 0) hasOTG = true;
-                    }
-                    if (!hasOTG) continue;
-                    
-                    // Skip if "Global Online Studio" is nearby (server cert, not CA cert)
-                    bool isServerCert = false;
-                    for (SIZE_T scan = (j > 0x200 ? j - 0x200 : 0); scan < j + 0x200 && scan + 20 < size && !isServerCert; scan++) {
-                        if (memcmp(base + scan, "Global Online Studio", 20) == 0) isServerCert = true;
-                    }
-                    if (isServerCert) continue;
-                    
-                    Log("CA CERT NODE: Redwood at %p", base + j);
+                    Log("REDWOOD at %p", base + j);
                     
                     // Dump 512 bytes after OTG3 to find the modulus
                     // Dump first 3 unique instances
                     static int dumpCount = 0;
-                    if (dumpCount < 4) {
+                    if (dumpCount < 6) {
                         dumpCount++;
-                        for (int doff = 0; doff < 512; doff += 32) {
+                        for (int doff = 0; doff < 1024; doff += 32) {
                             if (j + doff + 32 >= size) break;
                             char dhex[128]; int dhlen = 0;
                             char dasc[40] = {0};
