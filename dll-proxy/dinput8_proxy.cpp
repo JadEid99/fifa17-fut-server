@@ -1,20 +1,25 @@
 /**
- * dinput8.dll Proxy - v15
+ * dinput8.dll Proxy - v16
  * 
- * Strategy: Find the parsed CA cert struct in memory and replace
- * the RSA public key modulus with our CA's modulus.
+ * v15 found the PARSED SERVER CERT struct with RSA modulus at offset +0x388.
+ * Now we need to find the PARSED CA CERT struct and replace its RSA modulus.
  * 
- * From v8 analysis, the parsed cert fields are stored as null-terminated
- * strings at addresses like 0x27D90A60:
- *   "US" (padded to 32 bytes)
- *   "California" (padded to 32 bytes)  
- *   "Redwood City" (padded to 32 bytes)
- *   "Electronic Arts, Inc." (padded to 32 bytes)
- *   "Online Technology Group" (padded to 32 bytes)
+ * The CA cert is self-signed, so its subject = issuer = "OTG3 Certificate Authority".
+ * We search for the CA's parsed struct, find its RSA modulus, and replace it
+ * with our CA's modulus. Then the game verifies our server cert against our
+ * CA key and it passes.
  * 
- * The RSA public key modulus (128 bytes for 1024-bit) should be nearby.
- * This version dumps 2048 bytes around each "Online Technology Group"
- * occurrence that's in the padded-string format (followed by null bytes).
+ * From v15 struct layout (each field is 32 bytes padded):
+ *   -0x180: Issuer.C = "US"
+ *   -0x160: Issuer.ST = "California"  
+ *   -0x140: Issuer.L = "Redwood City"
+ *   -0x120: Issuer.O = "Electronic Arts, Inc."
+ *   -0x100: Issuer.OU = "Online Technology Group"
+ *   ... more padding ...
+ *   +0x100: Subject.CN = "OTG3 Certificate Authority" (or server CN)
+ *   ... more fields ...
+ *   +0x384: key size = 0x80 (128)
+ *   +0x388: RSA modulus (128 bytes)
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -69,8 +74,7 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-// Our CA's RSA modulus (128 bytes, from the 712-byte CA cert we generated)
-// This is what we want to replace EA's CA modulus with.
+// Our CA's RSA modulus (128 bytes) - from the 712-byte CA cert
 static const BYTE g_ourCAModulus[] = {
     0xcc,0xee,0xf0,0xa2,0xbe,0x51,0x6f,0x51,0x8f,0x17,0xac,0xf9,0xba,0x7a,0x82,0x04,
     0x72,0xce,0xa4,0x7e,0xa7,0x89,0xc8,0xc2,0xc9,0x71,0x05,0x4d,0xb9,0xf3,0xab,0x5b,
@@ -82,18 +86,23 @@ static const BYTE g_ourCAModulus[] = {
     0x50,0x8c,0x50,0xb5,0x5f,0x5c,0x50,0x69,0x39,0x1c,0x5a,0x3e,0xa3,0xa2,0x7e,0x5d
 };
 
-static const BYTE g_otgPattern[] = "Online Technology Group";
-static const SIZE_T g_otgLen = 23;
+// Search pattern: "OTG3 Certificate Authority" followed by null padding
+// This identifies the CN field in the parsed cert struct
+static const char g_otg3CN[] = "OTG3 Certificate Authority";
+static const SIZE_T g_otg3CNLen = 26;
 
-// Search for parsed CA cert structs (padded string format)
-// and dump the surrounding memory to find the RSA modulus
-static void FindAndDumpParsedCerts() {
+static int g_replacements = 0;
+
+// Find parsed cert structs where CN = "OTG3 Certificate Authority"
+// and the struct has the key size marker (0x80 = 128 at a known offset).
+// Then replace the RSA modulus.
+static int FindAndReplaceCAKey() {
+    int replaced = 0;
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    int found = 0;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 100 &&
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 1000 &&
             !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
             (mbi.Protect & 0xFE)) {
             
@@ -101,53 +110,75 @@ static void FindAndDumpParsedCerts() {
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0; j + g_otgLen < size; j++) {
-                    if (memcmp(base + j, g_otgPattern, g_otgLen) != 0) continue;
+                for (SIZE_T j = 0; j + g_otg3CNLen + 0x300 < size; j++) {
+                    // Look for "OTG3 Certificate Authority" + null padding
+                    if (base[j] != 'O' || memcmp(base + j, g_otg3CN, g_otg3CNLen) != 0) continue;
+                    if (base[j + g_otg3CNLen] != 0x00) continue; // must be null-terminated + padded
                     
-                    // Check if this is the padded-string format (followed by null bytes)
-                    // The parsed struct has each field padded to ~32 bytes
-                    bool isPadded = (j + g_otgLen + 5 < size) && 
-                                    base[j + g_otgLen] == 0x00 &&
-                                    base[j + g_otgLen + 1] == 0x00;
+                    // This could be the CN field. In the server cert struct from v15,
+                    // the CN was at offset +0x100 from OTG string, and the RSA key
+                    // was at +0x388 from OTG. So key is at CN + 0x288.
+                    // But for the CA cert, the layout might differ.
                     
-                    if (!isPadded) continue; // skip DER cert occurrences
-                    
-                    found++;
-                    Log("=== PARSED CA STRUCT #%d at %p (region %p, protect=0x%lx) ===",
-                        found, base + j, base, mbi.Protect);
-                    
-                    // Dump 512 bytes BEFORE (should contain US, California, etc.)
-                    SIZE_T beforeLen = (j >= 512) ? 512 : j;
-                    if (beforeLen > 0) {
-                        Log("--- %llu bytes BEFORE OTG ---", (unsigned long long)beforeLen);
-                        BYTE* start = base + j - beforeLen;
-                        for (SIZE_T i = 0; i < beforeLen; i += 32) {
-                            char hex[128] = {0};
-                            char ascii[40] = {0};
-                            int hlen = 0;
-                            SIZE_T lineLen = (i + 32 <= beforeLen) ? 32 : (beforeLen - i);
-                            for (SIZE_T k = 0; k < lineLen; k++) {
-                                hlen += sprintf(hex + hlen, "%02X ", start[i + k]);
-                                ascii[k] = (start[i+k] >= 32 && start[i+k] < 127) ? (char)start[i+k] : '.';
+                    // Look for the key size marker: 0x80 0x00 0x00 0x00 (128 as uint32)
+                    // followed by 128 bytes of non-zero data (the modulus)
+                    // Search in a range after the CN field
+                    for (int off = 0x100; off < 0x400; off += 4) {
+                        if (j + off + 4 + 128 >= size) break;
+                        
+                        BYTE* p = base + j + off;
+                        if (p[0] == 0x80 && p[1] == 0x00 && p[2] == 0x00 && p[3] == 0x00) {
+                            // Check if followed by non-zero data (RSA modulus)
+                            BYTE* modulus = p + 4;
+                            int nonZero = 0;
+                            for (int k = 0; k < 16; k++) if (modulus[k] != 0) nonZero++;
+                            if (nonZero < 8) continue; // too many zeros, not a key
+                            
+                            // Check if this is already our modulus
+                            if (memcmp(modulus, g_ourCAModulus, 128) == 0) continue;
+                            
+                            // Found a candidate! Log it
+                            Log("FOUND RSA key at %p (CN at %p, offset +0x%X from CN)",
+                                modulus, base + j, off + 4);
+                            
+                            char hex[64]; int hlen = 0;
+                            for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", modulus[h]);
+                            Log("  Current modulus (first 16): %s", hex);
+                            
+                            // Check what CN this belongs to - is it the CA cert?
+                            // The CA cert has CN = "OTG3 Certificate Authority"
+                            // Look for "winter15" nearby - if found, this is the server cert
+                            bool isServerCert = false;
+                            for (int scan = -0x400; scan < 0x400; scan += 32) {
+                                if (j + scan >= 0 && j + scan + 30 < size) {
+                                    if (memcmp(base + j + scan, "winter15", 8) == 0) {
+                                        isServerCert = true;
+                                        break;
+                                    }
+                                }
                             }
-                            Log("  %04llX: %-96s %s", (unsigned long long)i, hex, ascii);
+                            
+                            if (isServerCert) {
+                                Log("  This is the SERVER cert key, skipping");
+                                continue;
+                            }
+                            
+                            Log("  This appears to be the CA cert key! Replacing...");
+                            
+                            DWORD op;
+                            if (VirtualProtect(modulus, 128, PAGE_READWRITE, &op)) {
+                                memcpy(modulus, g_ourCAModulus, 128);
+                                VirtualProtect(modulus, 128, op, &op);
+                                replaced++;
+                                g_replacements++;
+                                Log("  REPLACED CA modulus at %p (total: %d)", modulus, g_replacements);
+                                
+                                // Log new modulus
+                                hlen = 0;
+                                for (int h = 0; h < 16; h++) hlen += sprintf(hex+hlen, "%02X ", modulus[h]);
+                                Log("  New modulus (first 16): %s", hex);
+                            }
                         }
-                    }
-                    
-                    // Dump 1024 bytes AFTER (should contain the RSA key)
-                    SIZE_T afterLen = (j + 1024 <= size) ? 1024 : (size - j);
-                    Log("--- %llu bytes FROM OTG onwards ---", (unsigned long long)afterLen);
-                    BYTE* start = base + j;
-                    for (SIZE_T i = 0; i < afterLen; i += 32) {
-                        char hex[128] = {0};
-                        char ascii[40] = {0};
-                        int hlen = 0;
-                        SIZE_T lineLen = (i + 32 <= afterLen) ? 32 : (afterLen - i);
-                        for (SIZE_T k = 0; k < lineLen; k++) {
-                            hlen += sprintf(hex + hlen, "%02X ", start[i + k]);
-                            ascii[k] = (start[i+k] >= 32 && start[i+k] < 127) ? (char)start[i+k] : '.';
-                        }
-                        Log("  %04llX: %-96s %s", (unsigned long long)i, hex, ascii);
                     }
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
@@ -155,25 +186,37 @@ static void FindAndDumpParsedCerts() {
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
     }
-    Log("Found %d parsed CA cert structs", found);
+    return replaced;
 }
+
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v15 (dump parsed CA struct to find RSA key) ===");
+        Log("=== FIFA 17 SSL Bypass v16 (replace CA RSA modulus in parsed struct) ===");
         Log("PID: %lu", GetCurrentProcessId());
         
-        // Wait 20 seconds for Denuvo to unpack, then dump
-        Sleep(20000);
-        Log("Starting parsed cert struct search...");
-        FindAndDumpParsedCerts();
+        int totalReplaced = 0;
+        DWORD startTick = GetTickCount();
         
-        // Do another dump at 40 seconds
-        Sleep(20000);
-        Log("Second search at 40s...");
-        FindAndDumpParsedCerts();
+        // Scan every 500ms for 3 minutes
+        for (int i = 0; i < 360; i++) {
+            Sleep(500);
+            DWORD elapsed = GetTickCount() - startTick;
+            
+            __try {
+                int r = FindAndReplaceCAKey();
+                totalReplaced += r;
+                if (r > 0) Log("Scan %d (%lus): replaced %d (total: %d)", i, elapsed/1000, r, totalReplaced);
+            } __except(EXCEPTION_EXECUTE_HANDLER) {
+                Log("Scan %d: EXCEPTION", i);
+            }
+            
+            if (i % 60 == 0 && i > 0) {
+                Log("Heartbeat: scan=%d, %lus, replaced=%d", i, elapsed/1000, totalReplaced);
+            }
+        }
         
-        Log("=== Done ===");
+        Log("=== Done. replaced=%d ===", totalReplaced);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("FATAL exception");
     }
