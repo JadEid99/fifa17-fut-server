@@ -1,35 +1,11 @@
 /**
- * dinput8.dll Proxy - v20 (THE BREAKTHROUGH)
+ * dinput8.dll Proxy - v21
  * 
- * From reading the DirtySDK ProtoSSL source code, we found:
+ * v20 found 0 instances of "winter15.gosredirector.ea.com" in writable memory.
+ * The struct might be in execute+read memory or the string might be shorter.
  * 
- * struct ProtoSSLRefT {
- *     SocketT *pSock;           // +0x00
- *     HostentT *pHost;          // +0x08
- *     int32_t iMemGroup;        // +0x10
- *     void *pMemGroupUserData;  // +0x18
- *     char strHost[256];        // +0x20  <-- contains "winter15.gosredirector.ea.com"
- *     struct sockaddr PeerAddr; // +0x120
- *     int32_t iState;           // +0x130
- *     int32_t iClosed;          // +0x134
- *     SecureStateT *pSecure;    // +0x138
- *     uint8_t bAllowAnyCert;    // +0x140  <-- SET THIS TO 1!
- * };
- * 
- * When bAllowAnyCert == 1, ProtoSSL skips ALL certificate verification:
- *   if (!pState->bAllowAnyCert) {
- *       // hostname check
- *       // signature verification
- *   }
- * 
- * Strategy: Search memory for "winter15.gosredirector.ea.com" as a
- * null-terminated string at a 32-byte aligned offset (strHost is at +0x20).
- * Then set the byte at strHost + 0x120 (= bAllowAnyCert at +0x140) to 1.
- * 
- * NOTE: The offsets above are from an older DirtySDK version. FIFA 17's
- * version may have different offsets. So we search a range of offsets
- * after strHost for a byte that's 0x00 and set it to 0x01.
- * We also try the ProtoSSLControl approach: search for the 'ncrt' handler.
+ * v21: Search ALL readable memory for "winter15.gosredirector.ea.com",
+ * dump the struct context, and try to set bAllowAnyCert.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -84,101 +60,82 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-static const char g_hostStr[] = "winter15.gosredirector.ea.com";
-static const SIZE_T g_hostLen = 29; // including null terminator for exact match
-
 static int g_patched = 0;
 
-// Search for the ProtoSSLRefT struct by finding strHost field,
-// then set bAllowAnyCert to 1.
-// 
-// In the source, strHost is at +0x20 in the struct.
-// bAllowAnyCert is at +0x140 in the struct.
-// So bAllowAnyCert is at strHost + 0x120.
-// 
-// But FIFA 17 may have a different struct layout (newer DirtySDK).
-// So we dump the area around strHost and try multiple offsets.
-static int FindAndPatchAllowAnyCert() {
-    int patched = 0;
+// Search ALL memory for "winter15.gosredirector.ea.com"
+// Log every occurrence with its protection flags and surrounding bytes
+static int FindHostStrings() {
+    static const char host[] = "winter15.gosredirector.ea.com";
+    static const SIZE_T hostLen = 29;
+    int found = 0;
+    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 256 &&
             !(mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS)) &&
-            (mbi.Protect & (PAGE_READWRITE | PAGE_EXECUTE_READWRITE))) {
-            // Only search writable memory (the struct is on the heap)
+            (mbi.Protect & 0xFE)) { // any readable
             
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                for (SIZE_T j = 0; j + g_hostLen + 0x200 < size; j++) {
-                    if (base[j] != 'w') continue;
-                    if (memcmp(base + j, g_hostStr, g_hostLen - 1) != 0) continue;
-                    if (base[j + g_hostLen - 1] != 0x00) continue; // null terminated
+                for (SIZE_T j = 0; j + hostLen < size; j++) {
+                    if (base[j] != 'w' || memcmp(base + j, host, hostLen) != 0) continue;
                     
-                    BYTE* strHostAddr = base + j;
-                    Log("Found strHost at %p", strHostAddr);
+                    found++;
+                    Log("HOST STRING #%d at %p protect=0x%lx region=%p+%llu",
+                        found, base + j, mbi.Protect, base, (unsigned long long)size);
                     
-                    // Dump 32 bytes before strHost (should be pSock, pHost, etc.)
-                    if (j >= 0x40) {
+                    // Dump 64 bytes before
+                    if (j >= 64) {
                         char hex[256]; int hlen = 0;
-                        for (int h = 0; h < 64; h++)
-                            hlen += sprintf(hex + hlen, "%02X ", strHostAddr[-0x40 + h]);
+                        for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", base[j-64+h]);
                         Log("  -0x40: %s", hex);
+                        hlen = 0;
+                        for (int h = 0; h < 32; h++) hlen += sprintf(hex+hlen, "%02X ", base[j-32+h]);
+                        Log("  -0x20: %s", hex);
                     }
                     
-                    // Dump bytes at expected bAllowAnyCert offsets
-                    // Try offsets 0x100 to 0x180 from strHost
-                    Log("  Bytes at offsets 0x100-0x17F from strHost:");
-                    for (int off = 0x100; off < 0x180; off += 16) {
-                        if (j + off + 16 >= size) break;
-                        char hex[64]; int hlen = 0;
-                        for (int h = 0; h < 16; h++)
-                            hlen += sprintf(hex + hlen, "%02X ", strHostAddr[off + h]);
+                    // Dump 256 bytes after the string
+                    for (int off = 0; off < 0x180; off += 32) {
+                        if (j + hostLen + off + 32 >= size) break;
+                        char hex[128]; int hlen = 0;
+                        for (int h = 0; h < 32; h++)
+                            hlen += sprintf(hex+hlen, "%02X ", base[j + off + h]);
                         Log("  +0x%03X: %s", off, hex);
                     }
                     
-                    // Try setting bAllowAnyCert at multiple candidate offsets
-                    // The struct in source has it at strHost + 0x120
-                    // But newer versions might have it elsewhere
-                    // We look for a byte that's 0x00 preceded by a pointer (8 bytes)
-                    // which would be pSecure
-                    
-                    int offsets[] = {0x120, 0x128, 0x130, 0x138, 0x140, 0x148, 0x150};
-                    for (int i = 0; i < sizeof(offsets)/sizeof(offsets[0]); i++) {
-                        int off = offsets[i];
-                        if (j + off >= size) continue;
-                        BYTE val = strHostAddr[off];
-                        Log("  Candidate bAllowAnyCert at +0x%X = 0x%02X", off, val);
-                    }
-                    
-                    // For now, set ALL candidate offsets to 1
-                    // This is aggressive but safe - setting random bytes to 1
-                    // in a struct won't crash, and one of them will be bAllowAnyCert
-                    DWORD op;
-                    if (VirtualProtect(strHostAddr + 0x100, 0x80, PAGE_READWRITE, &op)) {
-                        for (int i = 0; i < sizeof(offsets)/sizeof(offsets[0]); i++) {
-                            strHostAddr[offsets[i]] = 0x01;
+                    // Try to set bAllowAnyCert at various offsets
+                    // In the struct, strHost is at +0x20, bAllowAnyCert at +0x140
+                    // So from strHost, bAllowAnyCert is at +0x120
+                    // But struct may be different, so try a range
+                    bool didPatch = false;
+                    for (int off = 0x100; off <= 0x160; off += 8) {
+                        if (j + off >= size) break;
+                        DWORD op;
+                        if (VirtualProtect(base + j + off, 1, PAGE_READWRITE, &op)) {
+                            BYTE oldVal = base[j + off];
+                            base[j + off] = 0x01;
+                            VirtualProtect(base + j + off, 1, op, &op);
+                            Log("  SET byte at +0x%X from 0x%02X to 0x01", off, oldVal);
+                            didPatch = true;
                         }
-                        VirtualProtect(strHostAddr + 0x100, 0x80, op, &op);
-                        patched++;
-                        g_patched++;
-                        Log("  SET bAllowAnyCert candidates to 1 (total: %d)", g_patched);
                     }
+                    if (didPatch) g_patched++;
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
         if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
     }
-    return patched;
+    return found;
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
     __try {
-        Log("=== FIFA 17 SSL Bypass v20 (bAllowAnyCert flag) ===");
+        Log("=== FIFA 17 SSL Bypass v21 (search ALL memory for host string) ===");
         Log("PID: %lu", GetCurrentProcessId());
         
         // Scan every 500ms for 3 minutes
@@ -188,16 +145,16 @@ static DWORD WINAPI PatchThread(LPVOID) {
             DWORD elapsed = GetTickCount() - startTick;
             
             __try {
-                int r = FindAndPatchAllowAnyCert();
-                if (r > 0) Log("Scan %d (%lus): patched %d structs", i, elapsed/1000, r);
+                int r = FindHostStrings();
+                if (r > 0) Log("Scan %d (%lus): found %d host strings, patched=%d", i, elapsed/1000, r, g_patched);
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
             
             if (i % 60 == 0 && i > 0) {
-                Log("Heartbeat: scan=%d, %lus, total_patched=%d", i, elapsed/1000, g_patched);
+                Log("Heartbeat: scan=%d, %lus, patched=%d", i, elapsed/1000, g_patched);
             }
         }
         
-        Log("=== Done. total_patched=%d ===", g_patched);
+        Log("=== Done. patched=%d ===", g_patched);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("FATAL exception");
     }
