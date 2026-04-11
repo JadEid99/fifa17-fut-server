@@ -1,0 +1,363 @@
+﻿=== BATCH TEST RESULTS (2026-04-11 17:21:49) ===
+Total patches to test: 15
+
+=== TEST 1: G1_JNE_to_JMP_6126440 ===
+DESC: Change JNE to JMP at +0x6126440 (skip error path entirely)
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da673db74e18fb...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49720
+
+===
+
+=== TEST 2: G1_NOP_call_612644E ===
+DESC: NOP the CALL to error handler at +0x612644E
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6782a78c9a70...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49731
+
+===
+
+=== TEST 3: G1_NOP_call_AND_JNE ===
+DESC: NOP CALL at +0x612644E AND change JNE at +0x6126449 to JMP
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da67c89a6df461...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49738
+
+===
+
+=== TEST 4: G2_error_handler_ret0 ===
+DESC: Make error handler at +0x612E770 return 0 immediately
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da680de28bf213...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49747
+
+===
+
+=== TEST 5: G3_disconnect_ret ===
+DESC: Make disconnect at +0x612D5D0 return immediately
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da68522346b635...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49776
+
+===
+
+=== TEST 6: G3_disconnect_730_ret ===
+DESC: Make disconnect caller at +0x612D730 return immediately
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6897adbc791f...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49805
+
+===
+
+=== TEST 7: G4_state3_dump ===
+DESC: Dump State 3 code at +0x61262DC and find CALL instructions
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da68dd171914a2...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49827
+
+===
+
+=== TEST 8: G5_cert_process_ret0 ===
+DESC: Make cert process at +0x6127020 return 0
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6922ac95c93d...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49839
+
+===
+
+=== TEST 9: G5_cert_receive_ret0 ===
+DESC: Make cert receive at +0x6127B40 return 0
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da69679bf3ffb1...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49853
+
+===
+
+=== TEST 10: G5_cert_finalize_ret0 ===
+DESC: Make cert finalize at +0x61279F0 return 0
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da69ad0e7614e8...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49860
+
+===
+
+=== TEST 11: G6_NOP_call_AND_disconnect_ret ===
+DESC: NOP CALL at +0x612644E AND make disconnect +0x612D5D0 return
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da69f2966d6db6...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49874
+
+===
+
+=== TEST 12: G6_error_handler_ret0_AND_disconnect_ret ===
+DESC: Error handler ret 0 AND disconnect ret
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6a37ced4a61c...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49885
+
+===
+
+=== TEST 13: G6_JMP_6126440_AND_disconnect_ret ===
+DESC: JMP at +0x6126440 AND disconnect ret at +0x612D5D0
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6a7de5a31f0f...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49897
+
+===
+
+=== TEST 14: G7_JNE_to_NOP_6126449 ===
+DESC: NOP the JNE at +0x6126449 (force fall-through to error handler)
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6ac2eefdaeb2...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49907
+
+===
+
+=== TEST 15: G7_CMP_byte_patch_C20 ===
+DESC: Set [rbx+0xC20] to 1 via the CMP check - patch CMP to always succeed
+RESULT: SUCCESS_KEY_EXCHANGE
+FRIDA: frida.exe : usage: frida [options] target
+At C:\Users\Jad\fifa17-fut-server\batch_test.ps1:304 char:24
++ ... idaOutput = & frida -n FIFA17.exe -l $fridaScript --no-pause -q 2>&1  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (usage: frida [options] target:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+frida: error: unrecognized arguments: --no-pause
+
+SERVER: [Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da6b070f0be354...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:49917
+
+===
+
