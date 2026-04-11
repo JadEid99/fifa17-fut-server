@@ -1,17 +1,18 @@
-﻿=== BATCH v11 (2026-04-11 21:23:51) === 3 tests
+﻿=== BATCH v12 (2026-04-11 21:29:27) === 3 tests
 
-[1] T01_single_record_baseline | TIMEOUT_NO_DATA | Server sends all handshake in 1 TLS record + baseline patches
-FRIDA:    -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
+[1] T01_fresh_hook_all_winsock | TIMEOUT_NO_DATA | FRESH game + baseline + hook recv/WSARecv/select
+FRIDA:  . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
+message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'Hooked recv'} data: None
+message: {'type': 'send', 'payload': 'Hooked WSARecv'} data: None
+message: {'type': 'send', 'payload': 'Hooked recvfrom'} data: None
+message: {'type': 'send', 'payload': 'Hooked select'} data: None
+message: {'type': 'send', 'payload': 'Hooked WSAWaitForMultipleEvents'} data: None
+message: {'type': 'send', 'payload': 'OK'} data: None
 
 SERVER: irector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69da9ffd5a2297c4...
+[SSL] ClientHello: version=0x303 random=69daa1554380c887...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ALL handshake messages in single record (782b)
@@ -20,8 +21,13 @@ SERVER: irector-Raw] Attempting SSLv3 handshake...
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 
-[2] T02_single_record_no_patches | TIMEOUT_NO_DATA | Server sends all handshake in 1 TLS record, NO Frida patches
-FRIDA: /quit -> Exit
+[2] T02_fresh_no_patches_control | TIMEOUT_NO_DATA | FRESH game, NO patches (should get ECONNRESET)
+FRIDA: rumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
    . . . .
    . . . .   More info at https://frida.re/docs/home/
    . . . .
@@ -30,18 +36,23 @@ Attaching...
 message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'no patches'} data: None
 message: {'type': 'send', 'payload': 'OK'} data: None
 
-SERVER: irector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69daa02f652d0fc5...
+SERVER: ] ClientHello: version=0x303 random=69daa1addc6f6183...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ALL handshake messages in single record (782b)
 [SSL]   ServerHello: 74b, Certificate: 699b, ServerHelloDone: 4b
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Disconnected: 127.0.0.1:56850
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 
-[3] T03_single_record_hook_recv | TIMEOUT_NO_DATA | Single record + baseline + hook recv()
-FRIDA:    -> Display information about 'object'
+[3] T03_fresh_baseline_only | TIMEOUT_NO_DATA | FRESH game + baseline patches
+FRIDA:    ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
    . . . .       exit/quit -> Exit
    . . . .
    . . . .   More info at https://frida.re/docs/home/
@@ -51,7 +62,7 @@ Attaching...
 message:[Local::FIFA17.exe ]->  {'type': 'send', 'payload': 'OK'} data: None
 
 SERVER: irector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69daa0522dae6054...
+[SSL] ClientHello: version=0x303 random=69daa20136090223...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ALL handshake messages in single record (782b)
