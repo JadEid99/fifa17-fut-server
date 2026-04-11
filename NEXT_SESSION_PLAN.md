@@ -1,75 +1,58 @@
 # FIFA 17 FUT Private Server - Next Session Plan
 
-## What We've Built
-- Node.js Blaze protocol server (redirector + main server + HTTP API)
-- Manual TLS handshake implementation
-- dinput8.dll proxy DLL that patches game memory at runtime
-- Rust SSL proxy using blaze-ssl-async
-- Frida scripts for runtime analysis
+## BREAKTHROUGH APPROACH: Hook ProtoSSL at the Application Layer
 
-## The SSL Problem (Solved Analysis, Unsolved Implementation)
-FIFA 17's ProtoSSL (DirtySDK v15.1.2.1.0) has a hardcoded CA certificate.
-Our server cert isn't signed by this CA, so the cert PARSING function rejects it.
-We can't skip the parsing because it extracts the RSA public key needed for ClientKeyExchange.
+### The Problem (Solved Analysis)
+We spent 50+ patches trying to bypass cert verification inside ProtoSSL's SSL state machine. The verification is too deeply integrated — skipping it also skips the public key extraction needed for the handshake.
 
-## Fresh Approach: Hook SetCACert to Replace the CA
+### The Solution: Force Plaintext Mode
+From reading the DirtySDK source code:
 
-The game calls `_ProtoSSLSetCACert` to load its CA certificate at startup.
-We saw the string: `[0x%p]DirtySdkHttpProtoImpl::SetCACert(%p, %d) - installed CA cert.`
+```c
+int32_t ProtoSSLSend(ProtoSSLRefT *pState, const char *pBuffer, int32_t iLength) {
+    if (pState->iState == ST3_SECURE) {
+        // Encrypt and send via SSL
+        _SendPacket(pState, SSL3_REC_APPLICATION, NULL, 0, pBuffer, iLength);
+    }
+    if (pState->iState == ST_UNSECURE) {
+        // Send plaintext via raw socket!
+        iResult = SocketSend(pState->pSock, pBuffer, iLength, 0);
+    }
+}
+```
 
-**Plan:**
-1. In our dinput8.dll, hook the function that calls SetCACert
-2. When it's called, capture the CA cert data (the `%p` and `%d` parameters = pointer and size)
-3. Replace it with OUR CA cert data
-4. Now ProtoSSL will use our CA to verify certs, and our server cert will pass
+When `iState == ST_UNSECURE`, ProtoSSL sends/receives in **plaintext**. No SSL, no certs, no verification.
 
-This is the cleanest approach because:
-- We don't need to patch any verification code
-- We don't need to understand the cert parsing internals
-- The game's own verification code runs normally — it just uses our CA instead of EA's
-- All the crypto (RSA key exchange, RC4/AES encryption) works correctly
+### Implementation Plan
 
-**Implementation:**
-- Search for the `SetCACert` string reference in memory
-- Find the function that passes the cert data
-- Replace the cert data buffer with our CA cert (DER format)
-- Our CA cert is 804 bytes (already generated)
+**Option A: Frida hook on ProtoSSLConnect**
+1. Find `ProtoSSLConnect` in FIFA 17 (search for the connect pattern)
+2. After it connects, set `pState->iState = ST_UNSECURE` (offset +0x8C)
+3. The game sends plaintext Blaze data to our server
+4. Our server receives raw Blaze packets (no TLS needed!)
 
-## Alternative Approach: Intercept at Winsock Level
+**Option B: Patch the SSL state machine to skip to ST_UNSECURE**
+1. In the SSL state machine, after State 1 (ClientHello), instead of proceeding to State 2 (ServerHello), jump to ST_UNSECURE
+2. This means: game connects, sends ClientHello, we respond, then game switches to plaintext
 
-Instead of fighting ProtoSSL, intercept ALL network I/O:
-1. Hook `send()` and `recv()` in WS2_32.dll
-2. When the game sends a ClientHello, handle the TLS handshake ourselves
-3. Forward decrypted Blaze packets to our Node.js server
-4. Encrypt responses and feed them back to the game
+**Option C: Hook at the Winsock level (EA-MITM approach)**
+1. Find ProtoSSLConnect, ProtoSSLSend, ProtoSSLRecv addresses in FIFA 17
+2. Hook them to redirect to our server and intercept plaintext data
+3. This is what EA-MITM does for BF3/NFS
 
-This is essentially a local TLS proxy inside the game process.
-More complex but completely bypasses ProtoSSL.
+### Key Addresses
+- SSL state machine: exe+0x6126213
+- iState offset in struct: +0x8C (confirmed from code: `CMP DWORD [rbx+0x8C], 3`)
+- bAllowAnyCert offset: +0xC20 (confirmed from code: `CMP BYTE [rbx+0xC20], 0`)
+- Error handler: exe+0x612E770
+- Disconnect: exe+0x612D5D0
+- "installed CA cert" string: exe+0x39316B1
 
-## Key Addresses (Runtime, After Denuvo Decryption)
-- SSL state machine: +0x6126213 to +0x6128033
-- State 1 (ClientHello): +0x6126213
-- State 2 (ServerHello): +0x61262A9
-- State 3 (Certificate): +0x61262DC
-- State 4 (ServerHelloDone): +0x612634D
-- State 5 (ClientKeyExchange): +0x6126416
-- State 6 (ChangeCipherSpec): +0x6126463
-- State 7 (Finished): +0x6126439
-- Error handler: +0x612E7A4
-- Disconnect function: +0x612D5D0
-- Cert receive: +0x6127B40
-- Cert process: +0x6127020
-- Cert verify: +0x6124140
-- Cert finalize: +0x61279F0
+### Server Changes Needed
+If we force plaintext mode, the server needs to accept raw TCP Blaze packets instead of TLS. The main Blaze server on port 10041 already does this. We just need the redirector on port 42230 to also accept plaintext.
 
-## Files on Jad's PC
-- `C:\Users\Jad\fifa17-server\server.mjs` - Node.js server
-- `C:\Users\Jad\fifa17-server\dll-proxy\` - DLL proxy project
-- `C:\Users\Jad\fifa17-server\ssl-proxy\` - Rust SSL proxy
-- `D:\Games\FIFA 17\dinput8.dll` - Current DLL proxy (installed)
-- `D:\Games\FIFA 17\fifa17_ssl_bypass.log` - DLL log output
-- Hosts file: `127.0.0.1 winter15.gosredirector.ea.com`
-- CA cert installed in Windows trust store
-
-## Tools Installed
-- Node.js v20, Rust 1.94, MSVC Build Tools 2022, Frida 17.9.1, mitmproxy
+### What We Know Works
+- NOP-ing the error CALL at exe+0x612644E prevents disconnect (HANGING result)
+- The game's SSL state machine is at exe+0x6126213
+- Frida can successfully patch code in the Denuvo-decrypted process
+- The batch test framework works for rapid iteration
