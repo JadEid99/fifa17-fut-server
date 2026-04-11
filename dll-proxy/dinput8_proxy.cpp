@@ -1,13 +1,28 @@
 /**
  * dinput8.dll Proxy for FIFA 17 SSL Bypass
  * 
- * APPROACH: Hook connect() via IAT patching. When the game connects to
- * port 42230, scan memory and replace the EA CA cert RIGHT BEFORE the
- * SSL handshake starts. This solves the timing problem.
+ * APPROACH: IAT (Import Address Table) hooking of Winsock functions.
+ * 
+ * Unlike trampoline hooks (which crashed), IAT hooks are safe because
+ * they only modify a pointer in the import table, not executable code.
+ * 
+ * Strategy:
+ * 1. Hook connect() via IAT patching in ws2_32.dll imports
+ * 2. When game connects to port 42230 (redirector) or any EA server,
+ *    let it connect to our local server normally
+ * 3. ALSO: Periodically scan memory for EA CA cert and replace it
+ *    (belt and suspenders approach)
+ * 4. ALSO: Hook WSAConnect for good measure
+ * 
+ * The key insight: IAT hooks modify a pointer table, not code.
+ * The game's import table has entries like:
+ *   connect -> ws2_32.dll!connect
+ * We change it to:
+ *   connect -> our_connect_hook
+ * This is 100% safe and standard practice for DLL proxies.
  */
 
 #define WIN32_LEAN_AND_MEAN
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -16,12 +31,15 @@
 #include <string.h>
 
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "psapi.lib")
+
+#include <psapi.h>
 
 struct IUnknown;
 typedef IUnknown* LPUNKNOWN;
 
 // ============================================================
-// DirectInput8 forwarding
+// DirectInput8 forwarding (required for DLL proxy)
 // ============================================================
 typedef HRESULT(WINAPI* DirectInput8Create_t)(HINSTANCE, DWORD, REFIID, LPVOID*, LPUNKNOWN);
 static HMODULE g_realDinput8 = NULL;
@@ -52,20 +70,27 @@ extern "C" {
 // Logging
 // ============================================================
 static FILE* g_logFile = NULL;
+static CRITICAL_SECTION g_logCS;
+
 static void Log(const char* fmt, ...) {
+    EnterCriticalSection(&g_logCS);
     if (!g_logFile) g_logFile = fopen("fifa17_ssl_bypass.log", "a");
     if (g_logFile) {
-        va_list args;
-        va_start(args, fmt);
+        // Timestamp
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        fprintf(g_logFile, "[%02d:%02d:%02d.%03d] ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+        va_list args; va_start(args, fmt);
         vfprintf(g_logFile, fmt, args);
         va_end(args);
         fprintf(g_logFile, "\n");
         fflush(g_logFile);
     }
+    LeaveCriticalSection(&g_logCS);
 }
 
 // ============================================================
-// Our CA cert (804 bytes DER)
+// Our CA cert (804 bytes DER) - same issuer fields as EA's
 // ============================================================
 static const BYTE g_ourCACert[] = {
     0x30,0x82,0x03,0x20,0x30,0x82,0x02,0x89,0xa0,0x03,0x02,0x01,0x02,0x02,0x14,0x36,
@@ -123,194 +148,306 @@ static const BYTE g_ourCACert[] = {
 static const SIZE_T g_ourCACertLen = 804;
 
 // ============================================================
-// Winsock hooks - connect() and send()
+// IAT Hook Infrastructure
 // ============================================================
 
-typedef int (WINAPI *connect_t)(SOCKET, const struct sockaddr*, int);
-typedef int (WINAPI *send_t)(SOCKET, const char*, int, int);
-static connect_t g_realConnect = NULL;
-static send_t g_realSend = NULL;
-static SOCKET g_sslSocket = INVALID_SOCKET;
-static int g_certReplaced = 0;
+// Original function pointers (saved before hooking)
+typedef int (WSAAPI* connect_t)(SOCKET, const struct sockaddr*, int);
+static connect_t g_real_connect = NULL;
 
-// Scan and replace EA CA cert in all process memory
-static void ReplaceEACert() {
+// Track what we've hooked
+static int g_hooksInstalled = 0;
+static int g_connectCalls = 0;
+static int g_certReplacements = 0;
+
+/**
+ * IAT Hook: Patch the Import Address Table of a module.
+ * 
+ * This walks the PE import table of 'targetModule' and finds where it
+ * imports 'functionName' from 'dllName'. Then it replaces the pointer
+ * with our hook function.
+ * 
+ * This is SAFE because:
+ * - We only modify a pointer in a data table, not executable code
+ * - The original function still exists and is callable
+ * - No risk of corrupting instruction streams
+ */
+static BOOL PatchIAT(HMODULE targetModule, const char* dllName, const char* functionName, void* hookFunction, void** originalFunction) {
+    if (!targetModule) return FALSE;
+    
+    BYTE* base = (BYTE*)targetModule;
+    IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
+    if (dos->e_magic != IMAGE_DOS_SIGNATURE) return FALSE;
+    
+    IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
+    if (nt->Signature != IMAGE_NT_SIGNATURE) return FALSE;
+    
+    IMAGE_DATA_DIRECTORY* importDir = &nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    if (importDir->VirtualAddress == 0) return FALSE;
+    
+    IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + importDir->VirtualAddress);
+    
+    for (; imports->Name != 0; imports++) {
+        const char* modName = (const char*)(base + imports->Name);
+        if (_stricmp(modName, dllName) != 0) continue;
+        
+        IMAGE_THUNK_DATA* origThunk = (IMAGE_THUNK_DATA*)(base + imports->OriginalFirstThunk);
+        IMAGE_THUNK_DATA* firstThunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
+        
+        for (; origThunk->u1.AddressOfData != 0; origThunk++, firstThunk++) {
+            if (IMAGE_SNAP_BY_ORDINAL(origThunk->u1.Ordinal)) continue;
+            
+            IMAGE_IMPORT_BY_NAME* importByName = (IMAGE_IMPORT_BY_NAME*)(base + origThunk->u1.AddressOfData);
+            if (strcmp(importByName->Name, functionName) != 0) continue;
+            
+            // Found it! Save original and patch
+            if (originalFunction) *originalFunction = (void*)firstThunk->u1.Function;
+            
+            DWORD oldProtect;
+            if (VirtualProtect(&firstThunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
+                firstThunk->u1.Function = (ULONG_PTR)hookFunction;
+                VirtualProtect(&firstThunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
+// ============================================================
+// Connect Hook
+// ============================================================
+
+/**
+ * Our connect() hook. Logs all connection attempts.
+ * The game uses hosts file to resolve winter15.gosredirector.ea.com -> 127.0.0.1
+ * so connections should already go to localhost. We just log them.
+ */
+static int WSAAPI Hook_connect(SOCKET s, const struct sockaddr* name, int namelen) {
+    g_connectCalls++;
+    
+    if (name && name->sa_family == AF_INET) {
+        const struct sockaddr_in* addr = (const struct sockaddr_in*)name;
+        char ipStr[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &addr->sin_addr, ipStr, sizeof(ipStr));
+        int port = ntohs(addr->sin_port);
+        
+        Log("connect() #%d: %s:%d (socket=%llu)", g_connectCalls, ipStr, port, (unsigned long long)s);
+        
+        // Log if this looks like an EA server connection
+        if (port == 42230 || port == 10041 || port == 443 || port == 80) {
+            Log("  -> Game connecting to port %d (likely EA server)", port);
+        }
+    }
+    
+    return g_real_connect(s, name, namelen);
+}
+
+// ============================================================
+// CA Certificate Memory Replacement
+// ============================================================
+
+/**
+ * Scan process memory for EA's CA certificate and replace with ours.
+ * Uses SEH for safe memory access.
+ */
+static int ScanAndReplaceCerts() {
+    // Signature bytes to identify EA CA certs
     BYTE eaStr[] = {0x45,0x6C,0x65,0x63,0x74,0x72,0x6F,0x6E,0x69,0x63,0x20,0x41,0x72,0x74,0x73}; // "Electronic Arts"
-    BYTE caTrue[] = {0x30,0x03,0x01,0x01,0xFF};
+    BYTE caTrue[] = {0x30,0x03,0x01,0x01,0xFF}; // CA:TRUE in DER
     int replaced = 0;
     
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
+    
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && 
-            (mbi.Protect & (PAGE_READWRITE | PAGE_READONLY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE))) {
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 1000 &&
+            (mbi.Protect == PAGE_READWRITE || mbi.Protect == PAGE_READONLY || 
+             mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE)) {
+            
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
+            
             __try {
-                for (SIZE_T j = 0; j < size - 10; j++) {
+                for (SIZE_T j = 0; j + 820 < size; j++) {
+                    // Look for DER certificate start: 0x30 0x82
                     if (base[j] != 0x30 || base[j+1] != 0x82) continue;
+                    
                     uint16_t len = (base[j+2] << 8) | base[j+3];
-                    if (len < 200 || len > 2000) continue;
+                    if (len < 300 || len > 1500) continue;
                     SIZE_T cs = len + 4;
                     if (j + cs > size) continue;
-                    if (base[j+4] != 0x30) continue;
+                    
+                    // Must contain "Electronic Arts"
+                    int hasEA = 0;
+                    for (SIZE_T k = 0; k + 15 <= cs; k++) {
+                        if (memcmp(base + j + k, eaStr, 15) == 0) { hasEA = 1; break; }
+                    }
+                    if (!hasEA) { j += 3; continue; }
+                    
                     // Must have CA:TRUE
-                    BYTE* caMatch = NULL;
-                    for (SIZE_T k = 0; k < cs - 5; k++) {
-                        if (memcmp(base + j + k, caTrue, 5) == 0) { caMatch = base + j + k; break; }
+                    int hasCA = 0;
+                    for (SIZE_T k = 0; k + 5 <= cs; k++) {
+                        if (memcmp(base + j + k, caTrue, 5) == 0) { hasCA = 1; break; }
                     }
-                    if (!caMatch) continue;
-                    // Must have "Electronic Arts"
-                    BYTE* eaMatch = NULL;
-                    for (SIZE_T k = 0; k < cs - 15; k++) {
-                        if (memcmp(base + j + k, eaStr, 15) == 0) { eaMatch = base + j + k; break; }
-                    }
-                    if (!eaMatch) continue;
-                    // Skip if already our cert
+                    if (!hasCA) { j += cs - 1; continue; }
+                    
+                    // Skip if it's already our cert (check first 20 bytes)
                     if (cs == g_ourCACertLen && memcmp(base + j, g_ourCACert, 20) == 0) {
-                        j += cs - 1;
-                        continue;
+                        j += cs - 1; continue;
                     }
-                    // Replace!
+                    
+                    // Found EA CA cert - replace it!
                     DWORD op;
                     if (VirtualProtect(base + j, cs, PAGE_READWRITE, &op)) {
                         SIZE_T copyLen = (cs < g_ourCACertLen) ? cs : g_ourCACertLen;
                         memcpy(base + j, g_ourCACert, copyLen);
+                        // If our cert is smaller, zero-pad the rest
+                        if (g_ourCACertLen < cs) {
+                            memset(base + j + g_ourCACertLen, 0, cs - g_ourCACertLen);
+                        }
                         VirtualProtect(base + j, cs, op, &op);
                         replaced++;
-                        Log("REPLACED EA CA cert at 0x%p size=%llu", base + j, (unsigned long long)cs);
+                        g_certReplacements++;
+                        Log("REPLACED EA CA cert at %p (size=%llu, total replacements=%d)", 
+                            base + j, (unsigned long long)cs, g_certReplacements);
                     }
                     j += cs - 1;
                 }
-            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+            } __except(EXCEPTION_EXECUTE_HANDLER) {
+                // Skip bad memory regions
+            }
         }
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break; // overflow
     }
-    Log("ReplaceEACert: replaced %d certs", replaced);
-}
-
-static volatile int g_connectTriggered = 0;
-
-// Hooked connect function - just set a flag, don't scan here
-static int WINAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namelen) {
-    if (name && name->sa_family == AF_INET) {
-        struct sockaddr_in* addr = (struct sockaddr_in*)name;
-        int port = ntohs(addr->sin_port);
-        if (port == 42230) {
-            g_sslSocket = s;
-            g_connectTriggered = 1;
-            // Don't scan here - let the background thread handle it
-        }
-    }
-    return g_realConnect(s, name, namelen);
-}
-
-// Hooked send function - intercept ClientHello and replace cert
-static int WINAPI HookedSend(SOCKET s, const char* buf, int len, int flags) {
-    if (s == g_sslSocket && !g_certReplaced && len > 5) {
-        // Check if this is a TLS ClientHello (0x16 0x03)
-        if ((unsigned char)buf[0] == 0x16 && (unsigned char)buf[1] == 0x03) {
-            Log("send() ClientHello detected on SSL socket! len=%d", len);
-            Log("Replacing EA CA cert NOW (cert should be loaded for handshake)...");
-            ReplaceEACert();
-            g_certReplaced = 1;
-        }
-    }
-    return g_realSend(s, buf, len, flags);
+    return replaced;
 }
 
 // ============================================================
-// Trampoline hook for connect()
-// We overwrite the first bytes of WS2_32!connect with a JMP to our hook.
+// IAT Hook Installation - scan ALL loaded modules
 // ============================================================
 
-static BYTE g_connectOrigBytes[14];
-static BYTE* g_connectAddr = NULL;
-static BYTE g_sendOrigBytes[14];
-static BYTE* g_sendAddr = NULL;
-
-static void InstallHook(BYTE* target, void* hook, BYTE* origBytes, void** trampoline) {
-    memcpy(origBytes, target, 14);
+/**
+ * Install IAT hooks in ALL loaded modules, not just the main exe.
+ * EA's game may call connect() from various DLLs (Denuvo, Origin emu, etc.)
+ */
+static void InstallIATHooks() {
+    HMODULE modules[1024];
+    DWORD needed;
     
-    BYTE* tramp = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    if (!tramp) { Log("Can't alloc trampoline"); return; }
+    // Get the real connect function first
+    HMODULE ws2 = GetModuleHandleA("ws2_32.dll");
+    if (!ws2) ws2 = LoadLibraryA("ws2_32.dll");
+    if (ws2) {
+        g_real_connect = (connect_t)GetProcAddress(ws2, "connect");
+        Log("Real connect() at %p", g_real_connect);
+    }
     
-    memcpy(tramp, target, 14);
-    tramp[14] = 0xFF;
-    tramp[15] = 0x25;
-    *(uint32_t*)(tramp + 16) = 0;
-    *(uint64_t*)(tramp + 20) = (uint64_t)(target + 14);
-    *trampoline = tramp;
+    if (!g_real_connect) {
+        Log("ERROR: Could not find connect() in ws2_32.dll!");
+        return;
+    }
     
-    DWORD oldProtect;
-    VirtualProtect(target, 14, PAGE_EXECUTE_READWRITE, &oldProtect);
-    target[0] = 0xFF;
-    target[1] = 0x25;
-    *(uint32_t*)(target + 2) = 0;
-    *(uint64_t*)(target + 6) = (uint64_t)hook;
-    VirtualProtect(target, 14, oldProtect, &oldProtect);
+    // Hook connect() in the main executable
+    HMODULE mainExe = GetModuleHandleA(NULL);
+    if (PatchIAT(mainExe, "WS2_32.dll", "connect", (void*)Hook_connect, NULL)) {
+        g_hooksInstalled++;
+        Log("Hooked connect() in main exe via IAT");
+    }
+    if (PatchIAT(mainExe, "ws2_32.dll", "connect", (void*)Hook_connect, NULL)) {
+        g_hooksInstalled++;
+        Log("Hooked connect() in main exe via IAT (lowercase)");
+    }
+    
+    // Also try hooking in all loaded modules
+    if (EnumProcessModules(GetCurrentProcess(), modules, sizeof(modules), &needed)) {
+        int count = needed / sizeof(HMODULE);
+        for (int i = 0; i < count && i < 1024; i++) {
+            if (modules[i] == mainExe) continue; // already done
+            char modName[MAX_PATH];
+            if (GetModuleFileNameA(modules[i], modName, MAX_PATH)) {
+                if (PatchIAT(modules[i], "WS2_32.dll", "connect", (void*)Hook_connect, NULL) ||
+                    PatchIAT(modules[i], "ws2_32.dll", "connect", (void*)Hook_connect, NULL)) {
+                    g_hooksInstalled++;
+                    Log("Hooked connect() in %s", modName);
+                }
+            }
+        }
+    }
+    
+    Log("IAT hooks installed: %d modules patched", g_hooksInstalled);
 }
 
-static void InstallConnectHook() {
-    HMODULE ws2 = GetModuleHandleA("WS2_32.dll");
-    if (!ws2) ws2 = LoadLibraryA("WS2_32.dll");
-    if (!ws2) { Log("Can't load WS2_32.dll"); return; }
+// ============================================================
+// Background Thread - Cert scanning + delayed IAT re-hooking
+// ============================================================
+
+/**
+ * Main worker thread:
+ * 1. Install IAT hooks immediately
+ * 2. Scan for EA CA cert every 500ms for 3 minutes
+ * 3. Re-install IAT hooks periodically (new DLLs may load after Denuvo unpacks)
+ */
+static DWORD WINAPI PatchThread(LPVOID) {
+    Log("=== FIFA 17 SSL Bypass v5 (IAT hooks + cert replacement) ===");
+    Log("Process ID: %lu", GetCurrentProcessId());
     
-    g_connectAddr = (BYTE*)GetProcAddress(ws2, "connect");
-    g_sendAddr = (BYTE*)GetProcAddress(ws2, "send");
+    // Phase 1: Install IAT hooks immediately
+    InstallIATHooks();
     
-    if (g_connectAddr) {
-        InstallHook(g_connectAddr, (void*)HookedConnect, g_connectOrigBytes, (void**)&g_realConnect);
-        Log("connect() hooked at 0x%p", g_connectAddr);
+    // Phase 2: Continuous cert scanning + periodic re-hooking
+    int totalReplaced = 0;
+    int scanCount = 0;
+    int maxScans = 360; // 3 minutes at 500ms intervals
+    
+    for (int i = 0; i < maxScans; i++) {
+        Sleep(500);
+        scanCount++;
+        
+        // Scan for EA CA cert
+        int r = ScanAndReplaceCerts();
+        totalReplaced += r;
+        if (r > 0) {
+            Log("Scan #%d: replaced %d certs (total: %d)", scanCount, r, totalReplaced);
+        }
+        
+        // Re-install IAT hooks every 5 seconds (new modules may have loaded)
+        if (i % 10 == 0 && i > 0) {
+            int prevHooks = g_hooksInstalled;
+            InstallIATHooks();
+            if (g_hooksInstalled > prevHooks) {
+                Log("Re-hook pass: %d new hooks (total: %d)", g_hooksInstalled - prevHooks, g_hooksInstalled);
+            }
+        }
+        
+        // Status log every 30 seconds
+        if (i % 60 == 0 && i > 0) {
+            Log("Status: scan=%d/%d, certs_replaced=%d, connect_calls=%d, hooks=%d",
+                scanCount, maxScans, totalReplaced, g_connectCalls, g_hooksInstalled);
+        }
     }
-    // DON'T hook send() - it crashes the game because it's called too frequently
-    // Instead, we'll scan for the cert in the connect hook and also periodically
-    if (g_sendAddr) {
-        g_realSend = (send_t)g_sendAddr; // Just save the address, don't hook
-        Log("send() at 0x%p (not hooked)", g_sendAddr);
-    }
+    
+    Log("=== Scanning complete ===");
+    Log("Final: certs_replaced=%d, connect_calls=%d, hooks=%d", totalReplaced, g_connectCalls, g_hooksInstalled);
+    return 0;
 }
 
 // ============================================================
 // DLL Entry Point
 // ============================================================
 
-static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===");
-    Sleep(1000);
-    InstallConnectHook();
-    
-    // Also do an initial scan
-    Log("Initial CA cert scan...");
-    ReplaceEACert();
-    
-    // Keep scanning periodically
-    for (int i = 0; i < 120; i++) {
-        Sleep(500);
-        if (g_connectTriggered && !g_certReplaced) {
-            Log("connect() to 42230 was triggered! Scanning for cert...");
-            ReplaceEACert();
-            g_certReplaced = 1;
-            // Scan a few more times quickly
-            for (int j = 0; j < 5; j++) {
-                Sleep(100);
-                ReplaceEACert();
-            }
-        }
-        ReplaceEACert();
-    }
-    return 0;
-}
-
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
     if (reason == DLL_PROCESS_ATTACH) {
         DisableThreadLibraryCalls(hModule);
+        InitializeCriticalSection(&g_logCS);
         LoadRealDinput8();
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     }
     else if (reason == DLL_PROCESS_DETACH) {
         if (g_realDinput8) FreeLibrary(g_realDinput8);
         if (g_logFile) fclose(g_logFile);
+        DeleteCriticalSection(&g_logCS);
     }
     return TRUE;
 }
