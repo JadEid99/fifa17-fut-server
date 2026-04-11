@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 11:38:55) ===
+﻿=== TEST RESULTS (2026-04-11 11:43:23) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,6 +10,46 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
+[Redirector-Raw] Client connected: 127.0.0.1:64352
+[Redirector-Raw] Received 116 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 17 93 46  ....o...k..i...F
+  0010: 50 ee 6a 64 a2 07 43 51 22 5e 24 bc 90 e0 ac 98  P.jd..CQ"^$.....
+  0020: a2 99 e4 e9 41 5e 2a 92 4d 86 a3 00 00 10 00 9d  ....A^*.M.......
+  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0070: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da17934650ee6a...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0035
+[SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:64352
+[Redirector-Raw] Client connected: 127.0.0.1:64356
+[Redirector-Raw] Received 116 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 17 b2 71  ....o...k..i...q
+  0010: 51 82 61 06 78 35 0a 30 1e ef 39 f3 ee b6 03 00  Q.a.x5.0..9.....
+  0020: d7 6f 26 ac 7b 5c 84 b1 f5 be 74 00 00 10 00 9d  .o&.{\....t.....
+  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0070: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da17b271518261...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0035
+[SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:64356
 
 --- DLL LOG ---
 === FIFA 17 SSL Bypass DLL (CA Replacement) ===
@@ -19,105 +59,40 @@ Found 'installed CA cert' string at +0x39316B1
 Searching for code references to this string...
 Scanning for DER certificates (relaxed)...
 Scanning process heap for DER certificates...
-  Heap cert #1 at 0x0000000000A89E95 size=1528 CA=no: 0 0 3 0@ L M A 0 * H 0~1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corp
-  Heap cert #2 at 0x0000000000A8A48D size=1918 CA=YES: 0 z0 b a 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporatio
-  -> REPLACING CA cert at 0x0000000000A8A48D!
-  Heap cert #3 at 0x0000000000A8B01D size=1828 CA=no: 0  0 3 + R 0 * H 0|1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporat
-  Heap cert #4 at 0x0000000000A8B741 size=1909 CA=YES: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
-  -> REPLACING CA cert at 0x0000000000A8B741!
-  Heap cert #5 at 0x00000000024CF5D9 size=1010 CA=no: 0 0 W ~ | NY K w ;0 * H 0 1 0 U ZA1 0 U Western Cape1 0 U Durbanville1 0 U Thawt
-  Heap cert #6 at 0x00000000024CF9CB size=1191 CA=no: 0 0 8 5n j P0 * H 0^1 0 U US1 0 U Symantec Corporation100. U 'Symantec Time Stam
-  Heap cert #7 at 0x00000000024CFE72 size=1247 CA=no: 0 0 &| D V | 0 * H 0 1 0 U US1 0 U Symantec Corporation1 0 U Symantec Trust Netw
-  Heap cert #8 at 0x00000000024D0351 size=1373 CA=no: 0 Y0 A =x vI` a} *0 * H 0 1 0 U US1 0 U VeriSign, Inc.1 0 U VeriSign Trust Netwo
-  Heap cert #9 at 0x000000000357139B size=550 CA=no: 0 "0 * H 0 F - `V +W oQ p 7 B0c2 q L pl| H g M <tM c 7!O$ * C f [dz 6 P W ` I ` 
-  Heap cert #10 at 0x0000000003572026 size=1425 CA=no: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1$0" U Digi
-  Heap cert #11 at 0x00000000727B8232 size=1068 CA=no: 0 (0 g + 0 * H 0B1 0 & ,d com1 0 & ,d nvidia1 0 U NVIDIACorp0 061017230033Z 0710
-  Heap cert #12 at 0x00000000727B865E size=1382 CA=YES: 0 b0 J Jl @ E o 0 * H 011/0- U &Microsoft Digital Media Authority 20050 05082702
-  -> REPLACING CA cert at 0x00000000727B865E!
-  -> REPLACED!
-  Heap cert #13 at 0x00000000727B8BC4 size=1501 CA=YES: 0 0 a 0 * H 011/0- U &Microsoft Digital Media Authority 20050 061012175152Z 0710
-  -> REPLACING CA cert at 0x00000000727B8BC4!
-  -> REPLACED!
-  Heap cert #14 at 0x0000000072AB8B15 size=550 CA=no: 0 "0 * H 0 L r! y $y lNu 5W lJ > `3 \O f SqZ ~JZ 6g F# w2 `}jR D Fk v P D q\Q17 
-  Heap cert #15 at 0x0000000072AC9F01 size=1425 CA=YES: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1$0" U Digi
-  -> REPLACING CA cert at 0x0000000072AC9F01!
-  -> REPLACED!
-  Heap cert #16 at 0x00007FFD41655D70 size=550 CA=no: 0 "0 * H 0 6 / | X 0 } r _ D b"]/wP| 9 z < " A - N % o ) ( 6k/m I x O 3 W r c, D
-  Heap cert #17 at 0x00007FFD41655FA0 size=550 CA=no: 0 "0 * H 0 Q uv \[ln `bn W@a 1r@f Q p a :I f Pk T2 d ^ C Z F I$ ozL #$3 UN w H Z
-  Heap cert #18 at 0x00007FFD41656200 size=550 CA=no: 0 "0 * H 0 &T & 0 ? j E pU | BS TV i $ ) +/ yD. T S $4T " { F V v DyR4( OI a ~U 
-  Heap cert #19 at 0x00007FFD41656460 size=294 CA=no: 0 "0 * H 0 + 1 c H0 k ~ X q A ) G5 B z m P r o  m ? X @ O =} k; & > ~ ufz4 =, CY
-  Heap cert #20 at 0x00007FFD41656610 size=550 CA=no: 0 "0 * H 0 mI 9 M ? M ; (Z *F~ 3' ? 3 j w 5 6r W <{ b4 6 Zq Q 3 " bS @ ,HT * h i
-  Heap cert #21 at 0x00007FFD416569D0 size=550 CA=no: 0 "0 * H 0 A 58M r2h"M R l J 6 \~ (o s : % Z:m Y #h ) o \ D ] RX Q _* { V da | T
-  Heap cert #22 at 0x00007FFD41656D30 size=550 CA=no: 0 "0 * H 0 w x8 C!Z ; U1 !  Uv M . FV G c K p"D K{D?u + A K Y eM " k\" 8 ( -< 5_
-  Heap cert #23 at 0x00007FFD41656FF0 size=550 CA=no: 0 "0 * H 0 ( NPh A { "D e4iL p@ { y 9 =v Z .< m$T V P t Y v h o(x \ P D c_ , ! B
-  Heap cert #24 at 0x00007FFD41657290 size=294 CA=no: 0 "0 * H 0 p ; N ( x^0 %_ L  >|Q `2k Bdy v T f kzb# < -f h& :, X& F >8 , (9 I B 
-  Heap cert #25 at 0x00007FFD41657450 size=550 CA=no: 0 "0 * H 0 ] g Z ,  5 <u ` hZ q) v| %v X 46 X + w" 4d<" ^ uX y Y X h)m2 K H2O O 
-  Heap cert #26 at 0x00007FFD41657760 size=294 CA=no: 0 "0 * H 0 ?nd ( J . > i l v)O `59 r2 )=L K< ,o `SE K U YV$ x ? qP - m| l 2 ao m
-  Heap cert #27 at 0x00007FFD62009360 size=804 CA=YES: 0  0 6 u ` oL & ] P aZ0 * H 0 1 0 U Online Technology Group1 0 U Electronic Arts
-  -> REPLACING CA cert at 0x00007FFD62009360!
-  -> REPLACED!
-  Heap cert #28 at 0x00007FFD6D78E200 size=294 CA=no: 0 "0 * H 0 p ; N ( x^0 %_ L  >|Q `2k Bdy v T f kzb# < -f h& :, X& F >8 , (9 I B 
-  Heap cert #29 at 0x00007FFD6D78E4B0 size=550 CA=no: 0 "0 * H 0 mI 9 M ? M ; (Z *F~ 3' ? 3 j w 5 6r W <{ b4 6 Zq Q 3 " bS @ ,HT * h i
-  Heap cert #30 at 0x00007FFD6D78E770 size=550 CA=no: 0 "0 * H 0 w x8 C!Z ; U1 !  Uv M . FV G c K p"D K{D?u + A K Y eM " k\" 8 ( -< 5_
+  Heap cert #1 at 0x00000000025275D9 size=1010 CA=no EA=no: 0 0 W ~ | NY K w ;0 * H 0 1 0 U ZA1 0 U Western Cape1 0 U Durbanville1 0 U Thawt
+  Heap cert #2 at 0x00000000025279CB size=1191 CA=no EA=no: 0 0 8 5n j P0 * H 0^1 0 U US1 0 U Symantec Corporation100. U 'Symantec Time Stam
+  Heap cert #3 at 0x0000000002527E72 size=1247 CA=no EA=YES: 0 0 &| D V | 0 * H 0 1 0 U US1 0 U Symantec Corporation1 0 U Symantec Trust Netw
+  Heap cert #4 at 0x0000000002528351 size=1373 CA=no EA=no: 0 Y0 A =x vI` a} *0 * H 0 1 0 U US1 0 U VeriSign, Inc.1 0 U VeriSign Trust Netwo
+  Heap cert #5 at 0x00000000034F6116 size=1425 CA=no EA=no: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1$0" U Digi
+  Heap cert #6 at 0x00000000726F9E95 size=1528 CA=no EA=no: 0 0 3 0@ L M A 0 * H 0~1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corp
+  Heap cert #7 at 0x00000000726FA48D size=1918 CA=YES EA=no: 0 z0 b a 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporatio
+  Heap cert #8 at 0x00000000726FB01D size=1828 CA=no EA=no: 0  0 3 + R 0 * H 0|1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporat
+  Heap cert #9 at 0x00000000726FB741 size=1909 CA=YES EA=no: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
+  Heap cert #10 at 0x00000000727DB462 size=1068 CA=no EA=no: 0 (0 g + 0 * H 0B1 0 & ,d com1 0 & ,d nvidia1 0 U NVIDIACorp0 061017230033Z 0710
+  Heap cert #11 at 0x00000000727DB88E size=1382 CA=YES EA=no: 0 b0 J Jl @ E o 0 * H 011/0- U &Microsoft Digital Media Authority 20050 05082702
+  Heap cert #12 at 0x00000000727DBDF4 size=1501 CA=YES EA=no: 0 0 a 0 * H 011/0- U &Microsoft Digital Media Authority 20050 061012175152Z 0710
+  Heap cert #13 at 0x0000000072AC5151 size=1425 CA=no EA=no: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digi ]. 1$0" U DigiCert
+  Heap cert #14 at 0x0000000072ACE47F size=1411 CA=no EA=no: 0 0 g 3 <Ja 5x <0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Cor
+  Heap cert #15 at 0x0000000072ACEA02 size=1509 CA=no EA=no: 0 0 a 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporation12
+  Heap cert #16 at 0x0000000072ACF448 size=1836 CA=no EA=no: 0 (0 3 C 0 * H 0|1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporatio
+  Heap cert #17 at 0x0000000072ACFB74 size=1909 CA=YES EA=no: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
+  Heap cert #18 at 0x0000000072AD0C71 size=1909 CA=YES EA=no: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
+  Heap cert #19 at 0x0000000072AEBD80 size=1716 CA=no EA=no: 0 0 @ ` L ^ 0 * H 0b1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1!0 U DigiCe
+  Heap cert #20 at 0x0000000072AEC580 size=422 CA=no EA=no: 0 0 * H 0 % ) VL6 K l!~ cFH Ty/|7 b !M1 c 8 1 y 7 4 D v 6 ( V, G b ? O P j s E96
+  Heap cert #21 at 0x00007FFD41655D70 size=550 CA=no EA=no: 0 "0 * H 0 6 / | X 0 } r _ D b"]/wP| 9 z < " A - N % o ) ( 6k/m I x O 3 W r c, D
+  Heap cert #22 at 0x00007FFD41655FA0 size=550 CA=no EA=no: 0 "0 * H 0 Q uv \[ln `bn W@a 1r@f Q p a :I f Pk T2 d ^ C Z F I$ ozL #$3 UN w H Z
+  Heap cert #23 at 0x00007FFD41656200 size=550 CA=no EA=no: 0 "0 * H 0 &T & 0 ? j E pU | BS TV i $ ) +/ yD. T S $4T " { F V v DyR4( OI a ~U 
+  Heap cert #24 at 0x00007FFD41656460 size=294 CA=no EA=no: 0 "0 * H 0 + 1 c H0 k ~ X q A ) G5 B z m P r o  m ? X @ O =} k; & > ~ ufz4 =, CY
+  Heap cert #25 at 0x00007FFD41656610 size=550 CA=no EA=no: 0 "0 * H 0 mI 9 M ? M ; (Z *F~ 3' ? 3 j w 5 6r W <{ b4 6 Zq Q 3 " bS @ ,HT * h i
+  Heap cert #26 at 0x00007FFD416569D0 size=550 CA=no EA=no: 0 "0 * H 0 A 58M r2h"M R l J 6 \~ (o s : % Z:m Y #h ) o \ D ] RX Q _* { V da | T
+  Heap cert #27 at 0x00007FFD41656D30 size=550 CA=no EA=no: 0 "0 * H 0 w x8 C!Z ; U1 !  Uv M . FV G c K p"D K{D?u + A K Y eM " k\" 8 ( -< 5_
+  Heap cert #28 at 0x00007FFD41656FF0 size=550 CA=no EA=no: 0 "0 * H 0 ( NPh A { "D e4iL p@ { y 9 =v Z .< m$T V P t Y v h o(x \ P D c_ , ! B
+  Heap cert #29 at 0x00007FFD41657290 size=294 CA=no EA=no: 0 "0 * H 0 p ; N ( x^0 %_ L  >|Q `2k Bdy v T f kzb# < -f h& :, X& F >8 , (9 I B 
+  Heap cert #30 at 0x00007FFD41657450 size=550 CA=no EA=no: 0 "0 * H 0 ] g Z ,  5 <u ` hZ q) v| %v X 46 X + w" 4d<" ^ uX y Y X h)m2 K H2O O 
 Found 30 heap DER certs
 Found error handler at +0x612E7A4, patching JE->JMP
 Patched disconnect func to return 0
 All patches applied!
-Pass 0: replaced CA cert at 0x00000000027DF820 size=804
-=== FIFA 17 SSL Bypass DLL (CA Replacement) ===
-FIFA17.exe base=0x0000000140000000 size=0x11359000
-Waiting for Denuvo decryption (2s)...
-Found 'installed CA cert' string at +0x39316B1
-Searching for code references to this string...
-Scanning for DER certificates (relaxed)...
-Scanning process heap for DER certificates...
-  Heap cert #1 at 0x00000000024615D9 size=1010 CA=no: 0 0 W ~ | NY K w ;0 * H 0 1 0 U ZA1 0 U Western Cape1 0 U Durbanville1 0 U Thawt
-  Heap cert #2 at 0x00000000024619CB size=1191 CA=no: 0 0 8 5n j P0 * H 0^1 0 U US1 0 U Symantec Corporation100. U 'Symantec Time Stam
-  Heap cert #3 at 0x0000000002461E72 size=1247 CA=no: 0 0 &| D V | 0 * H 0 1 0 U US1 0 U Symantec Corporation1 0 U Symantec Trust Netw
-  Heap cert #4 at 0x0000000002462351 size=1373 CA=no: 0 Y0 A =x vI` a} *0 * H 0 1 0 U US1 0 U VeriSign, Inc.1 0 U VeriSign Trust Netwo
-  Heap cert #5 at 0x00000000034E3266 size=1425 CA=no: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1$0" U Digi
-  Heap cert #6 at 0x0000000039299E95 size=1528 CA=no: 0 0 3 0@ L M A 0 * H 0~1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corp
-  Heap cert #7 at 0x000000003929A48D size=1918 CA=YES: 0 z0 b a 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporatio
-  -> REPLACING CA cert at 0x000000003929A48D!
-  Heap cert #8 at 0x000000003929B01D size=1828 CA=no: 0  0 3 + R 0 * H 0|1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corporat
-  Heap cert #9 at 0x000000003929B741 size=1909 CA=YES: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
-  -> REPLACING CA cert at 0x000000003929B741!
-  Heap cert #10 at 0x0000000072783342 size=1068 CA=no: 0 (0 g + 0 * H 0B1 0 & ,d com1 0 & ,d nvidia1 0 U NVIDIACorp0 061017230033Z 0710
-  Heap cert #11 at 0x000000007278376E size=1382 CA=YES: 0 b0 J Jl @ E o 0 * H 011/0- U &Microsoft Digital Media Authority 20050 05082702
-  -> REPLACING CA cert at 0x000000007278376E!
-  -> REPLACED!
-  Heap cert #12 at 0x0000000072783CD4 size=1501 CA=YES: 0 0 a 0 * H 011/0- U &Microsoft Digital Media Authority 20050 061012175152Z 0710
-  -> REPLACING CA cert at 0x0000000072783CD4!
-  -> REPLACED!
-  Heap cert #13 at 0x0000000072A6127A size=294 CA=no: 0 "0 * H 0 f I5V 4 j %Cd 'k|< k v $< /= O _X # a F u N>;~" ? p 0 ! T -N V ] c J 
-  Heap cert #14 at 0x0000000072A619B9 size=1777 CA=no: 0 0 K v th0 * H 0i1 0 U US1 0 U DigiCert, Inc.1A0? U 8DigiCert Trusted G4 TimeSt
-  Heap cert #15 at 0x0000000072A620AA size=1720 CA=no: 0 0 W ! .@C" :I 0 * H 0b1 0 U US1 0 U DigiCert Inc1 0 U .  x z y ! " r x ? $~ $x
-  Heap cert #16 at 0x0000000072A62762 size=1425 CA=YES: 0 0 u - P @ Z0 * H 0e1 0 S  m1$0" U DigiCert Assured ID Root CA0 220801000000Z 3
-  -> REPLACING CA cert at 0x0000000072A62762!
-  -> REPLACED!
-  Heap cert #17 at 0x0000000072A7CE82 size=1425 CA=no: 0 0 u - P @ Z0 * H 0e1 0 U US1 0 U DigiCert Inc1 0 U www.digicert.com1$0" U Digi
-  Heap cert #18 at 0x0000000072A82CCC size=1909 CA=YES: 0 q0 Y 3 k I 0 * H 0 1 0 U US1 0 U Washington1 0 U Redmond1 0 U Microsoft Corpor
-  -> REPLACING CA cert at 0x0000000072A82CCC!
-  -> REPLACED!
-  Heap cert #19 at 0x00007FFD41655D70 size=550 CA=no: 0 "0 * H 0 6 / | X 0 } r _ D b"]/wP| 9 z < " A - N % o ) ( 6k/m I x O 3 W r c, D
-  Heap cert #20 at 0x00007FFD41655FA0 size=550 CA=no: 0 "0 * H 0 Q uv \[ln `bn W@a 1r@f Q p a :I f Pk T2 d ^ C Z F I$ ozL #$3 UN w H Z
-  Heap cert #21 at 0x00007FFD41656200 size=550 CA=no: 0 "0 * H 0 &T & 0 ? j E pU | BS TV i $ ) +/ yD. T S $4T " { F V v DyR4( OI a ~U 
-  Heap cert #22 at 0x00007FFD41656460 size=294 CA=no: 0 "0 * H 0 + 1 c H0 k ~ X q A ) G5 B z m P r o  m ? X @ O =} k; & > ~ ufz4 =, CY
-  Heap cert #23 at 0x00007FFD41656610 size=550 CA=no: 0 "0 * H 0 mI 9 M ? M ; (Z *F~ 3' ? 3 j w 5 6r W <{ b4 6 Zq Q 3 " bS @ ,HT * h i
-  Heap cert #24 at 0x00007FFD416569D0 size=550 CA=no: 0 "0 * H 0 A 58M r2h"M R l J 6 \~ (o s : % Z:m Y #h ) o \ D ] RX Q _* { V da | T
-  Heap cert #25 at 0x00007FFD41656D30 size=550 CA=no: 0 "0 * H 0 w x8 C!Z ; U1 !  Uv M . FV G c K p"D K{D?u + A K Y eM " k\" 8 ( -< 5_
-  Heap cert #26 at 0x00007FFD41656FF0 size=550 CA=no: 0 "0 * H 0 ( NPh A { "D e4iL p@ { y 9 =v Z .< m$T V P t Y v h o(x \ P D c_ , ! B
-  Heap cert #27 at 0x00007FFD41657290 size=294 CA=no: 0 "0 * H 0 p ; N ( x^0 %_ L  >|Q `2k Bdy v T f kzb# < -f h& :, X& F >8 , (9 I B 
-  Heap cert #28 at 0x00007FFD41657450 size=550 CA=no: 0 "0 * H 0 ] g Z ,  5 <u ` hZ q) v| %v X 46 X + w" 4d<" ^ uX y Y X h)m2 K H2O O 
-  Heap cert #29 at 0x00007FFD41657760 size=294 CA=no: 0 "0 * H 0 ?nd ( J . > i l v)O `59 r2 )=L K< ,o `SE K U YV$ x ? qP - m| l 2 ao m
-  Heap cert #30 at 0x00007FFD62009360 size=804 CA=YES: 0  0 6 u ` oL & ] P aZ0 * H 0 1 0 U Online Technology Group1 0 U Electronic Arts
-  -> REPLACING CA cert at 0x00007FFD62009360!
-  -> REPLACED!
-Found 30 heap DER certs
-Found error handler at +0x612E7A4, patching JE->JMP
-Patched disconnect func to return 0
-All patches applied!
-Pass 0: replaced CA cert at 0x000000000276F820 size=804
 
 
 --- END ---
