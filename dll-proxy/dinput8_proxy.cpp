@@ -209,8 +209,7 @@ static void PatchSSL() {
     
     // Let's try all strategies:
     
-    Log("Waiting for Denuvo decryption (2s)...");
-    Sleep(2000);
+    Log("Waiting for Denuvo decryption (0s - immediate scan)...");
     
     // === Find the "installed CA cert" string to locate SetCACert function ===
     // This string is in the .srdata section (not encrypted)
@@ -329,7 +328,14 @@ static void PatchSSL() {
                     
                     // ONLY replace if it's an EA CA cert
                     if (caMatch && eaMatch && certSize >= g_ourCACertLen) {
-                        Log("  -> REPLACING EA CA cert at 0x%p!", regionBase + i);
+                        // Log which module this cert is in
+                        HMODULE hMod = NULL;
+                        char modName[MAX_PATH] = "unknown";
+                        if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            (LPCSTR)(regionBase + i), &hMod)) {
+                            GetModuleFileNameA(hMod, modName, MAX_PATH);
+                        }
+                        Log("  -> REPLACING EA CA cert at 0x%p (module: %s)!", regionBase + i, modName);
                         DWORD oldProt;
                         if (VirtualProtect(regionBase + i, certSize, PAGE_READWRITE, &oldProt)) {
                             memcpy(regionBase + i, g_ourCACert, g_ourCACertLen);
@@ -387,7 +393,8 @@ static void PatchSSL() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Sleep(2000);
+    // Start scanning IMMEDIATELY - no delay
+    // The game connects during launch, we need to beat it
     PatchSSL();
     
     // Hook connect() to replace the CA cert right before the SSL connection
