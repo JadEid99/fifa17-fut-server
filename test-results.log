@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 12:18:29) ===
+﻿=== TEST RESULTS (2026-04-11 12:26:22) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -10,16 +10,33 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
+[Redirector-Raw] Client connected: 127.0.0.1:64679
+[Redirector-Raw] Received 116 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 da 21 c4 db  ....o...k..i.!..
+  0010: ac 3b 4e d1 ed bd cb 4d 12 45 0b b5 07 ab 43 02  .;N....M.E....C.
+  0020: 70 6d 94 79 6a 14 c6 3e ec 4b dc 00 00 10 00 9d  pm.yj..>.K......
+  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0070: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69da21c4dbac3b4e...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0035
+[SSL] Sending ServerHello (79b) + Certificate (779b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:64679
 
 --- DLL LOG ---
-=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===
-connect() hooked at 0x00007FFD6EB11A50
-send() at 0x00007FFD6EB02320 (not hooked)
-Initial CA cert scan...
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
-ReplaceEACert: replaced 0 certs
+[12:25:54.825] === FIFA 17 SSL Bypass v5 (IAT hooks + cert replacement) ===
+[12:25:54.825] Process ID: 96688
+[12:25:54.825] Real connect() at 00007FFD6EB11A50
+[12:25:54.825] IAT hooks installed: 0 modules patched
+[12:26:16.398] Real connect() at 00007FFD6EB11A50
 
 
 --- END ---
