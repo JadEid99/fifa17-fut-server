@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 11:18:59) ===
+﻿=== TEST RESULTS (2026-04-11 11:32:06) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -32,8 +32,10 @@ Node.js v20.19.5
 === FIFA 17 SSL Bypass DLL (CA Replacement) ===
 FIFA17.exe base=0x0000000140000000 size=0x11359000
 Waiting for Denuvo decryption...
-Scanning for DER certificates in game memory...
-Found 0 DER certs, replaced 0
+Found 'installed CA cert' string at +0x39316B1
+Searching for code references to this string...
+Scanning for DER certificates (relaxed)...
+Found 0 DER certs total
 Found error handler at +0x612E7A4, patching JE->JMP
 Patched disconnect func to return 0
 All patches applied!
