@@ -1,4 +1,4 @@
-﻿=== TEST RESULTS (2026-04-11 12:13:59) ===
+﻿=== TEST RESULTS (2026-04-11 12:16:20) ===
 
 --- SERVER OUTPUT ---
 === FIFA 17 FUT Private Server ===
@@ -14,16 +14,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 --- DLL LOG ---
 === FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===
 connect() hooked at 0x00007FFD6EB11A50
-send() hooked at 0x00007FFD6EB02320
+send() at 0x00007FFD6EB02320 (not hooked)
 Initial CA cert scan...
-=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===
-connect() hooked at 0x00007FFD6EB11A50
-send() hooked at 0x00007FFD6EB02320
-Initial CA cert scan...
-=== FIFA 17 SSL Bypass (connect trampoline hook + CA replacement) ===
-connect() hooked at 0x00007FFD6EB11A50
-send() hooked at 0x00007FFD6EB02320
-Initial CA cert scan...
+ReplaceEACert: replaced 0 certs
+ReplaceEACert: replaced 0 certs
+ReplaceEACert: replaced 0 certs
+connect() to port 42230 detected! socket=4152
 
 
 --- END ---
