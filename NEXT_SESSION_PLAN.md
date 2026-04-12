@@ -1,58 +1,34 @@
-# FIFA 17 FUT Private Server - Next Session Plan
+# FIFA 17 SSL Bypass - Current Status
 
-## BREAKTHROUGH APPROACH: Hook ProtoSSL at the Application Layer
+## KEY FINDING: Timing Issue
 
-### The Problem (Solved Analysis)
-We spent 50+ patches trying to bypass cert verification inside ProtoSSL's SSL state machine. The verification is too deeply integrated — skipping it also skips the public key extraction needed for the handshake.
+Our Frida patches are applied AFTER the game has already started the SSL handshake. The game's first connection attempt happens during launch (before we press Q). By the time we apply patches and press Q for attempt #2, the code may have already been executed on attempt #1 and the patches don't affect the cached state.
 
-### The Solution: Force Plaintext Mode
-From reading the DirtySDK source code:
+## What We Know Works
+- 3x bAllowAnyCert JNE→JMP patches prevent the disconnect (HANGING result)
+- The game DOES read our TLS response (ECONNRESET proves it processes the data)
+- The memory dump has all decrypted code
 
-```c
-int32_t ProtoSSLSend(ProtoSSLRefT *pState, const char *pBuffer, int32_t iLength) {
-    if (pState->iState == ST3_SECURE) {
-        // Encrypt and send via SSL
-        _SendPacket(pState, SSL3_REC_APPLICATION, NULL, 0, pBuffer, iLength);
-    }
-    if (pState->iState == ST_UNSECURE) {
-        // Send plaintext via raw socket!
-        iResult = SocketSend(pState->pSock, pBuffer, iLength, 0);
-    }
-}
-```
+## What We Need To Do
+1. Apply Frida patches DURING game launch (before first connection attempt)
+2. Or use the DLL proxy to apply patches at DLL_PROCESS_ATTACH time
+3. The DLL approach is better because it runs before ANY game code executes
 
-When `iState == ST_UNSECURE`, ProtoSSL sends/receives in **plaintext**. No SSL, no certs, no verification.
+## Patch Locations (confirmed from dump)
+- bAllowAnyCert check 1: exe+0x612522D (change 75→EB)
+- bAllowAnyCert check 2: exe+0x612753D (change 75→EB)  
+- bAllowAnyCert check 3: exe+0x6127C29 (change 75→EB)
 
-### Implementation Plan
+## Architecture
+- cert_receive (+0x6127B40): reads cert data from socket
+- cert_process (+0x6127020): parses TLS record fragments (NOT cert verification)
+- cert_finalize (+0x61279F0): finalizes cert processing
+- State 3 handler (+0x61262DC): orchestrates cert receive/process/verify
+- +0x6124140: called on success path (hostname check?)
+- +0x612E770: error handler (calls disconnect)
+- +0x612D5D0: disconnect function
 
-**Option A: Frida hook on ProtoSSLConnect**
-1. Find `ProtoSSLConnect` in FIFA 17 (search for the connect pattern)
-2. After it connects, set `pState->iState = ST_UNSECURE` (offset +0x8C)
-3. The game sends plaintext Blaze data to our server
-4. Our server receives raw Blaze packets (no TLS needed!)
-
-**Option B: Patch the SSL state machine to skip to ST_UNSECURE**
-1. In the SSL state machine, after State 1 (ClientHello), instead of proceeding to State 2 (ServerHello), jump to ST_UNSECURE
-2. This means: game connects, sends ClientHello, we respond, then game switches to plaintext
-
-**Option C: Hook at the Winsock level (EA-MITM approach)**
-1. Find ProtoSSLConnect, ProtoSSLSend, ProtoSSLRecv addresses in FIFA 17
-2. Hook them to redirect to our server and intercept plaintext data
-3. This is what EA-MITM does for BF3/NFS
-
-### Key Addresses
-- SSL state machine: exe+0x6126213
-- iState offset in struct: +0x8C (confirmed from code: `CMP DWORD [rbx+0x8C], 3`)
-- bAllowAnyCert offset: +0xC20 (confirmed from code: `CMP BYTE [rbx+0xC20], 0`)
-- Error handler: exe+0x612E770
-- Disconnect: exe+0x612D5D0
-- "installed CA cert" string: exe+0x39316B1
-
-### Server Changes Needed
-If we force plaintext mode, the server needs to accept raw TCP Blaze packets instead of TLS. The main Blaze server on port 10041 already does this. We just need the redirector on port 42230 to also accept plaintext.
-
-### What We Know Works
-- NOP-ing the error CALL at exe+0x612644E prevents disconnect (HANGING result)
-- The game's SSL state machine is at exe+0x6126213
-- Frida can successfully patch code in the Denuvo-decrypted process
-- The batch test framework works for rapid iteration
+## The Plan
+Use the dinput8.dll proxy to scan for the bAllowAnyCert byte patterns in memory
+and patch them as soon as Denuvo decrypts the code. This happens before the game
+tries to connect, so the patches are in place for the first connection attempt.
