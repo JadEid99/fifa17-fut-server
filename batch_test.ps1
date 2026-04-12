@@ -1,4 +1,4 @@
-# Batch v26: Longer wait (60s) to see if game reconnects after PreAuth
+# Batch v27: Fix Fire2 frame format - msgType in upper 16 bits of last uint32
 # v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
 # Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
 # v19 confirmed: redirect works, game connects to main server on port 10041
@@ -26,7 +26,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v25: Fix response msgType ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v27: Fire2 frame format ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -76,8 +76,8 @@ Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "SECOND|POSTAUTH|LOGIN"){
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v26 ($timestamp) ===`n[1] Longer wait | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v27 ($timestamp) ===`n[1] Fire2 frame | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v26: longer wait for reconnect $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v27: Fire2 frame format $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
