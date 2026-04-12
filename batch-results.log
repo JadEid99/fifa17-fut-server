@@ -1,4 +1,4 @@
-﻿=== BATCH v30 (2026-04-12 13:09:12) ===
+﻿=== BATCH v30 (2026-04-12 13:12:39) ===
 [1] secure=1 + DLL v51 | ECONNRESET
 SERVER:
 === FIFA 17 FUT Private Server ===
@@ -10,12 +10,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:60477
+[Redirector-Raw] Client connected: 127.0.0.1:60497
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 7d 2a 09  ....o...k..i.}*.
-  0010: 58 d7 e1 11 15 39 10 42 d2 72 ee 0d d2 c8 21 0b  X....9.B.r....!.
-  0020: bc 66 8c 37 74 85 b0 73 86 4c 51 00 00 10 00 9d  .f.7t..s.LQ.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 7d f9 b4  ....o...k..i.}..
+  0010: 63 85 f9 4a 68 46 ab 1a d9 c6 83 a3 b2 06 a6 a5  c..JhF..........
+  0020: b2 e5 49 ad 95 7b 53 0a 82 d2 2d 00 00 10 00 9d  ..I..{S...-.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,18 +23,18 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db7d2a0958d7e1...
+[SSL] ClientHello: version=0x303 random=69db7df9b46385f9...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:60477
+[Redirector-Raw] Disconnected: 127.0.0.1:60497
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
 DLL:
-[13:07:44.984] === FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===
-[13:07:44.984] PID: 95492
-[13:08:28.100] SET bAllowAnyCert at 0000000027DD25D4 (struct=0000000027DD2250, host=winter15.gosredirector.ea.com, state=0x4, old=0x00)
+[13:11:11.377] === FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===
+[13:11:11.377] PID: 77920
+[13:11:54.698] SET bAllowAnyCert at 0000000104D79534 (struct=0000000104D791B0, host=winter15.gosredirector.ea.com, state=0x4, old=0x00)
 
 
