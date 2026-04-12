@@ -393,10 +393,14 @@ bT9J4z1OJr6cTA==
         console.log('[SSL] Sent ChangeCipherSpec');
 
         // Build SSLv3 Finished message
-        // SSLv3 Finished = MD5(master + pad2 + MD5(msgs + sender + master + pad1))
-        //                + SHA1(master + pad2 + SHA1(msgs + sender + master + pad1))
         const keys = socket._sslKeys;
         const allHSBuf = Buffer.concat(socket._allHS);
+        console.log(`[SSL] Finished hash input: ${socket._allHS.length} messages, total ${allHSBuf.length} bytes`);
+        for (let i = 0; i < socket._allHS.length; i++) {
+          console.log(`[SSL]   msg[${i}]: ${socket._allHS[i].length} bytes, type=0x${socket._allHS[i][0].toString(16)}`);
+        }
+        console.log(`[SSL] Master secret: ${keys.masterSecret.toString('hex').substring(0, 32)}...`);
+        
         const sender = Buffer.from([0x53, 0x52, 0x56, 0x52]); // "SRVR"
         const pad1_md5 = Buffer.alloc(48, 0x36);
         const pad2_md5 = Buffer.alloc(48, 0x5c);
