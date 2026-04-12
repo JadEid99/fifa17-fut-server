@@ -1,14 +1,15 @@
-# Batch v13: Surgical patch inside cert_process
+# Batch v14: DLL-based patching (patches applied before first connection)
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
 $gameExe = "$gameDir\FIFA17.exe"
+$logFile = "$gameDir\fifa17_ssl_bypass.log"
 $resultsFile = "$repoRoot\batch-results.log"
 
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
-public class KSB {
+public class KSC {
     [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
     public const uint KUP = 0x0002;
@@ -16,98 +17,78 @@ public class KSB {
     public static void Q() { keybd_event(0x51,0x10,0,UIntPtr.Zero); System.Threading.Thread.Sleep(50); keybd_event(0x51,0x10,KUP,UIntPtr.Zero); }
 }
 "@
-function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KSB]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
-function FEnter { if(Focus){[KSB]::Enter()} }
-function FQ { if(Focus){[KSB]::Q()} }
+function Focus { $p=Get-Process -Name FIFA17 -EA SilentlyContinue; if($p -and $p.MainWindowHandle -ne [IntPtr]::Zero){[KSC]::SetForegroundWindow($p.MainWindowHandle)|Out-Null;Start-Sleep -Milliseconds 300;return $true};return $false }
+function FEnter { if(Focus){[KSC]::Enter()} }
+function FQ { if(Focus){[KSC]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
-function Launch-Game { Start-Process $gameExe; for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}; Start-Sleep 10;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 5;FEnter;Start-Sleep 10;FEnter;Start-Sleep 2 }
-function Run-Frida($code) { $tmp="$repoRoot\tf.js"; Set-Content $tmp "var b=Process.getModuleByName('FIFA17.exe').base;`ntry{`n$code`nsend('OK');`n}catch(e){send('ERR:'+e.message);}" -Encoding UTF8; $p=Start-Process -FilePath "frida" -ArgumentList "-n","FIFA17.exe","-l",$tmp -NoNewWindow -PassThru -RedirectStandardOutput "$repoRoot\fo.txt" -RedirectStandardError "$repoRoot\fe.txt"; $p|Wait-Process -Timeout 10 -EA SilentlyContinue; if(!$p.HasExited){$p|Stop-Process -Force}; $o=(Get-Content "$repoRoot\fo.txt" -Raw -EA SilentlyContinue); Remove-Item $tmp,"$repoRoot\fo.txt","$repoRoot\fe.txt" -Force -EA SilentlyContinue; return $o }
 
-# These patches are INSIDE cert_process - they don't break the state machine
-# because they only affect the return value, not the state transitions.
-$patches = @(
-    # P1: Change JNE at +0x61270C2 to JMP (always take success return path)
-    # Original: 75 1E (JNE +0x1E to +0x61270E2)
-    # Patched: EB 1E (JMP +0x1E to +0x61270E2) - always returns edi=1
-    @{ name="P1_JNE_to_JMP_70C2"; desc="cert_process: JNE->JMP at +0x61270C2 (force success return)"
-       fresh=$true
-       patch='Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);' },
+Write-Host "=== BATCH v14: DLL-based SSL bypass ===" -ForegroundColor Cyan
 
-    # P2: Same but also patch the bAllowAnyCert checks (belt and suspenders)
-    @{ name="P2_JMP_70C2_plus_bAllowAnyCert"; desc="cert_process JMP + 3x bAllowAnyCert"
-       fresh=$true
-       patch=@'
-Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
-Memory.protect(b.add(0x612522d),1,"rwx");b.add(0x612522d).writeU8(0xEB);
-Memory.protect(b.add(0x612753d),1,"rwx");b.add(0x612753d).writeU8(0xEB);
-Memory.protect(b.add(0x6127c29),1,"rwx");b.add(0x6127c29).writeU8(0xEB);
-'@ },
+# Step 1: Build DLL
+Write-Host "[1] Building DLL..." -ForegroundColor Yellow
+$vcvars = ""
+if (Test-Path "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
+    $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+}
+if (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
+    $vcvars = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+}
+$buildOutput = cmd /c "`"$vcvars`" && cd /d `"$repoRoot\dll-proxy`" && cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib 2>&1"
+Write-Host $buildOutput
 
-    # P3: Make the cert parser (+0x6138680) return 0 (no error) + JMP at 70C2
-    @{ name="P3_cert_parser_ret0_JMP_70C2"; desc="cert parser ret 0 + JMP at 70C2"
-       fresh=$true
-       patch=@'
-Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
-Memory.protect(b.add(0x6138680),6,"rwx");b.add(0x6138680).writeByteArray([0x31,0xC0,0xC3,0x90,0x90,0x90]);
-'@ },
+# Step 2: Deploy
+Write-Host "[2] Deploying..." -ForegroundColor Yellow
+Kill-All
+Remove-Item $logFile -Force -EA SilentlyContinue
+Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
+Write-Host "DLL deployed."
 
-    # P4: JMP at 70C2 + bAllowAnyCert + also patch the JLE in State 3 caller
-    @{ name="P4_full_combo"; desc="JMP 70C2 + bAllowAnyCert + NOP JLE in State 3"
-       fresh=$true
-       patch=@'
-Memory.protect(b.add(0x61270C2),1,"rwx");b.add(0x61270C2).writeU8(0xEB);
-Memory.protect(b.add(0x612522d),1,"rwx");b.add(0x612522d).writeU8(0xEB);
-Memory.protect(b.add(0x612753d),1,"rwx");b.add(0x612753d).writeU8(0xEB);
-Memory.protect(b.add(0x6127c29),1,"rwx");b.add(0x6127c29).writeU8(0xEB);
-Memory.protect(b.add(0x61262F7),2,"rwx");b.add(0x61262F7).writeByteArray([0x90,0x90]);
-'@ },
+# Step 3: Start server
+Write-Host "[3] Starting server..." -ForegroundColor Yellow
+$sj = Start-Job -ScriptBlock { param($r); node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
+Start-Sleep 2
 
-    # P5: Control - no patches (should get ECONNRESET)
-    @{ name="P5_control"; desc="No patches (control)"
-       fresh=$true
-       patch="send('no patches');" }
-)
+# Step 4: Launch game (DLL patches will apply automatically during Denuvo unpack)
+Write-Host "[4] Launching game (DLL will patch during load)..." -ForegroundColor Yellow
+Start-Process $gameExe
+for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
+
+# Navigate menus - the DLL is scanning and patching in the background
+Start-Sleep 10; FEnter
+Start-Sleep 5; FEnter
+Start-Sleep 5; FEnter
+Start-Sleep 5; FEnter
+Start-Sleep 10; FEnter  # dismiss first connection result
+Start-Sleep 2
+
+# Step 5: Trigger connection attempt #2 (patches should be applied by now)
+Write-Host "[5] Triggering connection..." -ForegroundColor Yellow
+FQ
+Start-Sleep 20
+
+# Step 6: Collect results
+Write-Host "[6] Collecting results..." -ForegroundColor Yellow
+$so = (Receive-Job $sj 2>&1 | Out-String).Trim()
+Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
+
+$dllLog = ""
+if (Test-Path $logFile) { $dllLog = Get-Content $logFile -Raw }
+
+$r = "UNKNOWN"
+if ($so -match "Phase=.*received") { $r = "RECEIVED_DATA" }
+if ($so -match "Handshake type: 0x10") { $r = "CLIENT_KEY_EXCHANGE" }
+if ($so -match "ECONNRESET") { $r = "ECONNRESET" }
+if ($so -match "TIMEOUT: No data") { $r = "TIMEOUT" }
+if ($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "TIMEOUT") { $r = "HANGING" }
+if ($so -eq "") { $r = "NO_CONNECTION" }
+
+$color = switch -Regex ($r) { "CLIENT_KEY|RECEIVED" {"Green"} "HANGING|TIMEOUT" {"Yellow"} default {"Red"} }
+Write-Host "RESULT: $r" -ForegroundColor $color
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Set-Content $resultsFile "=== BATCH v13 ($timestamp) === $($patches.Count) tests`n" -Encoding UTF8
-Write-Host "=== BATCH v13 - $($patches.Count) tests ===" -ForegroundColor Cyan
+$results = "=== DLL PATCH TEST ($timestamp) ===`nRESULT: $r`n`n--- DLL LOG ---`n$dllLog`n`n--- SERVER ---`n$so`n"
+Set-Content $resultsFile $results -Encoding UTF8
+Write-Host $results
 
-foreach($p in $patches){
-    $n = [array]::IndexOf($patches, $p) + 1
-    Write-Host "[$n/$($patches.Count)] $($p.name)" -ForegroundColor Yellow
-    
-    if($p.fresh){ Kill-All; Launch-Game }
-    
-    Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
-    Start-Sleep 1
-    $sj=Start-Job -ScriptBlock{param($r);node "$r\server-standalone\server.mjs" 2>&1} -ArgumentList $repoRoot
-    Start-Sleep 2
-    
-    $fo=Run-Frida $p.patch
-    Start-Sleep 1; FQ
-    Start-Sleep 20
-    
-    $so=(Receive-Job $sj 2>&1|Out-String).Trim()
-    Stop-Job $sj -EA SilentlyContinue;Remove-Job $sj -EA SilentlyContinue
-    
-    $r="UNKNOWN"
-    if($so -match "TIMEOUT: No data"){$r="TIMEOUT_NO_DATA"}
-    if($so -match "Phase=.*received"){$r="RECEIVED_DATA"}
-    if($so -match "Handshake type: 0x10"){$r="CLIENT_KEY_EXCHANGE"}
-    if($so -match "ECONNRESET"){$r="ECONNRESET"}
-    if($so -match "bad_certificate"){$r="BAD_CERT"}
-    if($so -match "Waiting for ClientKeyExchange" -and $so -notmatch "ECONNRESET" -and $so -notmatch "Disconnected" -and $so -notmatch "TIMEOUT"){$r="HANGING"}
-    if($so -eq ""){$r="NO_CONNECTION"}
-    if(-not(Get-Process -Name FIFA17 -EA SilentlyContinue)){$r+="+CRASHED"}
-    
-    $color=switch -Regex($r){"CLIENT_KEY|RECEIVED"{"Green"}"HANGING|TIMEOUT"{"Yellow"}default{"Red"}}
-    Write-Host "  -> $r" -ForegroundColor $color
-    
-    $ss=if($so.Length -gt 500){$so.Substring($so.Length-500)}else{$so}
-    Add-Content $resultsFile "[$n] $($p.name) | $r | $($p.desc)`nSERVER: $ss`n" -Encoding UTF8
-    
-    FEnter; Start-Sleep 2
-}
-
-Write-Host "`n=== DONE ===" -ForegroundColor Green
-git add batch-results.log;git commit -m "Batch v13 $timestamp";git push 2>&1
+git add batch-results.log; git commit -m "DLL patch test $timestamp"; git push 2>&1
+Write-Host "Done." -ForegroundColor Cyan
