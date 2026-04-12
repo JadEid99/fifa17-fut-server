@@ -1280,5 +1280,26 @@ console.log('=== FIFA 17 FUT Private Server ===\n');
 startRedirector();
 startMainServer();
 startHttpServer();
+
+// Catch-all listeners on common ports to detect where the game connects next
+[443, 9988, 17502, 80, 9946].forEach(port => {
+  if (port === HTTP_PORT || port === MAIN_BLAZE_PORT || port === REDIRECTOR_PORT) return;
+  net.createServer((socket) => {
+    console.log(`[PORT-${port}] Connection from ${socket.remoteAddress}:${socket.remotePort}`);
+    let buf = Buffer.alloc(0);
+    socket.on('data', (data) => {
+      buf = Buffer.concat([buf, data]);
+      const hex = Array.from(data.subarray(0, Math.min(64, data.length))).map(b => b.toString(16).padStart(2,'0')).join(' ');
+      const ascii = data.toString('ascii', 0, Math.min(64, data.length)).replace(/[^\x20-\x7e]/g, '.');
+      console.log(`[PORT-${port}] ${data.length} bytes: ${hex}`);
+      console.log(`[PORT-${port}] ASCII: ${ascii}`);
+    });
+    socket.on('close', () => console.log(`[PORT-${port}] Disconnected`));
+    socket.on('error', (e) => console.log(`[PORT-${port}] Error: ${e.message}`));
+  }).listen(port, '0.0.0.0', () => console.log(`[Catch] Listening on port ${port}`)).on('error', (e) => {
+    console.log(`[Catch] Cannot listen on port ${port}: ${e.message}`);
+  });
+});
+
 console.log('\nWaiting for FIFA 17...');
 console.log('hosts: 127.0.0.1 winter15.gosredirector.ea.com\n');
