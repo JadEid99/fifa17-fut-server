@@ -1,10 +1,15 @@
 /**
- * dinput8.dll Proxy - v51: Patch bAllowAnyCert for BOTH redirector AND main server
+ * dinput8.dll Proxy - v52: Permanent code patch for bAllowAnyCert
  * 
- * v50 only scanned for "winter15.gosredirector.ea.com" hostname.
- * v51 also scans for "127.0.0.1" to catch the main server SSL struct.
+ * Instead of racing to set a flag in memory, we patch the actual
+ * cert verification code to always skip verification.
  * 
- * The game uses TLS on BOTH connections when secure=1 in the redirect response.
+ * From Ghidra at 146132444:
+ *   CMP byte ptr [RBP + 0x384], 0x0    ; 80 bd 84 03 00 00 00
+ *   JNZ LAB_1461326df                   ; 0f 85 8e 02 00 00
+ * 
+ * We change JNZ to JMP (unconditional): 0f 85 -> e9 XX XX XX XX 90
+ * This makes cert verification ALWAYS skip, for ALL connections.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -63,96 +68,58 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-// Hook connect() via IAT to detect when the game connects to port 42230
-// Then find the ProtoSSL struct and set bAllowAnyCert
-typedef int (WSAAPI* connect_t)(SOCKET, const struct sockaddr*, int);
-static connect_t g_real_connect = NULL;
+static int g_codePatchDone = 0;
 static int g_patched = 0;
 
-// Search for the ProtoSSL connection struct and set offset +0x384 to 1
-// The struct is identified by having the hostname at some offset
-// and a sockaddr_in with port 42230 at another offset.
-// From Ghidra: param_1 is the outer connection struct.
-// The hostname is at param_1 + 0x58 area (from FUN_1461364f0 call with param_1+0x58)
-// Actually, we need to find the struct differently.
-// 
-// The Ghidra code shows param_1 + 0x384 is the flag.
-// param_1 + 0x386 is another flag.
-// param_1 + 0x388 is checked for value 2.
-// param_1 + 0x170 is a pointer to the SSL context.
-// param_1 + 0x168 is the connection state (0x15, 0x1e, 0x1f, etc.)
-//
-// The connection state at +0x168 should be between 0x14 and 0x20 during handshake.
-// We can search for structs where +0x168 has a value in this range.
-//
-// But simpler: the Ghidra code for FUN_14612f230 shows param_1[0x2d] which is
-// offset 0x168 (0x2d * 8 = 0x168). And param_1[0x2e] = offset 0x170 (SSL context).
-// The hostname is stored somewhere we can search for.
-//
-// SIMPLEST APPROACH: Hook connect() and when port 42230 is detected,
-// search ALL writable memory for the connect target address (127.0.0.1:42230)
-// in a sockaddr_in struct, then look backwards for the connection struct.
-//
-// Actually even simpler: the Ghidra code shows the cert handler receives param_1
-// which is the same struct used throughout. The flag at +0x384 just needs to be
-// set to non-zero. We can scan memory for structs that have the connection state
-// value 0x14-0x20 at offset +0x168 and set +0x384 = 1.
-
-static void SetAllowAnyCert() {
-    // Search for the pattern: connection state at +0x168 in range 0x14-0x20
-    // This identifies active SSL connections
+// Patch the cert verification code directly
+// Find: 80 bd 84 03 00 00 00 0f 85 (CMP [RBP+0x384],0 / JNZ)
+// Change JNZ to JMP: 0f 85 XX XX XX XX -> e9 XX XX XX XX 90
+static void PatchCertCheck() {
+    if (g_codePatchDone) return;
+    
+    // Search executable memory for the byte pattern
+    BYTE pattern[] = { 0x80, 0xBD, 0x84, 0x03, 0x00, 0x00, 0x00, 0x0F, 0x85 };
+    int patternLen = sizeof(pattern);
+    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
     
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x400 &&
-            mbi.Protect == PAGE_READWRITE) {
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
+            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
+             mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
             
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                // Search for hostnames that indicate ProtoSSL connection structs
-                // The redirector uses "winter15.gosredirector.ea.com"
-                // The main server uses "127.0.0.1" (from our redirect response)
-                const char* hostnames[] = {
-                    "winter15.gosredirector.ea.com",
-                    "127.0.0.1",
-                    NULL
-                };
-                
-                for (const char** hp = hostnames; *hp; hp++) {
-                    const char* needle = *hp;
-                    int needleLen = (int)strlen(needle);
+                for (SIZE_T j = 0; j + patternLen + 4 < size; j++) {
+                    if (memcmp(base + j, pattern, patternLen) != 0) continue;
                     
-                    for (SIZE_T j = 0; j + 0x400 < size; j++) {
-                        if (base[j] != needle[0]) continue;
-                        if (j + needleLen >= size) continue;
-                        if (memcmp(base + j, needle, needleLen) != 0) continue;
-                        if (base[j + needleLen] != 0) continue;
+                    // Found the pattern! The JNZ is at offset j+7
+                    BYTE* jnzAddr = base + j + 7;
+                    Log("Found cert check at %p (pattern at %p)", jnzAddr, base + j);
+                    Log("  Before: %02X %02X %02X %02X %02X %02X",
+                        jnzAddr[0], jnzAddr[1], jnzAddr[2], jnzAddr[3], jnzAddr[4], jnzAddr[5]);
+                    
+                    // Change JNZ (0F 85 xx xx xx xx) to JMP (E9 xx xx xx xx 90)
+                    // The displacement stays the same for JMP rel32
+                    DWORD oldProtect;
+                    if (VirtualProtect(jnzAddr, 6, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        jnzAddr[0] = 0xE9;  // JMP rel32
+                        // jnzAddr[1..4] stay the same (the relative offset)
+                        jnzAddr[5] = 0x90;  // NOP (pad the extra byte)
+                        VirtualProtect(jnzAddr, 6, oldProtect, &oldProtect);
                         
-                        BYTE* hostname = base + j;
-                        
-                        // hostname is at param_1 + 0x58 (from Ghidra)
-                        int hostOff = 0x58;
-                        if (j < (SIZE_T)hostOff) continue;
-                        
-                        BYTE* structBase = hostname - hostOff;
-                        
-                        // Don't check state - just patch any struct with the hostname
-                        // The hostname is written before TLS starts, so we can catch it early
-                        BYTE* flagAddr = structBase + 0x384;
-                        if (flagAddr >= base && flagAddr < base + size) {
-                            uint32_t state = *(uint32_t*)(structBase + 0x168);
-                            BYTE oldVal = *flagAddr;
-                            *flagAddr = 1;
-                            if (oldVal != 1) {
-                                Log("SET bAllowAnyCert at %p (struct=%p, host=%s, state=0x%X, old=0x%02X)",
-                                    flagAddr, structBase, needle, state, oldVal);
-                            }
-                            g_patched++;
-                        }
+                        Log("  After:  %02X %02X %02X %02X %02X %02X",
+                            jnzAddr[0], jnzAddr[1], jnzAddr[2], jnzAddr[3], jnzAddr[4], jnzAddr[5]);
+                        Log("PATCHED: JNZ -> JMP (cert verification permanently bypassed)");
+                        g_codePatchDone = 1;
+                        g_patched++;
+                    } else {
+                        Log("VirtualProtect failed: %lu", GetLastError());
                     }
+                    return;
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
@@ -162,22 +129,32 @@ static void SetAllowAnyCert() {
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===");
+    Log("=== FIFA 17 SSL Bypass v52 (permanent code patch) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Scan every 20ms for 5 minutes
+    // Try to patch the code every 100ms until successful
+    // The code might not be decrypted/loaded yet at startup (Denuvo)
     DWORD startTick = GetTickCount();
-    for (int i = 0; i < 15000; i++) {
-        Sleep(20);
+    for (int i = 0; i < 3000; i++) {
+        Sleep(100);
         
         __try {
-            SetAllowAnyCert();
+            PatchCertCheck();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
-        if (i % 200 == 0 && i > 0) {
-            DWORD elapsed = GetTickCount() - startTick;
-            Log("Progress: scan %d, %lu ms, patches: %d", i, elapsed, g_patched);
+        if (g_codePatchDone) {
+            Log("Code patch applied after %lu ms", GetTickCount() - startTick);
+            break;
         }
+        
+        if (i % 100 == 0 && i > 0) {
+            DWORD elapsed = GetTickCount() - startTick;
+            Log("Scanning for cert check... %lu ms elapsed", elapsed);
+        }
+    }
+    
+    if (!g_codePatchDone) {
+        Log("WARNING: Could not find cert check pattern after 5 minutes");
     }
     
     Log("=== Done. patches: %d ===", g_patched);
