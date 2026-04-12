@@ -111,16 +111,15 @@ function decodeTdf(buf, depth = 0) {
     
     try {
       if (type === 0x00) { // Integer
-        const { value, newOffset } = decodeVarInt(buf, offset);
-        offset = newOffset;
-        result.push(`${indent}${tag} (int) = ${value}`);
+        const vr = decodeVarInt(buf, offset);
+        offset = vr.newOffset;
+        result.push(`${indent}${tag} (int) = ${vr.value}`);
       } else if (type === 0x01) { // String
-        const { value: len, newOffset: o1 } = decodeVarInt(buf, o1 !== undefined ? o1 : offset);
-        // Fix: use offset not o1
         const lenResult = decodeVarInt(buf, offset);
         offset = lenResult.newOffset;
-        const str = buf.toString('utf-8', offset, offset + Number(lenResult.value) - 1);
-        offset += Number(lenResult.value);
+        const len = Number(lenResult.value);
+        const str = buf.toString('utf-8', offset, offset + len - 1); // -1 for null terminator
+        offset += len;
         result.push(`${indent}${tag} (str) = "${str}"`);
       } else if (type === 0x02) { // Blob
         const lenResult = decodeVarInt(buf, offset);
@@ -137,18 +136,28 @@ function decodeTdf(buf, depth = 0) {
         const itemType = buf[offset++];
         const countResult = decodeVarInt(buf, offset);
         offset = countResult.newOffset;
-        result.push(`${indent}${tag} (list) type=${itemType} count=${countResult.value}`);
+        result.push(`${indent}${tag} (list) itemType=${itemType} count=${countResult.value}`);
+        // Skip list items for now
+        for (let i = 0; i < Number(countResult.value); i++) {
+          if (itemType === 0x03) { // struct items
+            const sub = decodeTdf(buf.subarray(offset), depth + 1);
+            result.push(...sub.lines);
+            offset += sub.consumed;
+          }
+        }
       } else if (type === 0x05) { // Map
         const keyType = buf[offset++];
         const valType = buf[offset++];
         const countResult = decodeVarInt(buf, offset);
         offset = countResult.newOffset;
         result.push(`${indent}${tag} (map) k=${keyType} v=${valType} count=${countResult.value}`);
-        // Skip map entries for now
       } else if (type === 0x06) { // Union
         const unionType = buf[offset++];
         result.push(`${indent}${tag} (union) type=${unionType}`);
-      } else if (type === 0x07) { // IntList
+        if (unionType !== 0x7F) {
+          // Union contains one value - skip it for now
+        }
+      } else if (type === 0x07) { // IntList  
         const countResult = decodeVarInt(buf, offset);
         offset = countResult.newOffset;
         const vals = [];
@@ -158,6 +167,24 @@ function decodeTdf(buf, depth = 0) {
           vals.push(vr.value.toString());
         }
         result.push(`${indent}${tag} (intlist) = [${vals.join(', ')}]`);
+      } else if (type === 0x08) { // Pair/ObjectType
+        const vr1 = decodeVarInt(buf, offset);
+        offset = vr1.newOffset;
+        const vr2 = decodeVarInt(buf, offset);
+        offset = vr2.newOffset;
+        result.push(`${indent}${tag} (pair) = (${vr1.value}, ${vr2.value})`);
+      } else if (type === 0x09) { // Triple
+        const vr1 = decodeVarInt(buf, offset);
+        offset = vr1.newOffset;
+        const vr2 = decodeVarInt(buf, offset);
+        offset = vr2.newOffset;
+        const vr3 = decodeVarInt(buf, offset);
+        offset = vr3.newOffset;
+        result.push(`${indent}${tag} (triple) = (${vr1.value}, ${vr2.value}, ${vr3.value})`);
+      } else if (type === 0x0C) { // Float/VarList
+        const vr = decodeVarInt(buf, offset);
+        offset = vr.newOffset;
+        result.push(`${indent}${tag} (type0C) = ${vr.value}`);
       } else {
         result.push(`${indent}${tag} (type=0x${type.toString(16)}) ???`);
         break;
