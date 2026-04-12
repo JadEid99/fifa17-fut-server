@@ -1,4 +1,6 @@
-# Batch v21: Debug main server protocol - hex dump first bytes to identify format
+# Batch v22: Fixed Blaze header - 16 bytes not 12 (4-byte length field)
+# v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
+# Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
 # v19 confirmed: redirect works, game connects to main server on port 10041
 # But main server was misreading HTTP as raw Blaze binary. Now handles HTTP.
 $ErrorActionPreference = "Continue"
@@ -24,7 +26,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v21: Debug main server protocol ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v22: Fixed 16-byte Blaze header ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -72,8 +74,8 @@ Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "PREAUTH|LOGIN|HTTP_RESP"
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v21 ($timestamp) ===`n[1] Main protocol debug | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v22 ($timestamp) ===`n[1] 16-byte Blaze header | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v21: debug main server protocol $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v22: fixed Blaze header $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan

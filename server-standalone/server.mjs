@@ -71,15 +71,27 @@ class TdfEncoder {
 // Blaze Packet Codec
 // ============================================================
 
-const HEADER_SIZE = 12;
+const HEADER_SIZE = 16;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
-  return { length: buf.readUInt16BE(0), component: buf.readUInt16BE(2), command: buf.readUInt16BE(4), error: buf.readUInt16BE(6), msgType: (buf.readUInt32BE(8) >> 16) & 0xF000, msgId: buf.readUInt32BE(8) & 0xFFFF };
+  // Blaze v3 header: 4-byte length, 2-byte component, 2-byte command, 2-byte error, 2-byte msgType, 4-byte msgId (or 2+2 padding)
+  return { 
+    length: buf.readUInt32BE(0), 
+    component: buf.readUInt16BE(4), 
+    command: buf.readUInt16BE(6), 
+    error: buf.readUInt16BE(8), 
+    msgType: buf.readUInt16BE(10), 
+    msgId: buf.readUInt32BE(12)
+  };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
-  buf.writeUInt16BE(h.length, 0); buf.writeUInt16BE(h.component, 2); buf.writeUInt16BE(h.command, 4); buf.writeUInt16BE(h.error, 6);
-  buf.writeUInt32BE(((h.msgType & 0xF000) << 16) | (h.msgId & 0xFFFF), 8);
+  buf.writeUInt32BE(h.length, 0);
+  buf.writeUInt16BE(h.component, 4);
+  buf.writeUInt16BE(h.command, 6);
+  buf.writeUInt16BE(h.error, 8);
+  buf.writeUInt16BE(h.msgType || 0, 10);
+  buf.writeUInt32BE(h.msgId || 0, 12);
   return buf;
 }
 function readPacket(buf) {
@@ -876,9 +888,9 @@ function startMainServer() {
           setupHttpBlazeMainHandler(socket, session);
           socket.emit('data', dataBuf);
         } else {
-          console.log(`[Main] S${sid}: Unknown protocol (first byte: 0x${dataBuf[0].toString(16)})`);
-          // Try HTTP handler anyway - the game might send HTTP with a slight delay
-          setupHttpBlazeMainHandler(socket, session);
+          // Raw Blaze binary (16-byte header, first 4 bytes = length)
+          console.log(`[Main] S${sid}: Raw Blaze binary detected`);
+          setupMainBlazeHandler(socket, session);
           socket.emit('data', dataBuf);
         }
       }
