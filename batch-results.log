@@ -1,4 +1,4 @@
-﻿=== BATCH v16 (2026-04-12 11:01:34) ===
+﻿=== BATCH v16 (2026-04-12 11:04:10) ===
 [1] SSLv3 crypto | ALERT_AFTER_FINISHED
 SERVER: es, version=0x303
 [SSL] Master secret derived, keys ready
@@ -9,14 +9,13 @@ SERVER: es, version=0x303
 [SSL]   msg[2]: 699 bytes, type=0xb
 [SSL]   msg[3]: 4 bytes, type=0xe
 [SSL]   msg[4]: 134 bytes, type=0x10
-[SSL] Master secret: 38f81dec7a7b02f6a8ccbc3aa6216167...
+[SSL] Master secret: 612a33d2b6c3e483f69d63ad2ed8740e...
 [SSL] Sent encrypted Finished
-[SSL] Alert received: level=233 desc=208 (unknown)
-[SSL] Alert raw: e9 d0 76 31 6b 50 bb 2e ce 21 60 9f bc 62 b4 1e 48 e9 81 ec a0 4f
-[Redirector-Raw] Disconnected: 127.0.0.1:59580
-DLL: [11:00:27.138] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[11:00:27.139] PID: 102332
-[11:00:54.954] SET bAllowAnyCert at 0000000104525934 (struct=00000001045255B0, state=0x3, old=0x00)
-[11:01:09.038] SET bAllowAnyCert at 0000000104525934 (struct=00000001045255B0, state=0x1E, old=0x01)
+[SSL] Alert received: level=121 desc=242 (unknown)
+[SSL] Alert raw: 79 f2 e5 86 cc a7 93 96 bc 1a a5 f7 88 fe 99 39 81 b4 40 c5 f1 d5
+[Redirector-Raw] Disconnected: 127.0.0.1:59606
+DLL: [11:03:02.768] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[11:03:02.768] PID: 90228
+[11:03:30.726] SET bAllowAnyCert at 0000000027DC1B64 (struct=0000000027DC17E0, state=0x3, old=0x00)
 
 
