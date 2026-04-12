@@ -1,40 +1,24 @@
-﻿=== BATCH v18 (2026-04-12 11:34:12) ===
-[1] Full connection | HANDSHAKE_COMPLETE
+﻿=== BATCH v19 (2026-04-12 11:40:45) ===
+[1] HTTP-Blaze | MAIN_SERVER_CONNECTED
 SERVER:
-(total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 3f b8 98 d4 fa
-  0010: 00 ea f8 f5 ab ee 98 14 a9 35 f7 ef 68 1d ed 66
-  0020: b1 66 6a 84 74 24 04 0c 4f 52 7f 14 67 2e d2 2f
-  0030: 31 91 74 2c 2c 04 41 b2 5c 9b 01 72 64 4c f3 16
-  0040: a6 40 46 20 79 ea 47 e7 3a 62 f3 1f ef 56 c3 71
-  0050: 7d a2 d6 8a c9 be 32 53 ac 80 80 83 96 e0 d9 02
-  0060: 9d d5 e6 a7 b3 a6 eb 0c 0d 10 91 f9 8a dd dd 1c
-  0070: 8a 9c 13 f4 a1 72 96 50 36 92 8c 65 5f 60 f8 f8
-  0080: 63 a7 fd 28 cc d7 9b f5 b9 57 65
-[SSL] Record: type=0x16 ver=0x303 len=134
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
-[SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: a645fadcf55da56922b38ef59da76b9d...
-[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 e3 fb e9 fb 81
-  0010: d5 92 67 a9 e3 f4 4c 10 a5 40 4f 48 80 11 9e b9
-  0020: 68 03 8c 47 f0 d3 d6 7b 4d 3b b4 d8 18 fa 64
+(total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 62 f4 05 0a 41
+  0010: d3 6d b7 da 06 11 82 98 39 4a b2 86 2b f3 9b 79
+  0020: cd ee 6c a6 df 63 fe 49 b9 02 4b 06 d6 0c 8b
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: ba7ea67e6f4addd9b0f3b3e82ccd8996
+[SSL] RC4 decryption initialized with clientWriteKey: afb35639ec740aa97694b228cb570cfd
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c91aa8931ecd0f644d9e5150b0d032d060457e6b7de18c6c00775357f474951f1
-[SSL] Client Finished plaintext (16 bytes): 1400000c91aa8931ecd0f644d9e5150b
-[SSL] Client Finished MAC: 0d032d060457e6b7de18c6c00775357f474951f1
-[SSL] Client verify_data:   91aa8931ecd0f644d9e5150b
-[SSL] Expected verify_data:  91aa8931ecd0f644d9e5150b
+[SSL] Decrypted hex: 1400000c39ac9ac1a8835a9cc3949f31521cbfe5577ee013dfee3f5f6b10def3b6d74465
+[SSL] Client Finished plaintext (16 bytes): 1400000c39ac9ac1a8835a9cc3949f31
+[SSL] Client Finished MAC: 521cbfe5577ee013dfee3f5f6b10def3b6d74465
+[SSL] Client verify_data:   39ac9ac1a8835a9cc3949f31
+[SSL] Expected verify_data:  39ac9ac1a8835a9cc3949f31
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 0d032d060457e6b7de18c6c00775357f474951f1
-[SSL] Actual client MAC:   0d032d060457e6b7de18c6c00775357f474951f1
+[SSL] Expected client MAC: 521cbfe5577ee013dfee3f5f6b10def3b6d74465
+[SSL] Actual client MAC:   521cbfe5577ee013dfee3f5f6b10def3b6d74465
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1038 bytes
@@ -44,39 +28,82 @@ SERVER:
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: e5c8090a95e74539a24c41e0
+[SSL] Server verify_data: 97fe08ab2ac06d68ff6d8653
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL] Decrypted 858 bytes of application data
-[SSL] App data hex (first 64): 504f5354202f72656469726563746f722f676574536572766572496e7374616e636520485454502f312e310d0a486f73743a2077696e74657231352e676f7372
-[SSL] Blaze buffer: 858 bytes
-[SSL] No complete Blaze packet yet (need more data or parse issue)
-[SSL] Partial Blaze header: comp=0x5354 cmd=0x202f len=20559 (have 846 of 20559 body bytes)
-[SSL] Alert (decrypted): level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:59821
+[HTTP-Blaze] Request:
+POST /redirector/getServerInstance HTTP/1.1
+Host: winter15.gosredirector.ea.com:42230
+Content-Length: 665
+User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstancerequest>
+  <blazesdkversion>15.1.1.3.0</blazesdkversion>
+  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
+  <clientname>FIFA17</clientname>
+  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
+  <clientplatform>pc</clientplatform>
+  <client
+[HTTP-Blaze] POST /redirector/getServerInstance (body: 665 bytes)
+[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
+[HTTP-Blaze] Response (417 bytes):
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 322
+Connection: keep-alive
+
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstanceinfo>
+  <address member="0">
+    <valu>
+      <hostname>127.0.0.1</hostname>
+      <ip>2130706433</ip>
+      <port>10041</port>
+    </valu>
+  </address
+[HTTP-Blaze] Sent encrypted HTTP response
+[Main] Session 1 connected: 127.0.0.1:59866
+[Main] S1: Plain TCP Blaze
+[Main] S1: comp=0x00cb cmd=0x0000
+[Main] Unhandled comp=0xcb cmd=0x0
+[Main] S1: comp=0x0000 cmd=0x8e48
+[Main] Unhandled comp=0x0 cmd=0x8e48
+[Main] S1: comp=0x1ba7 cmd=0x0093
+[Main] Unhandled comp=0x1ba7 cmd=0x93
+[Main] S1 disconnected
 DLL:
-[11:32:44.737] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[11:32:44.737] PID: 107432
-[11:33:11.522] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x3, old=0x00)
-[11:33:13.104] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x3, old=0x01)
-[11:33:27.153] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:28.901] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:30.509] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:32.206] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:34.123] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:35.745] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:37.370] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:39.100] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:40.890] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:42.588] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:44.182] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:45.988] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:47.923] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:49.638] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:51.425] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:53.216] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:55.118] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:33:56.829] SET bAllowAnyCert at 0000000027DE2764 (struct=0000000027DE23E0, state=0x20, old=0x01)
-[11:34:07.161] Progress: scan 50, 82422 ms, patches: 20
+[11:39:17.667] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[11:39:17.667] PID: 103796
+[11:39:44.946] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x3, old=0x00)
+[11:39:46.522] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x3, old=0x01)
+[11:40:00.832] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:02.549] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:04.427] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:06.162] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:08.031] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:09.883] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:11.570] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:13.220] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:14.967] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:16.685] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:18.547] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:20.466] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:22.371] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:24.224] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:26.018] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:27.888] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:29.745] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:31.598] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:33.512] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:35.208] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:36.992] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:38.744] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:40.464] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:41.948] Progress: scan 50, 84281 ms, patches: 25
+[11:40:42.160] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
+[11:40:43.844] SET bAllowAnyCert at 0000000027DB1234 (struct=0000000027DB0EB0, state=0x20, old=0x01)
 
 
