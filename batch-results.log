@@ -1,12 +1,12 @@
-﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:27:41) ===
+﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:32:32) ===
 RESULT: TIMEOUT
 
 --- DLL LOG ---
-[10:26:39.349] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:26:39.349] PID: 104080
-[10:27:07.201] SET bAllowAnyCert at 0000000027D911C4 (struct=0000000027D90E40, state=0x4, old=0x00)
-[10:27:08.925] SET bAllowAnyCert at 0000000027D911C4 (struct=0000000027D90E40, state=0x4, old=0x01)
-[10:27:17.878] SET bAllowAnyCert at 0000000027D911C4 (struct=0000000027D90E40, state=0x18, old=0x01)
+[10:31:30.967] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[10:31:30.967] PID: 104264
+[10:31:57.799] SET bAllowAnyCert at 0000000103F18C34 (struct=0000000103F188B0, state=0x4, old=0x00)
+[10:31:59.505] SET bAllowAnyCert at 0000000103F18C34 (struct=0000000103F188B0, state=0x4, old=0x01)
+[10:32:01.146] SET bAllowAnyCert at 0000000103F18C34 (struct=0000000103F188B0, state=0x4, old=0x01)
 
 
 --- SERVER ---
@@ -19,12 +19,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:59120
+[Redirector-Raw] Client connected: 127.0.0.1:59309
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 57 59 90  ....o...k..i.WY.
-  0010: 0d 6f 10 fe 83 57 1d 69 49 03 02 9e 74 db e9 f8  .o...W.iI...t...
-  0020: 51 1b 0c c8 6f cf f8 8a ff 28 b8 00 00 10 00 9d  Q...o....(......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 58 7d 94  ....o...k..i.X}.
+  0010: a8 43 e1 48 ca 0b 2d 18 e1 65 e4 c7 25 b1 a5 75  .C.H..-..e..%..u
+  0020: 32 33 87 db 70 b9 a9 e7 20 4b 2a 00 00 10 00 9d  23..p... K*.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -32,21 +32,21 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db5759900d6f10...
+[SSL] ClientHello: version=0x303 random=69db587d94a843e1...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:59120
+[Redirector-Raw] Disconnected: 127.0.0.1:59309
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
-[Redirector-Raw] Client connected: 127.0.0.1:59124
+[Redirector-Raw] Client connected: 127.0.0.1:59313
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 57 65 b9  ....o...k..i.We.
-  0010: 22 2e e6 7f 98 d9 73 bb 7a 1a 06 1f 3b 13 6a ea  ".....s.z...;.j.
-  0020: d5 46 46 6e 1a 79 e4 47 f8 a2 4b 00 00 10 00 9d  .FFn.y.G..K.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 58 89 45  ....o...k..i.X.E
+  0010: 22 fa 06 98 5b b3 d3 61 1a c5 56 d0 5e 15 9c 65  "...[..a..V.^..e
+  0020: 8d 51 32 8f e6 49 92 64 b6 ce 63 00 00 10 00 9d  .Q2..I.d..c.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -54,21 +54,21 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db5765b9222ee6...
+[SSL] ClientHello: version=0x303 random=69db58894522fa06...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 137 bytes (total pending: 137)
-  0000: 16 03 00 00 84 10 00 00 80 20 3e 50 bf d2 92 1d
-  0010: cc 84 1d 24 21 4e bc 01 41 d6 43 2a 82 8b 97 1e
-  0020: 66 10 9c e1 16 03 80 10 e3 69 a9 e6 bf d7 86 bc
-  0030: 7f 09 cd 21 65 c1 9c df 18 cb 9f f5 5c fc f9 a1
-  0040: fa da f3 8c b5 46 a9 55 cf c5 4b 0a a9 aa e6 d7
-  0050: b2 09 34 29 c1 c4 94 4c d3 52 ca 22 eb dd 27 16
-  0060: 34 3e 6c 22 9d c8 fb c3 48 11 c0 05 a3 00 75 6b
-  0070: 9b 47 8d d6 77 f3 f0 1e c7 a1 40 32 96 0f 16 1d
-  0080: e1 1f e5 d2 4e a4 ad 5c ad
+  0000: 16 03 00 00 84 10 00 00 80 5d 9c 36 48 f6 e0 f5
+  0010: bb a0 a7 66 5d 34 e7 35 2b 8b 4a b2 ad 49 49 ab
+  0020: 9a fc 1c 86 a9 97 cc f5 8f 83 93 f0 89 50 6c e8
+  0030: 9f e5 22 9e 02 95 22 ae ec 0f 48 a0 1e 9d cc a0
+  0040: 40 1a a0 b1 be bd b6 28 1c d9 3d 6b b3 8a 7e 4e
+  0050: 8d a4 b3 e6 15 1f 56 2c 8f 32 15 6c 8c 05 c3 6b
+  0060: 7d 5b 40 3a 99 36 f2 7c 02 ec e2 60 d5 97 0d d4
+  0070: ed a7 85 dc 53 27 0c be 8c 0b 89 c5 96 2e db 40
+  0080: f2 d9 6b 73 56 f2 08 55 01
 [SSL] Record: type=0x16 ver=0x300 len=132
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted pre-master secret: 128 bytes (body len: 128)
@@ -77,5 +77,5 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [SSL] Sent ChangeCipherSpec
 [SSL] Sent encrypted Finished
 [SSL] Alert received
-[Redirector-Raw] Disconnected: 127.0.0.1:59124
+[Redirector-Raw] Disconnected: 127.0.0.1:59313
 
