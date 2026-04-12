@@ -13,9 +13,13 @@ public class KM {
 }
 "@
 
+# Kill any existing server
+Get-Process -Name node -EA SilentlyContinue | Stop-Process -Force -EA SilentlyContinue
+Start-Sleep 2
+
 Write-Host "Starting server..." -ForegroundColor Cyan
 $sj = Start-Job -ScriptBlock { param($r); $env:PREAUTH_VARIANT="full"; $env:REDIRECT_SECURE="1"; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2
+Start-Sleep 3
 
 Write-Host "Pressing Q to trigger connection..." -ForegroundColor Yellow
 $p = Get-Process -Name FIFA17 -EA SilentlyContinue
@@ -40,7 +44,9 @@ for ($i = 0; $i -lt 60; $i++) {
 $serverOut = (Receive-Job $sj 2>&1 | Out-String).Trim()
 Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
 
-$log += "`n=== SERVER OUTPUT ===`n$serverOut`n"
+# Get last 5000 chars of server output
+$serverTail = if($serverOut.Length -gt 5000){$serverOut.Substring($serverOut.Length-5000)}else{$serverOut}
+$log += "`n=== SERVER OUTPUT (last 5000 chars) ===`n$serverTail`n"
 Set-Content $resultsFile $log -Encoding UTF8
 Write-Host "Results saved to connection-monitor.log" -ForegroundColor Green
 
