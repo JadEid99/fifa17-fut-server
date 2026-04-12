@@ -432,3 +432,75 @@ void FUN_14612f230(longlong *param_1)
 }
 
 
+bool FUN_146132000(undefined8 *param_1,longlong param_2)
+
+{
+  int iVar1;
+  bool bVar2;
+  
+  iVar1 = *(int *)(param_2 + 0x18);
+  bVar2 = false;
+  if (iVar1 < 5) {
+    iVar1 = FUN_14612d260(*param_1,param_2 + 0x6718 + (longlong)iVar1,5 - iVar1,0,0,0);
+    bVar2 = 0 < iVar1;
+    if (bVar2) {
+      *(int *)(param_2 + 0x18) = *(int *)(param_2 + 0x18) + iVar1;
+    }
+    if (iVar1 < 0) {
+      *(undefined4 *)((longlong)param_1 + 0x16c) = 1;
+      *(uint *)(param_1 + 0x2d) = (0x1f < *(int *)(param_1 + 0x2d)) + 0x100d;
+    }
+  }
+  if (4 < *(int *)(param_2 + 0x18)) {
+    if (*(int *)(param_2 + 0x18) == 5) {
+      *(undefined4 *)(param_2 + 0x14) = 5;
+      if (*(char *)(param_2 + 0x6719) == '\x03') {
+        *(undefined4 *)(param_2 + 0x1c) = 5;
+        *(int *)(param_2 + 0x18) =
+             *(int *)(param_2 + 0x18) +
+             (uint)CONCAT11(*(undefined1 *)(param_2 + 0x671b),*(undefined1 *)(param_2 + 0x671c));
+        if (0x4800 < *(int *)(param_2 + 0x18)) {
+          FUN_146135250(param_1,2,0x16);
+          *(undefined4 *)((longlong)param_1 + 0x16c) = 1;
+          *(undefined8 *)(param_2 + 0x18) = 0;
+          *(undefined4 *)(param_2 + 0x14) = 0;
+          *(uint *)(param_1 + 0x2d) = (0x1f < *(int *)(param_1 + 0x2d)) + 0x100d;
+        }
+      }
+      else {
+        if ((*(char *)(param_2 + 0x6718) == -0x80) && (*(char *)(param_2 + 0x671a) == '\x01')) {
+          *(undefined4 *)(param_1 + 0x2d) = 0x1003;
+        }
+        else {
+          *(undefined4 *)(param_1 + 0x2d) = 0x1004;
+        }
+        *(undefined4 *)((longlong)param_1 + 0x16c) = 1;
+        *(undefined8 *)(param_2 + 0x18) = 0;
+        *(undefined4 *)(param_2 + 0x14) = 0;
+      }
+    }
+    iVar1 = *(int *)(param_2 + 0x14);
+    if (iVar1 < *(int *)(param_2 + 0x18)) {
+      iVar1 = FUN_14612d260(*param_1,param_2 + 0x6718 + (longlong)iVar1,
+                            *(int *)(param_2 + 0x18) - iVar1,0,0,0);
+      if (0 < iVar1) {
+        *(int *)(param_2 + 0x14) = *(int *)(param_2 + 0x14) + iVar1;
+        if (*(int *)(param_2 + 0x14) == *(int *)(param_2 + 0x18)) {
+          iVar1 = FUN_146134b30(param_1);
+        }
+        bVar2 = true;
+      }
+      if (iVar1 < 0) {
+        *(undefined4 *)((longlong)param_1 + 0x16c) = 1;
+        *(uint *)(param_1 + 0x2d) = (0x1f < *(int *)(param_1 + 0x2d)) + 0x100d;
+      }
+    }
+    if (((*(int *)(param_2 + 0x14) == *(int *)(param_2 + 0x18)) &&
+        (*(char *)(param_2 + 0x6718) != '\x17')) && (*(int *)((longlong)param_1 + 0x16c) == 0)) {
+      FUN_1461334d0(param_1,param_2);
+    }
+  }
+  return bVar2;
+}
+
+
