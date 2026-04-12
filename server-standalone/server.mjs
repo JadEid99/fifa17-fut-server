@@ -89,6 +89,103 @@ class TdfEncoder {
   build() { return Buffer.concat(this.buffers); }
 }
 
+// TDF Decoder - decode TDF binary to readable format
+function decodeTdf(buf, depth = 0) {
+  const result = [];
+  let offset = 0;
+  const indent = '  '.repeat(depth);
+  
+  while (offset < buf.length) {
+    if (buf[offset] === 0x00) { offset++; break; } // struct end
+    if (offset + 4 > buf.length) break;
+    
+    // Decode tag (3 bytes)
+    const b0 = buf[offset], b1 = buf[offset+1], b2 = buf[offset+2];
+    const c0 = String.fromCharCode((b0 >> 2) + 0x20);
+    const c1 = String.fromCharCode(((b0 & 0x03) << 4 | (b1 >> 4)) + 0x20);
+    const c2 = String.fromCharCode(((b1 & 0x0F) << 2 | (b2 >> 6)) + 0x20);
+    const c3 = String.fromCharCode((b2 & 0x3F) + 0x20);
+    const tag = c0 + c1 + c2 + c3;
+    const type = buf[offset + 3];
+    offset += 4;
+    
+    try {
+      if (type === 0x00) { // Integer
+        const { value, newOffset } = decodeVarInt(buf, offset);
+        offset = newOffset;
+        result.push(`${indent}${tag} (int) = ${value}`);
+      } else if (type === 0x01) { // String
+        const { value: len, newOffset: o1 } = decodeVarInt(buf, o1 !== undefined ? o1 : offset);
+        // Fix: use offset not o1
+        const lenResult = decodeVarInt(buf, offset);
+        offset = lenResult.newOffset;
+        const str = buf.toString('utf-8', offset, offset + Number(lenResult.value) - 1);
+        offset += Number(lenResult.value);
+        result.push(`${indent}${tag} (str) = "${str}"`);
+      } else if (type === 0x02) { // Blob
+        const lenResult = decodeVarInt(buf, offset);
+        offset = lenResult.newOffset;
+        offset += Number(lenResult.value);
+        result.push(`${indent}${tag} (blob) [${lenResult.value} bytes]`);
+      } else if (type === 0x03) { // Struct
+        result.push(`${indent}${tag} (struct) {`);
+        const sub = decodeTdf(buf.subarray(offset), depth + 1);
+        result.push(...sub.lines);
+        offset += sub.consumed;
+        result.push(`${indent}}`);
+      } else if (type === 0x04) { // List
+        const itemType = buf[offset++];
+        const countResult = decodeVarInt(buf, offset);
+        offset = countResult.newOffset;
+        result.push(`${indent}${tag} (list) type=${itemType} count=${countResult.value}`);
+      } else if (type === 0x05) { // Map
+        const keyType = buf[offset++];
+        const valType = buf[offset++];
+        const countResult = decodeVarInt(buf, offset);
+        offset = countResult.newOffset;
+        result.push(`${indent}${tag} (map) k=${keyType} v=${valType} count=${countResult.value}`);
+        // Skip map entries for now
+      } else if (type === 0x06) { // Union
+        const unionType = buf[offset++];
+        result.push(`${indent}${tag} (union) type=${unionType}`);
+      } else if (type === 0x07) { // IntList
+        const countResult = decodeVarInt(buf, offset);
+        offset = countResult.newOffset;
+        const vals = [];
+        for (let i = 0; i < Number(countResult.value); i++) {
+          const vr = decodeVarInt(buf, offset);
+          offset = vr.newOffset;
+          vals.push(vr.value.toString());
+        }
+        result.push(`${indent}${tag} (intlist) = [${vals.join(', ')}]`);
+      } else {
+        result.push(`${indent}${tag} (type=0x${type.toString(16)}) ???`);
+        break;
+      }
+    } catch (e) {
+      result.push(`${indent}${tag} (type=0x${type.toString(16)}) DECODE ERROR: ${e.message}`);
+      break;
+    }
+  }
+  return { lines: result, consumed: offset };
+}
+
+function decodeVarInt(buf, offset) {
+  let value = BigInt(buf[offset] & 0x3F);
+  let negative = (buf[offset] & 0x80) !== 0;
+  let hasMore = (buf[offset] & 0x40) !== 0;
+  offset++;
+  let shift = 6n;
+  while (hasMore && offset < buf.length) {
+    value |= BigInt(buf[offset] & 0x7F) << shift;
+    hasMore = (buf[offset] & 0x80) !== 0;
+    offset++;
+    shift += 7n;
+  }
+  if (negative) value = -value;
+  return { value, newOffset: offset };
+}
+
 // ============================================================
 // Blaze Packet Codec
 // ============================================================
@@ -1208,6 +1305,15 @@ function handleMainHttpRoute(path, bodyXml, session) {
 function handlePreAuth(pkt) {
   const variant = process.env.PREAUTH_VARIANT || 'full';
   console.log(`[PreAuth] Variant: ${variant}`);
+  
+  // Decode and log the request body
+  try {
+    const decoded = decodeTdf(pkt.body);
+    console.log(`[PreAuth] Request TDF:`);
+    for (const line of decoded.lines) console.log(`[PreAuth]   ${line}`);
+  } catch (e) {
+    console.log(`[PreAuth] TDF decode error: ${e.message}`);
+  }
   
   if (variant === 'empty') {
     // Test 1: Empty body - tests if header format is OK
