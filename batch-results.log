@@ -1,25 +1,24 @@
-﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:16:49) ===
+﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:20:02) ===
 RESULT: TIMEOUT
 
 --- DLL LOG ---
-[10:15:47.183] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:15:47.183] PID: 77108
-[10:16:13.891] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x4, old=0x00)
-[10:16:15.559] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x4, old=0x01)
-[10:16:17.233] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x4, old=0x01)
-[10:16:26.095] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:27.997] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:29.740] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:31.544] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:33.436] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:35.291] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:37.123] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:38.992] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:40.874] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:42.646] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:44.468] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:46.312] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
-[10:16:48.057] SET bAllowAnyCert at 0000000105D47BD4 (struct=0000000105D47850, state=0x1E, old=0x01)
+[10:18:59.961] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[10:18:59.961] PID: 68416
+[10:19:27.713] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x4, old=0x00)
+[10:19:29.395] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x4, old=0x01)
+[10:19:39.556] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:41.371] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:43.221] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:44.948] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:46.862] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:48.736] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:50.466] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:52.245] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:54.135] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:55.958] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:57.822] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:19:59.640] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:20:01.381] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
 
 
 --- SERVER ---
@@ -32,12 +31,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:59007
+[Redirector-Raw] Client connected: 127.0.0.1:59058
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 54 cd 5e  ....o...k..i.T.^
-  0010: 70 12 4c 40 f2 f6 c1 22 4b 65 8e 0e 5f db a8 fc  p.L@..."Ke.._...
-  0020: fe c0 31 43 cf 6f 06 d1 63 88 51 00 00 10 00 9d  ..1C.o..c.Q.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 55 8e 63  ....o...k..i.U.c
+  0010: 97 97 57 5f e8 12 96 9a 11 34 07 35 a4 6c be b8  ..W_.....4.5.l..
+  0020: 15 aa 5a 78 82 0d 1c a2 7d a8 ae 00 00 10 00 9d  ..Zx....}.......
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -45,21 +44,21 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db54cd5e70124c...
+[SSL] ClientHello: version=0x303 random=69db558e63979757...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:59007
+[Redirector-Raw] Disconnected: 127.0.0.1:59058
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
-[Redirector-Raw] Client connected: 127.0.0.1:59011
+[Redirector-Raw] Client connected: 127.0.0.1:59062
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 54 d9 63  ....o...k..i.T.c
-  0010: b2 31 f8 01 77 b0 d7 3a 08 ef ed 32 2c a4 0a 57  .1..w..:...2,..W
-  0020: b8 54 8a 93 e0 2a ef 12 7e b2 c6 00 00 10 00 9d  .T...*..~.......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 55 9a ef  ....o...k..i.U..
+  0010: b4 89 68 a4 3a 4f 85 05 2a 7e 27 eb e2 03 a2 55  ..h.:O..*~'....U
+  0020: c2 14 41 81 d4 9d bb 79 5e ac fc 00 00 10 00 9d  ..A....y^.......
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -67,33 +66,33 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db54d963b231f8...
+[SSL] ClientHello: version=0x303 random=69db559aefb48968...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 137 bytes (total pending: 137)
-  0000: 16 03 00 00 84 10 00 00 80 74 45 c9 dc 80 e4 4e
-  0010: 08 84 f4 d0 4b 53 a2 7f 91 18 08 51 53 2f 10 6a
-  0020: c3 40 cf 23 80 73 fe b5 37 40 f0 b0 81 3a f8 09
-  0030: 82 dd c1 21 f0 90 96 ae b3 85 51 c4 60 c1 0b 73
-  0040: c7 18 6e 26 ea fe e1 a9 e7 a5 29 ce 74 a0 19 e3
-  0050: 26 df 1e 42 d7 5c e0 9e c2 74 e9 57 79 2f 85 98
-  0060: 73 e7 18 53 d0 4f f7 de 60 d2 a7 52 21 5d 72 ef
-  0070: 93 ef b4 09 57 3a f3 cb ef 72 e4 e3 2e ce 19 66
-  0080: e9 44 8f eb e3 55 29 bb e9
+  0000: 16 03 00 00 84 10 00 00 80 05 0a 1e cb 52 af 5e
+  0010: 03 79 f6 08 1d d0 ed d3 e2 34 a1 18 06 f7 65 ca
+  0020: fe d0 5d 69 ae 7d be db 19 66 44 75 84 1a 07 7b
+  0030: 89 d0 09 ad fe 52 31 19 69 fb 68 18 fd 10 7e e7
+  0040: 33 f6 3b e1 81 99 ce b0 88 05 23 78 b9 3e 8d 1c
+  0050: 67 84 41 27 d5 5b c1 f1 35 df 20 89 b3 c1 f5 4b
+  0060: 21 b6 39 b1 49 7c f1 96 99 68 a4 39 48 40 74 7f
+  0070: fd 8a d9 f5 2a ca ee fa a9 06 b3 e2 55 c8 97 81
+  0080: 3e 49 ef d0 50 7f 6b 98 ca
 [SSL] Record: type=0x16 ver=0x300 len=132
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted pre-master secret: 126 bytes
-[SSL] Failed to decrypt pre-master secret: RSA_PKCS1_PADDING is no longer supported for private decryption, this can be reverted with --security-revert=CVE-2023-46809
+[SSL] Failed to decrypt pre-master secret: error:0200009F:rsa routines::pkcs decoding error
 [SSL] Phase=waiting_client_response, received 71 bytes (total pending: 71)
-  0000: 14 03 00 00 01 01 16 03 00 00 3c e4 e3 5e 6f 93
-  0010: 1e 37 b2 64 8e a5 d7 25 c5 d2 e7 d4 cc a3 43 da
-  0020: c8 a3 81 ba f2 98 e8 9d f8 b4 e8 81 b0 11 a5 49
-  0030: 29 56 b4 ea 7c f2 ed af 3c e6 5b 07 96 af a2 3b
-  0040: 58 94 f7 ae 3e c1 a7
+  0000: 14 03 00 00 01 01 16 03 00 00 3c 21 51 22 dd a0
+  0010: 0f 51 9d 67 0e d6 d5 cf 90 db e5 99 4a 5e 05 e5
+  0020: 23 03 d3 cb d7 5b c5 6a 33 52 59 e0 42 9c 33 39
+  0030: b1 fa 6c 52 3f 53 72 71 38 19 cb 09 5e ea d4 56
+  0040: 75 cf 94 e2 e3 6b 89
 [SSL] Record: type=0x14 ver=0x300 len=1
 [SSL] Client ChangeCipherSpec received
 [SSL] Record: type=0x16 ver=0x300 len=60
-[SSL] Handshake type: 0xe4 (unknown)
+[SSL] Handshake type: 0x21 (unknown)
 
