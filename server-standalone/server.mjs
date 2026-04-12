@@ -686,7 +686,9 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
     // Parse TLS records
     while (pendingBuf.length >= 5) {
       const recType = pendingBuf[0];
+      const recVer = (pendingBuf[1] << 8) | pendingBuf[2];
       const recLen = (pendingBuf[3] << 8) | pendingBuf[4];
+      console.log(`[SSL] TLS record: type=0x${recType.toString(16)} ver=0x${recVer.toString(16)} len=${recLen} (pending: ${pendingBuf.length})`);
       if (pendingBuf.length < 5 + recLen) break;
 
       const recBody = pendingBuf.subarray(5, 5 + recLen);
@@ -735,11 +737,21 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
           console.log(`[SSL] Stack: ${e.stack}`);
         }
       } else if (recType === 0x15) {
+        // Log raw record bytes BEFORE trying to decrypt
+        console.log(`[SSL] Record type 0x15 (alert?), raw body (${recBody.length} bytes): ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
         try {
           const decrypted = decryptRecord(0x15, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
           console.log(`[SSL] Alert (decrypted): level=${decrypted[0]} desc=${decrypted[1]}`);
         } catch (e) {
-          console.log(`[SSL] Alert (raw): ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
+          console.log(`[SSL] Alert decrypt failed: ${e.message}`);
+          // Maybe this isn't really an alert - try as app data
+          try {
+            const plaintext = decryptRecord(0x17, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
+            console.log(`[SSL] Re-decoded as app data: ${plaintext.length} bytes`);
+            console.log(`[SSL] Hex: ${plaintext.subarray(0, 64).toString('hex')}`);
+          } catch (e2) {
+            console.log(`[SSL] Also failed as app data: ${e2.message}`);
+          }
         }
       } else {
         console.log(`[SSL] Unknown record type 0x${recType.toString(16)} len=${recLen}`);
