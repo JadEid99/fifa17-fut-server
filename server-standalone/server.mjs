@@ -714,6 +714,12 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
+                // Hex dump the response for debugging
+                for (let i = 0; i < Math.min(resp.length, 256); i += 16) {
+                  const slice = resp.subarray(i, Math.min(i + 16, resp.length));
+                  const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
+                  console.log(`[Blaze-Enc]   ${i.toString(16).padStart(4,'0')}: ${hex}`);
+                }
               }
               result = readPacket(blazeBuf);
             }
