@@ -1,35 +1,29 @@
 # FIFA 17 Private Server - STATUS (April 12, 2026)
 
-## ✅ COMPLETED
-- DLL v52: Permanent code patch (JNZ→JMP at 0x14613244B) - 156ms at startup
-- Redirector: TLS + HTTP redirect (secure=1) on port 42230
-- Main server: TLS handshake on port 10041
-- Blaze PreAuth: parsed and responded (MAC-verified close_notify confirms crypto is correct)
-- Fire2 16-byte header, TDF varint encoder fixed
-- STP Origin emulator on port 4216 is working (game communicates with it)
-- Hosts file: all EA hostnames redirected to 127.0.0.1
+## CRITICAL FINDINGS FROM BF4 BLAZE EMULATOR ANALYSIS
 
-## CURRENT BLOCKER: Game sends close_notify after PreAuth response
-- close_notify MAC verified correct — game intentionally closes after PreAuth
-- No connections to any other ports after PreAuth
-- PreAuth response is 328 bytes with proper TDF encoding
+### 1. Varint Encoding Bug (FIXED in v45)
+The TDF varint continuation bit was WRONG. Our encoder used 0x40 (bit 6) for the
+first byte's continuation, but EA's format uses 0x80 (bit 7) on ALL bytes.
+This means EVERY value >= 64 in our PreAuth response was encoded incorrectly.
+The game couldn't parse the response properly.
 
-## NEXT SESSION PRIORITIES
-1. Decode the game's 203-byte PreAuth REQUEST body to see what fields it sends
-2. Compare our PreAuth response structure with real EA server responses
-3. Check if the response needs the LTPS map populated (currently empty struct)
-4. Try sending the response as HTTP-wrapped (like redirector) instead of raw Blaze
-5. Check if the game expects the main server to also use HTTP protocol (like redirector)
-6. The game might expect the Blaze connection to use HTTP framing on port 10041 too
+### 2. Missing nucleusConnect/nucleusProxy URLs (FIXED in v45)
+The BF4 emulator's PreAuth response includes critical CONF map entries:
+- nucleusConnect: https://accounts.ea.com
+- nucleusProxy: https://gateway.ea.com
+These are the URLs the game uses for Origin authentication after PreAuth.
+Without them, the game can't proceed to Login.
 
-## KEY INSIGHT FROM NETSTAT
-- Port 4216: STP Origin emulator (always connected, working)
-- Port 42230: Redirector TLS (working)
-- Port 10041: Main server TLS (connects, PreAuth, close_notify)
-- No other ports attempted
+### 3. Header Format
+BF4 uses 12-byte headers. FIFA 17 appears to use 16-byte (Fire2) headers.
+The BF4 emulator's large packet handling adds extra size bytes, which may
+be the Fire2 format. Need to verify if FIFA 17 really uses 16 or 12 bytes.
 
-## FILES
-- dll-proxy/dinput8_proxy.cpp (v52)
-- server-standalone/server.mjs
-- batch_test.ps1
-- stp-origin_emu.ini (PersonaId=33068179, PersonaName=Player)
+## READY TO TEST
+v45 has both fixes. Run: git pull && .\batch_test.ps1
+
+## IMPORTANT: Hosts File
+The hosts file was modified to redirect EA hostnames. Only keep:
+127.0.0.1 winter15.gosredirector.ea.com
+Remove all other EA hostname redirects to avoid breaking the EA app.
