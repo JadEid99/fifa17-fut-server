@@ -1,29 +1,28 @@
 # FIFA 17 Private Server - STATUS (April 12, 2026)
 
-## CRITICAL FINDINGS FROM BF4 BLAZE EMULATOR ANALYSIS
+## ✅ COMPLETED TODAY
+- DLL v52: Permanent code patch for cert bypass (157ms)
+- TLS on both redirector + main server
+- HTTP redirect over TLS
+- Varint encoding FIXED (0x80 continuation bit, matching EA's BlazeSDK)
+- PreAuth request fully decoded (CDAT, CINF with game version, FCCR, LADD)
+- PreAuth response sent and parsed by game (confirmed by "servers shut down" message)
+- TDF map encoding verified correct
+- Hosts file blocks EA's real "servers shut down" response
 
-### 1. Varint Encoding Bug (FIXED in v45)
-The TDF varint continuation bit was WRONG. Our encoder used 0x40 (bit 6) for the
-first byte's continuation, but EA's format uses 0x80 (bit 7) on ALL bytes.
-This means EVERY value >= 64 in our PreAuth response was encoded incorrectly.
-The game couldn't parse the response properly.
+## CURRENT STATE
+- Game flow: Redirector TLS → HTTP redirect → Main server TLS → PreAuth → close_notify
+- PreAuth response is parsed correctly by the game (varint fix confirmed this)
+- Game does NOT send Login/PostAuth on the same connection
+- Game does NOT connect to any other ports after PreAuth
+- STP Origin emulator running on port 4216 (game communicates with it)
 
-### 2. Missing nucleusConnect/nucleusProxy URLs (FIXED in v45)
-The BF4 emulator's PreAuth response includes critical CONF map entries:
-- nucleusConnect: https://accounts.ea.com
-- nucleusProxy: https://gateway.ea.com
-These are the URLs the game uses for Origin authentication after PreAuth.
-Without them, the game can't proceed to Login.
-
-### 3. Header Format
-BF4 uses 12-byte headers. FIFA 17 appears to use 16-byte (Fire2) headers.
-The BF4 emulator's large packet handling adds extra size bytes, which may
-be the Fire2 format. Need to verify if FIFA 17 really uses 16 or 12 bytes.
-
-## READY TO TEST
-v45 has both fixes. Run: git pull && .\batch_test.ps1
-
-## IMPORTANT: Hosts File
-The hosts file was modified to redirect EA hostnames. Only keep:
-127.0.0.1 winter15.gosredirector.ea.com
-Remove all other EA hostname redirects to avoid breaking the EA app.
+## NEXT STEPS
+1. The game's PreAuth → close_notify → no Login pattern may be NORMAL
+2. After PreAuth, the game likely does Origin auth via STP emulator (port 4216)
+3. The STP emulator may not provide the right auth token for online play
+4. Need to investigate what the STP emulator returns and whether we need to
+   intercept/modify its responses
+5. Alternative: bypass the Origin auth check in the game via Ghidra/DLL patch
+6. The BF4 Blaze Emulator (in BF4BlazeEmulator/) shows the full connection flow
+   for reference - BF4 handles Auth component (0x0001) with silentLogin
