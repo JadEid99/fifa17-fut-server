@@ -167,16 +167,16 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Scan every 200ms for 5 minutes
+    // Scan every 50ms for 5 minutes (faster to catch the narrow state=0x3 window)
     DWORD startTick = GetTickCount();
-    for (int i = 0; i < 1500; i++) {
-        Sleep(200);
+    for (int i = 0; i < 6000; i++) {
+        Sleep(50);
         
         __try {
             SetAllowAnyCert();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
-        if (i % 50 == 0 && i > 0) {
+        if (i % 200 == 0 && i > 0) {
             DWORD elapsed = GetTickCount() - startTick;
             Log("Progress: scan %d, %lu ms, patches: %d", i, elapsed, g_patched);
         }
