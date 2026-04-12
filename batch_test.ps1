@@ -1,4 +1,4 @@
-# Batch v23: Fixed header field offsets - component at offset 6, command at offset 8
+# Batch v24: Debug PreAuth response - added try/catch and detailed logging
 # v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
 # Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
 # v19 confirmed: redirect works, game connects to main server on port 10041
@@ -26,7 +26,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v23: Fixed header offsets ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v24: Debug PreAuth response ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -59,23 +59,25 @@ FEnter; Start-Sleep 2
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $r1 = "UNKNOWN"
-if ($so1 -match "Main-HTTP.*PreAuth") { $r1 = "PREAUTH_RECEIVED" }
-elseif ($so1 -match "Main-HTTP.*Login") { $r1 = "LOGIN_RECEIVED" }
-elseif ($so1 -match "Main-HTTP.*Sent response") { $r1 = "HTTP_RESPONSES_SENT" }
+if ($so1 -match "Main-HTTP.*PreAuth") { $r1 = "PREAUTH_HTTP" }
+elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
+elseif ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH_HANDLED" }
+elseif ($so1 -match "Main.*-> Login") { $r1 = "LOGIN_HANDLED" }
+elseif ($so1 -match "Main.*Sending response") { $r1 = "RESPONSE_SENT" }
+elseif ($so1 -match "Main.*ERROR") { $r1 = "ERROR_IN_HANDLER" }
 elseif ($so1 -match "Main.*Session.*connected") { $r1 = "MAIN_SERVER_CONNECTED" }
 elseif ($so1 -match "Sent encrypted HTTP response") { $r1 = "REDIRECT_SENT" }
 elseif ($so1 -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_COMPLETE" }
 elseif ($so1 -match "Alert.*level=") { $r1 = "ALERT" }
-elseif ($so1 -match "Decrypted PMS") { $r1 = "KEYS_DERIVED" }
 elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
 elseif ($so1 -match "TIMEOUT") { $r1 = "TIMEOUT" }
-Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "PREAUTH|LOGIN|HTTP_RESP"){"Green"}elseif($r1 -match "MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
+Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "POSTAUTH|LOGIN"){"Green"}elseif($r1 -match "PREAUTH|RESPONSE|MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
 
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v23 ($timestamp) ===`n[1] Header offsets | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v24 ($timestamp) ===`n[1] PreAuth debug | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v23: fixed header offsets $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v24: debug PreAuth $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan

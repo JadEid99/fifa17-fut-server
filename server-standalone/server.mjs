@@ -913,26 +913,34 @@ function setupMainBlazeHandler(socket, session) {
   const sid = session.id;
   handleBlazeStream(socket, `Main:${sid}`, (pkt) => {
     const { component: comp, command: cmd } = pkt.header;
-    console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')}`);
+    console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')} len=${pkt.header.length} msgId=${pkt.header.msgId}`);
     let resp = null;
-    if (comp === 0x0009) {
-      if (cmd === 0x0007) resp = handlePreAuth(pkt);
-      else if (cmd === 0x0008) resp = handlePostAuth(session, pkt);
-      else if (cmd === 0x0002) resp = handlePing(pkt);
-      else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
-      else if (cmd === 0x0001) resp = buildReply(pkt, new TdfEncoder().build());
-      else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
-      else resp = buildReply(pkt, Buffer.alloc(0));
-    } else if (comp === 0x0001) {
-      if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) resp = handleLogin(session, pkt);
-      else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
-      else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
-      else if (cmd === 0x0030) resp = handleListPersona(session, pkt);
-      else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
-      else resp = buildReply(pkt, Buffer.alloc(0));
-    } else if (comp === 0x7802) { resp = buildReply(pkt, Buffer.alloc(0)); }
-    else { console.log(`[Main] Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
-    if (resp) socket.write(resp);
+    try {
+      if (comp === 0x0009) {
+        if (cmd === 0x0007) { console.log(`[Main] S${sid}: -> PreAuth`); resp = handlePreAuth(pkt); }
+        else if (cmd === 0x0008) { console.log(`[Main] S${sid}: -> PostAuth`); resp = handlePostAuth(session, pkt); }
+        else if (cmd === 0x0002) resp = handlePing(pkt);
+        else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
+        else if (cmd === 0x0001) resp = buildReply(pkt, new TdfEncoder().build());
+        else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
+        else { console.log(`[Main] S${sid}: -> Util unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
+      } else if (comp === 0x0001) {
+        if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) { console.log(`[Main] S${sid}: -> Login`); resp = handleLogin(session, pkt); }
+        else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
+        else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
+        else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
+        else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
+        else { console.log(`[Main] S${sid}: -> Auth unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
+      } else if (comp === 0x7802) { resp = buildReply(pkt, Buffer.alloc(0)); }
+      else { console.log(`[Main] S${sid}: -> Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
+      if (resp) {
+        console.log(`[Main] S${sid}: Sending response (${resp.length} bytes)`);
+        socket.write(resp);
+      }
+    } catch (e) {
+      console.log(`[Main] S${sid}: ERROR handling packet: ${e.message}`);
+      console.log(`[Main] S${sid}: Stack: ${e.stack}`);
+    }
   });
 }
 
