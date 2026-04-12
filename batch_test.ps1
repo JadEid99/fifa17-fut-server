@@ -47,7 +47,7 @@ Write-Host "[1] DLL v52 code patch + secure=1" -ForegroundColor Yellow
 Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
 Start-Sleep 1
 $sj = Start-Job -ScriptBlock { param($r); $env:PREAUTH_VARIANT="full"; $env:REDIRECT_SECURE="1"; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; FQ; Start-Sleep 60
+Start-Sleep 2; FQ; Start-Sleep 25
 $so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
 Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
 FEnter; Start-Sleep 2

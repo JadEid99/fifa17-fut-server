@@ -847,7 +847,7 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
                 // Hex dump the response for debugging
-                for (let i = 0; i < Math.min(resp.length, 256); i += 16) {
+                for (let i = 0; i < resp.length; i += 16) {
                   const slice = resp.subarray(i, Math.min(i + 16, resp.length));
                   const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
                   console.log(`[Blaze-Enc]   ${i.toString(16).padStart(4,'0')}: ${hex}`);
@@ -1429,7 +1429,16 @@ function handlePreAuth(pkt) {
   enc.writeStructEnd();
   enc.writeString('RSRC', '303107');
   enc.writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
-  return buildReply(pkt, enc.build());
+  const body = enc.build();
+  // Verify our own TDF is decodable
+  try {
+    const selfDecode = decodeTdf(body);
+    console.log(`[PreAuth] Response TDF self-decode:`);
+    for (const line of selfDecode.lines) console.log(`[PreAuth]   ${line}`);
+  } catch (e) {
+    console.log(`[PreAuth] Response TDF self-decode FAILED: ${e.message}`);
+  }
+  return buildReply(pkt, body);
 }
 function handlePostAuth(session, pkt) {
   const enc = new TdfEncoder();
@@ -1502,3 +1511,4 @@ startHttpServer();
 
 console.log('\nWaiting for FIFA 17...');
 console.log('hosts: 127.0.0.1 winter15.gosredirector.ea.com\n');
+
