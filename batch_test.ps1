@@ -43,7 +43,7 @@ Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
 
 # Start server
 Write-Host "[3] Starting server..." -ForegroundColor Yellow
-$sj = Start-Job -ScriptBlock { param($r); $env:NODE_OPTIONS="--openssl-legacy-provider --security-revert=CVE-2023-46809"; node "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
+$sj = Start-Job -ScriptBlock { param($r); node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
 Start-Sleep 2
 
 # Launch game
