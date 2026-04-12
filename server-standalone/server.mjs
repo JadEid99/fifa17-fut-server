@@ -1204,12 +1204,32 @@ function handlePreAuth(pkt) {
   
   // Default: full response with current header format
   const enc = new TdfEncoder();
-  enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0005, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7802]);
-  enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();
-  enc.writeString('INST', 'fifa17-fut-server').writeString('NASP', 'cem_ea_id').writeString('PILD', '').writeString('PLAT', 'pc');
-  enc.writeStructStart('QOSS').writeStructStart('BWPS').writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'prod-sjc').writeStructEnd();
-  enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
-  enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
+  enc.writeInteger('ANON', 0);
+  enc.writeString('ASRC', '303107');
+  enc.writeIntList('CIDS', [1, 4, 5, 7, 9, 15, 25, 28, 30722]);
+  enc.writeString('CNGN', '');
+  enc.writeStructStart('CONF');
+  enc.writeString('CONF', '{"pingPeriod":"15s","voipHeadsetUpdateRate":"1000","xlspConnectionIdleTimeout":"300"}');
+  enc.writeStructEnd();
+  enc.writeString('INST', 'fifa17-2016');
+  enc.writeInteger('MINR', 0);
+  enc.writeString('NASP', 'cem_ea_id');
+  enc.writeString('PILD', '');
+  enc.writeString('PLAT', 'pc');
+  enc.writeString('PTAG', '');
+  enc.writeStructStart('QOSS');
+  enc.writeStructStart('BWPS');
+  enc.writeString('PSA ', '127.0.0.1');
+  enc.writeInteger('PSP ', 17502);
+  enc.writeString('SNA ', 'prod-sjc');
+  enc.writeStructEnd();
+  enc.writeInteger('LNP ', 10);
+  enc.writeStructStart('LTPS');
+  enc.writeStructEnd();
+  enc.writeInteger('SVID', 0x45410805);
+  enc.writeStructEnd();
+  enc.writeString('RSRC', '303107');
+  enc.writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
   return buildReply(pkt, enc.build());
 }
 function handlePostAuth(session, pkt) {
