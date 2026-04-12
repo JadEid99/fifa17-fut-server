@@ -754,7 +754,7 @@ function handleHttpBlazeRequest(data, socket, keys, cipher) {
   
   if (path === '/redirector/getServerInstance') {
     console.log(`[HTTP-Blaze] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
-    const secure = process.env.REDIRECT_SECURE || '0';
+    const secure = process.env.REDIRECT_SECURE || '1';
     console.log(`[HTTP-Blaze] secure=${secure}`);
     responseBody = Buffer.from(
       '<?xml version="1.0" encoding="UTF-8"?>\n' +

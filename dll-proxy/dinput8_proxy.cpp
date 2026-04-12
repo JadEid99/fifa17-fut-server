@@ -1,18 +1,10 @@
 /**
- * dinput8.dll Proxy - v50: Set REAL bAllowAnyCert at offset 0x384
+ * dinput8.dll Proxy - v51: Patch bAllowAnyCert for BOTH redirector AND main server
  * 
- * From Ghidra analysis of FUN_146132210 (cert verification handler):
- *   if (*(char*)(param_1 + 900) != '\0') break;  // skip ALL verification
+ * v50 only scanned for "winter15.gosredirector.ea.com" hostname.
+ * v51 also scans for "127.0.0.1" to catch the main server SSL struct.
  * 
- * 900 decimal = 0x384 hex. This is the REAL bAllowAnyCert flag.
- * We were patching 0xC20 before — WRONG offset.
- * 
- * param_1 is the ProtoSSL connection struct. We find it by looking for
- * the hostname string and calculating the offset.
- * 
- * From the Ghidra code, param_1+0x386 is also checked ("ncrt" flag).
- * param_1+0x388 is checked for value 2.
- * We set param_1+0x384 = 1 to bypass everything.
+ * The game uses TLS on BOTH connections when secure=1 in the redirect response.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -120,44 +112,48 @@ static void SetAllowAnyCert() {
             SIZE_T size = mbi.RegionSize;
             
             __try {
-                // Search for the hostname "winter15.gosredirector.ea.com" 
-                // which is stored in the connection struct
-                for (SIZE_T j = 0; j + 0x400 < size; j++) {
-                    if (base[j] != 'w') continue;
-                    if (memcmp(base + j, "winter15.gosredirector.ea.com", 29) != 0) continue;
-                    if (base[j + 29] != 0) continue;
+                // Search for hostnames that indicate ProtoSSL connection structs
+                // The redirector uses "winter15.gosredirector.ea.com"
+                // The main server uses "127.0.0.1" (from our redirect response)
+                const char* hostnames[] = {
+                    "winter15.gosredirector.ea.com",
+                    "127.0.0.1",
+                    NULL
+                };
+                
+                for (const char** hp = hostnames; *hp; hp++) {
+                    const char* needle = *hp;
+                    int needleLen = (int)strlen(needle);
                     
-                    // Found hostname. Now we need to figure out what offset
-                    // the hostname is at relative to the struct base (param_1).
-                    // From Ghidra: FUN_1461364f0(param_1 + 0x58, ...) does hostname match
-                    // So hostname might be at param_1 + 0x58.
-                    // Then param_1 = hostname_addr - 0x58
-                    // And bAllowAnyCert = param_1 + 0x384 = hostname_addr + 0x32C
-                    
-                    // But we're not sure about the 0x58 offset. Let's try multiple.
-                    // Also check: param_1 + 0x168 should be a connection state value
-                    
-                    BYTE* hostname = base + j;
-                    
-                    // Try different struct base offsets
-                    // From Ghidra: hostname is at param_1 + 0x58
-                    int hostOff = 0x58;
-                    if (j < (SIZE_T)hostOff) continue;
-                    
-                    BYTE* structBase = hostname - hostOff;
-                    
-                    // Verify: +0x168 should have a valid connection state (1-0x21)
-                    uint32_t state = *(uint32_t*)(structBase + 0x168);
-                    if (state < 1 || state > 0x21) continue;
-                    
-                    // Set +0x384 = 1 (bAllowAnyCert)
-                    BYTE* flagAddr = structBase + 0x384;
-                    if (flagAddr >= base && flagAddr < base + size) {
-                        BYTE oldVal = *flagAddr;
-                        *flagAddr = 1;
-                        Log("SET bAllowAnyCert at %p (struct=%p, state=0x%X, old=0x%02X)",
-                            flagAddr, structBase, state, oldVal);
-                        g_patched++;
+                    for (SIZE_T j = 0; j + 0x400 < size; j++) {
+                        if (base[j] != needle[0]) continue;
+                        if (j + needleLen >= size) continue;
+                        if (memcmp(base + j, needle, needleLen) != 0) continue;
+                        if (base[j + needleLen] != 0) continue;
+                        
+                        BYTE* hostname = base + j;
+                        
+                        // hostname is at param_1 + 0x58 (from Ghidra)
+                        int hostOff = 0x58;
+                        if (j < (SIZE_T)hostOff) continue;
+                        
+                        BYTE* structBase = hostname - hostOff;
+                        
+                        // Verify: +0x168 should have a valid connection state (1-0x21)
+                        uint32_t state = *(uint32_t*)(structBase + 0x168);
+                        if (state < 1 || state > 0x21) continue;
+                        
+                        // Set +0x384 = 1 (bAllowAnyCert)
+                        BYTE* flagAddr = structBase + 0x384;
+                        if (flagAddr >= base && flagAddr < base + size) {
+                            BYTE oldVal = *flagAddr;
+                            *flagAddr = 1;
+                            if (oldVal != 1) {
+                                Log("SET bAllowAnyCert at %p (struct=%p, host=%s, state=0x%X, old=0x%02X)",
+                                    flagAddr, structBase, needle, state, oldVal);
+                            }
+                            g_patched++;
+                        }
                     }
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
@@ -168,7 +164,7 @@ static void SetAllowAnyCert() {
 }
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===");
+    Log("=== FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     // Scan every 200ms for 5 minutes

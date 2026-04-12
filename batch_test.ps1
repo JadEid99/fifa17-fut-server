@@ -1,6 +1,8 @@
-# Batch v29: secure=0 vs secure=1 - game disconnects regardless of PreAuth response
-# v28 proved the issue is NOT the PreAuth format. Testing if main server needs TLS.
-$ErrorActionPreference = "Continue"
+# Batch v30: DLL v51 patches BOTH redirector + main server SSL structs
+# v29 proved: game expects TLS on main server (sends ClientHello with secure=1)
+# But cert was rejected because DLL only patched redirector's SSL struct
+# v51 DLL now also scans for "127.0.0.1" hostname to patch main server struct
+Write-Host "=== BATCH v30: DLL v51 - dual SSL bypass ===" -ForegroundColor Cyan
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
 $gameExe = "$gameDir\FIFA17.exe"
@@ -44,42 +46,31 @@ for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 Start-Sleep 10; FEnter; Start-Sleep 2
 
-# Test variants - test secure=0 vs secure=1 in redirect
-$variants = @(
-    @{name="secure0_full"; secure="0"; preauth="full"},
-    @{name="secure1_full"; secure="1"; preauth="full"}
-)
-$results = "=== BATCH v29 ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===`n"
+# Single test with secure=1 and DLL v51
+Write-Host "[1] secure=1 + DLL v51 dual bypass" -ForegroundColor Yellow
+Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
+Start-Sleep 1
+$sj = Start-Job -ScriptBlock { param($r); $env:PREAUTH_VARIANT="full"; $env:REDIRECT_SECURE="1"; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
+Start-Sleep 2; FQ; Start-Sleep 40
+$so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
+Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
+FEnter; Start-Sleep 2
 
-foreach ($v in $variants) {
-    Write-Host "[$($v.name)] Testing..." -ForegroundColor Yellow
-    Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
-    Start-Sleep 1
-    $sj = Start-Job -ScriptBlock { param($r,$pa,$sec); $env:PREAUTH_VARIANT=$pa; $env:REDIRECT_SECURE=$sec; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot,$v.preauth,$v.secure
-    Start-Sleep 2; FQ; Start-Sleep 30
-    $so = (Receive-Job $sj 2>&1 | Out-String).Trim()
-    Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
-    FEnter; Start-Sleep 2
-    
-    $r1 = "UNKNOWN"
-    if ($so -match "Main.*Session 2") { $r1 = "SECOND_CONNECTION" }
-    elseif ($so -match "Main.*-> PostAuth") { $r1 = "POSTAUTH" }
-    elseif ($so -match "Main.*-> Login") { $r1 = "LOGIN" }
-    elseif ($so -match "Main.*TLS detected") { $r1 = "MAIN_TLS" }
-    elseif ($so -match "Main.*-> PreAuth") { $r1 = "PREAUTH_ONLY" }
-    elseif ($so -match "Main.*Session.*connected") { $r1 = "CONNECTED" }
-    elseif ($so -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_ONLY" }
-    elseif ($so -match "TIMEOUT") { $r1 = "TIMEOUT" }
-    
-    Write-Host "  [$($v.name)] -> $r1" -ForegroundColor $(if($r1 -match "SECOND|POST|LOGIN|MAIN_TLS"){"Green"}elseif($r1 -match "PREAUTH|CONNECTED"){"Yellow"}else{"Red"})
-    
-    $tail = if($so.Length -gt 1200){$so.Substring($so.Length-1200)}else{$so}
-    $results += "[$($v.name)] $r1`nSERVER_TAIL: $tail`n---`n"
-}
+$r1 = "UNKNOWN"
+if ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH" }
+elseif ($so1 -match "Main.*-> Login") { $r1 = "LOGIN" }
+elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
+elseif ($so1 -match "Main.*HANDSHAKE COMPLETE.*Blaze") { $r1 = "MAIN_TLS_COMPLETE" }
+elseif ($so1 -match "Main.*TLS detected") { $r1 = "MAIN_TLS_STARTED" }
+elseif ($so1 -match "Alert.*cert") { $r1 = "CERT_REJECTED" }
+elseif ($so1 -match "Main.*Session.*connected") { $r1 = "CONNECTED" }
+elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
+Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "POSTAUTH|LOGIN|PREAUTH|MAIN_TLS_COMPLETE"){"Green"}elseif($r1 -match "MAIN_TLS|CONNECTED"){"Yellow"}else{"Red"})
 
-$dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw; if($dllLog.Length -gt 500){$dllLog=$dllLog.Substring(0,500)}}
-$results += "DLL:`n$dllLog`n"
+$ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
+$dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
+$results = "=== BATCH v30 ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===`n[1] secure=1 + DLL v51 | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v29: secure=0 vs secure=1 $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"; git push 2>&1
+git add -A; git commit -m "Batch v30: DLL v51 dual SSL bypass $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
