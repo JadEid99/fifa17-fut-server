@@ -1,4 +1,4 @@
-# Batch v24: Debug PreAuth response - added try/catch and detailed logging
+# Batch v25: Fix response header - msgType at offset 4 (0x1000=reply)
 # v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
 # Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
 # v19 confirmed: redirect works, game connects to main server on port 10041
@@ -26,7 +26,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v24: Debug PreAuth response ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v25: Fix response msgType ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -76,8 +76,8 @@ Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "POSTAUTH|LOGIN"){"Green"
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v24 ($timestamp) ===`n[1] PreAuth debug | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v25 ($timestamp) ===`n[1] Response msgType | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v24: debug PreAuth $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v25: fix response msgType $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan

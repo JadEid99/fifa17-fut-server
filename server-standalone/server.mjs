@@ -74,30 +74,31 @@ class TdfEncoder {
 const HEADER_SIZE = 16;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
-  // Blaze v3 header (FIFA 17): 
-  // [0-3] uint32 payload length
-  // [4-5] uint16 component (high bits) / QoS type
-  // [6-7] uint16 component 
-  // [8-9] uint16 command
+  // Blaze v3 header (FIFA 17, 16 bytes):
+  // [0-3]   uint32 payload length
+  // [4-5]   uint16 msgType/QoS (0x0000=request, 0x1000=reply, 0x2000=notify, 0x3000=error)
+  // [6-7]   uint16 component
+  // [8-9]   uint16 command
   // [10-11] uint16 error
-  // [12-15] uint32 msgType(upper) + msgId(lower)
+  // [12-13] uint16 msgType2/flags
+  // [14-15] uint16 msgId
   return { 
     length: buf.readUInt32BE(0), 
+    msgType: buf.readUInt16BE(4),
     component: buf.readUInt16BE(6), 
     command: buf.readUInt16BE(8), 
     error: buf.readUInt16BE(10), 
-    msgType: buf.readUInt16BE(12), 
     msgId: buf.readUInt16BE(14)
   };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
   buf.writeUInt32BE(h.length, 0);
-  buf.writeUInt16BE(0, 4); // padding/QoS
+  buf.writeUInt16BE(h.msgType || 0, 4);
   buf.writeUInt16BE(h.component, 6);
   buf.writeUInt16BE(h.command, 8);
   buf.writeUInt16BE(h.error, 10);
-  buf.writeUInt16BE(h.msgType || 0, 12);
+  buf.writeUInt16BE(0, 12);
   buf.writeUInt16BE(h.msgId || 0, 14);
   return buf;
 }
@@ -935,6 +936,8 @@ function setupMainBlazeHandler(socket, session) {
       else { console.log(`[Main] S${sid}: -> Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
       if (resp) {
         console.log(`[Main] S${sid}: Sending response (${resp.length} bytes)`);
+        const hdrHex = Array.from(resp.subarray(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+        console.log(`[Main] S${sid}: Response header: ${hdrHex}`);
         socket.write(resp);
       }
     } catch (e) {
