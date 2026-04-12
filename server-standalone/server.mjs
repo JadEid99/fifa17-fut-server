@@ -844,6 +844,44 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
+                
+                // After PreAuth, proactively send a SilentLogin response as notification
+                if (pkt.header.component === 0x0009 && pkt.header.command === 0x0007) {
+                  console.log('[Blaze-Enc] Sending proactive SilentLogin response after PreAuth...');
+                  const loginEnc = new TdfEncoder();
+                  loginEnc.writeInteger('AGUP', 0);
+                  loginEnc.writeString('LDHT', '');
+                  loginEnc.writeInteger('NTOS', 0);
+                  loginEnc.writeString('PCTK', 'FakeAuthToken_FIFA17');
+                  loginEnc.writeString('PRIV', '');
+                  loginEnc.writeStructStart('SESS');
+                  loginEnc.writeInteger('BUID', 1000000001);
+                  loginEnc.writeInteger('FRST', 0);
+                  loginEnc.writeString('KEY ', 'SessionKey_12345');
+                  loginEnc.writeInteger('LLOG', 0);
+                  loginEnc.writeString('MAIL', 'player@fut.local');
+                  loginEnc.writeStructStart('PDTL');
+                  loginEnc.writeString('DSNM', 'Player');
+                  loginEnc.writeInteger('LAST', 0);
+                  loginEnc.writeInteger('PID ', 1000000001);
+                  loginEnc.writeInteger('STAS', 0);
+                  loginEnc.writeInteger('XREF', 0);
+                  loginEnc.writeInteger('XTYP', 0);
+                  loginEnc.writeStructEnd(); // PDTL
+                  loginEnc.writeInteger('UID ', 2000000001);
+                  loginEnc.writeStructEnd(); // SESS
+                  loginEnc.writeInteger('SPAM', 0);
+                  loginEnc.writeString('THST', '');
+                  loginEnc.writeString('TSUI', '');
+                  loginEnc.writeString('TURI', '');
+                  const loginBody = loginEnc.build();
+                  // Send as SilentLogin response (comp=0x0001, cmd=0x0032, msgType=0x1000)
+                  const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, msgType: 0x1000, msgId: 1 });
+                  const loginPkt = Buffer.concat([loginHdr, loginBody]);
+                  const encLogin = encryptRecord(0x17, [0x03, 0x03], loginPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+                  socket.write(encLogin);
+                  console.log(`[Blaze-Enc] Sent proactive SilentLogin response (${loginPkt.length} bytes)`);
+                }
               }
               result = readPacket(blazeBuf);
             }
