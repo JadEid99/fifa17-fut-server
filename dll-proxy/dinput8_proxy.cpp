@@ -140,29 +140,24 @@ static void SetAllowAnyCert() {
                     BYTE* hostname = base + j;
                     
                     // Try different struct base offsets
-                    int offsets[] = {0x58, 0x100, 0x150, 0x200};
-                    for (int k = 0; k < 4; k++) {
-                        int hostOff = offsets[k];
-                        if (j < (SIZE_T)hostOff) continue;
-                        
-                        BYTE* structBase = hostname - hostOff;
-                        
-                        // Check if +0x168 has a plausible connection state
-                        uint32_t state = *(uint32_t*)(structBase + 0x168);
-                        
-                        // Set +0x384 regardless (it's just a byte, safe to set)
-                        BYTE* flagAddr = structBase + 0x384;
-                        if (flagAddr >= base && flagAddr < base + size) {
-                            BYTE oldVal = *flagAddr;
-                            *flagAddr = 1;
-                            // Also set +0x386 (ncrt flag from Ghidra)
-                            if (flagAddr + 2 < base + size) {
-                                *(flagAddr + 2) = 1;
-                            }
-                            Log("Set bAllowAnyCert: hostname at %p, struct guess at %p (hostOff=0x%X), state=0x%X, old=0x%02X",
-                                hostname, structBase, hostOff, state, oldVal);
-                            g_patched++;
-                        }
+                    // From Ghidra: hostname is at param_1 + 0x58
+                    int hostOff = 0x58;
+                    if (j < (SIZE_T)hostOff) continue;
+                    
+                    BYTE* structBase = hostname - hostOff;
+                    
+                    // Verify: +0x168 should have a valid connection state (1-0x21)
+                    uint32_t state = *(uint32_t*)(structBase + 0x168);
+                    if (state < 1 || state > 0x21) continue;
+                    
+                    // Set +0x384 = 1 (bAllowAnyCert)
+                    BYTE* flagAddr = structBase + 0x384;
+                    if (flagAddr >= base && flagAddr < base + size) {
+                        BYTE oldVal = *flagAddr;
+                        *flagAddr = 1;
+                        Log("SET bAllowAnyCert at %p (struct=%p, state=0x%X, old=0x%02X)",
+                            flagAddr, structBase, state, oldVal);
+                        g_patched++;
                     }
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
