@@ -50,12 +50,12 @@ class TdfEncoder {
   encodeVarInt(value) {
     let v = BigInt(value);
     const bytes = [];
-    // First byte: 6 data bits, bit 6 = continuation, bit 7 = sign
+    // First byte: 6 data bits, bit 7 = continuation (matches EA's BlazeSDK format)
     if (v < 0n) { v = -v; bytes.push(Number(v & 0x3Fn) | 0x80); v >>= 6n; }
     else { bytes.push(Number(v & 0x3Fn)); v >>= 6n; }
-    // Subsequent bytes: 7 data bits, bit 7 = continuation
+    // Set continuation bit on previous byte and add next byte
     while (v > 0n) { 
-      bytes[bytes.length - 1] |= (bytes.length === 1 ? 0x40 : 0x80); // continuation on previous byte
+      bytes[bytes.length - 1] |= 0x80; // continuation bit 7 on ALL bytes
       bytes.push(Number(v & 0x7Fn)); 
       v >>= 7n; 
     }
@@ -199,8 +199,7 @@ function decodeTdf(buf, depth = 0) {
 
 function decodeVarInt(buf, offset) {
   let value = BigInt(buf[offset] & 0x3F);
-  let negative = (buf[offset] & 0x80) !== 0;
-  let hasMore = (buf[offset] & 0x40) !== 0;
+  let hasMore = (buf[offset] & 0x80) !== 0;
   offset++;
   let shift = 6n;
   while (hasMore && offset < buf.length) {
@@ -209,7 +208,6 @@ function decodeVarInt(buf, offset) {
     offset++;
     shift += 7n;
   }
-  if (negative) value = -value;
   return { value, newOffset: offset };
 }
 
@@ -239,12 +237,13 @@ function decodeHeader(buf) {
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
   buf.writeUInt32BE(h.length, 0);           // payload length
-  buf.writeUInt16BE(h.msgType || 0, 4);     // msgType at offset 4-5
+  buf.writeUInt16BE(0, 4);                  // padding/flags
   buf.writeUInt16BE(h.component, 6);        // component
   buf.writeUInt16BE(h.command, 8);          // command
   buf.writeUInt16BE(h.error, 10);           // error
-  buf.writeUInt16BE(h.msgId || 0, 12);      // msgId at offset 12-13
-  buf.writeUInt16BE(0, 14);                 // padding
+  // Pack msgType into upper 16 bits, msgId into lower 16 bits
+  const msgTypeAndId = ((h.msgType & 0xFFFF) << 16) | ((h.msgId || 0) & 0xFFFF);
+  buf.writeUInt32BE(msgTypeAndId >>> 0, 12);
   return buf;
 }
 function readPacket(buf) {
@@ -1401,6 +1400,10 @@ function handlePreAuth(pkt) {
   enc.writeIntList('CIDS', [1, 4, 7, 9, 25, 28, 30722]);
   enc.writeStructStart('CONF');
   enc.writeMap('CONF', {
+    'connIdleTimeout': '90s',
+    'defaultRequestTimeout': '60s',
+    'nucleusConnect': 'https://accounts.ea.com',
+    'nucleusProxy': 'https://gateway.ea.com',
     'pingPeriod': '15s',
     'voipHeadsetUpdateRate': '1000',
     'xlspConnectionIdleTimeout': '300'
