@@ -1,33 +1,35 @@
 # FIFA 17 Private Server - STATUS (April 12, 2026)
 
 ## ✅ COMPLETED
-- DLL v52: Permanent code patch (JNZ→JMP at 0x14613244B) bypasses cert verification
-- Redirector: TLS handshake + HTTP redirect (secure=1) on port 42230
+- DLL v52: Permanent code patch (JNZ→JMP at 0x14613244B) - 156ms at startup
+- Redirector: TLS + HTTP redirect (secure=1) on port 42230
 - Main server: TLS handshake on port 10041
-- Blaze PreAuth: parsed (comp=0x0009 cmd=0x0007) and responded over TLS
-- Fire2 16-byte header format confirmed and working
-- TDF varint encoder fixed (continuation bit 0x80 for bytes 1+)
-- Hosts file: redirects EA hostnames to 127.0.0.1
+- Blaze PreAuth: parsed and responded (MAC-verified close_notify confirms crypto is correct)
+- Fire2 16-byte header, TDF varint encoder fixed
+- STP Origin emulator on port 4216 is working (game communicates with it)
+- Hosts file: all EA hostnames redirected to 127.0.0.1
 
-## CURRENT BLOCKER: Game disconnects after PreAuth
-- Game: TLS → PreAuth → close_notify → no further connections
-- Tested: empty body, no response, different headers, different fields, extra hosts — all same
-- No connections to ports 443, 80, 9988, 17502, 9946
-- close_notify is graceful (level=1 desc=0), game closes TCP after
+## CURRENT BLOCKER: Game sends close_notify after PreAuth response
+- close_notify MAC verified correct — game intentionally closes after PreAuth
+- No connections to any other ports after PreAuth
+- PreAuth response is 328 bytes with proper TDF encoding
 
-## THEORIES TO INVESTIGATE
-1. Origin auth: STP emulator (stp-origin_emu.dll) might need config changes
-   - Current: PersonaId=33068179, PersonaName=Player
-   - Game might try Origin auth locally and fail before sending Login to Blaze
-2. PreAuth response TDF body might have encoding issues beyond varint
-   - Need to verify full 328-byte response (only 256 shown in hex dump)
-   - LTPS struct, SVID, RSRC, SVER fields need verification
-3. Game might expect specific CONF map keys or CIDS values for FIFA 17
-4. The Blaze connection might need to be HTTP-wrapped (like redirector) not raw binary
-5. Game might need a server-initiated notification before it sends Login
+## NEXT SESSION PRIORITIES
+1. Decode the game's 203-byte PreAuth REQUEST body to see what fields it sends
+2. Compare our PreAuth response structure with real EA server responses
+3. Check if the response needs the LTPS map populated (currently empty struct)
+4. Try sending the response as HTTP-wrapped (like redirector) instead of raw Blaze
+5. Check if the game expects the main server to also use HTTP protocol (like redirector)
+6. The game might expect the Blaze connection to use HTTP framing on port 10041 too
 
-## KEY FILES
-- dll-proxy/dinput8_proxy.cpp (v52 - permanent code patch)
-- server-standalone/server.mjs (TLS + Blaze server)
-- batch_test.ps1 (automated testing)
-- stp-origin_emu.ini (Origin emulator config)
+## KEY INSIGHT FROM NETSTAT
+- Port 4216: STP Origin emulator (always connected, working)
+- Port 42230: Redirector TLS (working)
+- Port 10041: Main server TLS (connects, PreAuth, close_notify)
+- No other ports attempted
+
+## FILES
+- dll-proxy/dinput8_proxy.cpp (v52)
+- server-standalone/server.mjs
+- batch_test.ps1
+- stp-origin_emu.ini (PersonaId=33068179, PersonaName=Player)
