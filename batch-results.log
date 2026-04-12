@@ -1,4 +1,4 @@
-﻿=== BATCH v31 (2026-04-12 16:39:33) ===
+﻿=== BATCH v31 (2026-04-12 16:55:08) ===
 [1] DLL v52 code patch | PREAUTH_REPLIED
 SERVER:
 YPE (int) = 0
@@ -55,19 +55,23 @@ YPE (int) = 0
 [Blaze-Enc]   0190: 31 30 36 30 30 38 30 20 2f 20 4a 75 6c 20 31 31
 [Blaze-Enc]   01a0: 20 32 30 31 36 29 00
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 6f 34 fe 39 43 d6 34 96 1e 1b 78 79 39 64 ec e5 91 1e e0 b7 1d 5c
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 65 6e 9d 7c e3 d3 79 55 40 48 60 0c 92 1d 2b 7e 13 05 dd f9 4d b2
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S1 disconnected
 DLL:
-[16:38:20.502] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
-[16:38:20.502] PID: 108064
-[16:38:20.681] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[16:38:20.681]   Before: 0F 85 8E 02 00 00
-[16:38:20.681]   After:  E9 8F 02 00 00 90
-[16:38:20.681] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[16:38:20.681] Code patch applied after 172 ms
-[16:38:20.681] === Done. patches: 1 ===
+[16:53:55.649] === FIFA 17 SSL Bypass v53 (cert + Origin SDK patches) ===
+[16:53:55.649] PID: 81944
+[16:53:55.810] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[16:53:55.810]   Before: 0F 85 8E 02 00 00
+[16:53:55.810]   After:  E9 8F 02 00 00 90
+[16:53:55.810] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[16:53:56.168] Found Origin SDK check at 00000001470A8430
+[16:53:56.168]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
+[16:53:56.168]   After:  B0 01 90 90 90 ... 90 90 90 C3
+[16:53:56.168] PATCHED: Origin SDK check -> always returns true
+[16:53:56.168] All patches applied after 516 ms
+[16:53:56.168] === Done. patches: 2 ===
 
 
