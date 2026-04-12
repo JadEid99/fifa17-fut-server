@@ -103,12 +103,19 @@ static void PatchCertCheck() {
                         jnzAddr[0], jnzAddr[1], jnzAddr[2], jnzAddr[3], jnzAddr[4], jnzAddr[5]);
                     
                     // Change JNZ (0F 85 xx xx xx xx) to JMP (E9 xx xx xx xx 90)
-                    // The displacement stays the same for JMP rel32
+                    // JNZ rel32: opcode is 2 bytes (0F 85), displacement is 4 bytes
+                    // JMP rel32: opcode is 1 byte (E9), displacement is 4 bytes
+                    // We need to adjust: the JMP displacement must account for
+                    // the instruction being 1 byte shorter (5 vs 6 bytes)
                     DWORD oldProtect;
                     if (VirtualProtect(jnzAddr, 6, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        // Read the original 4-byte displacement from JNZ
+                        int32_t origDisp = *(int32_t*)(jnzAddr + 2);
+                        // JMP is 1 byte shorter, so add 1 to displacement
+                        int32_t newDisp = origDisp + 1;
                         jnzAddr[0] = 0xE9;  // JMP rel32
-                        // jnzAddr[1..4] stay the same (the relative offset)
-                        jnzAddr[5] = 0x90;  // NOP (pad the extra byte)
+                        *(int32_t*)(jnzAddr + 1) = newDisp;
+                        jnzAddr[5] = 0x90;  // NOP
                         VirtualProtect(jnzAddr, 6, oldProtect, &oldProtect);
                         
                         Log("  After:  %02X %02X %02X %02X %02X %02X",
