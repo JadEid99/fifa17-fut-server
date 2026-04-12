@@ -624,7 +624,10 @@ function setupEncryptedBlazeHandler(socket, keys, cipher) {
           console.log(`[SSL] Decryption error: ${e.message}`);
         }
       } else if (recType === 0x15) {
-        console.log('[SSL] Alert received');
+        const alertLevel = recBody[0];
+        const alertDesc = recBody[1];
+        console.log(`[SSL] Alert received: level=${alertLevel} desc=${alertDesc} (${alertDesc === 20 ? 'bad_record_mac' : alertDesc === 40 ? 'handshake_failure' : alertDesc === 10 ? 'unexpected_message' : alertDesc === 42 ? 'bad_certificate' : alertDesc === 47 ? 'illegal_parameter' : alertDesc === 51 ? 'decrypt_error' : 'unknown'})`);
+        console.log(`[SSL] Alert raw: ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
       }
     }
   });
