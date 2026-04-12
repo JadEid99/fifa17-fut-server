@@ -1,22 +1,22 @@
-﻿=== BATCH v16 (2026-04-12 10:37:50) ===
+﻿=== BATCH v16 (2026-04-12 10:42:32) ===
 [1] SSLv3 crypto | ALERT_AFTER_FINISHED
-SERVER:  54 79 aa
-  0050: 1d 67 87 83 4f 4e a4 0d d9 0e 32 6e f1 99 75 80
-  0060: 0e ca 6f d3 aa cb 44 29 6b c4 fb aa 28 e4 dd d3
-  0070: 08 1b 9c 6c 73 09 a4 80 ff d5 05 78 24 aa bf 2a
-  0080: a1 d2 02 88 ba 67 5c 6b a7
-[SSL] Record: type=0x16 ver=0x300 len=132
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
+SERVER: Exchange)
 [SSL] Encrypted pre-master secret: 128 bytes (body len: 128)
 [SSL] Decrypted pre-master secret: 48 bytes, version=0x303
 [SSL] Master secret derived, keys ready
 [SSL] Sent ChangeCipherSpec
+[SSL] Finished hash input: 5 messages, total 1020 bytes
+[SSL]   msg[0]: 111 bytes, type=0x1
+[SSL]   msg[1]: 74 bytes, type=0x2
+[SSL]   msg[2]: 699 bytes, type=0xb
+[SSL]   msg[3]: 4 bytes, type=0xe
+[SSL]   msg[4]: 132 bytes, type=0x10
+[SSL] Master secret: e2bf42a64ae1b6ee9ffeb915f7ca9e4b...
 [SSL] Sent encrypted Finished
 [SSL] Alert received
-[Redirector-Raw] Disconnected: 127.0.0.1:59377
-DLL: [10:36:42.689] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:36:42.689] PID: 106960
-[10:37:10.614] SET bAllowAnyCert at 0000000027D91794 (struct=0000000027D91410, state=0x3, old=0x00)
-[10:37:24.279] SET bAllowAnyCert at 0000000027D91794 (struct=0000000027D91410, state=0x18, old=0x01)
+[Redirector-Raw] Disconnected: 127.0.0.1:59421
+DLL: [10:41:24.550] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[10:41:24.550] PID: 106616
+[10:41:51.905] SET bAllowAnyCert at 0000000027E12014 (struct=0000000027E11C90, state=0x3, old=0x00)
 
 
