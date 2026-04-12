@@ -139,13 +139,11 @@ static void SetAllowAnyCert() {
                         
                         BYTE* structBase = hostname - hostOff;
                         
-                        // Verify: +0x168 should have a valid connection state (1-0x21)
-                        uint32_t state = *(uint32_t*)(structBase + 0x168);
-                        if (state < 1 || state > 0x21) continue;
-                        
-                        // Set +0x384 = 1 (bAllowAnyCert)
+                        // Don't check state - just patch any struct with the hostname
+                        // The hostname is written before TLS starts, so we can catch it early
                         BYTE* flagAddr = structBase + 0x384;
                         if (flagAddr >= base && flagAddr < base + size) {
+                            uint32_t state = *(uint32_t*)(structBase + 0x168);
                             BYTE oldVal = *flagAddr;
                             *flagAddr = 1;
                             if (oldVal != 1) {
@@ -167,10 +165,10 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Scan every 50ms for 5 minutes (faster to catch the narrow state=0x3 window)
+    // Scan every 20ms for 5 minutes
     DWORD startTick = GetTickCount();
-    for (int i = 0; i < 6000; i++) {
-        Sleep(50);
+    for (int i = 0; i < 15000; i++) {
+        Sleep(20);
         
         __try {
             SetAllowAnyCert();
