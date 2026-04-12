@@ -69,6 +69,7 @@ static void Log(const char* fmt, ...) {
 
 static int g_codePatchDone = 0;
 static int g_originPatchDone = 0;
+static int g_authBypassDone = 0;
 static int g_patched = 0;
 
 // Patch the cert verification code directly
@@ -196,8 +197,74 @@ static void PatchOriginCheck() {
     }
 }
 
+// Patch 3: Auth token bypass - skip Origin auth and set authenticated flag directly
+// In FUN_146f199c0, after CALL OriginRequestAuthCodeSync:
+//   146f19a16: 85 c0              TEST EAX,EAX
+//   146f19a18: 0f 85 8d 00 00 00  JNZ error_path
+//   146f19a1e: 4c 39 74 24 ...    CMP [RSP+...], R14
+// Replace with:
+//   c6 86 e8 00 00 00 01          MOV byte ptr [RSI+0xe8], 1  (set auth flag)
+//   eb 5d                          JMP continue_path
+static void PatchAuthBypass() {
+    if (g_authBypassDone) return;
+    
+    BYTE pattern[] = { 0x85, 0xC0, 0x0F, 0x85, 0x8D, 0x00, 0x00, 0x00, 0x4C, 0x39, 0x74, 0x24 };
+    int patternLen = sizeof(pattern);
+    
+    MEMORY_BASIC_INFORMATION mbi;
+    BYTE* addr = NULL;
+    
+    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
+            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
+             mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
+            
+            BYTE* base = (BYTE*)mbi.BaseAddress;
+            SIZE_T size = mbi.RegionSize;
+            
+            __try {
+                for (SIZE_T j = 0; j + patternLen < size; j++) {
+                    if (memcmp(base + j, pattern, patternLen) != 0) continue;
+                    
+                    BYTE* patchAddr = base + j;
+                    Log("Found auth check at %p", patchAddr);
+                    Log("  Before: %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                        patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
+                        patchAddr[4], patchAddr[5], patchAddr[6], patchAddr[7], patchAddr[8]);
+                    
+                    DWORD oldProtect;
+                    if (VirtualProtect(patchAddr, 9, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        // MOV byte ptr [RSI+0xe8], 1
+                        patchAddr[0] = 0xC6;
+                        patchAddr[1] = 0x86;
+                        patchAddr[2] = 0xE8;
+                        patchAddr[3] = 0x00;
+                        patchAddr[4] = 0x00;
+                        patchAddr[5] = 0x00;
+                        patchAddr[6] = 0x01;
+                        // JMP +0x5D (skip to continue path)
+                        patchAddr[7] = 0xEB;
+                        patchAddr[8] = 0x5D;
+                        VirtualProtect(patchAddr, 9, oldProtect, &oldProtect);
+                        
+                        Log("  After:  %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                            patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
+                            patchAddr[4], patchAddr[5], patchAddr[6], patchAddr[7], patchAddr[8]);
+                        Log("PATCHED: Auth check -> set authenticated + skip");
+                        g_authBypassDone = 1;
+                        g_patched++;
+                    }
+                    return;
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        }
+        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
+
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v53 (cert + Origin SDK patches) ===");
+    Log("=== FIFA 17 SSL Bypass v54 (cert + Origin + auth bypass) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD startTick = GetTickCount();
@@ -207,21 +274,23 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if (!g_codePatchDone) PatchCertCheck();
             if (!g_originPatchDone) PatchOriginCheck();
+            if (!g_authBypassDone) PatchAuthBypass();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
-        if (g_codePatchDone && g_originPatchDone) {
+        if (g_codePatchDone && g_originPatchDone && g_authBypassDone) {
             Log("All patches applied after %lu ms", GetTickCount() - startTick);
             break;
         }
         
         if (i % 100 == 0 && i > 0) {
             DWORD elapsed = GetTickCount() - startTick;
-            Log("Scanning... %lu ms (cert=%d, origin=%d)", elapsed, g_codePatchDone, g_originPatchDone);
+            Log("Scanning... %lu ms (cert=%d, origin=%d, auth=%d)", elapsed, g_codePatchDone, g_originPatchDone, g_authBypassDone);
         }
     }
     
     if (!g_codePatchDone) Log("WARNING: Could not find cert check pattern");
     if (!g_originPatchDone) Log("WARNING: Could not find Origin SDK check pattern");
+    if (!g_authBypassDone) Log("WARNING: Could not find auth check pattern");
     
     Log("=== Done. patches: %d ===", g_patched);
     return 0;
