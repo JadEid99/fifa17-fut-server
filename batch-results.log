@@ -1,24 +1,13 @@
-﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:20:02) ===
+﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:23:00) ===
 RESULT: TIMEOUT
 
 --- DLL LOG ---
-[10:18:59.961] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:18:59.961] PID: 68416
-[10:19:27.713] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x4, old=0x00)
-[10:19:29.395] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x4, old=0x01)
-[10:19:39.556] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:41.371] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:43.221] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:44.948] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:46.862] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:48.736] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:50.466] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:52.245] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:54.135] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:55.958] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:57.822] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:19:59.640] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
-[10:20:01.381] SET bAllowAnyCert at 0000000027DE2474 (struct=0000000027DE20F0, state=0x1E, old=0x01)
+[10:22:02.609] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[10:22:02.609] PID: 89992
+[10:22:29.178] SET bAllowAnyCert at 0000000027DC1FB4 (struct=0000000027DC1C30, state=0x4, old=0x00)
+[10:22:30.789] SET bAllowAnyCert at 0000000027DC1FB4 (struct=0000000027DC1C30, state=0x4, old=0x01)
+[10:22:32.698] SET bAllowAnyCert at 0000000027DC1FB4 (struct=0000000027DC1C30, state=0x4, old=0x01)
+[10:22:41.312] SET bAllowAnyCert at 0000000027DC1FB4 (struct=0000000027DC1C30, state=0x18, old=0x01)
 
 
 --- SERVER ---
@@ -31,12 +20,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:59058
+[Redirector-Raw] Client connected: 127.0.0.1:59078
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 55 8e 63  ....o...k..i.U.c
-  0010: 97 97 57 5f e8 12 96 9a 11 34 07 35 a4 6c be b8  ..W_.....4.5.l..
-  0020: 15 aa 5a 78 82 0d 1c a2 7d a8 ae 00 00 10 00 9d  ..Zx....}.......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 56 45 00  ....o...k..i.VE.
+  0010: b3 02 ef a9 38 dc 29 fa 42 9d 5a e7 68 57 09 16  ....8.).B.Z.hW..
+  0020: 32 f6 30 5b 15 7d 54 37 bc 06 7c 00 00 10 00 9d  2.0[.}T7..|.....
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -44,21 +33,21 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db558e63979757...
+[SSL] ClientHello: version=0x303 random=69db564500b302ef...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:59058
+[Redirector-Raw] Disconnected: 127.0.0.1:59078
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
-[Redirector-Raw] Client connected: 127.0.0.1:59062
+[Redirector-Raw] Client connected: 127.0.0.1:59082
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 55 9a ef  ....o...k..i.U..
-  0010: b4 89 68 a4 3a 4f 85 05 2a 7e 27 eb e2 03 a2 55  ..h.:O..*~'....U
-  0020: c2 14 41 81 d4 9d bb 79 5e ac fc 00 00 10 00 9d  ..A....y^.......
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 56 51 4f  ....o...k..i.VQO
+  0010: 3a 05 a1 b2 57 60 47 f6 b3 54 1e 39 13 c6 27 4d  :...W`G..T.9..'M
+  0020: a3 65 26 54 0e 4d cf 7a ac a0 e3 00 00 10 00 9d  .e&T.M.z........
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -66,33 +55,50 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db559aefb48968...
+[SSL] ClientHello: version=0x303 random=69db56514f3a05a1...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 137 bytes (total pending: 137)
-  0000: 16 03 00 00 84 10 00 00 80 05 0a 1e cb 52 af 5e
-  0010: 03 79 f6 08 1d d0 ed d3 e2 34 a1 18 06 f7 65 ca
-  0020: fe d0 5d 69 ae 7d be db 19 66 44 75 84 1a 07 7b
-  0030: 89 d0 09 ad fe 52 31 19 69 fb 68 18 fd 10 7e e7
-  0040: 33 f6 3b e1 81 99 ce b0 88 05 23 78 b9 3e 8d 1c
-  0050: 67 84 41 27 d5 5b c1 f1 35 df 20 89 b3 c1 f5 4b
-  0060: 21 b6 39 b1 49 7c f1 96 99 68 a4 39 48 40 74 7f
-  0070: fd 8a d9 f5 2a ca ee fa a9 06 b3 e2 55 c8 97 81
-  0080: 3e 49 ef d0 50 7f 6b 98 ca
+  0000: 16 03 00 00 84 10 00 00 80 67 14 ae 0d 32 27 7b
+  0010: bb 66 e1 fa 95 79 67 bb 2e c1 24 bb 98 01 90 fc
+  0020: 10 be c0 89 9e 20 f8 0b 78 73 5f 06 b6 3e 38 ea
+  0030: 49 6f 4c 0c 4f a6 e0 3d 31 6a 28 a1 fd 77 04 4a
+  0040: 7e 5b 89 dd 78 b3 d1 09 97 2e 2b e4 cb 9e c7 17
+  0050: 3d b6 f6 0f 1d 50 06 3f 0a 4f 14 71 3d b6 d4 8b
+  0060: 7a 93 42 e4 c3 b2 7c 94 3b d9 a4 e6 89 1a e1 fb
+  0070: 73 ea 18 6f 80 1a e5 a4 76 f7 1f d5 52 cd 6d 83
+  0080: b1 4d 55 d2 62 d8 59 eb 9c
 [SSL] Record: type=0x16 ver=0x300 len=132
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted pre-master secret: 126 bytes
-[SSL] Failed to decrypt pre-master secret: error:0200009F:rsa routines::pkcs decoding error
-[SSL] Phase=waiting_client_response, received 71 bytes (total pending: 71)
-  0000: 14 03 00 00 01 01 16 03 00 00 3c 21 51 22 dd a0
-  0010: 0f 51 9d 67 0e d6 d5 cf 90 db e5 99 4a 5e 05 e5
-  0020: 23 03 d3 cb d7 5b c5 6a 33 52 59 e0 42 9c 33 39
-  0030: b1 fa 6c 52 3f 53 72 71 38 19 cb 09 5e ea d4 56
-  0040: 75 cf 94 e2 e3 6b 89
-[SSL] Record: type=0x14 ver=0x300 len=1
-[SSL] Client ChangeCipherSpec received
-[SSL] Record: type=0x16 ver=0x300 len=60
-[SSL] Handshake type: 0x21 (unknown)
+[SSL] Encrypted pre-master secret: 128 bytes (body len: 128)
+[SSL] Decrypted pre-master secret: 48 bytes, version=0x303
+[SSL] Master secret derived, keys ready
+[SSL] Sent ChangeCipherSpec
+node : node:internal/crypto/cipher:121
+    + CategoryInfo          : NotSpecified: (node:internal/crypto/cipher:121:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    this[kHandle].initiv(cipher, credential, iv, authTagLength);
+                  ^
+
+Error: error:0308010C:digital envelope routines::unsupported
+    at Cipheriv.createCipherBase (node:internal/crypto/cipher:121:19)
+    at Cipheriv.createCipherWithIV (node:internal/crypto/cipher:140:3)
+    at new Cipheriv (node:internal/crypto/cipher:243:3)
+    at Object.createCipheriv (node:crypto:147:10)
+    at encryptRecord (file:///C:/Users/Jad/fifa17-fut-server/server-standalone/server.mjs:509:32)
+    at Socket.<anonymous> (file:///C:/Users/Jad/fifa17-fut-server/server-standalone/server.mjs:410:27)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5) {
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
+}
+
+Node.js v20.19.5
+SECURITY WARNING: Reverting CVE-2023-46809: Marvin attack on PKCS#1 padding
 
