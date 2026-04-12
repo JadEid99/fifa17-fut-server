@@ -1,7 +1,7 @@
-﻿=== BATCH v31 (2026-04-12 16:36:06) ===
+﻿=== BATCH v31 (2026-04-12 16:39:33) ===
 [1] DLL v52 code patch | PREAUTH_REPLIED
 SERVER:
- = 0
+YPE (int) = 0
 [PreAuth]   }
 [PreAuth]   CINF (struct) {
 [PreAuth]     BSDK (str) = "15.1.1.3.0"
@@ -26,48 +26,48 @@ SERVER:
 [PreAuth]     $&-O (type=0x6e) ???
 [PreAuth]   }
 [PreAuth]   ;DED (type=0x6c) ???
-[Blaze-Enc] Sent encrypted reply (426 bytes)
-[Blaze-Enc]   0000: 00 00 01 9a 00 00 00 09 00 07 00 00 10 00 00 00
+[Blaze-Enc] Sent encrypted reply (423 bytes)
+[Blaze-Enc]   0000: 00 00 01 97 00 00 00 09 00 07 00 00 10 00 00 00
 [Blaze-Enc]   0010: 8e 99 33 07 07 01 04 07 09 19 1c 82 e0 03 8e fb
 [Blaze-Enc]   0020: a6 03 8e fb a6 05 01 01 07 10 63 6f 6e 6e 49 64
 [Blaze-Enc]   0030: 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16
 [Blaze-Enc]   0040: 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69
 [Blaze-Enc]   0050: 6d 65 6f 75 74 00 04 36 30 73 00 0f 6e 75 63 6c
-[Blaze-Enc]   0060: 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70
-[Blaze-Enc]   0070: 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e
-[Blaze-Enc]   0080: 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78
-[Blaze-Enc]   0090: 79 00 17 68 74 74 70 73 3a 2f 2f 67 61 74 65 77
-[Blaze-Enc]   00a0: 61 79 2e 65 61 2e 63 6f 6d 00 0b 70 69 6e 67 50
-[Blaze-Enc]   00b0: 65 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70
-[Blaze-Enc]   00c0: 48 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74
-[Blaze-Enc]   00d0: 65 00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e
-[Blaze-Enc]   00e0: 6e 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f
-[Blaze-Enc]   00f0: 75 74 00 04 33 30 30 00 00 a6 ec f4 01 0c 66 69
-[Blaze-Enc]   0100: 66 61 31 37 2d 32 30 31 36 00 ba 1c f0 01 0a 63
-[Blaze-Enc]   0110: 65 6d 5f 65 61 5f 69 64 00 c2 9b 24 01 01 00 c2
-[Blaze-Enc]   0120: c8 74 01 03 70 63 00 c6 fc f3 03 8b 7c 33 03 c3
-[Blaze-Enc]   0130: 38 40 01 0a 31 32 37 2e 30 2e 30 2e 31 00 c3 3c
-[Blaze-Enc]   0140: 00 00 9e 91 02 ce e8 40 01 09 70 72 6f 64 2d 73
-[Blaze-Enc]   0150: 6a 63 00 00 b2 ec 00 00 0a b3 4c 33 03 00 cf 6a
-[Blaze-Enc]   0160: 64 00 85 a0 88 d4 08 00 cb 3c a3 01 0c 66 69 66
-[Blaze-Enc]   0170: 61 31 37 2d 32 30 31 36 00 cf 69 72 01 2c 42 6c
-[Blaze-Enc]   0180: 61 7a 65 20 33 2e 31 35 2e 30 38 2e 30 20 28 43
-[Blaze-Enc]   0190: 4c 23 20 31 30 36 30 30 38 30 20 2f 20 4a 75 6c
-[Blaze-Enc]   01a0: 20 31 31 20 32 30 31 36 29 00
+[Blaze-Enc]   0060: 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70
+[Blaze-Enc]   0070: 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38
+[Blaze-Enc]   0080: 30 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00
+[Blaze-Enc]   0090: 16 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e
+[Blaze-Enc]   00a0: 31 3a 38 30 38 30 00 0b 70 69 6e 67 50 65 72 69
+[Blaze-Enc]   00b0: 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61
+[Blaze-Enc]   00c0: 64 73 65 74 55 70 64 61 74 65 52 61 74 65 00 05
+[Blaze-Enc]   00d0: 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63
+[Blaze-Enc]   00e0: 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00
+[Blaze-Enc]   00f0: 04 33 30 30 00 00 a6 ec f4 01 0c 66 69 66 61 31
+[Blaze-Enc]   0100: 37 2d 32 30 31 36 00 ba 1c f0 01 0a 63 65 6d 5f
+[Blaze-Enc]   0110: 65 61 5f 69 64 00 c2 9b 24 01 01 00 c2 c8 74 01
+[Blaze-Enc]   0120: 03 70 63 00 c6 fc f3 03 8b 7c 33 03 c3 38 40 01
+[Blaze-Enc]   0130: 0a 31 32 37 2e 30 2e 30 2e 31 00 c3 3c 00 00 9e
+[Blaze-Enc]   0140: 91 02 ce e8 40 01 09 70 72 6f 64 2d 73 6a 63 00
+[Blaze-Enc]   0150: 00 b2 ec 00 00 0a b3 4c 33 03 00 cf 6a 64 00 85
+[Blaze-Enc]   0160: a0 88 d4 08 00 cb 3c a3 01 0c 66 69 66 61 31 37
+[Blaze-Enc]   0170: 2d 32 30 31 36 00 cf 69 72 01 2c 42 6c 61 7a 65
+[Blaze-Enc]   0180: 20 33 2e 31 35 2e 30 38 2e 30 20 28 43 4c 23 20
+[Blaze-Enc]   0190: 31 30 36 30 30 38 30 20 2f 20 4a 75 6c 20 31 31
+[Blaze-Enc]   01a0: 20 32 30 31 36 29 00
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): c3 b5 8c b2 0a f4 61 1c f2 40 d2 39 97 30 58 f6 92 80 13 8e 15 d4
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 6f 34 fe 39 43 d6 34 96 1e 1b 78 79 39 64 ec e5 91 1e e0 b7 1d 5c
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S1 disconnected
 DLL:
-[16:34:53.870] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
-[16:34:53.870] PID: 98120
-[16:34:54.044] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[16:34:54.044]   Before: 0F 85 8E 02 00 00
-[16:34:54.044]   After:  E9 8F 02 00 00 90
-[16:34:54.044] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[16:34:54.044] Code patch applied after 172 ms
-[16:34:54.044] === Done. patches: 1 ===
+[16:38:20.502] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
+[16:38:20.502] PID: 108064
+[16:38:20.681] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[16:38:20.681]   Before: 0F 85 8E 02 00 00
+[16:38:20.681]   After:  E9 8F 02 00 00 90
+[16:38:20.681] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[16:38:20.681] Code patch applied after 172 ms
+[16:38:20.681] === Done. patches: 1 ===
 
 
