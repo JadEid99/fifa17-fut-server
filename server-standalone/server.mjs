@@ -311,13 +311,20 @@ bT9J4z1OJr6cTA==
     }
   }, 10000);
 
+  // State machine for the handshake:
+  // Phase 1: waiting_key_exchange - waiting for ClientKeyExchange
+  // Phase 2: waiting_ccs - got keys, waiting for ChangeCipherSpec
+  // Phase 3: waiting_client_finished - CCS received, RC4 initialized, waiting for encrypted Finished
+  // Phase 4: established - handshake complete
+  let gotCCS = false;
+
   socket.removeAllListeners('data');
   socket.on('data', (data) => {
     pendingBuf = Buffer.concat([pendingBuf, data]);
     console.log(`[SSL] Phase=${phase}, received ${data.length} bytes (total pending: ${pendingBuf.length})`);
     clearTimeout(clientTimeout);
 
-    // Hex dump
+    // Hex dump first 256 bytes
     for (let i = 0; i < Math.min(data.length, 256); i += 16) {
       const slice = data.subarray(i, Math.min(i + 16, data.length));
       const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
@@ -325,7 +332,7 @@ bT9J4z1OJr6cTA==
     }
 
     if (phase === 'waiting_client_response') {
-      // Parse records from the client
+      // Parse TLS records from the client
       let offset = 0;
       while (offset + 5 <= pendingBuf.length) {
         const recType = pendingBuf[offset];
@@ -337,104 +344,154 @@ bT9J4z1OJr6cTA==
         const recBody = pendingBuf.subarray(offset + 5, offset + 5 + recLen);
         console.log(`[SSL] Record: type=0x${recType.toString(16)} ver=0x${recVer.toString(16)} len=${recLen}`);
 
-        if (recType === 0x16) {
-          // Handshake record
+        if (recType === 0x16 && !gotCCS) {
+          // Plaintext handshake record (before CCS)
           const hsType = recBody[0];
           console.log(`[SSL] Handshake type: 0x${hsType.toString(16)} (${hsType === 0x10 ? 'ClientKeyExchange' : hsType === 0x14 ? 'Finished' : 'unknown'})`);
           
           if (hsType === 0x10) {
-            // ClientKeyExchange - contains encrypted pre-master secret
-            // Handshake header: type(1) + length(3) = 4 bytes
+            // ClientKeyExchange - extract and decrypt pre-master secret
             const pmsBodyLen = (recBody[1] << 16) | (recBody[2] << 8) | recBody[3];
             let encPMS;
-            // TLS 1.0+ has a 2-byte explicit length prefix; SSLv3 does not
             if (pmsBodyLen > 128) {
-              // TLS format: 2-byte length + encrypted PMS
               const explicitLen = (recBody[4] << 8) | recBody[5];
               encPMS = recBody.subarray(6, 6 + explicitLen);
-              console.log(`[SSL] Encrypted pre-master secret: ${encPMS.length} bytes (TLS format, explicit len: ${explicitLen})`);
+              console.log(`[SSL] Encrypted PMS: ${encPMS.length} bytes (TLS format, explicit len: ${explicitLen})`);
             } else {
-              // SSLv3 format: raw encrypted PMS
               encPMS = recBody.subarray(4, 4 + pmsBodyLen);
-              console.log(`[SSL] Encrypted pre-master secret: ${encPMS.length} bytes (SSLv3 format)`);
+              console.log(`[SSL] Encrypted PMS: ${encPMS.length} bytes (SSLv3 format)`);
             }
 
-            // Decrypt pre-master secret with our private key
             try {
               const preMasterSecret = crypto.privateDecrypt(
                 { key: keyPem, padding: crypto.constants.RSA_PKCS1_PADDING, oaepHash: undefined },
                 encPMS
               );
-              console.log(`[SSL] Decrypted pre-master secret: ${preMasterSecret.length} bytes, version=0x${preMasterSecret.readUInt16BE(0).toString(16)}`);
+              console.log(`[SSL] Decrypted PMS: ${preMasterSecret.length} bytes, version=0x${preMasterSecret.readUInt16BE(0).toString(16)}`);
 
-              // Derive master secret and keys
               const keys = deriveKeys(preMasterSecret, clientRandom, serverRandom, selectedCipher);
-              console.log(`[SSL] Master secret derived, keys ready`);
+              console.log(`[SSL] Master secret derived: ${keys.masterSecret.toString('hex').substring(0, 32)}...`);
 
-              // Store keys for later use
               socket._sslKeys = keys;
               socket._selectedCipher = selectedCipher;
-              socket._serverRandom = serverRandom;
-              socket._clientRandom = clientRandom;
               socket._allHS = allHandshakeMessages;
-              socket._allHS.push(recBody); // add ClientKeyExchange
+              socket._allHS.push(Buffer.from(recBody)); // add ClientKeyExchange (copy it)
+              console.log(`[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...`);
             } catch (e) {
-              console.log(`[SSL] Failed to decrypt pre-master secret: ${e.message}`);
+              console.log(`[SSL] Failed to decrypt PMS: ${e.message}`);
+              socket.end();
+              return;
             }
           }
         } else if (recType === 0x14) {
-          // ChangeCipherSpec
-          console.log('[SSL] Client ChangeCipherSpec received');
-        } else if (recType === 0x16 && recBody[0] === 0x14) {
-          // This shouldn't happen in plaintext after CCS
+          // ChangeCipherSpec (not a handshake message, not included in hash)
+          console.log('[SSL] Client ChangeCipherSpec received - initializing RC4 decryption');
+          gotCCS = true;
+          
+          if (socket._sslKeys) {
+            // Initialize the client->server RC4 cipher for decrypting subsequent records
+            const keys = socket._sslKeys;
+            if (!keys._clientRC4) {
+              keys._clientRC4 = crypto.createDecipheriv('rc4', keys.clientWriteKey, Buffer.alloc(0));
+            }
+            console.log(`[SSL] RC4 decryption initialized with clientWriteKey: ${keys.clientWriteKey.toString('hex')}`);
+          }
+        } else if (recType === 0x16 && gotCCS && socket._sslKeys) {
+          // Encrypted handshake record AFTER CCS - this is the client's Finished
+          console.log(`[SSL] Encrypted handshake record (client Finished): ${recLen} bytes`);
+          
+          const keys = socket._sslKeys;
+          
+          // Decrypt with RC4
+          const decrypted = keys._clientRC4.update(recBody);
+          console.log(`[SSL] Decrypted client Finished record: ${decrypted.length} bytes`);
+          console.log(`[SSL] Decrypted hex: ${decrypted.toString('hex')}`);
+          
+          // Structure: handshake_message(16 bytes) + HMAC-SHA1(20 bytes) = 36 bytes
+          // Handshake message: type(1) + length(3) + verify_data(12) = 16 bytes
+          const clientFinishedPlaintext = decrypted.subarray(0, decrypted.length - 20);
+          const clientFinishedMAC = decrypted.subarray(decrypted.length - 20);
+          
+          console.log(`[SSL] Client Finished plaintext (${clientFinishedPlaintext.length} bytes): ${clientFinishedPlaintext.toString('hex')}`);
+          console.log(`[SSL] Client Finished MAC: ${clientFinishedMAC.toString('hex')}`);
+          
+          // Verify the client's Finished verify_data
+          const allHSBeforeClientFinished = Buffer.concat(socket._allHS);
+          const expectedClientVerify = tls12PRF(keys.masterSecret, 'client finished',
+            crypto.createHash('sha256').update(allHSBeforeClientFinished).digest(), 12);
+          const clientVerifyData = clientFinishedPlaintext.subarray(4); // skip type(1)+length(3)
+          
+          console.log(`[SSL] Client verify_data:   ${clientVerifyData.toString('hex')}`);
+          console.log(`[SSL] Expected verify_data:  ${expectedClientVerify.toString('hex')}`);
+          
+          if (clientVerifyData.equals(expectedClientVerify)) {
+            console.log('[SSL] ✓ Client Finished verify_data MATCHES!');
+          } else {
+            console.log('[SSL] ✗ Client Finished verify_data MISMATCH (continuing anyway)');
+          }
+          
+          // Verify MAC on client Finished
+          const seqBuf = Buffer.alloc(8);
+          seqBuf.writeBigUInt64BE(keys.clientSeqNum);
+          keys.clientSeqNum++;
+          const macInput = Buffer.concat([
+            seqBuf,
+            Buffer.from([0x16, recordVersion[0], recordVersion[1]]),
+            Buffer.from([(clientFinishedPlaintext.length >> 8) & 0xFF, clientFinishedPlaintext.length & 0xFF]),
+            clientFinishedPlaintext,
+          ]);
+          const expectedMAC = crypto.createHmac('sha1', keys.clientWriteMAC).update(macInput).digest();
+          console.log(`[SSL] Expected client MAC: ${expectedMAC.toString('hex')}`);
+          console.log(`[SSL] Actual client MAC:   ${clientFinishedMAC.toString('hex')}`);
+          
+          if (clientFinishedMAC.equals(expectedMAC)) {
+            console.log('[SSL] ✓ Client Finished MAC MATCHES!');
+          } else {
+            console.log('[SSL] ✗ Client Finished MAC MISMATCH (continuing anyway)');
+          }
+          
+          // NOW add client's Finished to the handshake hash
+          // This is the critical fix: server Finished hash must include client Finished
+          socket._allHS.push(Buffer.from(clientFinishedPlaintext));
+          
+          // NOW compute and send server's ChangeCipherSpec + Finished
+          // Send ChangeCipherSpec (not encrypted, not part of handshake hash)
+          socket.write(wrapRecord(0x14, recordVersion, Buffer.from([0x01])));
+          console.log('[SSL] Sent server ChangeCipherSpec');
+          
+          // Compute server Finished with ALL messages including client's Finished
+          const allHSBuf = Buffer.concat(socket._allHS);
+          console.log(`[SSL] Server Finished hash input: ${socket._allHS.length} messages, total ${allHSBuf.length} bytes`);
+          for (let i = 0; i < socket._allHS.length; i++) {
+            console.log(`[SSL]   msg[${i}]: ${socket._allHS[i].length} bytes, starts=0x${socket._allHS[i][0].toString(16)}`);
+          }
+          
+          const verifyData = tls12PRF(keys.masterSecret, 'server finished',
+            crypto.createHash('sha256').update(allHSBuf).digest(), 12);
+          console.log(`[SSL] Server verify_data: ${verifyData.toString('hex')}`);
+          
+          const finishedMsg = wrapHandshake(0x14, verifyData);
+          
+          // Encrypt server Finished with RC4
+          const encrypted = encryptRecord(0x16, recordVersion, finishedMsg,
+            keys.serverWriteKey, keys.serverWriteMAC, keys, selectedCipher);
+          socket.write(encrypted);
+          console.log('[SSL] Sent encrypted server Finished');
+          
+          phase = 'established';
+          
+          // Handshake complete! Set up encrypted Blaze handler
+          socket.removeAllListeners('data');
+          setupEncryptedBlazeHandler(socket, keys, selectedCipher);
+          console.log('[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...');
+        } else if (recType === 0x15) {
+          // Alert
+          console.log(`[SSL] Alert: level=${recBody[0]} desc=${recBody[1]}`);
         }
 
         offset += 5 + recLen;
       }
       pendingBuf = pendingBuf.subarray(offset);
-
-      // If we have keys, send our ChangeCipherSpec + Finished
-      if (socket._sslKeys) {
-        // Send ChangeCipherSpec
-        socket.write(wrapRecord(0x14, recordVersion, Buffer.from([0x01])));
-        console.log('[SSL] Sent ChangeCipherSpec');
-
-        // Build SSLv3 Finished message
-        const keys = socket._sslKeys;
-        const allHSBuf = Buffer.concat(socket._allHS);
-        console.log(`[SSL] Finished hash input: ${socket._allHS.length} messages, total ${allHSBuf.length} bytes`);
-        for (let i = 0; i < socket._allHS.length; i++) {
-          console.log(`[SSL]   msg[${i}]: ${socket._allHS[i].length} bytes, type=0x${socket._allHS[i][0].toString(16)}`);
-        }
-        console.log(`[SSL] Master secret: ${keys.masterSecret.toString('hex').substring(0, 32)}...`);
-        
-        const sender = Buffer.from([0x53, 0x52, 0x56, 0x52]); // "SRVR"
-        const pad1_md5 = Buffer.alloc(48, 0x36);
-        const pad2_md5 = Buffer.alloc(48, 0x5c);
-        const pad1_sha = Buffer.alloc(40, 0x36);
-        const pad2_sha = Buffer.alloc(40, 0x5c);
-        
-        // TLS 1.2 Finished: PRF_SHA256(master, "server finished", SHA256(msgs))[0..12]
-        const verifyData = tls12PRF(keys.masterSecret, 'server finished',
-          crypto.createHash('sha256').update(allHSBuf).digest(), 12);
-        
-        const finishedMsg = wrapHandshake(0x14, verifyData);
-        
-        // Encrypt the Finished message
-        const encrypted = encryptRecord(0x16, recordVersion, finishedMsg, keys.serverWriteKey, keys.serverWriteMAC, keys, selectedCipher);
-        socket.write(encrypted);
-        console.log('[SSL] Sent encrypted Finished');
-
-        phase = 'established';
-        
-        // Set up decryption for incoming data
-        socket._readSeqNum = BigInt(1); // after Finished
-        socket._writeSeqNum = BigInt(1);
-        
-        // Now handle decrypted Blaze packets
-        socket.removeAllListeners('data');
-        setupEncryptedBlazeHandler(socket, keys, selectedCipher);
-      }
     }
   });
 

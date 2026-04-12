@@ -1,6 +1,7 @@
-# Batch v16: Multiple server crypto variations
-# The DLL is already built and deployed from the last run.
-# We just need to test different server configurations.
+# Batch v17: Fixed handshake flow - wait for client Finished before sending server Finished
+# ROOT CAUSE FIX: Server was sending Finished immediately after ClientKeyExchange.
+# Per Ghidra analysis, server Finished hash MUST include client's Finished message.
+# New flow: CKE -> derive keys -> wait CCS -> wait client Finished -> THEN send server Finished
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -24,9 +25,9 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v16: Server crypto variations ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v17: Fixed handshake - client Finished before server Finished ===" -ForegroundColor Cyan
 
-# Build + deploy DLL (same as before)
+# Build + deploy DLL
 $vcvars = ""
 if (Test-Path "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
     $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
@@ -45,32 +46,37 @@ for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 Start-Sleep 10; FEnter; Start-Sleep 2
 
-# The server.mjs already has the SSLv3 crypto. Just run it with different flags.
-# Test 1: Current SSLv3 PRF + SSLv3 Finished + SSLv3 MAC
-Write-Host "[1] SSLv3 crypto (current)" -ForegroundColor Yellow
+# Test: Fixed handshake flow
+Write-Host "[1] Fixed handshake (client Finished -> server Finished)" -ForegroundColor Yellow
 Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
 Start-Sleep 1
 $sj = Start-Job -ScriptBlock { param($r); node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; FQ; Start-Sleep 20
+Start-Sleep 2; FQ; Start-Sleep 25
 $so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
 Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
 FEnter; Start-Sleep 2
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $r1 = "UNKNOWN"
-if ($so1 -match "Decrypted \d+ bytes of application") { $r1 = "APP_DATA_DECRYPTED" }
+if ($so1 -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_COMPLETE" }
+elseif ($so1 -match "Decrypted \d+ bytes of application") { $r1 = "APP_DATA_DECRYPTED" }
 elseif ($so1 -match "Redirector.*comp=") { $r1 = "BLAZE_REQUEST" }
+elseif ($so1 -match "Client Finished verify_data MATCHES") { $r1 = "CLIENT_FINISHED_VERIFIED" }
+elseif ($so1 -match "Client Finished verify_data MISMATCH") { $r1 = "CLIENT_VERIFY_MISMATCH" }
+elseif ($so1 -match "Decrypted client Finished") { $r1 = "CLIENT_FINISHED_DECRYPTED" }
 elseif ($so1 -match "Alert received") { $r1 = "ALERT_AFTER_FINISHED" }
-elseif ($so1 -match "Sent encrypted Finished") { $r1 = "FINISHED_SENT" }
-elseif ($so1 -match "Decrypted pre-master") { $r1 = "KEYS_DERIVED" }
+elseif ($so1 -match "Sent encrypted server Finished") { $r1 = "SERVER_FINISHED_SENT" }
+elseif ($so1 -match "RC4 decryption initialized") { $r1 = "CCS_RECEIVED" }
+elseif ($so1 -match "Decrypted PMS") { $r1 = "KEYS_DERIVED" }
 elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
 elseif ($so1 -match "TIMEOUT") { $r1 = "TIMEOUT" }
-Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "APP_DATA|BLAZE"){"Green"}elseif($r1 -match "FINISHED|KEYS"){"Yellow"}else{"Red"})
+Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "COMPLETE|APP_DATA|BLAZE"){"Green"}elseif($r1 -match "FINISHED|VERIFIED|CCS|KEYS"){"Yellow"}else{"Red"})
 
-$ss1 = if($so1.Length -gt 600){$so1.Substring($so1.Length-600)}else{$so1}
+# Capture full server output (up to 3000 chars for detailed diagnostics)
+$ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v16 ($timestamp) ===`n[1] SSLv3 crypto | $r1`nSERVER: $ss1`nDLL: $dllLog`n"
+$results = "=== BATCH v17 ($timestamp) ===`n[1] Fixed handshake | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add batch-results.log; git commit -m "Batch v16 $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v17: fixed handshake flow $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
