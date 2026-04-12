@@ -407,12 +407,12 @@ bT9J4z1OJr6cTA==
         const pad1_sha = Buffer.alloc(40, 0x36);
         const pad2_sha = Buffer.alloc(40, 0x5c);
         
-        const md5Inner = crypto.createHash('md5').update(Buffer.concat([allHSBuf, sender, keys.masterSecret, pad1_md5])).digest();
-        const md5Outer = crypto.createHash('md5').update(Buffer.concat([keys.masterSecret, pad2_md5, md5Inner])).digest();
-        const sha1Inner = crypto.createHash('sha1').update(Buffer.concat([allHSBuf, sender, keys.masterSecret, pad1_sha])).digest();
-        const sha1Outer = crypto.createHash('sha1').update(Buffer.concat([keys.masterSecret, pad2_sha, sha1Inner])).digest();
-        
-        const verifyData = Buffer.concat([md5Outer, sha1Outer]); // 16 + 20 = 36 bytes
+        // Try TLS 1.0 Finished: PRF(master, "server finished", MD5(msgs) + SHA1(msgs))[0..12]
+        const verifyData = tlsPRF(keys.masterSecret, 'server finished',
+          Buffer.concat([
+            crypto.createHash('md5').update(allHSBuf).digest(),
+            crypto.createHash('sha1').update(allHSBuf).digest()
+          ]), 12);
         
         const finishedMsg = wrapHandshake(0x14, verifyData);
         
@@ -485,8 +485,8 @@ function ssl3PRF(secret, seed, length) {
 
 function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   const seed = Buffer.concat([clientRandom, serverRandom]);
-  // Use SSLv3 PRF for master secret and key expansion
-  const masterSecret = ssl3PRF(preMasterSecret, seed, 48);
+  // Try TLS 1.0 PRF (the game says version 0x0303 in ClientHello)
+  const masterSecret = tlsPRF(preMasterSecret, 'master secret', seed, 48);
   
   const keySeed = Buffer.concat([serverRandom, clientRandom]);
   let macLen = 20, keyLen = 16, ivLen = 0;
@@ -494,7 +494,7 @@ function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   if (cipher === 0x0035) { keyLen = 32; ivLen = 16; }
   
   const totalNeeded = 2 * macLen + 2 * keyLen + 2 * ivLen;
-  const keyBlock = ssl3PRF(masterSecret, keySeed, totalNeeded);
+  const keyBlock = tlsPRF(masterSecret, 'key expansion', keySeed, totalNeeded);
   
   let off = 0;
   const clientWriteMAC = keyBlock.subarray(off, off + macLen); off += macLen;
@@ -508,19 +508,18 @@ function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
 }
 
 function encryptRecord(type, version, plaintext, writeKey, writeMAC, keys, cipher) {
-  // SSLv3 MAC: hash(mac_secret + pad2 + hash(mac_secret + pad1 + seq_num + type + length + data))
+  // TLS 1.0 MAC: HMAC-SHA1(mac_key, seq_num + type + version + length + data)
   const seqBuf = Buffer.alloc(8);
   seqBuf.writeBigUInt64BE(keys.serverSeqNum);
   keys.serverSeqNum++;
   
-  const pad1 = Buffer.alloc(40, 0x36);
-  const pad2 = Buffer.alloc(40, 0x5c);
-  const lenBuf = Buffer.from([(plaintext.length >> 8) & 0xFF, plaintext.length & 0xFF]);
-  
-  const macInner = crypto.createHash('sha1').update(Buffer.concat([
-    writeMAC, pad1, seqBuf, Buffer.from([type]), lenBuf, plaintext
-  ])).digest();
-  const mac = crypto.createHash('sha1').update(Buffer.concat([writeMAC, pad2, macInner])).digest();
+  const macInput = Buffer.concat([
+    seqBuf,
+    Buffer.from([type, version[0], version[1]]),
+    Buffer.from([(plaintext.length >> 8) & 0xFF, plaintext.length & 0xFF]),
+    plaintext,
+  ]);
+  const mac = crypto.createHmac('sha1', writeMAC).update(macInput).digest();
   
   let encrypted;
   if (cipher === 0x0005 || cipher === 0x0004) {
