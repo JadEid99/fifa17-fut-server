@@ -753,8 +753,9 @@ function handleHttpBlazeRequest(data, socket, keys, cipher) {
   let contentType = 'application/xml';
   
   if (path === '/redirector/getServerInstance') {
-    // Respond with server address in XML format (EA's Blaze HTTP uses XML)
     console.log(`[HTTP-Blaze] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
+    const secure = process.env.REDIRECT_SECURE || '0';
+    console.log(`[HTTP-Blaze] secure=${secure}`);
     responseBody = Buffer.from(
       '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<serverinstanceinfo>\n' +
@@ -765,7 +766,7 @@ function handleHttpBlazeRequest(data, socket, keys, cipher) {
       `      <port>${MAIN_BLAZE_PORT}</port>\n` +
       `    </valu>\n` +
       `  </address>\n` +
-      `  <secure>0</secure>\n` +
+      `  <secure>${secure}</secure>\n` +
       `  <triallogin>0</triallogin>\n` +
       `  <defaultdnsaddress>0</defaultdnsaddress>\n` +
       '</serverinstanceinfo>\n'
