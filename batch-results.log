@@ -1,74 +1,28 @@
-﻿=== BATCH v31 (2026-04-12 15:52:10) ===
-[1] DLL v52 code patch | PREAUTH_REPLIED
+﻿=== BATCH v31 (2026-04-12 16:32:22) ===
+[1] DLL v52 code patch | UNKNOWN
 SERVER:
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 1a28150254cd835e6b4453ddbc1440ba285fe654
-[SSL] Actual client MAC:   1a28150254cd835e6b4453ddbc1440ba285fe654
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1018 bytes
-[SSL]   msg[0]: 91 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 55e4274ddea0bae6bd7662c9
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
-[SSL] Decrypted 219 bytes of application data
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = -19
-[PreAuth]     U?+6 (type0C) = -6671
-[PreAuth]     [@$- (type=0x66) ???
-[PreAuth]   }
-[PreAuth]   :69A (type=0x2d) ???
-[PreAuth] Response TDF self-decode:
-[PreAuth]   CIDS (intlist) = [1, 4, 7, 9, 25, 28, 30722]
-[PreAuth]   CONF (struct) {
-[PreAuth]     CONF (map) k=1 v=1 count=3
-[PreAuth]     "W!I (type=0x6e) ???
-[PreAuth]   }
-[PreAuth]   9U!E (type=0x72) ???
-[Blaze-Enc] Sent encrypted reply (297 bytes)
-[Blaze-Enc]   0000: 00 00 01 19 10 00 00 09 00 07 00 00 00 00 00 00
-[Blaze-Enc]   0010: 8e 99 33 07 07 01 04 07 09 19 1c 42 e0 03 8e fb
-[Blaze-Enc]   0020: a6 03 8e fb a6 05 01 01 03 0b 70 69 6e 67 50 65
-[Blaze-Enc]   0030: 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48
-[Blaze-Enc]   0040: 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74 65
-[Blaze-Enc]   0050: 00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e
-[Blaze-Enc]   0060: 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75
-[Blaze-Enc]   0070: 74 00 04 33 30 30 00 00 a6 ec f4 01 0c 66 69 66
-[Blaze-Enc]   0080: 61 31 37 2d 32 30 31 36 00 ba 1c f0 01 0a 63 65
-[Blaze-Enc]   0090: 6d 5f 65 61 5f 69 64 00 c2 9b 24 01 01 00 c2 c8
-[Blaze-Enc]   00a0: 74 01 03 70 63 00 c6 fc f3 03 8b 7c 33 03 c3 38
-[Blaze-Enc]   00b0: 40 01 0a 31 32 37 2e 30 2e 30 2e 31 00 c3 3c 00
-[Blaze-Enc]   00c0: 00 5e 91 02 ce e8 40 01 09 70 72 6f 64 2d 73 6a
-[Blaze-Enc]   00d0: 63 00 00 b2 ec 00 00 0a b3 4c 33 03 00 cf 6a 64
-[Blaze-Enc]   00e0: 00 45 a0 88 d4 08 00 cb 3c a3 01 0c 66 69 66 61
-[Blaze-Enc]   00f0: 31 37 2d 32 30 31 36 00 cf 69 72 01 2c 42 6c 61
-[Blaze-Enc]   0100: 7a 65 20 33 2e 31 35 2e 30 38 2e 30 20 28 43 4c
-[Blaze-Enc]   0110: 23 20 31 30 36 30 30 38 30 20 2f 20 4a 75 6c 20
-[Blaze-Enc]   0120: 31 31 20 32 30 31 36 29 00
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): bf b9 b4 01 8f f7 dd 04 28 fb 68 17 45 72 f0 b0 ef 8b af c3 43 f8
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Main] S1 disconnected
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
 DLL:
-[15:50:58.106] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
-[15:50:58.106] PID: 107152
-[15:50:58.267] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[15:50:58.267]   Before: 0F 85 8E 02 00 00
-[15:50:58.267]   After:  E9 8F 02 00 00 90
-[15:50:58.267] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[15:50:58.267] Code patch applied after 172 ms
-[15:50:58.267] === Done. patches: 1 ===
+[16:31:10.003] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
+[16:31:10.003] PID: 96768
+[16:31:10.209] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[16:31:10.209]   Before: 0F 85 8E 02 00 00
+[16:31:10.209]   After:  E9 8F 02 00 00 90
+[16:31:10.209] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[16:31:10.209] Code patch applied after 203 ms
+[16:31:10.209] === Done. patches: 1 ===
 
 
