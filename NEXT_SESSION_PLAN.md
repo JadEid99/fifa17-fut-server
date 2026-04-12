@@ -1,44 +1,32 @@
-# FIFA 17 Private Server - SESSION END STATUS (April 12, 2026)
+# FIFA 17 Private Server - STATUS UPDATE
 
-## DEFINITIVE FINDINGS
-1. PreAuth response content DOES NOT MATTER (proven with real BF4 EA server response)
-2. secure=0 vs secure=1 DOES NOT MATTER (game uses TLS regardless)
-3. Origin auth function (146f19a11) is NEVER called (x64dbg confirmed)
-4. Origin SDK check (1470e2840) is called CONSTANTLY (game polls it)
-5. Game always: PreAuth → close_notify → disconnect. No Login ever sent.
-6. Redirector stays open 30+ seconds but receives no more data
-7. Main server stays open ~10 seconds then closes
-8. No connections to any other ports
+## DEFINITIVE CONCLUSION
+PreAuth → close_notify is HARDCODED behavior. The game ALWAYS closes after PreAuth.
+Login happens on a SEPARATE connection that is never initiated because Origin auth fails.
 
-## ROOT CAUSE THEORY
-The game needs a real Origin SDK session object (not just the availability check).
-DAT_144b7c7a0 should point to an initialized Origin SDK object. Our patch makes
-the null check pass, but the game then tries to call methods on the object and
-fails because there's no real object.
+Proven by:
+- Real BF4 EA server response → same close_notify
+- Proactive SilentLogin sent after PreAuth → game ignores it, still closes
+- x64dbg: Origin auth function (146f19a11) NEVER called
+- x64dbg: Only ONE winsock connect() call (to redirector 42230)
+- Game makes exactly: redirector HTTP → main server PreAuth → close. That's it.
 
-The STP emulator (stp-origin_emu.dll) handles Denuvo licensing but doesn't
-provide a full Origin SDK session. The game can't get an auth token without
-a real Origin SDK session.
+## THE REAL BLOCKER
+The game needs the Origin SDK to provide an auth token. The STP emulator
+handles Denuvo licensing but NOT Origin online auth. Without a real auth token,
+the game never initiates the Login connection.
 
-## APPROACH FOR NEXT SESSION
-1. Find DAT_144b7c7a0 in Ghidra - see what initializes it
-2. The Origin SDK init function (FUN_1470e2850) might need to be called/faked
-3. Alternative: find where the game decides "I have an auth token, send Login"
-   and force that code path
-4. Alternative: hook the game's Blaze send function and inject a silentLogin
-   packet directly from the DLL
-5. Alternative: find a more complete Origin emulator that provides auth tokens
+## SOLUTION OPTIONS
+1. Write a replacement Origin SDK DLL (stp-origin_emu.dll replacement)
+   that provides fake auth tokens
+2. Patch the game's online state machine to skip to "logged in" state
+3. Find and hook the specific function that initiates the Login connection
+   and call it directly from our DLL
 
-## ALL WORKING COMPONENTS
-- DLL v55: cert bypass + Origin SDK check + auth flag bypass
-- TLS 1.2 with RC4-SHA on both connections
-- HTTP redirect over TLS
-- Blaze PreAuth with correct TDF encoding (varint 0x80 continuation)
-- Fire2 16-byte header format
-- Hosts file redirects
-
-## KEY FILES
-- dll-proxy/dinput8_proxy.cpp (v55)
-- server-standalone/server.mjs
-- BF4BlazeEmulator/ (reference)
-- stp-origin_emu.dll + .ini
+## FOR NEXT SESSION
+- Option 2 is most promising: find the game's "online state" variable in Ghidra
+  and patch it to "logged in" after PreAuth
+- Search for strings like "LOGGED_IN" or "CONNECTED" or state values
+- The game's FE (front-end) code at addresses 146f7xxxx manages online state
+- FUN_146f7c7e0 at 146f7b279 calls the auth token request - trace its caller
+  to find the state machine
