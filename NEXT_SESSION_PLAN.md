@@ -1,28 +1,23 @@
-# FIFA 17 Private Server - STATUS (April 12, 2026)
+# FIFA 17 Private Server - CRITICAL FINDINGS (April 12, 2026)
 
-## ✅ COMPLETED TODAY
-- DLL v52: Permanent code patch for cert bypass (157ms)
-- TLS on both redirector + main server
-- HTTP redirect over TLS
-- Varint encoding FIXED (0x80 continuation bit, matching EA's BlazeSDK)
-- PreAuth request fully decoded (CDAT, CINF with game version, FCCR, LADD)
-- PreAuth response sent and parsed by game (confirmed by "servers shut down" message)
-- TDF map encoding verified correct
-- Hosts file blocks EA's real "servers shut down" response
+## CONNECTION MONITOR RESULTS
+- Port 42230 (redirector): stays ESTABLISHED for 30+ seconds (never closes!)
+- Port 10041 (main server): stays ESTABLISHED for ~10 seconds after PreAuth
+- Port 4216 (STP emulator): always connected
+- No other ports attempted
 
-## CURRENT STATE
-- Game flow: Redirector TLS → HTTP redirect → Main server TLS → PreAuth → close_notify
-- PreAuth response is parsed correctly by the game (varint fix confirmed this)
-- Game does NOT send Login/PostAuth on the same connection
-- Game does NOT connect to any other ports after PreAuth
-- STP Origin emulator running on port 4216 (game communicates with it)
+## KEY INSIGHT: Redirector connection stays open!
+The game keeps the redirector TLS connection alive after getting the redirect.
+It might send MORE requests on this connection (Login? PostAuth?).
+Our server only handles getServerInstance and doesn't process further requests.
+
+## KEY INSIGHT: Main server stays open 10 seconds
+Our server sees close_notify immediately, but TCP stays open 10 seconds.
+We don't send close_notify back — game might be waiting for it.
+Or the game sends more TLS data after close_notify that we ignore.
 
 ## NEXT STEPS
-1. The game's PreAuth → close_notify → no Login pattern may be NORMAL
-2. After PreAuth, the game likely does Origin auth via STP emulator (port 4216)
-3. The STP emulator may not provide the right auth token for online play
-4. Need to investigate what the STP emulator returns and whether we need to
-   intercept/modify its responses
-5. Alternative: bypass the Origin auth check in the game via Ghidra/DLL patch
-6. The BF4 Blaze Emulator (in BF4BlazeEmulator/) shows the full connection flow
-   for reference - BF4 handles Auth component (0x0001) with silentLogin
+1. Fix server to send close_notify back after receiving one
+2. Check if game sends more data on redirector connection after redirect
+3. The game might do Login over HTTP on the redirector, not raw Blaze on main server
+4. Need to keep both connections alive and process all data on both
