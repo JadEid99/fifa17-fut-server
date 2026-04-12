@@ -481,9 +481,13 @@ bT9J4z1OJr6cTA==
           phase = 'established';
           
           // Handshake complete! Set up encrypted Blaze handler
+          // Pass remaining pendingBuf in case app data arrived in same TCP segment
+          const leftover = pendingBuf.subarray(offset + 5 + recLen);
+          pendingBuf = Buffer.alloc(0); // clear it
           socket.removeAllListeners('data');
-          setupEncryptedBlazeHandler(socket, keys, selectedCipher);
+          setupEncryptedBlazeHandler(socket, keys, selectedCipher, leftover);
           console.log('[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...');
+          return; // exit the loop since we swapped handlers
         } else if (recType === 0x15) {
           // Alert
           console.log(`[SSL] Alert: level=${recBody[0]} desc=${recBody[1]}`);
@@ -632,13 +636,11 @@ function decryptRecord(type, version, ciphertext, readKey, readMAC, keys, cipher
   return plaintext;
 }
 
-function setupEncryptedBlazeHandler(socket, keys, cipher) {
-  let pendingBuf = Buffer.alloc(0);
+function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
+  let pendingBuf = initialPendingBuf || Buffer.alloc(0);
   let blazeBuf = Buffer.alloc(0);
 
-  socket.on('data', (data) => {
-    pendingBuf = Buffer.concat([pendingBuf, data]);
-
+  function processPending() {
     // Parse TLS records
     while (pendingBuf.length >= 5) {
       const recType = pendingBuf[0];
@@ -653,17 +655,33 @@ function setupEncryptedBlazeHandler(socket, keys, cipher) {
         try {
           const plaintext = decryptRecord(0x17, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
           console.log(`[SSL] Decrypted ${plaintext.length} bytes of application data`);
+          console.log(`[SSL] App data hex (first 64): ${plaintext.subarray(0, 64).toString('hex')}`);
           
           // Feed into Blaze packet parser
           blazeBuf = Buffer.concat([blazeBuf, plaintext]);
+          console.log(`[SSL] Blaze buffer: ${blazeBuf.length} bytes`);
+          
+          // Try to parse Blaze packets
           let result = readPacket(blazeBuf);
+          if (!result) {
+            console.log(`[SSL] No complete Blaze packet yet (need more data or parse issue)`);
+            if (blazeBuf.length >= 12) {
+              const hdr = decodeHeader(blazeBuf);
+              if (hdr) {
+                console.log(`[SSL] Partial Blaze header: comp=0x${hdr.component.toString(16)} cmd=0x${hdr.command.toString(16)} len=${hdr.length} (have ${blazeBuf.length - 12} of ${hdr.length} body bytes)`);
+              }
+            }
+          }
           while (result) {
             blazeBuf = result.remaining;
             const pkt = result.packet;
-            console.log(`[Redirector] comp=0x${pkt.header.component.toString(16)} cmd=0x${pkt.header.command.toString(16)}`);
+            console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length} msgType=0x${pkt.header.msgType.toString(16)} msgId=${pkt.header.msgId}`);
 
+            // Handle the packet based on component
+            let resp = null;
             if (pkt.header.component === 0x0005 && pkt.header.command === 0x0001) {
-              console.log(`[Redirector] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
+              // GetServerInstance (redirector)
+              console.log(`[Blaze-Enc] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
               const enc = new TdfEncoder();
               enc.writeUnion('ADDR', 0x00, (e) => {
                 e.writeStructStart('VALU');
@@ -674,27 +692,76 @@ function setupEncryptedBlazeHandler(socket, keys, cipher) {
               });
               enc.writeInteger('SECU', 0);
               enc.writeInteger('XDNS', 0);
-              const reply = buildReply(pkt, enc.build());
-              
-              // Encrypt and send
-              const encReply = encryptRecord(0x17, [0x03, 0x03], reply, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+              resp = buildReply(pkt, enc.build());
+            } else if (pkt.header.component === 0x0009) {
+              // Util component
+              if (pkt.header.command === 0x0007) {
+                console.log('[Blaze-Enc] PreAuth request');
+                resp = handlePreAuth(pkt);
+              } else if (pkt.header.command === 0x0008) {
+                console.log('[Blaze-Enc] PostAuth request');
+                const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: false };
+                resp = handlePostAuth(session, pkt);
+              } else if (pkt.header.command === 0x0002) {
+                resp = handlePing(pkt);
+              } else if (pkt.header.command === 0x0003) {
+                resp = handleGetTelemetry(pkt);
+              } else {
+                console.log(`[Blaze-Enc] Util cmd=0x${pkt.header.command.toString(16)}`);
+                resp = buildReply(pkt, Buffer.alloc(0));
+              }
+            } else if (pkt.header.component === 0x0001) {
+              // Auth component
+              const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: true };
+              if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(pkt.header.command)) {
+                console.log('[Blaze-Enc] Login request');
+                resp = handleLogin(session, pkt);
+              } else if (pkt.header.command === 0x0030) {
+                resp = handleListPersona(session, pkt);
+              } else {
+                console.log(`[Blaze-Enc] Auth cmd=0x${pkt.header.command.toString(16)}`);
+                resp = buildReply(pkt, Buffer.alloc(0));
+              }
+            } else {
+              console.log(`[Blaze-Enc] Unhandled comp=0x${pkt.header.component.toString(16)} cmd=0x${pkt.header.command.toString(16)}`);
+              resp = buildReply(pkt, Buffer.alloc(0));
+            }
+
+            if (resp) {
+              const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
               socket.write(encReply);
-              console.log('[Redirector] Sent encrypted redirect response');
-              setTimeout(() => socket.end(), 100);
+              console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes plaintext)`);
             }
             result = readPacket(blazeBuf);
           }
         } catch (e) {
           console.log(`[SSL] Decryption error: ${e.message}`);
+          console.log(`[SSL] Stack: ${e.stack}`);
         }
       } else if (recType === 0x15) {
-        const alertLevel = recBody[0];
-        const alertDesc = recBody[1];
-        console.log(`[SSL] Alert received: level=${alertLevel} desc=${alertDesc} (${alertDesc === 20 ? 'bad_record_mac' : alertDesc === 40 ? 'handshake_failure' : alertDesc === 10 ? 'unexpected_message' : alertDesc === 42 ? 'bad_certificate' : alertDesc === 47 ? 'illegal_parameter' : alertDesc === 51 ? 'decrypt_error' : 'unknown'})`);
-        console.log(`[SSL] Alert raw: ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
+        // Try to decrypt the alert since we're post-CCS
+        try {
+          const decrypted = decryptRecord(0x15, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
+          console.log(`[SSL] Alert (decrypted): level=${decrypted[0]} desc=${decrypted[1]}`);
+        } catch (e) {
+          console.log(`[SSL] Alert (raw): ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
+        }
+      } else {
+        console.log(`[SSL] Unknown record type 0x${recType.toString(16)} len=${recLen}`);
       }
     }
+  }
+
+  socket.on('data', (data) => {
+    pendingBuf = Buffer.concat([pendingBuf, data]);
+    processPending();
   });
+
+  // Process any data already in the buffer (leftover from handshake phase)
+  if (pendingBuf.length > 0) {
+    console.log(`[SSL] Processing ${pendingBuf.length} bytes of leftover data from handshake`);
+    processPending();
+  }
 }
 
 function setupRedirectorHandler(socket) {
@@ -731,33 +798,59 @@ function startMainServer() {
     const session = { id: sid, socket, personaId: 1000000000 + sid, nucleusId: 2000000000 + sid, displayName: `Player${sid}`, auth: false };
     console.log(`[Main] Session ${sid} connected: ${socket.remoteAddress}:${socket.remotePort}`);
 
-    handleBlazeStream(socket, `Main:${sid}`, (pkt) => {
-      const { component: comp, command: cmd } = pkt.header;
-      console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')}`);
-      let resp = null;
-      if (comp === 0x0009) {
-        if (cmd === 0x0007) resp = handlePreAuth(pkt);
-        else if (cmd === 0x0008) resp = handlePostAuth(session, pkt);
-        else if (cmd === 0x0002) resp = handlePing(pkt);
-        else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
-        else if (cmd === 0x0001) resp = buildReply(pkt, new TdfEncoder().build());
-        else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
-        else resp = buildReply(pkt, Buffer.alloc(0));
-      } else if (comp === 0x0001) {
-        if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) resp = handleLogin(session, pkt);
-        else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
-        else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
-        else if (cmd === 0x0030) resp = handleListPersona(session, pkt);
-        else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
-        else resp = buildReply(pkt, Buffer.alloc(0));
-      } else if (comp === 0x7802) { resp = buildReply(pkt, Buffer.alloc(0)); }
-      else { console.log(`[Main] Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
-      if (resp) socket.write(resp);
-    });
+    // Auto-detect TLS vs plaintext: peek at first byte
+    let firstData = true;
+    const initialHandler = (data) => {
+      if (!firstData) return;
+      firstData = false;
+      socket.removeListener('data', initialHandler);
+
+      if (data[0] === 0x16 && data.length >= 5 && data[1] === 0x03) {
+        // TLS ClientHello - do full handshake
+        console.log(`[Main] S${sid}: TLS detected, starting handshake`);
+        handleSSLv3Handshake(socket, data, `Main:${sid}`, (clearSocket, keys, cipher) => {
+          // After handshake, set up encrypted Blaze handler
+          console.log(`[Main] S${sid}: TLS handshake complete, handling encrypted Blaze`);
+        });
+      } else {
+        // Plain Blaze
+        console.log(`[Main] S${sid}: Plain TCP Blaze`);
+        setupMainBlazeHandler(socket, session);
+        socket.emit('data', data); // re-emit for the handler
+      }
+    };
+    socket.on('data', initialHandler);
     socket.on('close', () => console.log(`[Main] S${sid} disconnected`));
     socket.on('error', (e) => console.log(`[Main] S${sid} error: ${e.message}`));
   });
   server.listen(MAIN_BLAZE_PORT, '0.0.0.0', () => console.log(`[Main] Blaze server on port ${MAIN_BLAZE_PORT}`));
+}
+
+function setupMainBlazeHandler(socket, session) {
+  const sid = session.id;
+  handleBlazeStream(socket, `Main:${sid}`, (pkt) => {
+    const { component: comp, command: cmd } = pkt.header;
+    console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')}`);
+    let resp = null;
+    if (comp === 0x0009) {
+      if (cmd === 0x0007) resp = handlePreAuth(pkt);
+      else if (cmd === 0x0008) resp = handlePostAuth(session, pkt);
+      else if (cmd === 0x0002) resp = handlePing(pkt);
+      else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
+      else if (cmd === 0x0001) resp = buildReply(pkt, new TdfEncoder().build());
+      else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
+      else resp = buildReply(pkt, Buffer.alloc(0));
+    } else if (comp === 0x0001) {
+      if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) resp = handleLogin(session, pkt);
+      else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
+      else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
+      else if (cmd === 0x0030) resp = handleListPersona(session, pkt);
+      else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
+      else resp = buildReply(pkt, Buffer.alloc(0));
+    } else if (comp === 0x7802) { resp = buildReply(pkt, Buffer.alloc(0)); }
+    else { console.log(`[Main] Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
+    if (resp) socket.write(resp);
+  });
 }
 
 function handlePreAuth(pkt) {
