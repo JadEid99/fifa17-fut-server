@@ -1,333 +1,21 @@
-﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:12:45) ===
+﻿=== v50 bAllowAnyCert +0x384 (2026-04-12 10:15:30) ===
 RESULT: TIMEOUT
 
 --- DLL LOG ---
-[10:11:43.775] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:11:43.775] PID: 81404
-[10:12:10.289] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x00
-[10:12:10.289] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x00
-[10:12:10.289] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:10.289] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x00
-[10:12:10.289] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:10.298] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21C70 (hostOff=0x58), state=0x0, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21BC8 (hostOff=0x100), state=0x0, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21B78 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.619] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21AC8 (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x4, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x64
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x65
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE41C8 (hostOff=0x58), state=0x4C581A74, old=0x65
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4120 (hostOff=0x100), state=0x35353335, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE40D0 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.620] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4020 (hostOff=0x200), state=0x0, old=0x00
-[10:12:11.635] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0xFFFFFFFC, old=0x00
-[10:12:11.635] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x2A7BCF80, old=0x00
-[10:12:11.635] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:11.635] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:11.784] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:11.784] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:11.784] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:11.784] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:11.785] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21C70 (hostOff=0x58), state=0x0, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21BC8 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21B78 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.115] Set bAllowAnyCert: hostname at 0000000027B21CC8, struct guess at 0000000027B21AC8 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x4, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE41C8 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4120 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE40D0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.116] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4020 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.130] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0xFFFFFFFC, old=0x01
-[10:12:13.130] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x2A7BCF80, old=0x01
-[10:12:13.130] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.130] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:13.275] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.591] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:14.591] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.591] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.591] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE41C8 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4120 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE40D0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.592] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4020 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.607] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0xFFFFFFFC, old=0x01
-[10:12:14.607] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x2A7BCF80, old=0x01
-[10:12:14.607] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.607] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x00
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:14.744] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.075] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:16.075] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.075] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.075] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE41C8 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4120 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE40D0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.076] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4020 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.090] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0xFFFFFFFC, old=0x01
-[10:12:16.090] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x2A7BCF80, old=0x01
-[10:12:16.090] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.090] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:16.236] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.551] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:17.551] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.551] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.551] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE41C8 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4120 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE40D0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.552] Set bAllowAnyCert: hostname at 0000000027DE4220, struct guess at 0000000027DE4020 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.566] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0xFFFFFFFC, old=0x01
-[10:12:17.566] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x2A7BCF80, old=0x01
-[10:12:17.566] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.566] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:17.706] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.082] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:19.082] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.082] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.082] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.083] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x0, old=0x01
-[10:12:19.083] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.083] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.083] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.084] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.101] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0x2C4CDD21, old=0x01
-[10:12:19.101] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x43A18460, old=0x01
-[10:12:19.101] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.101] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:19.251] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.806] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03AF8 (hostOff=0x58), state=0x6D6F632E, old=0x01
-[10:12:20.806] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A50 (hostOff=0x100), state=0x0, old=0x00
-[10:12:20.806] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03A00 (hostOff=0x150), state=0x6F632E61, old=0x00
-[10:12:20.806] Set bAllowAnyCert: hostname at 0000000027B03B50, struct guess at 0000000027B03950 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D913C0 (hostOff=0x58), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91318 (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D912C8 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027D91418, struct guess at 0000000027D91218 (hostOff=0x200), state=0x8BD5D398, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC23F4 (hostOff=0x58), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC234C (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC22FC (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DC244C, struct guess at 0000000027DC224C (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF198 (hostOff=0x58), state=0x4C581A74, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0F0 (hostOff=0x100), state=0x35353335, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCF0A0 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF1F0, struct guess at 0000000027DCEFF0 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF713 (hostOff=0x58), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF66B (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF61B (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.807] Set bAllowAnyCert: hostname at 0000000027DCF76B, struct guess at 0000000027DCF56B (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.821] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE740 (hostOff=0x58), state=0x2C4CDD21, old=0x9C
-[10:12:20.821] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE698 (hostOff=0x100), state=0x43A18460, old=0xCA
-[10:12:20.821] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE648 (hostOff=0x150), state=0x6F632E61, old=0x1A
-[10:12:20.821] Set bAllowAnyCert: hostname at 000000002A7BE798, struct guess at 000000002A7BE598 (hostOff=0x200), state=0x0, old=0xA2
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D2C9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D221 (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D1D1 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045E9D321, struct guess at 0000000045E9D121 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB5F9 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB551 (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB501 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EAB651, struct guess at 0000000045EAB451 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9929 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9881 (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9831 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EB9981, struct guess at 0000000045EB9781 (hostOff=0x200), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7C59 (hostOff=0x58), state=0x800000, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7BB1 (hostOff=0x100), state=0x0, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7B61 (hostOff=0x150), state=0x6F632E61, old=0x01
-[10:12:20.967] Set bAllowAnyCert: hostname at 0000000045EC7CB1, struct guess at 0000000045EC7AB1 (hostOff=0x200), state=0x0, old=0x01
+[10:14:28.009] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[10:14:28.009] PID: 90488
+[10:14:54.847] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x4, old=0x00)
+[10:14:56.512] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x4, old=0x01)
+[10:14:58.184] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x4, old=0x01)
+[10:15:14.252] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:15.916] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:17.707] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:19.555] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:21.423] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:23.315] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:25.034] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:26.869] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
+[10:15:28.670] SET bAllowAnyCert at 0000000027DC1B24 (struct=0000000027DC17A0, state=0x1E, old=0x01)
 
 
 --- SERVER ---
@@ -340,12 +28,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:58760
+[Redirector-Raw] Client connected: 127.0.0.1:58986
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 53 da d9  ....o...k..i.S..
-  0010: 62 5e 79 34 50 97 cf e7 b2 b7 89 a4 4a 1d 16 7f  b^y4P.......J...
-  0020: 37 f8 fb 15 fb ee 62 12 b2 e0 a2 00 00 10 00 9d  7.....b.........
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 54 7e 08  ....o...k..i.T~.
+  0010: c5 54 18 b3 ab ff d0 1e ff bf b9 9d fb ef 51 a8  .T............Q.
+  0020: bd 3d 6a 2b 41 cc 9e 7d 35 2a ce 00 00 10 00 9d  .=j+A..}5*......
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -353,15 +41,55 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db53dad9625e79...
+[SSL] ClientHello: version=0x303 random=69db547e08c55418...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Disconnected: 127.0.0.1:58760
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:58986
 [SSL] TIMEOUT: No data received from client after 10 seconds
 [SSL] pendingBuf length: 0
-[Redirector-Raw] Client connected: 127.0.0.1:58764
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:58764
+[Redirector-Raw] Client connected: 127.0.0.1:58991
+[Redirector-Raw] Received 116 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 54 91 b9  ....o...k..i.T..
+  0010: 8f 92 51 e1 b5 9d 36 a0 70 66 9c 7e 25 3a fe b8  ..Q...6.pf.~%:..
+  0020: ba 23 56 b4 03 89 ad 11 88 31 51 00 00 10 00 9d  .#V......1Q.....
+  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0070: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69db5491b98f9251...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[SSL] Phase=waiting_client_response, received 137 bytes (total pending: 137)
+  0000: 16 03 00 00 84 10 00 00 80 2b 4f 30 92 6d 73 1e
+  0010: 59 bd b1 f7 f1 e3 73 88 c3 41 96 fc ea 6e 54 c3
+  0020: 7f 19 95 4e e3 44 26 8a 3c cc 2d 9a 29 56 30 5f
+  0030: 8a 47 a0 60 3a 81 97 21 1e 9f 58 dc ed 65 0f 00
+  0040: ea 3c c3 88 c7 8d 80 6f c1 ac 8a 64 48 d4 6a fa
+  0050: 1d 01 bf c1 4d 80 f2 8a d3 69 4b c3 e1 b1 11 b7
+  0060: 1f c8 62 b0 97 11 ef c6 77 f0 ed ad ea ef a8 bd
+  0070: 3b 5b 45 de 08 8a dc df cd aa 52 5c e2 a8 c2 9d
+  0080: 40 c6 a9 0c 3d 3e 42 a1 c3
+[SSL] Record: type=0x16 ver=0x300 len=132
+[SSL] Handshake type: 0x10 (ClientKeyExchange)
+[SSL] Encrypted pre-master secret: 126 bytes
+[SSL] Failed to decrypt pre-master secret: RSA_PKCS1_PADDING is no longer supported for private decryption, this can be reverted with --security-revert=CVE-2023-46809
+[SSL] Phase=waiting_client_response, received 71 bytes (total pending: 71)
+  0000: 14 03 00 00 01 01 16 03 00 00 3c 67 f7 74 14 c5
+  0010: 94 02 5b 47 57 19 7d 93 50 80 1b 0c 2a 09 46 5b
+  0020: 11 7a 8a 81 d5 ea ec 8b 0e 1e 28 97 1f 89 5d 58
+  0030: 8b 49 a5 9b 7d 19 20 50 51 87 b0 9d 0e 5a d1 63
+  0040: 90 89 ed b9 ce 72 ef
+[SSL] Record: type=0x14 ver=0x300 len=1
+[SSL] Client ChangeCipherSpec received
+[SSL] Record: type=0x16 ver=0x300 len=60
+[SSL] Handshake type: 0x67 (unknown)
 
