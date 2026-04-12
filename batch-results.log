@@ -1,4 +1,4 @@
-﻿=== BATCH v31 (2026-04-12 17:17:00) ===
+﻿=== BATCH v31 (2026-04-12 17:22:50) ===
 [1] DLL v52 code patch | PREAUTH_REPLIED
 SERVER:
 YPE (int) = 0
@@ -55,27 +55,26 @@ YPE (int) = 0
 [Blaze-Enc]   0190: 31 30 36 30 30 38 30 20 2f 20 4a 75 6c 20 31 31
 [Blaze-Enc]   01a0: 20 32 30 31 36 29 00
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 50 39 dc ef 81 bc af 12 80 4d cc 17 ff e0 6f 0b a1 38 48 04 0a 4f
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): e3 6a 93 e3 17 d4 d1 70 fb 65 67 23 f6 81 dc c4 19 b0 79 b6 7c 47
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S1 disconnected
 DLL:
-[17:15:48.017] === FIFA 17 SSL Bypass v54 (cert + Origin + auth bypass) ===
-[17:15:48.017] PID: 85796
-[17:15:48.180] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[17:15:48.180]   Before: 0F 85 8E 02 00 00
-[17:15:48.181]   After:  E9 8F 02 00 00 90
-[17:15:48.181] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[17:15:48.375] Found auth check at 0000000146F19A16
-[17:15:48.375]   Before: 85 C0 0F 85 8D 00 00 00 4C
-[17:15:48.375]   After:  C6 86 E8 00 00 00 01 EB 5D
-[17:15:48.375] PATCHED: Auth check -> set authenticated + skip
-[17:15:48.539] Found Origin SDK check at 00000001470A8430
-[17:15:48.539]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
-[17:15:48.539]   After:  B0 01 90 90 90 ... 90 90 90 C3
-[17:15:48.551] PATCHED: Origin SDK check -> always returns true
-[17:15:48.551] All patches applied after 531 ms
-[17:15:48.551] === Done. patches: 3 ===
+[17:21:37.483] === FIFA 17 SSL Bypass v54 (cert + Origin + auth bypass) ===
+[17:21:37.483] PID: 100404
+[17:21:37.645] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[17:21:37.645]   Before: 0F 85 8E 02 00 00
+[17:21:37.645]   After:  E9 8F 02 00 00 90
+[17:21:37.645] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[17:21:37.808] Found auth call+check at 0000000146F19A11
+[17:21:37.808]   Patched: C6 86 E8 00 00 00 01 EB 62 90 90 90 90
+[17:21:37.808] PATCHED: Auth -> set [RSI+0xe8]=1 + JMP to continue
+[17:21:37.957] Found Origin SDK check at 00000001470A8430
+[17:21:37.957]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
+[17:21:37.957]   After:  B0 01 90 90 90 ... 90 90 90 C3
+[17:21:37.969] PATCHED: Origin SDK check -> always returns true
+[17:21:37.969] All patches applied after 484 ms
+[17:21:37.969] === Done. patches: 3 ===
 
 
