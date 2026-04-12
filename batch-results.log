@@ -1,5 +1,5 @@
-﻿=== BATCH v30 (2026-04-12 13:12:39) ===
-[1] secure=1 + DLL v51 | ECONNRESET
+﻿=== BATCH v30 (2026-04-12 13:16:07) ===
+[1] secure=1 + DLL v51 | UNKNOWN
 SERVER:
 === FIFA 17 FUT Private Server ===
 
@@ -10,31 +10,20 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:60497
-[Redirector-Raw] Received 116 bytes
-[Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 7d f9 b4  ....o...k..i.}..
-  0010: 63 85 f9 4a 68 46 ab 1a d9 c6 83 a3 b2 06 a6 a5  c..JhF..........
-  0020: b2 e5 49 ad 95 7b 53 0a 82 d2 2d 00 00 10 00 9d  ..I..{S...-.....
-  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
-  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
-  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
-  0070: 02 01 01 01                                      ....
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db7df9b46385f9...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:60497
-[SSL] TIMEOUT: No data received from client after 10 seconds
-[SSL] pendingBuf length: 0
 DLL:
-[13:11:11.377] === FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===
-[13:11:11.377] PID: 77920
-[13:11:54.698] SET bAllowAnyCert at 0000000104D79534 (struct=0000000104D791B0, host=winter15.gosredirector.ea.com, state=0x4, old=0x00)
+[13:14:40.664] === FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===
+[13:14:40.664] PID: 109284
+[13:14:41.508] SET bAllowAnyCert at 000000002DDC034C (struct=000000002DDBFFC8, host=127.0.0.1, state=0x66666964, old=0x00)
+[13:14:41.508] SET bAllowAnyCert at 000000002DDC037C (struct=000000002DDBFFF8, host=127.0.0.1, state=0x4F687434, old=0x00)
+[13:14:44.300] SET bAllowAnyCert at 00000000219A038C (struct=00000000219A0008, host=127.0.0.1, state=0x219A0180, old=0x00)
+[13:15:07.690] SET bAllowAnyCert at 0000000027B03ECC (struct=0000000027B03B48, host=winter15.gosredirector.ea.com, state=0x0, old=0x00)
+[13:15:07.691] SET bAllowAnyCert at 0000000027DC1618 (struct=0000000027DC1294, host=winter15.gosredirector.ea.com, state=0x0, old=0x00)
+[13:15:07.703] SET bAllowAnyCert at 0000000027DC1994 (struct=0000000027DC1610, host=winter15.gosredirector.ea.com, state=0x3, old=0x00)
+[13:15:07.742] SET bAllowAnyCert at 000000002A7BEAC4 (struct=000000002A7BE740, host=winter15.gosredirector.ea.com, state=0xFFFFFFFC, old=0x00)
+[13:15:08.019] SET bAllowAnyCert at 0000000045E7D64D (struct=0000000045E7D2C9, host=winter15.gosredirector.ea.com, state=0x800000, old=0x00)
+[13:15:08.019] SET bAllowAnyCert at 0000000045E8B97D (struct=0000000045E8B5F9, host=winter15.gosredirector.ea.com, state=0x800000, old=0x00)
+[13:15:08.019] SET bAllowAnyCert at 0000000045E99CAD (struct=0000000045E99929, host=winter15.gosredirector.ea.com, state=0x800000, old=0x00)
+[13:15:08.019] SET bAllowAnyCert at 0000000045EA7FDD (struct=0000000045EA7C59, host=winter15.gosredirector.ea.com, state=0x800000, old=0x00)
+[13:15:17.949] SET bAllowAnyCert at 000000002A7BEAC4 (struct=000000002A7BE740, host=winter15.gosredirector.ea.com, state=0xF7F8430, old=0xDD)
 
 
