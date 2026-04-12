@@ -1,0 +1,18 @@
+$content = "127.0.0.1 gosredirector.ea.com`r`n"
+$content += "127.0.0.1 gosredirector.online.ea.com`r`n"
+$content += "127.0.0.1 gosredirector.scert.ea.com`r`n"
+$content += "127.0.0.1 gosredirector.stest.ea.com`r`n"
+$content += "127.0.0.1 gosca.ea.com`r`n"
+$content += "127.0.0.1 peach.online.ea.com`r`n"
+$content += "127.0.0.1 winter15.gosredirector.ea.com`r`n"
+$content += "127.0.0.1 accounts.ea.com`r`n"
+$content += "127.0.0.1 signin.ea.com`r`n"
+$content += "127.0.0.1 gateway.ea.com`r`n"
+$content += "127.0.0.1 waleu2.tools.gos.ea.com`r`n"
+$content += "127.0.0.1 reports.tools.gos.ea.com`r`n"
+$content += "127.0.0.1 river.data.ea.com`r`n"
+$content += "127.0.0.1 wal.tools.gos.ea.com`r`n"
+$content += "127.0.0.1 eaassets-a.akamaihd.net`r`n"
+[System.IO.File]::WriteAllText("C:\Windows\System32\drivers\etc\hosts", $content)
+Write-Host "Hosts file updated. Verify:"
+Get-Content C:\Windows\System32\drivers\etc\hosts

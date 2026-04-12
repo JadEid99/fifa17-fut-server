@@ -1,20 +1,22 @@
 # FIFA 17 Private Server - STATUS (April 12, 2026)
 
-## ✅ COMPLETED: Full TLS on Both Connections
-- DLL v52: Permanent code patch (JNZ→JMP) bypasses cert verification for ALL SSL connections
-- Redirector TLS handshake: working
-- Main server TLS handshake: working (with secure=1 in redirect)
-- HTTP redirect over TLS: working
-- Blaze PreAuth over TLS on main server: parsed and responded
+## ✅ COMPLETED
+- DLL v52: Permanent code patch (JNZ→JMP) bypasses cert verification for ALL SSL connections (157ms)
+- Redirector TLS handshake on port 42230
+- HTTP redirect response over TLS (secure=1)
+- Main server TLS handshake on port 10041
+- Blaze PreAuth parsed and responded over TLS on main server
+- Fire2 16-byte Blaze header format (4-byte length + 12-byte header)
 
-## CURRENT: Game disconnects after PreAuth response
-- Game connects to main server over TLS
-- Sends PreAuth (comp=0x0009, cmd=0x0007) — 219 bytes
-- We respond with 228 bytes (PreAuth response with CIDS, CONF, QOSS, etc.)
-- Game sends close_notify (graceful TLS close) and disconnects
-- Game does NOT reconnect for PostAuth/Login
+## CURRENT BLOCKER: Game disconnects after PreAuth
+- Game: TLS → PreAuth → close_notify → no reconnection
+- Tested: empty response, no response, different headers, different body fields — all same result
+- No connections to other ports (443, 9988, 17502, 80, 9946)
+- close_notify is level=1 desc=0 (graceful close, not error)
 
-### Possible causes:
-1. PreAuth response body is wrong/incomplete — game doesn't like our TDF content
-2. Game expects to send multiple packets on same connection (PreAuth + Login)
-3. Game reconnects but to a different port/host based on PreAuth response content
+## NEXT STEPS TO INVESTIGATE
+1. Check game UI after Q press — does it show "failed" or something else?
+2. The game might need user interaction to proceed past PreAuth
+3. Try handling PreAuth on the redirector connection instead of main server
+4. The game might expect the server to send a notification/ping first
+5. Check if the game tries to connect to other EA hostnames not in hosts file
