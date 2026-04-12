@@ -392,17 +392,23 @@ bT9J4z1OJr6cTA==
         socket.write(wrapRecord(0x14, recordVersion, Buffer.from([0x01])));
         console.log('[SSL] Sent ChangeCipherSpec');
 
-        // For now, send an encrypted Finished message
-        // The Finished verify_data is PRF(master_secret, "server finished", Hash(all_handshake_messages))
+        // Build SSLv3 Finished message
+        // SSLv3 Finished = MD5(master + pad2 + MD5(msgs + sender + master + pad1))
+        //                + SHA1(master + pad2 + SHA1(msgs + sender + master + pad1))
         const keys = socket._sslKeys;
-        
-        // Build Finished message
         const allHSBuf = Buffer.concat(socket._allHS);
-        const verifyData = tlsPRF(keys.masterSecret, 'server finished', 
-          Buffer.concat([
-            crypto.createHash('md5').update(allHSBuf).digest(),
-            crypto.createHash('sha1').update(allHSBuf).digest()
-          ]), 12);
+        const sender = Buffer.from([0x53, 0x52, 0x56, 0x52]); // "SRVR"
+        const pad1_md5 = Buffer.alloc(48, 0x36);
+        const pad2_md5 = Buffer.alloc(48, 0x5c);
+        const pad1_sha = Buffer.alloc(40, 0x36);
+        const pad2_sha = Buffer.alloc(40, 0x5c);
+        
+        const md5Inner = crypto.createHash('md5').update(Buffer.concat([allHSBuf, sender, keys.masterSecret, pad1_md5])).digest();
+        const md5Outer = crypto.createHash('md5').update(Buffer.concat([keys.masterSecret, pad2_md5, md5Inner])).digest();
+        const sha1Inner = crypto.createHash('sha1').update(Buffer.concat([allHSBuf, sender, keys.masterSecret, pad1_sha])).digest();
+        const sha1Outer = crypto.createHash('sha1').update(Buffer.concat([keys.masterSecret, pad2_sha, sha1Inner])).digest();
+        
+        const verifyData = Buffer.concat([md5Outer, sha1Outer]); // 16 + 20 = 36 bytes
         
         const finishedMsg = wrapHandshake(0x14, verifyData);
         
@@ -435,47 +441,35 @@ bT9J4z1OJr6cTA==
   console.log(`[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...`);
 }
 
-// TLS PRF (Pseudo-Random Function) for TLS 1.0/1.1
-function tlsPRF(secret, label, seed, length) {
-  const labelBuf = Buffer.from(label, 'ascii');
-  const fullSeed = Buffer.concat([labelBuf, seed]);
-  
-  // Split secret in half
-  const half = Math.ceil(secret.length / 2);
-  const s1 = secret.subarray(0, half);
-  const s2 = secret.subarray(secret.length - half);
-  
-  const md5Result = pHash('md5', s1, fullSeed, length);
-  const sha1Result = pHash('sha1', s2, fullSeed, length);
-  
-  const result = Buffer.alloc(length);
-  for (let i = 0; i < length; i++) result[i] = md5Result[i] ^ sha1Result[i];
-  return result;
-}
-
-function pHash(algo, secret, seed, length) {
+// SSLv3 PRF - different from TLS PRF!
+// SSLv3 uses: MD5(secret + SHA1('A' + secret + random)) for key material
+function ssl3PRF(secret, seed, length) {
   const output = [];
-  let a = seed; // A(0) = seed
+  let label = 0x41; // 'A'
   while (Buffer.concat(output).length < length) {
-    a = crypto.createHmac(algo, secret).update(a).digest(); // A(i)
-    output.push(crypto.createHmac(algo, secret).update(Buffer.concat([a, seed])).digest());
+    const labelStr = Buffer.alloc(label - 0x40, label);
+    const sha1 = crypto.createHash('sha1').update(Buffer.concat([labelStr, secret, seed])).digest();
+    const md5 = crypto.createHash('md5').update(Buffer.concat([secret, sha1])).digest();
+    output.push(md5);
+    label++;
   }
   return Buffer.concat(output).subarray(0, length);
 }
 
 function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   const seed = Buffer.concat([clientRandom, serverRandom]);
-  const masterSecret = tlsPRF(preMasterSecret, 'master secret', seed, 48);
+  
+  // SSLv3 master secret derivation
+  const masterSecret = ssl3PRF(preMasterSecret, seed, 48);
   
   const keySeed = Buffer.concat([serverRandom, clientRandom]);
   // For RC4-128-SHA: MAC=20, Key=16, IV=0
-  // For AES-128-CBC-SHA: MAC=20, Key=16, IV=16
   let macLen = 20, keyLen = 16, ivLen = 0;
-  if (cipher === 0x002f) ivLen = 16; // AES-128-CBC
-  if (cipher === 0x0035) { keyLen = 32; ivLen = 16; } // AES-256-CBC
+  if (cipher === 0x002f) ivLen = 16;
+  if (cipher === 0x0035) { keyLen = 32; ivLen = 16; }
   
   const totalNeeded = 2 * macLen + 2 * keyLen + 2 * ivLen;
-  const keyBlock = tlsPRF(masterSecret, 'key expansion', keySeed, totalNeeded);
+  const keyBlock = ssl3PRF(masterSecret, keySeed, totalNeeded);
   
   let off = 0;
   const clientWriteMAC = keyBlock.subarray(off, off + macLen); off += macLen;
@@ -489,18 +483,19 @@ function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
 }
 
 function encryptRecord(type, version, plaintext, writeKey, writeMAC, keys, cipher) {
-  // Compute MAC: HMAC-SHA1(mac_key, seq_num + type + version + length + data)
+  // SSLv3 MAC: hash(mac_secret + pad2 + hash(mac_secret + pad1 + seq_num + type + length + data))
   const seqBuf = Buffer.alloc(8);
   seqBuf.writeBigUInt64BE(keys.serverSeqNum);
   keys.serverSeqNum++;
   
-  const macInput = Buffer.concat([
-    seqBuf,
-    Buffer.from([type, version[0], version[1]]),
-    Buffer.from([(plaintext.length >> 8) & 0xFF, plaintext.length & 0xFF]),
-    plaintext,
-  ]);
-  const mac = crypto.createHmac('sha1', writeMAC).update(macInput).digest();
+  const pad1 = Buffer.alloc(40, 0x36);
+  const pad2 = Buffer.alloc(40, 0x5c);
+  const lenBuf = Buffer.from([(plaintext.length >> 8) & 0xFF, plaintext.length & 0xFF]);
+  
+  const macInner = crypto.createHash('sha1').update(Buffer.concat([
+    writeMAC, pad1, seqBuf, Buffer.from([type]), lenBuf, plaintext
+  ])).digest();
+  const mac = crypto.createHash('sha1').update(Buffer.concat([writeMAC, pad2, macInner])).digest();
   
   let encrypted;
   if (cipher === 0x0005 || cipher === 0x0004) {
