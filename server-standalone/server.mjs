@@ -1143,6 +1143,65 @@ function handleMainHttpRoute(path, bodyXml, session) {
 }
 
 function handlePreAuth(pkt) {
+  const variant = process.env.PREAUTH_VARIANT || 'full';
+  console.log(`[PreAuth] Variant: ${variant}`);
+  
+  if (variant === 'empty') {
+    // Test 1: Empty body - tests if header format is OK
+    console.log('[PreAuth] Sending empty response');
+    return buildReply(pkt, Buffer.alloc(0));
+  }
+  
+  if (variant === 'noreply') {
+    // Test 2: No reply at all - tests if game waits or disconnects on timeout
+    console.log('[PreAuth] NOT sending any response');
+    return null;
+  }
+  
+  if (variant === 'alt_header') {
+    // Test 3: Alternative header - msgType at offset 4 instead of 12
+    console.log('[PreAuth] Sending with alt header (msgType at offset 4)');
+    const enc = new TdfEncoder();
+    enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0005, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7802]);
+    enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();
+    enc.writeString('INST', 'fifa17-fut-server').writeString('NASP', 'cem_ea_id').writeString('PILD', '').writeString('PLAT', 'pc');
+    enc.writeStructStart('QOSS').writeStructStart('BWPS').writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'prod-sjc').writeStructEnd();
+    enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
+    enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
+    const body = enc.build();
+    // Build header manually with msgType at offset 4
+    const hdr = Buffer.alloc(16);
+    hdr.writeUInt32BE(body.length, 0);
+    hdr.writeUInt16BE(0x1000, 4);  // msgType at offset 4
+    hdr.writeUInt16BE(pkt.header.component, 6);
+    hdr.writeUInt16BE(pkt.header.command, 8);
+    hdr.writeUInt16BE(0, 10);
+    hdr.writeUInt32BE(pkt.header.msgId || 0, 12);  // msgId at offset 12
+    return Buffer.concat([hdr, body]);
+  }
+  
+  if (variant === '12byte') {
+    // Test 4: Classic 12-byte header (no 4-byte length prefix)
+    console.log('[PreAuth] Sending with 12-byte header (no frame prefix)');
+    const enc = new TdfEncoder();
+    enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0005, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7802]);
+    enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();
+    enc.writeString('INST', 'fifa17-fut-server').writeString('NASP', 'cem_ea_id').writeString('PILD', '').writeString('PLAT', 'pc');
+    enc.writeStructStart('QOSS').writeStructStart('BWPS').writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'prod-sjc').writeStructEnd();
+    enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
+    enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
+    const body = enc.build();
+    // Classic 12-byte Blaze header
+    const hdr = Buffer.alloc(12);
+    hdr.writeUInt16BE(body.length, 0);
+    hdr.writeUInt16BE(pkt.header.component, 2);
+    hdr.writeUInt16BE(pkt.header.command, 4);
+    hdr.writeUInt16BE(0, 6);
+    hdr.writeUInt32BE(0x10000000 | (pkt.header.msgId || 0), 8);
+    return Buffer.concat([hdr, body]);
+  }
+  
+  // Default: full response with current header format
   const enc = new TdfEncoder();
   enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0005, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7802]);
   enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();

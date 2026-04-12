@@ -1,8 +1,5 @@
-# Batch v27: Fix Fire2 frame format - msgType in upper 16 bits of last uint32
-# v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
-# Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
-# v19 confirmed: redirect works, game connects to main server on port 10041
-# But main server was misreading HTTP as raw Blaze binary. Now handles HTTP.
+# Batch v28: Multi-variant PreAuth test
+# Tests 5 variants: full (current), empty body, alt_header (msgType@4), 12byte header, noreply
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -26,7 +23,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v27: Fire2 frame format ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v28: Multi-variant PreAuth ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -47,37 +44,42 @@ for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 Start-Sleep 10; FEnter; Start-Sleep 2
 
-# Test: Fixed handshake flow
-Write-Host "[1] Main server HTTP Blaze" -ForegroundColor Yellow
-Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
-Start-Sleep 1
-$sj = Start-Job -ScriptBlock { param($r); node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; FQ; Start-Sleep 60
-$so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
-Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
-FEnter; Start-Sleep 2
+# Test variants - reuse same game session, just restart server with different env
+$variants = @("full", "empty", "alt_header", "12byte", "noreply")
+$results = "=== BATCH v28 ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===`n"
 
-$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$r1 = "UNKNOWN"
-if ($so1 -match "Main.*Session 2") { $r1 = "SECOND_CONNECTION" }
-elseif ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH_HANDLED" }
-elseif ($so1 -match "Main.*-> Login") { $r1 = "LOGIN_HANDLED" }
-elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
-elseif ($so1 -match "Main.*Sending response") { $r1 = "RESPONSE_SENT" }
-elseif ($so1 -match "Main.*ERROR") { $r1 = "ERROR_IN_HANDLER" }
-elseif ($so1 -match "Main.*Session.*connected") { $r1 = "MAIN_SERVER_CONNECTED" }
-elseif ($so1 -match "Sent encrypted HTTP response") { $r1 = "REDIRECT_SENT" }
-elseif ($so1 -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_COMPLETE" }
-elseif ($so1 -match "Alert.*level=") { $r1 = "ALERT" }
-elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
-elseif ($so1 -match "TIMEOUT") { $r1 = "TIMEOUT" }
-Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "SECOND|POSTAUTH|LOGIN"){"Green"}elseif($r1 -match "PREAUTH|RESPONSE|MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
+foreach ($v in $variants) {
+    Write-Host "[$v] Testing PreAuth variant..." -ForegroundColor Yellow
+    Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
+    Start-Sleep 1
+    $env:PREAUTH_VARIANT = $v
+    $sj = Start-Job -ScriptBlock { param($r,$var); $env:PREAUTH_VARIANT=$var; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot,$v
+    Start-Sleep 2; FQ; Start-Sleep 30
+    $so = (Receive-Job $sj 2>&1 | Out-String).Trim()
+    Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
+    FEnter; Start-Sleep 2
+    
+    $r1 = "UNKNOWN"
+    if ($so -match "Main.*Session 2") { $r1 = "SECOND_CONNECTION" }
+    elseif ($so -match "Main.*-> PostAuth") { $r1 = "POSTAUTH" }
+    elseif ($so -match "Main.*-> Login") { $r1 = "LOGIN" }
+    elseif ($so -match "Main.*comp=0x0009 cmd=0x0007.*comp=") { $r1 = "MULTI_PACKETS" }
+    elseif ($so -match "Main.*-> PreAuth") { $r1 = "PREAUTH_ONLY" }
+    elseif ($so -match "Main.*ERROR") { $r1 = "ERROR" }
+    elseif ($so -match "Main.*Session.*connected") { $r1 = "CONNECTED_NO_PREAUTH" }
+    elseif ($so -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_ONLY" }
+    elseif ($so -match "TIMEOUT") { $r1 = "TIMEOUT" }
+    
+    Write-Host "  [$v] -> $r1" -ForegroundColor $(if($r1 -match "SECOND|POST|LOGIN|MULTI"){"Green"}elseif($r1 -match "PREAUTH|CONNECTED"){"Yellow"}else{"Red"})
+    
+    # Get last 800 chars of server output for this variant
+    $tail = if($so.Length -gt 800){$so.Substring($so.Length-800)}else{$so}
+    $results += "[$v] $r1`nSERVER_TAIL: $tail`n---`n"
+}
 
-# Capture full server output (up to 3000 chars for detailed diagnostics)
-$ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v27 ($timestamp) ===`n[1] Fire2 frame | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results += "DLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v27: Fire2 frame format $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v28: multi-variant PreAuth test $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
