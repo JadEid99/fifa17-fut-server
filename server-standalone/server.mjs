@@ -358,7 +358,7 @@ bT9J4z1OJr6cTA==
             // Decrypt pre-master secret with our private key
             try {
               const preMasterSecret = crypto.privateDecrypt(
-                { key: keyPem, padding: crypto.constants.RSA_PKCS1_PADDING },
+                { key: keyPem, padding: crypto.constants.RSA_PKCS1_PADDING, oaepHash: undefined },
                 encPMS
               );
               console.log(`[SSL] Decrypted pre-master secret: ${preMasterSecret.length} bytes, version=0x${preMasterSecret.readUInt16BE(0).toString(16)}`);
