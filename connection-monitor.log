@@ -1,596 +1,661 @@
-﻿=== 17:00:35.999 ===
+﻿=== 17:08:42.551 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:36.553 ===
+=== 17:08:43.074 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:37.075 ===
+=== 17:08:43.597 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:37.598 ===
+=== 17:08:44.121 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:38.123 ===
+=== 17:08:44.644 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:38.648 ===
+=== 17:08:45.167 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:39.174 ===
+=== 17:08:45.691 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:39.697 ===
+=== 17:08:46.213 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:40.222 ===
+=== 17:08:46.738 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:40.745 ===
+=== 17:08:47.262 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:41.270 ===
+=== 17:08:47.789 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:41.793 ===
+=== 17:08:48.315 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:42.334 ===
+=== 17:08:48.840 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:42.859 ===
+=== 17:08:49.368 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:43.381 ===
+=== 17:08:49.896 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:43.905 ===
+=== 17:08:50.422 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:44.427 ===
+=== 17:08:50.948 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:44.950 ===
+=== 17:08:51.471 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:45.476 ===
+=== 17:08:51.995 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:46.003 ===
+=== 17:08:52.521 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:46.527 ===
+=== 17:08:53.046 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
-  TCP    127.0.0.1:63520        127.0.0.1:10041        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63603        127.0.0.1:10041        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:47.052 ===
+=== 17:08:53.572 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:47.576 ===
+=== 17:08:54.096 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:48.102 ===
+=== 17:08:54.623 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:48.627 ===
+=== 17:08:55.147 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:49.149 ===
+=== 17:08:55.670 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:49.675 ===
+=== 17:08:56.194 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:50.201 ===
+=== 17:08:56.717 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:50.726 ===
+=== 17:08:57.240 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:51.248 ===
+=== 17:08:57.765 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:51.770 ===
+=== 17:08:58.290 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:52.299 ===
+=== 17:08:58.814 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:52.822 ===
+=== 17:08:59.336 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:53.346 ===
+=== 17:08:59.862 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:53.869 ===
+=== 17:09:00.387 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:54.394 ===
+=== 17:09:00.912 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:54.919 ===
+=== 17:09:01.438 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:55.444 ===
+=== 17:09:01.961 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:55.968 ===
+=== 17:09:02.487 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:56.490 ===
+=== 17:09:03.011 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:57.013 ===
+=== 17:09:03.536 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:57.536 ===
+=== 17:09:04.061 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:58.063 ===
+=== 17:09:04.588 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:58.586 ===
+=== 17:09:05.117 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:59.111 ===
+=== 17:09:05.644 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:00:59.636 ===
+=== 17:09:06.168 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:00.159 ===
+=== 17:09:06.693 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:00.684 ===
+=== 17:09:07.220 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:01.208 ===
+=== 17:09:07.746 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:01.731 ===
+=== 17:09:08.273 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:02.255 ===
+=== 17:09:08.795 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:02.781 ===
+=== 17:09:09.317 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:03.306 ===
+=== 17:09:09.843 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:03.831 ===
+=== 17:09:10.367 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:04.357 ===
+=== 17:09:10.894 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:04.884 ===
+=== 17:09:11.419 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:05.406 ===
+=== 17:09:11.945 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:05.929 ===
+=== 17:09:12.471 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:06.467 ===
+=== 17:09:12.997 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
-=== 17:01:06.994 ===
+=== 17:09:13.522 ===
 
   TCP    127.0.0.1:4216         127.0.0.1:63511        ESTABLISHED     82832
   TCP    127.0.0.1:63511        127.0.0.1:4216         ESTABLISHED     82832
-  TCP    127.0.0.1:63519        127.0.0.1:42230        ESTABLISHED     82832
+  TCP    127.0.0.1:63602        127.0.0.1:42230        ESTABLISHED     82832
   UDP    0.0.0.0:51048          *:*                                    82832
 
 
 
 
-=== SERVER OUTPUT ===
-=== FIFA 17 FUT Private Server ===
-
-
-Waiting for FIFA 17...
-hosts: 127.0.0.1 winter15.gosredirector.ea.com
-
-node : node:events:502
-At line:1 char:68
-+ ... SECURE="1"; node --openssl-legacy-provider --security-revert=CVE-2023 ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (node:events:502:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use 0.0.0.0:42230
-    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
-    at listenInCluster (node:net:1965:12)
-    at doListen (node:net:2139:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
-Emitted 'error' event on Server instance at:
-    at emitErrorNT (node:net:1944:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
-  code: 'EADDRINUSE',
-  errno: -4091,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 42230
-}
-
-Node.js v20.19.5
-SECURITY WARNING: Reverting CVE-2023-46809: Marvin attack on PKCS#1 padding
+=== SERVER OUTPUT (last 5000 chars) ===
+iting_client_response, received 47 bytes (total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 f0 8e 25 82 ac
+  0010: 9e 5a 0a 9d ad 7c ee 89 c7 c3 b2 28 83 8d 82 16
+  0020: 6b e6 51 34 c1 45 67 88 02 7a e6 a5 75 d4 20
+[SSL] Record: type=0x14 ver=0x303 len=1
+[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
+[SSL] RC4 decryption initialized with clientWriteKey: 72ff69058535f7e8999b98c2b1a13221
+[SSL] Record: type=0x16 ver=0x303 len=36
+[SSL] Encrypted handshake record (client Finished): 36 bytes
+[SSL] Decrypted client Finished record: 36 bytes
+[SSL] Decrypted hex: 1400000cf4a69004ebf57aae1a4bd02a230aa5748f9aae1bc7528e5406062d14f97e0315
+[SSL] Client Finished plaintext (16 bytes): 1400000cf4a69004ebf57aae1a4bd02a
+[SSL] Client Finished MAC: 230aa5748f9aae1bc7528e5406062d14f97e0315
+[SSL] Client verify_data:   f4a69004ebf57aae1a4bd02a
+[SSL] Expected verify_data:  f4a69004ebf57aae1a4bd02a
+[SSL] Ô£ô Client Finished verify_data MATCHES!
+[SSL] Expected client MAC: 230aa5748f9aae1bc7528e5406062d14f97e0315
+[SSL] Actual client MAC:   230aa5748f9aae1bc7528e5406062d14f97e0315
+[SSL] Ô£ô Client Finished MAC MATCHES!
+[SSL] Sent server ChangeCipherSpec
+[SSL] Server Finished hash input: 6 messages, total 1050 bytes
+[SSL]   msg[0]: 123 bytes, starts=0x1
+[SSL]   msg[1]: 74 bytes, starts=0x2
+[SSL]   msg[2]: 699 bytes, starts=0xb
+[SSL]   msg[3]: 4 bytes, starts=0xe
+[SSL]   msg[4]: 134 bytes, starts=0x10
+[SSL]   msg[5]: 16 bytes, starts=0x14
+[SSL] Server verify_data: 2b25436fc653b17e339620b8
+[SSL] Sent encrypted server Finished
+[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
+[SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
+[SSL] Decrypted 219 bytes of application data
+[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
+[PreAuth] Variant: full
+[PreAuth] Request TDF:
+[PreAuth]   CDAT (struct) {
+[PreAuth]     IITO (int) = 0
+[PreAuth]     LANG (int) = 1701729619
+[PreAuth]     SVCN (str) = "fifa-2017-pc"
+[PreAuth]     TYPE (int) = 0
+[PreAuth]   }
+[PreAuth]   CINF (struct) {
+[PreAuth]     BSDK (str) = "15.1.1.3.0"
+[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
+[PreAuth]     CLNT (str) = "FIFA17"
+[PreAuth]     CPFT (int) = 4
+[PreAuth]     CSKU (str) = "FIFAPC"
+[PreAuth]     CVER (str) = "3175939"
+[PreAuth]     DSDK (str) = "15.1.2.1.0"
+[PreAuth]     ENV  (str) = "prod"
+[PreAuth]     LOC  (int) = 1701729619
+[PreAuth]     PTVR (str) = "1.1"
+[PreAuth]   }
+[PreAuth]   FCCR (struct) {
+[PreAuth]     CFID (str) = "BlazeSDK"
+[PreAuth]   }
+[PreAuth]   LADD (int) = 380807360
+[PreAuth] Response TDF self-decode:
+[PreAuth]   CIDS (intlist) = [1, 4, 7, 9, 25, 28, 30722]
+[PreAuth]   CONF (struct) {
+[PreAuth]     CONF (map) k=1 v=1 count=7
+[PreAuth]     $&-O (type=0x6e) ???
+[PreAuth]   }
+[PreAuth]   ;DED (type=0x6c) ???
+[Blaze-Enc] Sent encrypted reply (423 bytes)
+[Blaze-Enc]   0000: 00 00 01 97 00 00 00 09 00 07 00 00 10 00 00 00
+[Blaze-Enc]   0010: 8e 99 33 07 07 01 04 07 09 19 1c 82 e0 03 8e fb
+[Blaze-Enc]   0020: a6 03 8e fb a6 05 01 01 07 10 63 6f 6e 6e 49 64
+[Blaze-Enc]   0030: 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16
+[Blaze-Enc]   0040: 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69
+[Blaze-Enc]   0050: 6d 65 6f 75 74 00 04 36 30 73 00 0f 6e 75 63 6c
+[Blaze-Enc]   0060: 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70
+[Blaze-Enc]   0070: 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38
+[Blaze-Enc]   0080: 30 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00
+[Blaze-Enc]   0090: 16 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e
+[Blaze-Enc]   00a0: 31 3a 38 30 38 30 00 0b 70 69 6e 67 50 65 72 69
+[Blaze-Enc]   00b0: 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61
+[Blaze-Enc]   00c0: 64 73 65 74 55 70 64 61 74 65 52 61 74 65 00 05
+[Blaze-Enc]   00d0: 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63
+[Blaze-Enc]   00e0: 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00
+[Blaze-Enc]   00f0: 04 33 30 30 00 00 a6 ec f4 01 0c 66 69 66 61 31
+[Blaze-Enc]   0100: 37 2d 32 30 31 36 00 ba 1c f0 01 0a 63 65 6d 5f
+[Blaze-Enc]   0110: 65 61 5f 69 64 00 c2 9b 24 01 01 00 c2 c8 74 01
+[Blaze-Enc]   0120: 03 70 63 00 c6 fc f3 03 8b 7c 33 03 c3 38 40 01
+[Blaze-Enc]   0130: 0a 31 32 37 2e 30 2e 30 2e 31 00 c3 3c 00 00 9e
+[Blaze-Enc]   0140: 91 02 ce e8 40 01 09 70 72 6f 64 2d 73 6a 63 00
+[Blaze-Enc]   0150: 00 b2 ec 00 00 0a b3 4c 33 03 00 cf 6a 64 00 85
+[Blaze-Enc]   0160: a0 88 d4 08 00 cb 3c a3 01 0c 66 69 66 61 31 37
+[Blaze-Enc]   0170: 2d 32 30 31 36 00 cf 69 72 01 2c 42 6c 61 7a 65
+[Blaze-Enc]   0180: 20 33 2e 31 35 2e 30 38 2e 30 20 28 43 4c 23 20
+[Blaze-Enc]   0190: 31 30 36 30 30 38 30 20 2f 20 4a 75 6c 20 31 31
+[Blaze-Enc]   01a0: 20 32 30 31 36 29 00
+[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 27 6f 2a 56 14 d8 70 e6 eb b1 b5 81 84 17 3e 96 86 b3 cb 65 42 f0
+[SSL] Alert decrypted: 01 00
+[SSL] Alert MAC match: true
+[SSL] Alert: level=1 desc=0
+[Main] S1 disconnected
 
