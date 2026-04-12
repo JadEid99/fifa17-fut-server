@@ -74,24 +74,31 @@ class TdfEncoder {
 const HEADER_SIZE = 16;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
-  // Blaze v3 header: 4-byte length, 2-byte component, 2-byte command, 2-byte error, 2-byte msgType, 4-byte msgId (or 2+2 padding)
+  // Blaze v3 header (FIFA 17): 
+  // [0-3] uint32 payload length
+  // [4-5] uint16 component (high bits) / QoS type
+  // [6-7] uint16 component 
+  // [8-9] uint16 command
+  // [10-11] uint16 error
+  // [12-15] uint32 msgType(upper) + msgId(lower)
   return { 
     length: buf.readUInt32BE(0), 
-    component: buf.readUInt16BE(4), 
-    command: buf.readUInt16BE(6), 
-    error: buf.readUInt16BE(8), 
-    msgType: buf.readUInt16BE(10), 
-    msgId: buf.readUInt32BE(12)
+    component: buf.readUInt16BE(6), 
+    command: buf.readUInt16BE(8), 
+    error: buf.readUInt16BE(10), 
+    msgType: buf.readUInt16BE(12), 
+    msgId: buf.readUInt16BE(14)
   };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
   buf.writeUInt32BE(h.length, 0);
-  buf.writeUInt16BE(h.component, 4);
-  buf.writeUInt16BE(h.command, 6);
-  buf.writeUInt16BE(h.error, 8);
-  buf.writeUInt16BE(h.msgType || 0, 10);
-  buf.writeUInt32BE(h.msgId || 0, 12);
+  buf.writeUInt16BE(0, 4); // padding/QoS
+  buf.writeUInt16BE(h.component, 6);
+  buf.writeUInt16BE(h.command, 8);
+  buf.writeUInt16BE(h.error, 10);
+  buf.writeUInt16BE(h.msgType || 0, 12);
+  buf.writeUInt16BE(h.msgId || 0, 14);
   return buf;
 }
 function readPacket(buf) {
