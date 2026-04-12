@@ -50,9 +50,15 @@ class TdfEncoder {
   encodeVarInt(value) {
     let v = BigInt(value);
     const bytes = [];
+    // First byte: 6 data bits, bit 6 = continuation, bit 7 = sign
     if (v < 0n) { v = -v; bytes.push(Number(v & 0x3Fn) | 0x80); v >>= 6n; }
     else { bytes.push(Number(v & 0x3Fn)); v >>= 6n; }
-    while (v > 0n) { bytes[bytes.length - 1] |= 0x40; bytes.push(Number(v & 0x7Fn)); v >>= 7n; }
+    // Subsequent bytes: 7 data bits, bit 7 = continuation
+    while (v > 0n) { 
+      bytes[bytes.length - 1] |= (bytes.length === 1 ? 0x40 : 0x80); // continuation on previous byte
+      bytes.push(Number(v & 0x7Fn)); 
+      v >>= 7n; 
+    }
     return Buffer.from(bytes);
   }
 
