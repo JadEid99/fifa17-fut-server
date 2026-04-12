@@ -1402,8 +1402,8 @@ function handlePreAuth(pkt) {
   enc.writeMap('CONF', {
     'connIdleTimeout': '90s',
     'defaultRequestTimeout': '60s',
-    'nucleusConnect': 'https://accounts.ea.com',
-    'nucleusProxy': 'https://gateway.ea.com',
+    'nucleusConnect': 'http://127.0.0.1:8080',
+    'nucleusProxy': 'http://127.0.0.1:8080',
     'pingPeriod': '15s',
     'voipHeadsetUpdateRate': '1000',
     'xlspConnectionIdleTimeout': '300'
