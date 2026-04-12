@@ -1409,7 +1409,7 @@ function handlePreAuth(pkt) {
     'xlspConnectionIdleTimeout': '300'
   });
   enc.writeStructEnd();
-  enc.writeString('INST', 'fifa17-2016');
+  enc.writeString('INST', 'fifa-2017-pc');
   enc.writeString('NASP', 'cem_ea_id');
   enc.writeString('PILD', '');
   enc.writeString('PLAT', 'pc');
