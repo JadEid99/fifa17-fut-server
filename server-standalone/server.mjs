@@ -344,16 +344,13 @@ bT9J4z1OJr6cTA==
           
           if (hsType === 0x10) {
             // ClientKeyExchange - contains encrypted pre-master secret
-            const pmsLen = (recBody[1] << 16) | (recBody[2] << 8) | recBody[3];
-            // In TLS, there's a 2-byte length prefix for the encrypted PMS
-            let encPMS;
-            if (recBody.length > 4 + 2) {
-              const explicitLen = (recBody[4] << 8) | recBody[5];
-              encPMS = recBody.subarray(6, 6 + explicitLen);
-            } else {
-              encPMS = recBody.subarray(4);
-            }
-            console.log(`[SSL] Encrypted pre-master secret: ${encPMS.length} bytes`);
+            // Handshake header: type(1) + length(3) = 4 bytes
+            // In SSLv3: the encrypted PMS follows directly (no explicit length prefix)
+            // In TLS 1.0+: there's a 2-byte length prefix
+            // We use SSLv3 format since that's what ProtoSSL speaks
+            const pmsBodyLen = (recBody[1] << 16) | (recBody[2] << 8) | recBody[3];
+            let encPMS = recBody.subarray(4, 4 + pmsBodyLen);
+            console.log(`[SSL] Encrypted pre-master secret: ${encPMS.length} bytes (body len: ${pmsBodyLen})`);
 
             // Decrypt pre-master secret with our private key
             try {
