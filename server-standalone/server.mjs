@@ -441,11 +441,34 @@ bT9J4z1OJr6cTA==
   console.log(`[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...`);
 }
 
-// SSLv3 PRF - different from TLS PRF!
-// SSLv3 uses: MD5(secret + SHA1('A' + secret + random)) for key material
+// TLS PRF (used for key derivation and Finished in TLS 1.0+)
+function tlsPRF(secret, label, seed, length) {
+  const labelBuf = Buffer.from(label, 'ascii');
+  const fullSeed = Buffer.concat([labelBuf, seed]);
+  const half = Math.ceil(secret.length / 2);
+  const s1 = secret.subarray(0, half);
+  const s2 = secret.subarray(secret.length - half);
+  const md5Result = pHash('md5', s1, fullSeed, length);
+  const sha1Result = pHash('sha1', s2, fullSeed, length);
+  const result = Buffer.alloc(length);
+  for (let i = 0; i < length; i++) result[i] = md5Result[i] ^ sha1Result[i];
+  return result;
+}
+
+function pHash(algo, secret, seed, length) {
+  const output = [];
+  let a = seed;
+  while (Buffer.concat(output).length < length) {
+    a = crypto.createHmac(algo, secret).update(a).digest();
+    output.push(crypto.createHmac(algo, secret).update(Buffer.concat([a, seed])).digest());
+  }
+  return Buffer.concat(output).subarray(0, length);
+}
+
+// SSLv3 PRF (used as fallback)
 function ssl3PRF(secret, seed, length) {
   const output = [];
-  let label = 0x41; // 'A'
+  let label = 0x41;
   while (Buffer.concat(output).length < length) {
     const labelStr = Buffer.alloc(label - 0x40, label);
     const sha1 = crypto.createHash('sha1').update(Buffer.concat([labelStr, secret, seed])).digest();
@@ -458,12 +481,10 @@ function ssl3PRF(secret, seed, length) {
 
 function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   const seed = Buffer.concat([clientRandom, serverRandom]);
-  
-  // SSLv3 master secret derivation
+  // Use SSLv3 PRF for master secret and key expansion
   const masterSecret = ssl3PRF(preMasterSecret, seed, 48);
   
   const keySeed = Buffer.concat([serverRandom, clientRandom]);
-  // For RC4-128-SHA: MAC=20, Key=16, IV=0
   let macLen = 20, keyLen = 16, ivLen = 0;
   if (cipher === 0x002f) ivLen = 16;
   if (cipher === 0x0035) { keyLen = 32; ivLen = 16; }
