@@ -197,17 +197,26 @@ static void PatchOriginCheck() {
     }
 }
 
-// Patch 3: Auth token bypass - skip Origin auth and set authenticated flag directly
-// In FUN_146f199c0, after CALL OriginRequestAuthCodeSync:
-//   146f19a16: 85 c0              TEST EAX,EAX
-//   146f19a18: 0f 85 8d 00 00 00  JNZ error_path
-//   146f19a1e: 4c 39 74 24 ...    CMP [RSP+...], R14
-// Replace with:
-//   c6 86 e8 00 00 00 01          MOV byte ptr [RSI+0xe8], 1  (set auth flag)
-//   eb 5d                          JMP continue_path
+// Patch 3: Auth token bypass - skip Origin auth entirely, set authenticated flag
+// At 146f19a11: CALL OriginRequestAuthCodeSync (5 bytes)
+// At 146f19a16: TEST EAX,EAX (2 bytes)  
+// At 146f19a18: JNZ error (6 bytes)
+// Total: 13 bytes from 146f19a11 to 146f19a1e
+// Target: 146f19a75 (MOV byte [RSI+0xe8], 1)
+// We replace all 13 bytes with: MOV byte [RSI+0xe8],1 (7 bytes) + JMP +0x5C (2 bytes) + NOPs
+// JMP offset: from 146f19a1c (after JMP instruction) to 146f19a7c = 0x60
+// Wait: from 146f19a11+9 = 146f19a1a to 146f19a7c = 0x62. Let me recalculate.
+// Patch starts at 146f19a11 (the CALL)
+// MOV byte [RSI+0xe8],1 = c6 86 e8 00 00 00 01 (7 bytes, ends at 146f19a18)
+// JMP rel8 to 146f19a7c: from 146f19a1a (after JMP) to 146f19a7c = 0x62
+// But 0x62 > 0x7F so we need JMP rel8... 0x62 fits in signed byte (98 decimal, < 127)
+// Actually 0x62 = 98 which fits. eb 62.
+// Wait: 146f19a18 + 2 = 146f19a1a. Target 146f19a7c. Offset = 0x7c - 0x1a = 0x62. Yes.
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
     
+    // Pattern: the CALL to OriginRequestAuthCodeSync followed by TEST EAX,EAX / JNZ
+    // We search for TEST EAX,EAX / JNZ with specific displacement
     BYTE pattern[] = { 0x85, 0xC0, 0x0F, 0x85, 0x8D, 0x00, 0x00, 0x00, 0x4C, 0x39, 0x74, 0x24 };
     int patternLen = sizeof(pattern);
     
@@ -226,31 +235,41 @@ static void PatchAuthBypass() {
                 for (SIZE_T j = 0; j + patternLen < size; j++) {
                     if (memcmp(base + j, pattern, patternLen) != 0) continue;
                     
-                    BYTE* patchAddr = base + j;
-                    Log("Found auth check at %p", patchAddr);
-                    Log("  Before: %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                        patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
-                        patchAddr[4], patchAddr[5], patchAddr[6], patchAddr[7], patchAddr[8]);
+                    // base+j = TEST EAX,EAX (146f19a16)
+                    // base+j-5 = CALL instruction (146f19a11)
+                    // We patch from CALL (j-5) through JNZ end (j+8), total 13 bytes
+                    BYTE* patchStart = base + j - 5; // CALL address
+                    
+                    Log("Found auth call+check at %p", patchStart);
                     
                     DWORD oldProtect;
-                    if (VirtualProtect(patchAddr, 9, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        // MOV byte ptr [RSI+0xe8], 1
-                        patchAddr[0] = 0xC6;
-                        patchAddr[1] = 0x86;
-                        patchAddr[2] = 0xE8;
-                        patchAddr[3] = 0x00;
-                        patchAddr[4] = 0x00;
-                        patchAddr[5] = 0x00;
-                        patchAddr[6] = 0x01;
-                        // JMP +0x5D (skip to continue path)
-                        patchAddr[7] = 0xEB;
-                        patchAddr[8] = 0x5D;
-                        VirtualProtect(patchAddr, 9, oldProtect, &oldProtect);
+                    if (VirtualProtect(patchStart, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        // Bytes 0-6: MOV byte ptr [RSI+0xe8], 1
+                        patchStart[0] = 0xC6;
+                        patchStart[1] = 0x86;
+                        patchStart[2] = 0xE8;
+                        patchStart[3] = 0x00;
+                        patchStart[4] = 0x00;
+                        patchStart[5] = 0x00;
+                        patchStart[6] = 0x01;
+                        // Bytes 7-8: JMP to 146f19a7c (the JMP LAB_146f19ad0 after success)
+                        // From patchStart+9 to target: target is at patchStart + 5 + 0x62 + 2 = ...
+                        // patchStart = j-5 relative to base
+                        // JMP is at patchStart+7, instruction ends at patchStart+9
+                        // Target is at base+j + 0x66 (146f19a7c - 146f19a16 = 0x66, plus j)
+                        // Offset = (base+j+0x66) - (patchStart+9) = (base+j+0x66) - (base+j-5+9) = 0x66+5-9 = 0x62
+                        patchStart[7] = 0xEB;
+                        patchStart[8] = 0x62;
+                        // Bytes 9-12: NOPs (padding)
+                        patchStart[9] = 0x90;
+                        patchStart[10] = 0x90;
+                        patchStart[11] = 0x90;
+                        patchStart[12] = 0x90;
                         
-                        Log("  After:  %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                            patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
-                            patchAddr[4], patchAddr[5], patchAddr[6], patchAddr[7], patchAddr[8]);
-                        Log("PATCHED: Auth check -> set authenticated + skip");
+                        VirtualProtect(patchStart, 13, oldProtect, &oldProtect);
+                        
+                        Log("  Patched: C6 86 E8 00 00 00 01 EB 62 90 90 90 90");
+                        Log("PATCHED: Auth -> set [RSI+0xe8]=1 + JMP to continue");
                         g_authBypassDone = 1;
                         g_patched++;
                     }
