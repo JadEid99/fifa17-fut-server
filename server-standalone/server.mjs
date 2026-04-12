@@ -655,91 +655,38 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
         try {
           const plaintext = decryptRecord(0x17, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
           console.log(`[SSL] Decrypted ${plaintext.length} bytes of application data`);
-          console.log(`[SSL] App data hex (first 64): ${plaintext.subarray(0, 64).toString('hex')}`);
           
-          // Feed into Blaze packet parser
+          // Feed into application buffer
           blazeBuf = Buffer.concat([blazeBuf, plaintext]);
-          console.log(`[SSL] Blaze buffer: ${blazeBuf.length} bytes`);
           
-          // Try to parse Blaze packets
-          let result = readPacket(blazeBuf);
-          if (!result) {
-            console.log(`[SSL] No complete Blaze packet yet (need more data or parse issue)`);
-            if (blazeBuf.length >= 12) {
-              const hdr = decodeHeader(blazeBuf);
-              if (hdr) {
-                console.log(`[SSL] Partial Blaze header: comp=0x${hdr.component.toString(16)} cmd=0x${hdr.command.toString(16)} len=${hdr.length} (have ${blazeBuf.length - 12} of ${hdr.length} body bytes)`);
+          // Check if this is HTTP or raw Blaze
+          const firstLine = blazeBuf.toString('ascii', 0, Math.min(blazeBuf.length, 20));
+          
+          if (firstLine.startsWith('POST ') || firstLine.startsWith('GET ') || firstLine.startsWith('HTTP')) {
+            // HTTP-wrapped Blaze request
+            handleHttpBlazeRequest(blazeBuf, socket, keys, cipher);
+            blazeBuf = Buffer.alloc(0); // consumed
+          } else {
+            // Raw Blaze binary
+            let result = readPacket(blazeBuf);
+            while (result) {
+              blazeBuf = result.remaining;
+              const pkt = result.packet;
+              console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length}`);
+              const resp = handleBlazePacket(pkt);
+              if (resp) {
+                const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+                socket.write(encReply);
+                console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
               }
+              result = readPacket(blazeBuf);
             }
-          }
-          while (result) {
-            blazeBuf = result.remaining;
-            const pkt = result.packet;
-            console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length} msgType=0x${pkt.header.msgType.toString(16)} msgId=${pkt.header.msgId}`);
-
-            // Handle the packet based on component
-            let resp = null;
-            if (pkt.header.component === 0x0005 && pkt.header.command === 0x0001) {
-              // GetServerInstance (redirector)
-              console.log(`[Blaze-Enc] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
-              const enc = new TdfEncoder();
-              enc.writeUnion('ADDR', 0x00, (e) => {
-                e.writeStructStart('VALU');
-                e.writeString('HOST', TARGET_HOST);
-                e.writeInteger('IP  ', ipToInt(TARGET_HOST));
-                e.writeInteger('PORT', MAIN_BLAZE_PORT);
-                e.writeStructEnd();
-              });
-              enc.writeInteger('SECU', 0);
-              enc.writeInteger('XDNS', 0);
-              resp = buildReply(pkt, enc.build());
-            } else if (pkt.header.component === 0x0009) {
-              // Util component
-              if (pkt.header.command === 0x0007) {
-                console.log('[Blaze-Enc] PreAuth request');
-                resp = handlePreAuth(pkt);
-              } else if (pkt.header.command === 0x0008) {
-                console.log('[Blaze-Enc] PostAuth request');
-                const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: false };
-                resp = handlePostAuth(session, pkt);
-              } else if (pkt.header.command === 0x0002) {
-                resp = handlePing(pkt);
-              } else if (pkt.header.command === 0x0003) {
-                resp = handleGetTelemetry(pkt);
-              } else {
-                console.log(`[Blaze-Enc] Util cmd=0x${pkt.header.command.toString(16)}`);
-                resp = buildReply(pkt, Buffer.alloc(0));
-              }
-            } else if (pkt.header.component === 0x0001) {
-              // Auth component
-              const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: true };
-              if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(pkt.header.command)) {
-                console.log('[Blaze-Enc] Login request');
-                resp = handleLogin(session, pkt);
-              } else if (pkt.header.command === 0x0030) {
-                resp = handleListPersona(session, pkt);
-              } else {
-                console.log(`[Blaze-Enc] Auth cmd=0x${pkt.header.command.toString(16)}`);
-                resp = buildReply(pkt, Buffer.alloc(0));
-              }
-            } else {
-              console.log(`[Blaze-Enc] Unhandled comp=0x${pkt.header.component.toString(16)} cmd=0x${pkt.header.command.toString(16)}`);
-              resp = buildReply(pkt, Buffer.alloc(0));
-            }
-
-            if (resp) {
-              const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
-              socket.write(encReply);
-              console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes plaintext)`);
-            }
-            result = readPacket(blazeBuf);
           }
         } catch (e) {
           console.log(`[SSL] Decryption error: ${e.message}`);
           console.log(`[SSL] Stack: ${e.stack}`);
         }
       } else if (recType === 0x15) {
-        // Try to decrypt the alert since we're post-CCS
         try {
           const decrypted = decryptRecord(0x15, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
           console.log(`[SSL] Alert (decrypted): level=${decrypted[0]} desc=${decrypted[1]}`);
@@ -757,11 +704,112 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
     processPending();
   });
 
-  // Process any data already in the buffer (leftover from handshake phase)
   if (pendingBuf.length > 0) {
     console.log(`[SSL] Processing ${pendingBuf.length} bytes of leftover data from handshake`);
     processPending();
   }
+}
+
+// Handle HTTP-wrapped Blaze requests (game sends POST /redirector/getServerInstance HTTP/1.1)
+function handleHttpBlazeRequest(data, socket, keys, cipher) {
+  const text = data.toString('ascii');
+  console.log(`[HTTP-Blaze] Request:\n${text.substring(0, 500)}`);
+  
+  // Parse the HTTP request
+  const headerEnd = text.indexOf('\r\n\r\n');
+  if (headerEnd === -1) {
+    console.log('[HTTP-Blaze] Incomplete HTTP request (no header end)');
+    return;
+  }
+  
+  const headerText = text.substring(0, headerEnd);
+  const body = data.subarray(headerEnd + 4);
+  const firstLine = headerText.split('\r\n')[0];
+  const [method, path] = firstLine.split(' ');
+  
+  console.log(`[HTTP-Blaze] ${method} ${path} (body: ${body.length} bytes)`);
+  
+  let responseBody;
+  let contentType = 'application/xml';
+  
+  if (path === '/redirector/getServerInstance') {
+    // Respond with server address in XML format (EA's Blaze HTTP uses XML)
+    console.log(`[HTTP-Blaze] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
+    responseBody = Buffer.from(
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<serverinstanceinfo>\n' +
+      `  <address member="0">\n` +
+      `    <valu>\n` +
+      `      <hostname>${TARGET_HOST}</hostname>\n` +
+      `      <ip>${ipToInt(TARGET_HOST)}</ip>\n` +
+      `      <port>${MAIN_BLAZE_PORT}</port>\n` +
+      `    </valu>\n` +
+      `  </address>\n` +
+      `  <secure>0</secure>\n` +
+      `  <triallogin>0</triallogin>\n` +
+      `  <defaultdnsaddress>0</defaultdnsaddress>\n` +
+      '</serverinstanceinfo>\n'
+    );
+  } else {
+    console.log(`[HTTP-Blaze] Unknown path: ${path}`);
+    responseBody = Buffer.from('<?xml version="1.0" encoding="UTF-8"?>\n<response></response>\n');
+  }
+  
+  const httpResponse = Buffer.from(
+    `HTTP/1.1 200 OK\r\n` +
+    `Content-Type: ${contentType}\r\n` +
+    `Content-Length: ${responseBody.length}\r\n` +
+    `Connection: keep-alive\r\n` +
+    `\r\n`
+  );
+  
+  const fullResponse = Buffer.concat([httpResponse, responseBody]);
+  console.log(`[HTTP-Blaze] Response (${fullResponse.length} bytes):\n${fullResponse.toString('ascii').substring(0, 300)}`);
+  
+  // Encrypt and send
+  const encrypted = encryptRecord(0x17, [0x03, 0x03], fullResponse, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+  socket.write(encrypted);
+  console.log(`[HTTP-Blaze] Sent encrypted HTTP response`);
+}
+
+// Generic Blaze packet handler for both redirector and main server
+function handleBlazePacket(pkt) {
+  const { component: comp, command: cmd } = pkt.header;
+  const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: true };
+  
+  if (comp === 0x0005 && cmd === 0x0001) {
+    console.log(`[Blaze] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
+    const enc = new TdfEncoder();
+    enc.writeUnion('ADDR', 0x00, (e) => {
+      e.writeStructStart('VALU');
+      e.writeString('HOST', TARGET_HOST);
+      e.writeInteger('IP  ', ipToInt(TARGET_HOST));
+      e.writeInteger('PORT', MAIN_BLAZE_PORT);
+      e.writeStructEnd();
+    });
+    enc.writeInteger('SECU', 0);
+    enc.writeInteger('XDNS', 0);
+    return buildReply(pkt, enc.build());
+  } else if (comp === 0x0009) {
+    if (cmd === 0x0007) return handlePreAuth(pkt);
+    if (cmd === 0x0008) return handlePostAuth(session, pkt);
+    if (cmd === 0x0002) return handlePing(pkt);
+    if (cmd === 0x0003) return handleGetTelemetry(pkt);
+    if (cmd === 0x0001) return buildReply(pkt, new TdfEncoder().build());
+    if (cmd === 0x000B) return buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
+    return buildReply(pkt, Buffer.alloc(0));
+  } else if (comp === 0x0001) {
+    if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) return handleLogin(session, pkt);
+    if (cmd === 0x001D) return buildReply(pkt, new TdfEncoder().build());
+    if (cmd === 0x0024) return buildReply(pkt, new TdfEncoder().writeString('AUTH', 'tok_1').build());
+    if (cmd === 0x0030) return handleListPersona(session, pkt);
+    if (cmd === 0x002A) return buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
+    return buildReply(pkt, Buffer.alloc(0));
+  } else if (comp === 0x7802) {
+    return buildReply(pkt, Buffer.alloc(0));
+  }
+  console.log(`[Blaze] Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`);
+  return buildReply(pkt, Buffer.alloc(0));
 }
 
 function setupRedirectorHandler(socket) {
