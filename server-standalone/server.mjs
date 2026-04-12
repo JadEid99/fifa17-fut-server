@@ -64,6 +64,22 @@ class TdfEncoder {
   writeUnion(tag, type, cb) { this.writeTagAndType(tag, 0x06); this.buffers.push(Buffer.from([type])); if (type !== 0x7F) cb(this); return this; }
   writeIntList(tag, vals) { this.writeTagAndType(tag, 0x07); this.buffers.push(this.encodeVarInt(vals.length)); for (const v of vals) this.buffers.push(this.encodeVarInt(v)); return this; }
   writeList(tag, itemType, count, cb) { this.writeTagAndType(tag, 0x04); this.buffers.push(Buffer.from([itemType])); this.buffers.push(this.encodeVarInt(count)); for (let i = 0; i < count; i++) { cb(this, i); if (itemType === 0x03) this.buffers.push(Buffer.from([0x00])); } return this; }
+  writeMap(tag, map) {
+    // TDF Map: type 0x05, keyType(1), valueType(1), count(varint), then key-value pairs
+    this.writeTagAndType(tag, 0x05);
+    const entries = Object.entries(map);
+    this.buffers.push(Buffer.from([0x01, 0x01])); // keyType=string, valueType=string
+    this.buffers.push(this.encodeVarInt(entries.length));
+    for (const [k, v] of entries) {
+      const kBuf = Buffer.from(k + '\0', 'utf-8');
+      this.buffers.push(this.encodeVarInt(kBuf.length));
+      this.buffers.push(kBuf);
+      const vBuf = Buffer.from(v + '\0', 'utf-8');
+      this.buffers.push(this.encodeVarInt(vBuf.length));
+      this.buffers.push(vBuf);
+    }
+    return this;
+  }
   build() { return Buffer.concat(this.buffers); }
 }
 
@@ -1209,7 +1225,11 @@ function handlePreAuth(pkt) {
   enc.writeIntList('CIDS', [1, 4, 5, 7, 9, 15, 25, 28, 30722]);
   enc.writeString('CNGN', '');
   enc.writeStructStart('CONF');
-  enc.writeString('CONF', '{"pingPeriod":"15s","voipHeadsetUpdateRate":"1000","xlspConnectionIdleTimeout":"300"}');
+  enc.writeMap('CONF', {
+    'pingPeriod': '15s',
+    'voipHeadsetUpdateRate': '1000',
+    'xlspConnectionIdleTimeout': '300'
+  });
   enc.writeStructEnd();
   enc.writeString('INST', 'fifa17-2016');
   enc.writeInteger('MINR', 0);
