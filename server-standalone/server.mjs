@@ -407,12 +407,9 @@ bT9J4z1OJr6cTA==
         const pad1_sha = Buffer.alloc(40, 0x36);
         const pad2_sha = Buffer.alloc(40, 0x5c);
         
-        // Try TLS 1.0 Finished: PRF(master, "server finished", MD5(msgs) + SHA1(msgs))[0..12]
-        const verifyData = tlsPRF(keys.masterSecret, 'server finished',
-          Buffer.concat([
-            crypto.createHash('md5').update(allHSBuf).digest(),
-            crypto.createHash('sha1').update(allHSBuf).digest()
-          ]), 12);
+        // TLS 1.2 Finished: PRF_SHA256(master, "server finished", SHA256(msgs))[0..12]
+        const verifyData = tls12PRF(keys.masterSecret, 'server finished',
+          crypto.createHash('sha256').update(allHSBuf).digest(), 12);
         
         const finishedMsg = wrapHandshake(0x14, verifyData);
         
@@ -443,6 +440,13 @@ bT9J4z1OJr6cTA==
   console.log(`[SSL] Sending ServerHello (${serverHelloRecord.length}b) + Certificate (${certRecord.length}b) + ServerHelloDone (${helloDoneRecord.length}b)`);
   socket.write(Buffer.concat([serverHelloRecord, certRecord, helloDoneRecord]));
   console.log(`[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...`);
+}
+
+// TLS 1.2 PRF (SHA-256 based, single hash)
+function tls12PRF(secret, label, seed, length) {
+  const labelBuf = Buffer.from(label, 'ascii');
+  const fullSeed = Buffer.concat([labelBuf, seed]);
+  return pHash('sha256', secret, fullSeed, length);
 }
 
 // TLS PRF (used for key derivation and Finished in TLS 1.0+)
@@ -485,8 +489,8 @@ function ssl3PRF(secret, seed, length) {
 
 function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   const seed = Buffer.concat([clientRandom, serverRandom]);
-  // Try TLS 1.0 PRF (the game says version 0x0303 in ClientHello)
-  const masterSecret = tlsPRF(preMasterSecret, 'master secret', seed, 48);
+  // TLS 1.2 PRF uses SHA-256 only (not MD5+SHA1 split)
+  const masterSecret = tls12PRF(preMasterSecret, 'master secret', seed, 48);
   
   const keySeed = Buffer.concat([serverRandom, clientRandom]);
   let macLen = 20, keyLen = 16, ivLen = 0;
@@ -494,7 +498,7 @@ function deriveKeys(preMasterSecret, clientRandom, serverRandom, cipher) {
   if (cipher === 0x0035) { keyLen = 32; ivLen = 16; }
   
   const totalNeeded = 2 * macLen + 2 * keyLen + 2 * ivLen;
-  const keyBlock = tlsPRF(masterSecret, 'key expansion', keySeed, totalNeeded);
+  const keyBlock = tls12PRF(masterSecret, 'key expansion', keySeed, totalNeeded);
   
   let off = 0;
   const clientWriteMAC = keyBlock.subarray(off, off + macLen); off += macLen;
