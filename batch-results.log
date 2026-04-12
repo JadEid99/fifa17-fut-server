@@ -1,21 +1,78 @@
-﻿=== BATCH v16 (2026-04-12 11:04:10) ===
-[1] SSLv3 crypto | ALERT_AFTER_FINISHED
-SERVER: es, version=0x303
-[SSL] Master secret derived, keys ready
-[SSL] Sent ChangeCipherSpec
-[SSL] Finished hash input: 5 messages, total 1022 bytes
-[SSL]   msg[0]: 111 bytes, type=0x1
-[SSL]   msg[1]: 74 bytes, type=0x2
-[SSL]   msg[2]: 699 bytes, type=0xb
-[SSL]   msg[3]: 4 bytes, type=0xe
-[SSL]   msg[4]: 134 bytes, type=0x10
-[SSL] Master secret: 612a33d2b6c3e483f69d63ad2ed8740e...
-[SSL] Sent encrypted Finished
-[SSL] Alert received: level=121 desc=242 (unknown)
-[SSL] Alert raw: 79 f2 e5 86 cc a7 93 96 bc 1a a5 f7 88 fe 99 39 81 b4 40 c5 f1 d5
-[Redirector-Raw] Disconnected: 127.0.0.1:59606
-DLL: [11:03:02.768] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[11:03:02.768] PID: 90228
-[11:03:30.726] SET bAllowAnyCert at 0000000027DC1B64 (struct=0000000027DC17E0, state=0x3, old=0x00)
+﻿=== BATCH v17 (2026-04-12 11:27:21) ===
+[1] Fixed handshake | HANDSHAKE_COMPLETE
+SERVER:
+ SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69db655bf7208f51...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
+  0000: 16 03 03 00 86 10 00 00 82 00 80 24 25 9a b1 61
+  0010: e6 cc b6 5b 3c 53 d6 db 6c 26 fd 8a 73 2e 8e a8
+  0020: 93 4a 90 26 31 30 00 54 04 91 e9 85 25 74 0a 0d
+  0030: 2f d3 0c a2 31 3a be da 3b bb d3 0f 6b 49 53 d6
+  0040: 74 84 9c f2 a4 4b a2 ff 07 7e 49 07 ef a8 52 f2
+  0050: 4d ff f9 f8 70 ab ef 54 f7 19 c8 a6 9d 5f 62 3f
+  0060: b9 2d 9e 95 02 04 ab e9 12 4c 80 90 98 1e da b0
+  0070: ac 49 b8 86 0c 19 4e aa e9 5f d9 c1 78 c1 e0 30
+  0080: c8 c1 aa dd d4 36 c3 02 a8 a9 e0
+[SSL] Record: type=0x16 ver=0x303 len=134
+[SSL] Handshake type: 0x10 (ClientKeyExchange)
+[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
+[SSL] Decrypted PMS: 48 bytes, version=0x303
+[SSL] Master secret derived: 63035452846efd6396227a220d8a1437...
+[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
+[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 5b a1 2f 73 4c
+  0010: 89 5d 55 fb 97 fa 50 c6 21 18 05 c7 8f 50 b0 c6
+  0020: ab ea fe f4 5c 94 1c 6f 7d 26 6e 9f cd ca c6
+[SSL] Record: type=0x14 ver=0x303 len=1
+[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
+[SSL] RC4 decryption initialized with clientWriteKey: c306d30f5dfd56715430fb98d75c8d86
+[SSL] Record: type=0x16 ver=0x303 len=36
+[SSL] Encrypted handshake record (client Finished): 36 bytes
+[SSL] Decrypted client Finished record: 36 bytes
+[SSL] Decrypted hex: 1400000c8ca46784317b307cbec4df4e02c0d952fd02d3b92c7e70780052bd1e10e287f3
+[SSL] Client Finished plaintext (16 bytes): 1400000c8ca46784317b307cbec4df4e
+[SSL] Client Finished MAC: 02c0d952fd02d3b92c7e70780052bd1e10e287f3
+[SSL] Client verify_data:   8ca46784317b307cbec4df4e
+[SSL] Expected verify_data:  8ca46784317b307cbec4df4e
+[SSL] Ô£ô Client Finished verify_data MATCHES!
+[SSL] Expected client MAC: 02c0d952fd02d3b92c7e70780052bd1e10e287f3
+[SSL] Actual client MAC:   02c0d952fd02d3b92c7e70780052bd1e10e287f3
+[SSL] Ô£ô Client Finished MAC MATCHES!
+[SSL] Sent server ChangeCipherSpec
+[SSL] Server Finished hash input: 6 messages, total 1038 bytes
+[SSL]   msg[0]: 111 bytes, starts=0x1
+[SSL]   msg[1]: 74 bytes, starts=0x2
+[SSL]   msg[2]: 699 bytes, starts=0xb
+[SSL]   msg[3]: 4 bytes, starts=0xe
+[SSL]   msg[4]: 134 bytes, starts=0x10
+[SSL]   msg[5]: 16 bytes, starts=0x14
+[SSL] Server verify_data: ba7a21e0803adff51ca8fc3c
+[SSL] Sent encrypted server Finished
+[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
+[SSL] Decrypted 858 bytes of application data
+DLL:
+[11:26:09.493] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[11:26:09.493] PID: 107316
+[11:26:36.842] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x3, old=0x00)
+[11:26:52.514] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:26:54.311] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:26:56.057] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:26:57.936] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:26:59.734] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:01.573] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:03.426] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:05.279] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:07.015] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:08.889] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:10.623] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:12.426] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:14.483] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:16.240] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
+[11:27:17.989] SET bAllowAnyCert at 0000000107ED6B44 (struct=0000000107ED67C0, state=0x20, old=0x01)
 
 
