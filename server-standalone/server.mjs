@@ -1395,7 +1395,10 @@ function handlePreAuth(pkt) {
   
   // Default: minimal response matching PocketRelay structure
   const enc = new TdfEncoder();
-  enc.writeIntList('CIDS', [1, 4, 7, 9, 25, 28, 30722]);
+  enc.writeList('CIDS', 0x00, 7, (e, i) => {
+    const vals = [1, 4, 7, 9, 25, 28, 30722];
+    e.buffers.push(e.encodeVarInt(vals[i]));
+  });
   enc.writeStructStart('CONF');
   enc.writeMap('CONF', {
     'connIdleTimeout': '90s',
