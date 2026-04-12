@@ -1,71 +1,40 @@
-﻿=== BATCH v29 (2026-04-12 13:03:11) ===
-[secure0_full] PREAUTH_ONLY
-SERVER_TAIL: ector/getServerInstance (body: 665 bytes)
-[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
-[HTTP-Blaze] secure=0
-[HTTP-Blaze] Response (417 bytes):
-HTTP/1.1 200 OK
-Content-Type: application/xml
-Content-Length: 322
-Connection: keep-alive
+﻿=== BATCH v30 (2026-04-12 13:09:12) ===
+[1] secure=1 + DLL v51 | ECONNRESET
+SERVER:
+=== FIFA 17 FUT Private Server ===
 
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstanceinfo>
-  <address member="0">
-    <valu>
-      <hostname>127.0.0.1</hostname>
-      <ip>2130706433</ip>
-      <port>10041</port>
-    </valu>
-  </address
-[HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 1 connected: 127.0.0.1:60424
-[Main] S1: received 219 bytes (total: 219)
-[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 00 00 00 00  ................
-[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
-[Main]   0020: d6 0c cf 68 ee 01 0d 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
-[Main]   0030: 2d 70 63 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39  -pc...%........9
-[Main] S1: Raw Blaze binary detected
-[Main] S1: comp=0x0009 cmd=0x0007 len=203 msgId=0
-[Main] S1: -> PreAuth
-[PreAuth] Variant: full
-[Main] S1: Sending response (228 bytes)
-[Main] S1: Response header: 00 00 00 d4 00 00 00 09 00 07 00 00 10 00 00 00
-[Main] S1 disconnected
----
-[secure1_full] MAIN_TLS
-SERVER_TAIL: ddress member="0">
-    <valu>
-      <hostname>127.0.0.1</hostname>
-      <ip>2130706433</ip>
-      <port>10041</port>
-    </valu>
-  </address
-[HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 1 connected: 127.0.0.1:60428
-[Main] S1: received 96 bytes (total: 96)
-[Main]   0000: 16 03 00 00 5b 01 00 00 57 03 03 69 db 7c 1b aa  ....[...W..i.|..
-[Main]   0010: 33 8a 9b 83 d6 0f af b2 9c 96 7b d1 b5 6b 2f da  3.........{..k/.
-[Main]   0020: 6f b6 38 5e b9 b4 5b 10 b1 d6 8e 00 00 10 00 9d  o.8^..[.........
-[Main]   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-[Main] S1: TLS detected, starting handshake
-[SSL] ClientHello: version=0x303 random=69db7c1baa338a9b...
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Redirector-Raw] Client connected: 127.0.0.1:60477
+[Redirector-Raw] Received 116 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 7d 2a 09  ....o...k..i.}*.
+  0010: 58 d7 e1 11 15 39 10 42 d2 72 ee 0d d2 c8 21 0b  X....9.B.r....!.
+  0020: bc 66 8c 37 74 85 b0 73 86 4c 51 00 00 10 00 9d  .f.7t..s.LQ.....
+  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0070: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69db7d2a0958d7e1...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] Phase=waiting_client_response, received 7 bytes (total pending: 7)
-  0000: 15 03 03 00 02 02 2e
-[SSL] Record: type=0x15 ver=0x303 len=2
-[SSL] Alert: level=2 desc=46
-[Main] S1 error: read ECONNRESET
-[Main] S1 disconnected
----
+[Redirector-Raw] Error: read ECONNRESET
+[Redirector-Raw] Disconnected: 127.0.0.1:60477
+[SSL] TIMEOUT: No data received from client after 10 seconds
+[SSL] pendingBuf length: 0
 DLL:
-[13:02:33.372] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[13:02:33.373] PID: 33576
-[13:03:01.813] SET bAllowAnyCert at 0000000027DB0FD4 (struct=0000000027DB0C50, state=0x3, old=0x00)
-[13:03:16.084] SET bAllowAnyCert at 0000000027DB0FD4 (struct=0000000027DB0C50, state=0x20, old=0x01)
-[13:03:17.952] SET bAllowAnyCert at 0000000027DB0FD4 (struct=0000000027DB0C50, state=0x20, old=0x01)
-[13:03:19.834] SET bAllowAnyCert at 0000000027DB0FD4 (struct=0000000027DB0C50, state=0x20,
+[13:07:44.984] === FIFA 17 SSL Bypass v51 (bAllowAnyCert for redirector + main server) ===
+[13:07:44.984] PID: 95492
+[13:08:28.100] SET bAllowAnyCert at 0000000027DD25D4 (struct=0000000027DD2250, host=winter15.gosredirector.ea.com, state=0x4, old=0x00)
+
 
