@@ -1,30 +1,22 @@
-﻿=== BATCH v16 (2026-04-12 10:59:07) ===
-[1] SSLv3 crypto | UNKNOWN
-SERVER: ake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted pre-master secret: 130 bytes (body len: 130)
-[SSL] Failed to decrypt pre-master secret: error:0200006C:rsa routines::data greater than mod len
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 d9 70 53 2b ce
-  0010: 4b 3e 49 74 68 df 75 86 63 27 21 a5 ae e5 97 dd
-  0020: 00 04 7e db 97 5e 56 5f 8f 9f 2d 2d 7a 5c e7
-[SSL] Record: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Handshake type: 0xd9 (unknown)
-DLL: [10:57:59.925] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
-[10:57:59.925] PID: 63440
-[10:58:27.685] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x3, old=0x00)
-[10:58:43.233] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:44.889] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:46.703] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:48.438] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:50.212] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:52.022] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:53.859] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:55.756] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:57.570] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:58:59.402] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:59:01.269] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
-[10:59:03.043] SET bAllowAnyCert at 0000000027DD2454 (struct=0000000027DD20D0, state=0x1E, old=0x01)
+﻿=== BATCH v16 (2026-04-12 11:01:34) ===
+[1] SSLv3 crypto | ALERT_AFTER_FINISHED
+SERVER: es, version=0x303
+[SSL] Master secret derived, keys ready
+[SSL] Sent ChangeCipherSpec
+[SSL] Finished hash input: 5 messages, total 1022 bytes
+[SSL]   msg[0]: 111 bytes, type=0x1
+[SSL]   msg[1]: 74 bytes, type=0x2
+[SSL]   msg[2]: 699 bytes, type=0xb
+[SSL]   msg[3]: 4 bytes, type=0xe
+[SSL]   msg[4]: 134 bytes, type=0x10
+[SSL] Master secret: 38f81dec7a7b02f6a8ccbc3aa6216167...
+[SSL] Sent encrypted Finished
+[SSL] Alert received: level=233 desc=208 (unknown)
+[SSL] Alert raw: e9 d0 76 31 6b 50 bb 2e ce 21 60 9f bc 62 b4 1e 48 e9 81 ec a0 4f
+[Redirector-Raw] Disconnected: 127.0.0.1:59580
+DLL: [11:00:27.138] === FIFA 17 SSL Bypass v50 (REAL bAllowAnyCert at +0x384) ===
+[11:00:27.139] PID: 102332
+[11:00:54.954] SET bAllowAnyCert at 0000000104525934 (struct=00000001045255B0, state=0x3, old=0x00)
+[11:01:09.038] SET bAllowAnyCert at 0000000104525934 (struct=00000001045255B0, state=0x1E, old=0x01)
 
 
