@@ -213,7 +213,7 @@ function handleSSLv3Handshake(socket, clientHelloRecord) {
   // Use SSLv3 (0x0300) to match what the game's record layer uses
   // and what blaze-ssl-async uses. Previous versions used 0x0303 (TLS 1.2)
   // which may have been causing the rejection.
-  const recordVersion = [0x03, 0x00]; // SSLv3 record layer (keep this for compatibility)
+  const recordVersion = [0x03, 0x03]; // TLS 1.2 record layer (match ServerHello)
   const replyVersion = [0x03, 0x03]; // TLS 1.2 in ServerHello body
 
   console.log(`[SSL] ClientHello: version=0x${clientVersion.toString(16)} random=${clientRandom.toString('hex').substring(0, 16)}...`);
