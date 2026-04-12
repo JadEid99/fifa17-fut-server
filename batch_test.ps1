@@ -47,13 +47,18 @@ Write-Host "[1] DLL v52 code patch + secure=1" -ForegroundColor Yellow
 Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
 Start-Sleep 1
 $sj = Start-Job -ScriptBlock { param($r); $env:PREAUTH_VARIANT="full"; $env:REDIRECT_SECURE="1"; node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; FQ; Start-Sleep 40
+Start-Sleep 2; FQ; Start-Sleep 60
 $so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
 Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
 FEnter; Start-Sleep 2
 
 $r1 = "UNKNOWN"
-if ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH" }
+if ($so1 -match "Main.*Session 2") { $r1 = "SECOND_CONNECTION" }
+elseif ($so1 -match "Blaze-Enc.*comp=0x0009 cmd=0x0008") { $r1 = "POSTAUTH" }
+elseif ($so1 -match "Blaze-Enc.*comp=0x0001") { $r1 = "AUTH_COMPONENT" }
+elseif ($so1 -match "Blaze-Enc.*Sent encrypted reply") { $r1 = "PREAUTH_REPLIED" }
+elseif ($so1 -match "Blaze-Enc.*comp=0x0009 cmd=0x0007") { $r1 = "PREAUTH_PARSED" }
+elseif ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH" }
 elseif ($so1 -match "Main.*-> Login") { $r1 = "LOGIN" }
 elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
 elseif ($so1 -match "Main.*HANDSHAKE COMPLETE") { $r1 = "MAIN_TLS_COMPLETE" }
