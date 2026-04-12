@@ -1,15 +1,14 @@
 /**
- * dinput8.dll Proxy - v52: Permanent code patch for bAllowAnyCert
+ * dinput8.dll Proxy - v53: Permanent code patches for cert bypass + Origin SDK bypass
  * 
- * Instead of racing to set a flag in memory, we patch the actual
- * cert verification code to always skip verification.
+ * Patch 1: Cert verification bypass (from v52)
+ *   CMP byte ptr [RBP + 0x384], 0x0 / JNZ -> JMP
  * 
- * From Ghidra at 146132444:
- *   CMP byte ptr [RBP + 0x384], 0x0    ; 80 bd 84 03 00 00 00
- *   JNZ LAB_1461326df                   ; 0f 85 8e 02 00 00
- * 
- * We change JNZ to JMP (unconditional): 0f 85 -> e9 XX XX XX XX 90
- * This makes cert verification ALWAYS skip, for ALL connections.
+ * Patch 2: Origin SDK availability check
+ *   FUN_1470e2840 returns DAT_144b7c7a0 != 0
+ *   We patch it to always return 1 (true)
+ *   Original: 31 c0 48 39 05 XX XX XX XX 0f 95 d0 c3
+ *   Patched:  b0 01 90 90 90 90 90 90 90 90 90 90 c3
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -69,6 +68,7 @@ static void Log(const char* fmt, ...) {
 }
 
 static int g_codePatchDone = 0;
+static int g_originPatchDone = 0;
 static int g_patched = 0;
 
 // Patch the cert verification code directly
@@ -135,34 +135,93 @@ static void PatchCertCheck() {
     }
 }
 
+// Patch 2: Origin SDK availability check
+// Find: 31 c0 48 39 05 XX XX XX XX 0f 95 d0 c3
+// This is FUN_1470e2840 which returns (DAT_144b7c7a0 != 0)
+// Patch to: b0 01 + NOPs + c3 (always return 1)
+static void PatchOriginCheck() {
+    if (g_originPatchDone) return;
+    
+    // Pattern: XOR EAX,EAX / CMP [rip+XX], RAX / SETNZ AL / RET
+    BYTE pattern[] = { 0x31, 0xC0, 0x48, 0x39, 0x05 };
+    BYTE suffix[] = { 0x0F, 0x95, 0xD0, 0xC3 };
+    int patternLen = sizeof(pattern);
+    
+    MEMORY_BASIC_INFORMATION mbi;
+    BYTE* addr = NULL;
+    
+    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
+        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
+            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
+             mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
+            
+            BYTE* base = (BYTE*)mbi.BaseAddress;
+            SIZE_T size = mbi.RegionSize;
+            
+            __try {
+                for (SIZE_T j = 0; j + 13 < size; j++) {
+                    if (memcmp(base + j, pattern, patternLen) != 0) continue;
+                    // Check suffix at offset +9 (after 4-byte displacement)
+                    if (memcmp(base + j + 9, suffix, sizeof(suffix)) != 0) continue;
+                    
+                    BYTE* funcAddr = base + j;
+                    Log("Found Origin SDK check at %p", funcAddr);
+                    Log("  Before: %02X %02X %02X %02X %02X ... %02X %02X %02X %02X",
+                        funcAddr[0], funcAddr[1], funcAddr[2], funcAddr[3], funcAddr[4],
+                        funcAddr[9], funcAddr[10], funcAddr[11], funcAddr[12]);
+                    
+                    DWORD oldProtect;
+                    if (VirtualProtect(funcAddr, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        // MOV AL, 1
+                        funcAddr[0] = 0xB0;
+                        funcAddr[1] = 0x01;
+                        // NOP out the CMP and SETNZ (bytes 2-11)
+                        for (int k = 2; k < 12; k++) funcAddr[k] = 0x90;
+                        // RET is already at byte 12
+                        VirtualProtect(funcAddr, 13, oldProtect, &oldProtect);
+                        
+                        Log("  After:  %02X %02X %02X %02X %02X ... %02X %02X %02X %02X",
+                            funcAddr[0], funcAddr[1], funcAddr[2], funcAddr[3], funcAddr[4],
+                            funcAddr[9], funcAddr[10], funcAddr[11], funcAddr[12]);
+                        Log("PATCHED: Origin SDK check -> always returns true");
+                        g_originPatchDone = 1;
+                        g_patched++;
+                    }
+                    return;
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        }
+        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
+        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
+
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v52 (permanent code patch) ===");
+    Log("=== FIFA 17 SSL Bypass v53 (cert + Origin SDK patches) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Try to patch the code every 100ms until successful
-    // The code might not be decrypted/loaded yet at startup (Denuvo)
     DWORD startTick = GetTickCount();
     for (int i = 0; i < 3000; i++) {
         Sleep(100);
         
         __try {
-            PatchCertCheck();
+            if (!g_codePatchDone) PatchCertCheck();
+            if (!g_originPatchDone) PatchOriginCheck();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
-        if (g_codePatchDone) {
-            Log("Code patch applied after %lu ms", GetTickCount() - startTick);
+        if (g_codePatchDone && g_originPatchDone) {
+            Log("All patches applied after %lu ms", GetTickCount() - startTick);
             break;
         }
         
         if (i % 100 == 0 && i > 0) {
             DWORD elapsed = GetTickCount() - startTick;
-            Log("Scanning for cert check... %lu ms elapsed", elapsed);
+            Log("Scanning... %lu ms (cert=%d, origin=%d)", elapsed, g_codePatchDone, g_originPatchDone);
         }
     }
     
-    if (!g_codePatchDone) {
-        Log("WARNING: Could not find cert check pattern after 5 minutes");
-    }
+    if (!g_codePatchDone) Log("WARNING: Could not find cert check pattern");
+    if (!g_originPatchDone) Log("WARNING: Could not find Origin SDK check pattern");
     
     Log("=== Done. patches: %d ===", g_patched);
     return 0;
