@@ -740,18 +740,40 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
         // Log raw record bytes BEFORE trying to decrypt
         console.log(`[SSL] Record type 0x15 (alert?), raw body (${recBody.length} bytes): ${Array.from(recBody).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
         try {
-          const decrypted = decryptRecord(0x15, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
-          console.log(`[SSL] Alert (decrypted): level=${decrypted[0]} desc=${decrypted[1]}`);
-        } catch (e) {
-          console.log(`[SSL] Alert decrypt failed: ${e.message}`);
-          // Maybe this isn't really an alert - try as app data
-          try {
-            const plaintext = decryptRecord(0x17, [0x03, 0x03], recBody, keys.clientWriteKey, keys.clientWriteMAC, keys, cipher);
-            console.log(`[SSL] Re-decoded as app data: ${plaintext.length} bytes`);
-            console.log(`[SSL] Hex: ${plaintext.subarray(0, 64).toString('hex')}`);
-          } catch (e2) {
-            console.log(`[SSL] Also failed as app data: ${e2.message}`);
+          // Decrypt but also verify MAC
+          let decrypted;
+          if (cipher === 0x0005 || cipher === 0x0004) {
+            if (!keys._clientRC4) {
+              keys._clientRC4 = crypto.createDecipheriv('rc4', keys.clientWriteKey, Buffer.alloc(0));
+            }
+            decrypted = keys._clientRC4.update(recBody);
           }
+          const plaintext = decrypted.subarray(0, decrypted.length - 20);
+          const mac = decrypted.subarray(decrypted.length - 20);
+          
+          // Verify MAC
+          const seqBuf = Buffer.alloc(8);
+          seqBuf.writeBigUInt64BE(keys.clientSeqNum);
+          keys.clientSeqNum++;
+          const macInput = Buffer.concat([
+            seqBuf,
+            Buffer.from([0x15, 0x03, 0x03]),
+            Buffer.from([(plaintext.length >> 8) & 0xFF, plaintext.length & 0xFF]),
+            plaintext,
+          ]);
+          const expectedMAC = crypto.createHmac('sha1', keys.clientWriteMAC).update(macInput).digest();
+          
+          console.log(`[SSL] Alert decrypted: ${Array.from(plaintext).map(b => b.toString(16).padStart(2,'0')).join(' ')}`);
+          console.log(`[SSL] Alert MAC match: ${mac.equals(expectedMAC)}`);
+          console.log(`[SSL] Alert: level=${plaintext[0]} desc=${plaintext[1]}`);
+          
+          if (!mac.equals(expectedMAC)) {
+            console.log(`[SSL] MAC MISMATCH - this might not be a real alert!`);
+            console.log(`[SSL] Expected MAC: ${expectedMAC.toString('hex')}`);
+            console.log(`[SSL] Actual MAC:   ${mac.toString('hex')}`);
+          }
+        } catch (e) {
+          console.log(`[SSL] Alert processing error: ${e.message}`);
         }
       } else {
         console.log(`[SSL] Unknown record type 0x${recType.toString(16)} len=${recLen}`);
