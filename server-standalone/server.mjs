@@ -239,13 +239,12 @@ function decodeHeader(buf) {
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
   buf.writeUInt32BE(h.length, 0);           // payload length
-  buf.writeUInt16BE(0, 4);                  // secondary length/flags
+  buf.writeUInt16BE(h.msgType || 0, 4);     // msgType at offset 4-5
   buf.writeUInt16BE(h.component, 6);        // component
   buf.writeUInt16BE(h.command, 8);          // command
   buf.writeUInt16BE(h.error, 10);           // error
-  // Pack msgType into upper 16 bits, msgId into lower 16 bits
-  const msgTypeAndId = ((h.msgType & 0xFFFF) << 16) | ((h.msgId || 0) & 0xFFFF);
-  buf.writeUInt32BE(msgTypeAndId >>> 0, 12);
+  buf.writeUInt16BE(h.msgId || 0, 12);      // msgId at offset 12-13
+  buf.writeUInt16BE(0, 14);                 // padding
   return buf;
 }
 function readPacket(buf) {
