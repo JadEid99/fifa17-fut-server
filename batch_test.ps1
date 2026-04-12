@@ -1,6 +1,6 @@
-# Batch v19: HTTP-wrapped Blaze - game sends HTTP POST over TLS, not raw binary
-# v18 revealed: decrypted data is "POST /redirector/getServerInstance HTTP/1.1"
-# Need to parse HTTP, respond with XML redirect, handle main server connection
+# Batch v20: Main server HTTP Blaze - game uses HTTP on main server too
+# v19 confirmed: redirect works, game connects to main server on port 10041
+# But main server was misreading HTTP as raw Blaze binary. Now handles HTTP.
 $ErrorActionPreference = "Continue"
 $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
@@ -24,7 +24,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v19: HTTP-wrapped Blaze ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v20: Main server HTTP Blaze ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -46,7 +46,7 @@ Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Slee
 Start-Sleep 10; FEnter; Start-Sleep 2
 
 # Test: Fixed handshake flow
-Write-Host "[1] HTTP-wrapped Blaze over TLS" -ForegroundColor Yellow
+Write-Host "[1] Main server HTTP Blaze" -ForegroundColor Yellow
 Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
 Start-Sleep 1
 $sj = Start-Job -ScriptBlock { param($r); node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
@@ -57,23 +57,23 @@ FEnter; Start-Sleep 2
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $r1 = "UNKNOWN"
-if ($so1 -match "Main.*Session.*connected") { $r1 = "MAIN_SERVER_CONNECTED" }
-elseif ($so1 -match "Sent encrypted HTTP response") { $r1 = "HTTP_RESPONSE_SENT" }
-elseif ($so1 -match "HTTP-Blaze.*GetServerInstance") { $r1 = "REDIRECT_PARSED" }
-elseif ($so1 -match "Blaze-Enc.*comp=") { $r1 = "BLAZE_PACKET_PARSED" }
+if ($so1 -match "Main-HTTP.*PreAuth") { $r1 = "PREAUTH_RECEIVED" }
+elseif ($so1 -match "Main-HTTP.*Login") { $r1 = "LOGIN_RECEIVED" }
+elseif ($so1 -match "Main-HTTP.*Sent response") { $r1 = "HTTP_RESPONSES_SENT" }
+elseif ($so1 -match "Main.*Session.*connected") { $r1 = "MAIN_SERVER_CONNECTED" }
+elseif ($so1 -match "Sent encrypted HTTP response") { $r1 = "REDIRECT_SENT" }
 elseif ($so1 -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_COMPLETE" }
-elseif ($so1 -match "Decrypted \d+ bytes of application") { $r1 = "APP_DATA_DECRYPTED" }
 elseif ($so1 -match "Alert.*level=") { $r1 = "ALERT" }
 elseif ($so1 -match "Decrypted PMS") { $r1 = "KEYS_DERIVED" }
 elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
 elseif ($so1 -match "TIMEOUT") { $r1 = "TIMEOUT" }
-Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "MAIN_SERVER|HTTP_RESPONSE|BLAZE"){"Green"}elseif($r1 -match "REDIRECT|COMPLETE|APP_DATA"){"Yellow"}else{"Red"})
+Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "PREAUTH|LOGIN|HTTP_RESP"){"Green"}elseif($r1 -match "MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
 
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v19 ($timestamp) ===`n[1] HTTP-Blaze | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v20 ($timestamp) ===`n[1] Main HTTP Blaze | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v19: HTTP-wrapped Blaze $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v20: main server HTTP Blaze $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan

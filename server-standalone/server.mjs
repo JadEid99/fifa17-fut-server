@@ -846,7 +846,7 @@ function startMainServer() {
     const session = { id: sid, socket, personaId: 1000000000 + sid, nucleusId: 2000000000 + sid, displayName: `Player${sid}`, auth: false };
     console.log(`[Main] Session ${sid} connected: ${socket.remoteAddress}:${socket.remotePort}`);
 
-    // Auto-detect TLS vs plaintext: peek at first byte
+    // Auto-detect TLS vs plaintext vs HTTP: peek at first bytes
     let firstData = true;
     const initialHandler = (data) => {
       if (!firstData) return;
@@ -856,15 +856,20 @@ function startMainServer() {
       if (data[0] === 0x16 && data.length >= 5 && data[1] === 0x03) {
         // TLS ClientHello - do full handshake
         console.log(`[Main] S${sid}: TLS detected, starting handshake`);
-        handleSSLv3Handshake(socket, data, `Main:${sid}`, (clearSocket, keys, cipher) => {
-          // After handshake, set up encrypted Blaze handler
-          console.log(`[Main] S${sid}: TLS handshake complete, handling encrypted Blaze`);
-        });
+        handleSSLv3Handshake(socket, data);
       } else {
-        // Plain Blaze
-        console.log(`[Main] S${sid}: Plain TCP Blaze`);
-        setupMainBlazeHandler(socket, session);
-        socket.emit('data', data); // re-emit for the handler
+        const peek = data.toString('ascii', 0, Math.min(data.length, 10));
+        if (peek.startsWith('POST ') || peek.startsWith('GET ')) {
+          // HTTP-wrapped Blaze
+          console.log(`[Main] S${sid}: HTTP Blaze detected`);
+          setupHttpBlazeMainHandler(socket, session);
+          socket.emit('data', data);
+        } else {
+          // Raw Blaze binary
+          console.log(`[Main] S${sid}: Plain TCP Blaze`);
+          setupMainBlazeHandler(socket, session);
+          socket.emit('data', data);
+        }
       }
     };
     socket.on('data', initialHandler);
@@ -899,6 +904,201 @@ function setupMainBlazeHandler(socket, session) {
     else { console.log(`[Main] Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
     if (resp) socket.write(resp);
   });
+}
+
+// HTTP-wrapped Blaze handler for the main server
+function setupHttpBlazeMainHandler(socket, session) {
+  const sid = session.id;
+  let httpBuf = Buffer.alloc(0);
+  
+  socket.on('data', (data) => {
+    httpBuf = Buffer.concat([httpBuf, data]);
+    
+    // Try to parse complete HTTP requests
+    while (httpBuf.length > 0) {
+      const text = httpBuf.toString('ascii');
+      const headerEnd = text.indexOf('\r\n\r\n');
+      if (headerEnd === -1) break; // incomplete headers
+      
+      const headerText = text.substring(0, headerEnd);
+      const headers = {};
+      const lines = headerText.split('\r\n');
+      const firstLine = lines[0];
+      for (let i = 1; i < lines.length; i++) {
+        const colon = lines[i].indexOf(':');
+        if (colon > 0) headers[lines[i].substring(0, colon).trim().toLowerCase()] = lines[i].substring(colon + 1).trim();
+      }
+      
+      const contentLength = parseInt(headers['content-length'] || '0');
+      const totalLen = headerEnd + 4 + contentLength;
+      if (httpBuf.length < totalLen) break; // incomplete body
+      
+      const body = httpBuf.subarray(headerEnd + 4, totalLen);
+      httpBuf = httpBuf.subarray(totalLen);
+      
+      const [method, path] = firstLine.split(' ');
+      const bodyText = body.toString('utf-8');
+      console.log(`[Main-HTTP] S${sid}: ${method} ${path} (${contentLength} bytes)`);
+      console.log(`[Main-HTTP] Body: ${bodyText.substring(0, 500)}`);
+      
+      // Route based on path
+      const responseXml = handleMainHttpRoute(path, bodyText, session);
+      
+      const responseBody = Buffer.from(responseXml, 'utf-8');
+      const httpResponse = Buffer.from(
+        `HTTP/1.1 200 OK\r\n` +
+        `Content-Type: application/xml\r\n` +
+        `Content-Length: ${responseBody.length}\r\n` +
+        `Connection: keep-alive\r\n` +
+        `\r\n`
+      );
+      
+      socket.write(Buffer.concat([httpResponse, responseBody]));
+      console.log(`[Main-HTTP] S${sid}: Sent response for ${path} (${responseBody.length} bytes)`);
+    }
+  });
+}
+
+function handleMainHttpRoute(path, bodyXml, session) {
+  console.log(`[Main-HTTP] Routing: ${path}`);
+  
+  // Extract component/command from path: /util/preAuth, /authentication/login, etc.
+  const parts = path.split('/').filter(p => p);
+  const component = parts[0] || '';
+  const command = parts[1] || '';
+  
+  if (component === 'util') {
+    if (command === 'preAuth' || command === 'pre-auth') {
+      console.log('[Main-HTTP] PreAuth');
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<preauth>
+  <componentids>
+    <id>1</id><id>4</id><id>5</id><id>7</id><id>9</id><id>15</id><id>25</id><id>28</id><id>30722</id>
+  </componentids>
+  <serverconfig>
+    <config>{}</config>
+  </serverconfig>
+  <serverinstance>fifa17-fut-server</serverinstance>
+  <namespace>cem_ea_id</namespace>
+  <personaid></personaid>
+  <platform>pc</platform>
+  <qosconfig>
+    <bandwidthpingsite>
+      <address>127.0.0.1</address>
+      <port>17502</port>
+      <sitename>prod-sjc</sitename>
+    </bandwidthpingsite>
+    <latenecyping>10</latenecyping>
+    <serverid>1162281989</serverid>
+  </qosconfig>
+  <resource>fifa17-2016</resource>
+  <serverversion>Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)</serverversion>
+</preauth>`;
+    }
+    if (command === 'postAuth' || command === 'post-auth') {
+      console.log('[Main-HTTP] PostAuth');
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<postauth>
+  <telemetry>
+    <address>127.0.0.1</address>
+    <anonymous>0</anonymous>
+    <datapointtags>ut/bf/fifa17</datapointtags>
+    <locale>1701729619</locale>
+    <nook></nook>
+    <port>9988</port>
+    <senddelay>15000</senddelay>
+    <session>JMhnT9dXSED</session>
+    <sessionkey>key</sessionkey>
+    <sendpercentage>75</sendpercentage>
+    <sendtime></sendtime>
+  </telemetry>
+  <userroleoverride>
+    <temporaryoverride>1</temporaryoverride>
+    <userid>${session.nucleusId}</userid>
+  </userroleoverride>
+</postauth>`;
+    }
+    if (command === 'ping') {
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<ping><servertime>${Date.now()}</servertime></ping>`;
+    }
+    if (command === 'getTelemetryServer' || command === 'get-telemetry-server') {
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<telemetryserver>
+  <address>127.0.0.1</address>
+  <anonymous>0</anonymous>
+  <datapointtags>ut/bf/fifa17</datapointtags>
+  <locale>1701729619</locale>
+  <nook></nook>
+  <port>9988</port>
+  <senddelay>15000</senddelay>
+  <session></session>
+  <sessionkey></sessionkey>
+  <sendpercentage>75</sendpercentage>
+  <sendtime></sendtime>
+</telemetryserver>`;
+    }
+    if (command === 'getUserOptions' || command === 'get-user-options') {
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<useroptions><telemetryoptout>0</telemetryoptout></useroptions>`;
+    }
+  }
+  
+  if (component === 'authentication') {
+    if (command === 'login') {
+      console.log('[Main-HTTP] Login');
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<login>
+  <agentid>0</agentid>
+  <sessionkey>sk_${session.id}</sessionkey>
+  <email>p${session.id}@fut.local</email>
+  <personadetails>
+    <displayname>${session.displayName}</displayname>
+    <lastlogin>0</lastlogin>
+    <personaid>${session.personaId}</personaid>
+    <status>0</status>
+    <externalreference>0</externalreference>
+    <externaltype>0</externaltype>
+  </personadetails>
+  <userid>${session.nucleusId}</userid>
+</login>`;
+    }
+    if (command === 'silentLogin' || command === 'silent-login') {
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<login>
+  <agentid>0</agentid>
+  <sessionkey>sk_${session.id}</sessionkey>
+  <email>p${session.id}@fut.local</email>
+  <personadetails>
+    <displayname>${session.displayName}</displayname>
+    <lastlogin>0</lastlogin>
+    <personaid>${session.personaId}</personaid>
+    <status>0</status>
+    <externalreference>0</externalreference>
+    <externaltype>0</externaltype>
+  </personadetails>
+  <userid>${session.nucleusId}</userid>
+</login>`;
+    }
+    if (command === 'listPersonas' || command === 'list-personas') {
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<personas>
+  <persona>
+    <displayname>${session.displayName}</displayname>
+    <lastlogin>0</lastlogin>
+    <personaid>${session.personaId}</personaid>
+    <status>0</status>
+    <externalreference>0</externalreference>
+    <externaltype>0</externaltype>
+  </persona>
+</personas>`;
+    }
+    if (command === 'getAuthToken' || command === 'get-auth-token') {
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<authtoken><token>tok_${session.id}</token></authtoken>`;
+    }
+  }
+  
+  // Default: empty response
+  console.log(`[Main-HTTP] Unhandled: ${path}`);
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<response></response>`;
 }
 
 function handlePreAuth(pkt) {
