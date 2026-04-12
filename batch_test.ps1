@@ -1,4 +1,4 @@
-# Batch v20: Main server HTTP Blaze - game uses HTTP on main server too
+# Batch v21: Debug main server protocol - hex dump first bytes to identify format
 # v19 confirmed: redirect works, game connects to main server on port 10041
 # But main server was misreading HTTP as raw Blaze binary. Now handles HTTP.
 $ErrorActionPreference = "Continue"
@@ -24,7 +24,7 @@ function FEnter { if(Focus){[KSE]::Enter()} }
 function FQ { if(Focus){[KSE]::Q()} }
 function Kill-All { Stop-Process -Name FIFA17 -Force -EA SilentlyContinue; Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue; Start-Sleep 3 }
 
-Write-Host "=== BATCH v20: Main server HTTP Blaze ===" -ForegroundColor Cyan
+Write-Host "=== BATCH v21: Debug main server protocol ===" -ForegroundColor Cyan
 
 # Build + deploy DLL
 $vcvars = ""
@@ -72,8 +72,8 @@ Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "PREAUTH|LOGIN|HTTP_RESP"
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v20 ($timestamp) ===`n[1] Main HTTP Blaze | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v21 ($timestamp) ===`n[1] Main protocol debug | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v20: main server HTTP Blaze $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v21: debug main server protocol $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan

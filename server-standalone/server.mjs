@@ -846,29 +846,40 @@ function startMainServer() {
     const session = { id: sid, socket, personaId: 1000000000 + sid, nucleusId: 2000000000 + sid, displayName: `Player${sid}`, auth: false };
     console.log(`[Main] Session ${sid} connected: ${socket.remoteAddress}:${socket.remotePort}`);
 
-    // Auto-detect TLS vs plaintext vs HTTP: peek at first bytes
-    let firstData = true;
+    // Auto-detect protocol: accumulate data, log raw bytes, then decide
+    let dataBuf = Buffer.alloc(0);
+    let detected = false;
     const initialHandler = (data) => {
-      if (!firstData) return;
-      firstData = false;
+      if (detected) return;
+      dataBuf = Buffer.concat([dataBuf, data]);
+      
+      // Log raw bytes for debugging
+      console.log(`[Main] S${sid}: received ${data.length} bytes (total: ${dataBuf.length})`);
+      for (let i = 0; i < Math.min(dataBuf.length, 64); i += 16) {
+        const slice = dataBuf.subarray(i, Math.min(i + 16, dataBuf.length));
+        const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
+        const ascii = Array.from(slice).map(b => b >= 32 && b < 127 ? String.fromCharCode(b) : '.').join('');
+        console.log(`[Main]   ${i.toString(16).padStart(4, '0')}: ${hex.padEnd(48)} ${ascii}`);
+      }
+      
+      if (dataBuf.length < 5) return; // wait for more data
+      detected = true;
       socket.removeListener('data', initialHandler);
 
-      if (data[0] === 0x16 && data.length >= 5 && data[1] === 0x03) {
-        // TLS ClientHello - do full handshake
+      if (dataBuf[0] === 0x16 && dataBuf[1] === 0x03) {
         console.log(`[Main] S${sid}: TLS detected, starting handshake`);
-        handleSSLv3Handshake(socket, data);
+        handleSSLv3Handshake(socket, dataBuf);
       } else {
-        const peek = data.toString('ascii', 0, Math.min(data.length, 10));
+        const peek = dataBuf.toString('ascii', 0, Math.min(dataBuf.length, 10));
         if (peek.startsWith('POST ') || peek.startsWith('GET ')) {
-          // HTTP-wrapped Blaze
           console.log(`[Main] S${sid}: HTTP Blaze detected`);
           setupHttpBlazeMainHandler(socket, session);
-          socket.emit('data', data);
+          socket.emit('data', dataBuf);
         } else {
-          // Raw Blaze binary
-          console.log(`[Main] S${sid}: Plain TCP Blaze`);
-          setupMainBlazeHandler(socket, session);
-          socket.emit('data', data);
+          console.log(`[Main] S${sid}: Unknown protocol (first byte: 0x${dataBuf[0].toString(16)})`);
+          // Try HTTP handler anyway - the game might send HTTP with a slight delay
+          setupHttpBlazeMainHandler(socket, session);
+          socket.emit('data', dataBuf);
         }
       }
     };
