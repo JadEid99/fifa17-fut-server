@@ -1,45 +1,70 @@
-﻿=== BATCH v31 (2026-04-12 13:25:45) ===
-[1] DLL v52 code patch | ECONNRESET
+﻿=== BATCH v31 (2026-04-12 13:28:40) ===
+[1] DLL v52 code patch | MAIN_TLS_STARTED
 SERVER:
-=== FIFA 17 FUT Private Server ===
-
-
-Waiting for FIFA 17...
-hosts: 127.0.0.1 winter15.gosredirector.ea.com
-
-[Redirector-Raw] Listening on port 42230
-[Main] Blaze server on port 10041
-[HTTP] on port 8080
-[Redirector-Raw] Client connected: 127.0.0.1:60602
-[Redirector-Raw] Received 116 bytes
-[Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 db 81 0c e6  ....o...k..i....
-  0010: d2 42 6b 90 df 41 32 23 bb e7 90 ad 48 3e f6 40  .Bk..A2#....H>.@
-  0020: e5 eb 11 a0 9b f4 f5 fa 3b ad 37 00 00 10 00 9d  ........;.7.....
-  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
-  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
-  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
-  0070: 02 01 01 01                                      ....
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69db810ce6d2426b...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[Redirector-Raw] Error: read ECONNRESET
-[Redirector-Raw] Disconnected: 127.0.0.1:60602
-[SSL] TIMEOUT: No data received from client after 10 seconds
-[SSL] pendingBuf length: 0
+[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
+  0000: 16 03 03 00 86 10 00 00 82 00 80 96 80 f7 30 4d
+  0010: bf df 51 5b db 2e 1b e4 83 68 ce c1 fb 28 61 e6
+  0020: 75 2f ec 37 2e f6 b2 c6 e9 46 98 7a d9 97 b3 0b
+  0030: 53 43 ed 42 74 28 35 e5 f7 8c e1 10 14 51 06 fb
+  0040: f0 df da 15 bd 3a 16 fa fb 4c 18 e6 90 3f 47 49
+  0050: 61 e0 1a 0d 6e 10 16 30 9c 32 fb 68 7a 70 42 db
+  0060: e9 f1 e9 cd af e3 bb 88 1d 93 ad 27 c6 1e aa 9a
+  0070: 70 97 66 9a 8a 2a 29 59 14 9b 41 59 36 2b 18 8b
+  0080: 1e 0b 59 7e b8 cf ba a5 91 b1 27
+[SSL] Record: type=0x16 ver=0x303 len=134
+[SSL] Handshake type: 0x10 (ClientKeyExchange)
+[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
+[SSL] Decrypted PMS: 48 bytes, version=0x303
+[SSL] Master secret derived: 354963cd988b39b4ca75c37762837f5b...
+[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
+[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 69 e4 72 1f 7f
+  0010: de a6 53 b5 35 fc db d9 62 5c a5 af 86 d6 f1 d1
+  0020: e3 aa 08 a7 4f 44 c8 89 07 a6 7f 2d 62 bb 86
+[SSL] Record: type=0x14 ver=0x303 len=1
+[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
+[SSL] RC4 decryption initialized with clientWriteKey: 363c5072b38c3a671c8805abbe8bbbc8
+[SSL] Record: type=0x16 ver=0x303 len=36
+[SSL] Encrypted handshake record (client Finished): 36 bytes
+[SSL] Decrypted client Finished record: 36 bytes
+[SSL] Decrypted hex: 1400000cd125a276484e8fefe71b84e279317069bace32c9d13e48b3be8b3882a6277a4d
+[SSL] Client Finished plaintext (16 bytes): 1400000cd125a276484e8fefe71b84e2
+[SSL] Client Finished MAC: 79317069bace32c9d13e48b3be8b3882a6277a4d
+[SSL] Client verify_data:   d125a276484e8fefe71b84e2
+[SSL] Expected verify_data:  d125a276484e8fefe71b84e2
+[SSL] Ô£ô Client Finished verify_data MATCHES!
+[SSL] Expected client MAC: 79317069bace32c9d13e48b3be8b3882a6277a4d
+[SSL] Actual client MAC:   79317069bace32c9d13e48b3be8b3882a6277a4d
+[SSL] Ô£ô Client Finished MAC MATCHES!
+[SSL] Sent server ChangeCipherSpec
+[SSL] Server Finished hash input: 6 messages, total 1018 bytes
+[SSL]   msg[0]: 91 bytes, starts=0x1
+[SSL]   msg[1]: 74 bytes, starts=0x2
+[SSL]   msg[2]: 699 bytes, starts=0xb
+[SSL]   msg[3]: 4 bytes, starts=0xe
+[SSL]   msg[4]: 134 bytes, starts=0x10
+[SSL]   msg[5]: 16 bytes, starts=0x14
+[SSL] Server verify_data: 74ce3580e89180bbdb714aca
+[SSL] Sent encrypted server Finished
+[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
+[SSL] Decrypted 219 bytes of application data
+[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
+[PreAuth] Variant: full
+[Blaze-Enc] Sent encrypted reply (228 bytes)
+[SSL] Alert (decrypted): level=1 desc=0
+[Main] S1 disconnected
 DLL:
-[13:24:18.209] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
-[13:24:18.209] PID: 49904
-[13:24:18.363] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[13:24:18.363]   Before: 0F 85 8E 02 00 00
-[13:24:18.363]   After:  E9 85 8E 02 00 90
-[13:24:18.363] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[13:24:18.363] Code patch applied after 157 ms
-[13:24:18.363] === Done. patches: 1 ===
+[13:27:12.631] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
+[13:27:12.631] PID: 103344
+[13:27:12.797] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[13:27:12.797]   Before: 0F 85 8E 02 00 00
+[13:27:12.797]   After:  E9 8F 02 00 00 90
+[13:27:12.797] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[13:27:12.797] Code patch applied after 157 ms
+[13:27:12.797] === Done. patches: 1 ===
 
 
