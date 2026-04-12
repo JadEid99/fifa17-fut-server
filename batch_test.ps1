@@ -1,4 +1,4 @@
-# Batch v25: Fix response header - msgType at offset 4 (0x1000=reply)
+# Batch v26: Longer wait (60s) to see if game reconnects after PreAuth
 # v21 hex dump revealed: 00 00 00 cb 00 09 00 07 = raw Blaze with 4-byte length
 # Component 0x0009 cmd 0x0007 = PreAuth! Game IS sending raw Blaze binary.
 # v19 confirmed: redirect works, game connects to main server on port 10041
@@ -52,17 +52,17 @@ Write-Host "[1] Main server HTTP Blaze" -ForegroundColor Yellow
 Get-Process -Name node -EA SilentlyContinue|Stop-Process -Force -EA SilentlyContinue
 Start-Sleep 1
 $sj = Start-Job -ScriptBlock { param($r); node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 } -ArgumentList $repoRoot
-Start-Sleep 2; FQ; Start-Sleep 40
+Start-Sleep 2; FQ; Start-Sleep 60
 $so1 = (Receive-Job $sj 2>&1 | Out-String).Trim()
 Stop-Job $sj -EA SilentlyContinue; Remove-Job $sj -EA SilentlyContinue
 FEnter; Start-Sleep 2
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $r1 = "UNKNOWN"
-if ($so1 -match "Main-HTTP.*PreAuth") { $r1 = "PREAUTH_HTTP" }
-elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
+if ($so1 -match "Main.*Session 2") { $r1 = "SECOND_CONNECTION" }
 elseif ($so1 -match "Main.*-> PostAuth") { $r1 = "POSTAUTH_HANDLED" }
 elseif ($so1 -match "Main.*-> Login") { $r1 = "LOGIN_HANDLED" }
+elseif ($so1 -match "Main.*-> PreAuth") { $r1 = "PREAUTH_HANDLED" }
 elseif ($so1 -match "Main.*Sending response") { $r1 = "RESPONSE_SENT" }
 elseif ($so1 -match "Main.*ERROR") { $r1 = "ERROR_IN_HANDLER" }
 elseif ($so1 -match "Main.*Session.*connected") { $r1 = "MAIN_SERVER_CONNECTED" }
@@ -71,13 +71,13 @@ elseif ($so1 -match "HANDSHAKE COMPLETE") { $r1 = "HANDSHAKE_COMPLETE" }
 elseif ($so1 -match "Alert.*level=") { $r1 = "ALERT" }
 elseif ($so1 -match "ECONNRESET") { $r1 = "ECONNRESET" }
 elseif ($so1 -match "TIMEOUT") { $r1 = "TIMEOUT" }
-Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "POSTAUTH|LOGIN"){"Green"}elseif($r1 -match "PREAUTH|RESPONSE|MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
+Write-Host "  -> $r1" -ForegroundColor $(if($r1 -match "SECOND|POSTAUTH|LOGIN"){"Green"}elseif($r1 -match "PREAUTH|RESPONSE|MAIN_SERVER|REDIRECT|COMPLETE"){"Yellow"}else{"Red"})
 
 # Capture full server output (up to 3000 chars for detailed diagnostics)
 $ss1 = if($so1.Length -gt 3000){$so1.Substring($so1.Length-3000)}else{$so1}
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$results = "=== BATCH v25 ($timestamp) ===`n[1] Response msgType | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
+$results = "=== BATCH v26 ($timestamp) ===`n[1] Longer wait | $r1`nSERVER:`n$ss1`nDLL:`n$dllLog`n"
 Set-Content $resultsFile $results -Encoding UTF8
 
-git add -A; git commit -m "Batch v25: fix response msgType $timestamp"; git push 2>&1
+git add -A; git commit -m "Batch v26: longer wait for reconnect $timestamp"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
