@@ -1,16 +1,16 @@
-﻿=== BATCH v31 (2026-04-12 15:32:59) ===
+﻿=== BATCH v31 (2026-04-12 15:36:52) ===
 [1] DLL v52 code patch | PREAUTH_REPLIED
 SERVER:
-nt Finished): 36 bytes
+record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c4da90db1592b19605196d907e12fd7270e14232cce0a278822b6bb362d6ca815
-[SSL] Client Finished plaintext (16 bytes): 1400000c4da90db1592b19605196d907
-[SSL] Client Finished MAC: e12fd7270e14232cce0a278822b6bb362d6ca815
-[SSL] Client verify_data:   4da90db1592b19605196d907
-[SSL] Expected verify_data:  4da90db1592b19605196d907
+[SSL] Decrypted hex: 1400000cad68da955e68a2203182ec7d38d90569c0d18ab0a3d20f3c96bd100e902bb69c
+[SSL] Client Finished plaintext (16 bytes): 1400000cad68da955e68a2203182ec7d
+[SSL] Client Finished MAC: 38d90569c0d18ab0a3d20f3c96bd100e902bb69c
+[SSL] Client verify_data:   ad68da955e68a2203182ec7d
+[SSL] Expected verify_data:  ad68da955e68a2203182ec7d
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: e12fd7270e14232cce0a278822b6bb362d6ca815
-[SSL] Actual client MAC:   e12fd7270e14232cce0a278822b6bb362d6ca815
+[SSL] Expected client MAC: 38d90569c0d18ab0a3d20f3c96bd100e902bb69c
+[SSL] Actual client MAC:   38d90569c0d18ab0a3d20f3c96bd100e902bb69c
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1018 bytes
@@ -20,7 +20,7 @@ nt Finished): 36 bytes
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 0b922e6a04617955a871e0ed
+[SSL] Server verify_data: d29993557c999c82d09424cb
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
@@ -31,9 +31,10 @@ nt Finished): 36 bytes
 [PreAuth]   CDAT (struct) {
 [PreAuth]     IITO (int) = 0
 [PreAuth]     LANG (int) = -19
-[PreAuth]     U?+6 (type=0xc) ???
+[PreAuth]     U?+6 (type0C) = -6671
+[PreAuth]     [@$- (type=0x66) ???
 [PreAuth]   }
-[PreAuth]   SVCN (type=0x1) DECODE ERROR: Cannot access 'o1' before initialization
+[PreAuth]   :69A (type=0x2d) ???
 [Blaze-Enc] Sent encrypted reply (328 bytes)
 [Blaze-Enc]   0000: 00 00 01 38 00 00 00 09 00 07 00 00 10 00 00 00
 [Blaze-Enc]   0010: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37
@@ -52,19 +53,19 @@ nt Finished): 36 bytes
 [Blaze-Enc]   00e0: 00 c3 3c 00 00 5e 91 02 ce e8 40 01 09 70 72 6f
 [Blaze-Enc]   00f0: 64 2d 73 6a 63 00 00 b2 ec 00 00 0a b3 4c 33 03
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): e5 c0 e7 7e 73 fb a9 b0 3f 9f 3c ad 46 a1 45 6e e8 d6 97 07 21 2e
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 73 61 74 59 d5 c1 47 63 af 98 71 95 77 ce aa 98 dd 64 25 cc 1d fa
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S1 disconnected
 DLL:
-[15:31:11.263] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
-[15:31:11.264] PID: 88108
-[15:31:11.434] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[15:31:11.434]   Before: 0F 85 8E 02 00 00
-[15:31:11.434]   After:  E9 8F 02 00 00 90
-[15:31:11.434] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[15:31:11.434] Code patch applied after 172 ms
-[15:31:11.434] === Done. patches: 1 ===
+[15:35:04.807] === FIFA 17 SSL Bypass v52 (permanent code patch) ===
+[15:35:04.807] PID: 76356
+[15:35:04.983] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[15:35:04.983]   Before: 0F 85 8E 02 00 00
+[15:35:04.983]   After:  E9 8F 02 00 00 90
+[15:35:04.983] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[15:35:04.983] Code patch applied after 172 ms
+[15:35:04.983] === Done. patches: 1 ===
 
 
