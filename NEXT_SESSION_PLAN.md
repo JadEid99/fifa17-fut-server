@@ -1,34 +1,30 @@
-# FIFA 17 SSL Bypass - Current Status
+# FIFA 17 SSL Bypass - CURRENT STATUS
 
-## KEY FINDING: Timing Issue
+## BREAKTHROUGH ACHIEVED
+- DLL sets bAllowAnyCert at offset +0x384 (found via Ghidra)
+- Game accepts our certificate and sends ClientKeyExchange
+- RSA decryption works, master secret derived
+- Game sends ChangeCipherSpec + encrypted Finished
 
-Our Frida patches are applied AFTER the game has already started the SSL handshake. The game's first connection attempt happens during launch (before we press Q). By the time we apply patches and press Q for attempt #2, the code may have already been executed on attempt #1 and the patches don't affect the cached state.
+## CURRENT BLOCKER: Server Finished Message
+The game rejects our server's Finished message (sends encrypted alert).
 
-## What We Know Works
-- 3x bAllowAnyCert JNE→JMP patches prevent the disconnect (HANGING result)
-- The game DOES read our TLS response (ECONNRESET proves it processes the data)
-- The memory dump has all decrypted code
+### Root Cause (from Ghidra analysis of FUN_146131560):
+The server's Finished verify_data must include the CLIENT's Finished message
+in the handshake hash. Our server computes the hash BEFORE receiving the
+client's Finished, so the hash is incomplete.
 
-## What We Need To Do
-1. Apply Frida patches DURING game launch (before first connection attempt)
-2. Or use the DLL proxy to apply patches at DLL_PROCESS_ATTACH time
-3. The DLL approach is better because it runs before ANY game code executes
+### Fix Required:
+1. Receive client's ChangeCipherSpec
+2. Initialize RC4 decryption with clientWriteKey
+3. Decrypt client's Finished message
+4. Add client's Finished to the handshake hash
+5. THEN compute server's Finished: PRF_SHA256(master, "server finished", SHA256(all_messages))
+6. Encrypt and send server's ChangeCipherSpec + Finished
 
-## Patch Locations (confirmed from dump)
-- bAllowAnyCert check 1: exe+0x612522D (change 75→EB)
-- bAllowAnyCert check 2: exe+0x612753D (change 75→EB)  
-- bAllowAnyCert check 3: exe+0x6127C29 (change 75→EB)
-
-## Architecture
-- cert_receive (+0x6127B40): reads cert data from socket
-- cert_process (+0x6127020): parses TLS record fragments (NOT cert verification)
-- cert_finalize (+0x61279F0): finalizes cert processing
-- State 3 handler (+0x61262DC): orchestrates cert receive/process/verify
-- +0x6124140: called on success path (hostname check?)
-- +0x612E770: error handler (calls disconnect)
-- +0x612D5D0: disconnect function
-
-## The Plan
-Use the dinput8.dll proxy to scan for the bAllowAnyCert byte patterns in memory
-and patch them as soon as Denuvo decrypts the code. This happens before the game
-tries to connect, so the patches are in place for the first connection attempt.
+### Crypto Details (from Ghidra):
+- Version: TLS 1.2 (0x0303)
+- PRF: SHA-256 based (FUN_146131a60)
+- Finished: 12 bytes = PRF(master_secret, "server finished", SHA256(all_handshake_messages))
+- Record MAC: HMAC-SHA1 (cipher suite RC4-SHA)
+- The handshake hash includes ALL messages including client's Finished
