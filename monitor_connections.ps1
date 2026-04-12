@@ -29,9 +29,9 @@ if ($p -and $p.MainWindowHandle -ne [IntPtr]::Zero) {
     [KM]::Q()
 }
 
-Write-Host "Monitoring connections for 30 seconds..." -ForegroundColor Yellow
+Write-Host "Monitoring connections for 40 seconds..." -ForegroundColor Yellow
 $log = ""
-for ($i = 0; $i -lt 60; $i++) {
+for ($i = 0; $i -lt 80; $i++) {
     Start-Sleep -Milliseconds 500
     $ts = Get-Date -Format "HH:mm:ss.fff"
     $p = Get-Process -Name FIFA17 -EA SilentlyContinue

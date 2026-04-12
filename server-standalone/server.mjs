@@ -844,12 +844,6 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
-                // Hex dump the response for debugging
-                for (let i = 0; i < resp.length; i += 16) {
-                  const slice = resp.subarray(i, Math.min(i + 16, resp.length));
-                  const hex = Array.from(slice).map(b => b.toString(16).padStart(2, '0')).join(' ');
-                  console.log(`[Blaze-Enc]   ${i.toString(16).padStart(4,'0')}: ${hex}`);
-                }
               }
               result = readPacket(blazeBuf);
             }
@@ -904,9 +898,13 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
   }
 
   socket.on('data', (data) => {
+    console.log(`[SSL-DATA] Received ${data.length} bytes on socket (total pending: ${pendingBuf.length + data.length})`);
     pendingBuf = Buffer.concat([pendingBuf, data]);
     processPending();
   });
+
+  socket.on('close', () => console.log('[SSL-CONN] Socket closed'));
+  socket.on('error', (e) => console.log(`[SSL-CONN] Socket error: ${e.message}`));
 
   if (pendingBuf.length > 0) {
     console.log(`[SSL] Processing ${pendingBuf.length} bytes of leftover data from handshake`);
