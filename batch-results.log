@@ -1,93 +1,40 @@
-﻿=== BATCH v31 (2026-04-13 09:02:14) ===
-[1] DLL v52 code patch | PREAUTH_REPLIED
-SERVER:
-rd: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 7bed68ac4c49f08ea31e73182f8f6417
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c663d4ebc78f53f6c5cdd27a6743c6866b69a344091e7f74668653eb168feb442
-[SSL] Client Finished plaintext (16 bytes): 1400000c663d4ebc78f53f6c5cdd27a6
-[SSL] Client Finished MAC: 743c6866b69a344091e7f74668653eb168feb442
-[SSL] Client verify_data:   663d4ebc78f53f6c5cdd27a6
-[SSL] Expected verify_data:  663d4ebc78f53f6c5cdd27a6
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 743c6866b69a344091e7f74668653eb168feb442
-[SSL] Actual client MAC:   743c6866b69a344091e7f74668653eb168feb442
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1018 bytes
-[SSL]   msg[0]: 91 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 991a81c4593123e24adf5ca9
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 244 bytes on socket (total pending: 244)
-[SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
-[SSL] Decrypted 219 bytes of application data
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = 1701729619
-[PreAuth]     SVCN (str) = "fifa-2017-pc"
-[PreAuth]     TYPE (int) = 0
-[PreAuth]   }
-[PreAuth]   CINF (struct) {
-[PreAuth]     BSDK (str) = "15.1.1.3.0"
-[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
-[PreAuth]     CLNT (str) = "FIFA17"
-[PreAuth]     CPFT (int) = 4
-[PreAuth]     CSKU (str) = "FIFAPC"
-[PreAuth]     CVER (str) = "3175939"
-[PreAuth]     DSDK (str) = "15.1.2.1.0"
-[PreAuth]     ENV  (str) = "prod"
-[PreAuth]     LOC  (int) = 1701729619
-[PreAuth]     PTVR (str) = "1.1"
-[PreAuth]   }
-[PreAuth]   FCCR (struct) {
-[PreAuth]     CFID (str) = "BlazeSDK"
-[PreAuth]   }
-[PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending BF4-based response (829 bytes)
-[Blaze-Enc] Sent encrypted reply (845 bytes)
-[Blaze-Enc] Sending proactive SilentLogin response after PreAuth...
-[Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 1b 2d 0f 76 8a c4 32 c9 a6 b2 36 0f b1 8a ff 74 2a 62 e0 e6 0f 6b
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Main] S1 disconnected
-[SSL-CONN] Socket closed
-DLL:
-[09:01:02.428] === FIFA 17 SSL Bypass v56 (cert + Origin + auth bypass + auth flag) ===
-[09:01:02.428] PID: 95296
-[09:01:02.592] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[09:01:02.592]   Before: 0F 85 8E 02 00 00
-[09:01:02.592]   After:  E9 8F 02 00 00 90
-[09:01:02.592] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[09:01:02.747] Found auth call at 0000000146F19A11
-[09:01:02.747] Code cave at 00000000001D0000, fake auth code at 00007FFD4C7F4000 ("FAKEAUTHCODE1234567890", len=22)
-[09:01:02.747] Code cave too far for rel32 call (offset=-5483305494)
-[09:01:02.747] Patched CALL to use absolute address via MOV RAX + CALL RAX
-[09:01:02.747] PATCHED: OriginRequestAuthCodeSync -> fake auth code provider
-[09:01:02.799] Found auth flag write at 00000001473CE785
-[09:01:02.799]   Before: 40 88 BB 61 20 00 00
-[09:01:02.799]   After:  C6 83 61 20 00 00 01
-[09:01:02.799] PATCHED: Auth bypass flag -> always set to 1
-[09:01:02.953] Found Origin SDK check at 00000001470A8430
-[09:01:02.953]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
-[09:01:02.953]   After:  B0 01 90 90 90 ... 90 90 90 C3
-[09:01:02.953] PATCHED: Origin SDK check -> always returns true
-[09:01:02.953] All patches applied after 516 ms
-[09:01:02.953] === Done. patches: 4 ===
+﻿=== LSX Origin SDK Test (2026-04-13 09:04:39) ===
+BLAZE RESULT: UNKNOWN
+LSX RESULT: NO_ACTIVITY
 
+--- BLAZE SERVER LOG ---
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
+
+--- LSX SERVER LOG ---
+
+
+--- DLL LOG ---
+[09:03:28.800] === FIFA 17 SSL Bypass v56 (cert + Origin + auth bypass + auth flag) ===
+[09:03:28.800] PID: 86840
+[09:03:28.961] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[09:03:28.961]   Before: 0F 85 8E 02 00 00
+[09:03:28.961]   After:  E9 8F 02 00 00 90
+[09:03:28.961] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[09:03:29.119] Found auth call at 0000000146F19A11
+[09:03:29.119] Code cave at 00000000001D0000, fake auth code at 00007FFD4D454000 ("FAKEAUTHCODE1234567890", len=22)
+[09:03:29.119] Code cave too far for rel32 call (offset=-5483305494)
+[09:03:29.119] Patched CALL to use absolute address via MOV RAX + CALL RAX
+[09:03:29.119] PATCHED: OriginRequestAuthCodeSync -> fake auth code provider
+[09:03:29.173] Found auth flag write at 00000001473CE785
+[09:03:29.173]   Before: 40 88 BB 61 20 00 00
+[09:03:29.173]   After:  C6 83 61 20 00 00 01
+[09:03:29.173] PATCHED: Auth bypass flag -> always set to 1
 
