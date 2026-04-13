@@ -1,158 +1,9 @@
-=== S2 disconnect (2026-04-13 19:54:36) ===
+﻿=== LSX + connect() hook test (2026-04-13 21:55:07) ===
+BLAZE RESULT: SECOND_CONNECTION
+LSX RESULT: NO_ACTIVITY
 
-[SSL-CONN] Socket closed
-[Redirector-Raw] Client connected: 127.0.0.1:52939
-[Redirector-Raw] Received 148 bytes
-[Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd 49 fb 95  ...........i.I..
-  0010: 76 9a 1c 80 80 4a b7 ed 3d 79 f2 91 5f 57 18 c2  v....J..=y.._W..
-  0020: c9 88 18 d5 67 55 15 73 82 af 0e 20 d8 64 f1 c3  ....gU.s... .d..
-  0030: 61 18 8a 97 a8 5b 3f 2f 05 b9 80 8c a1 fb 4c 44  a....[?/......LD
-  0040: 50 b0 0c d8 3e 9f c1 3a 9c 86 38 87 00 10 00 9d  P...>..:..8.....
-  0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-  0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
-  0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
-  0080: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
-  0090: 02 01 01 01                                      ....
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69dd49fb95769a1c...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 21 30 99 ab 04
-  0010: ce 04 59 34 25 08 e3 75 29 29 9f b6 61 58 d3 1f
-  0020: 58 b7 56 9f ba 8a b7 af ee 90 b6 c9 18 e9 f8 02
-  0030: 5f 02 1e e6 74 19 1f 9c 3e be 41 74 07 25 b6 b0
-  0040: ed 01 1c f5 73 55 df f2 91 c7 5d 99 f9 cf 22 b2
-  0050: f9 d6 a7 a2 7d 45 b6 f6 6f c9 3a 4e 49 85 94 3a
-  0060: 53 8d 35 fb 2f 32 a9 ee d7 b2 78 a1 29 f8 d6 41
-  0070: 14 11 79 57 d7 1f d2 e8 17 08 9b 13 b5 d6 e8 91
-  0080: 61 45 26 70 36 73 6d 6d a8 46 b0
-[SSL] Record: type=0x16 ver=0x303 len=134
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
-[SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: bf4cd1792ac4177708cd19b5cfa48dd1...
-[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 2a 17 3c 51 21
-  0010: da a5 69 9a 63 4f a0 c6 00 c2 4d 6b e4 1e 1c 96
-  0020: 95 e8 29 64 b6 97 ed 56 14 98 d0 7c cf 9e 37
-[SSL] Record: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 47d170e1c0a8f4fcd35f8671deddd09d
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c87dbd3417188402a9d16cf7aa684b7de758b508f44bce066db0f6e2e385fe918
-[SSL] Client Finished plaintext (16 bytes): 1400000c87dbd3417188402a9d16cf7a
-[SSL] Client Finished MAC: a684b7de758b508f44bce066db0f6e2e385fe918
-[SSL] Client verify_data:   87dbd3417188402a9d16cf7a
-[SSL] Expected verify_data:  87dbd3417188402a9d16cf7a
-[SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: a684b7de758b508f44bce066db0f6e2e385fe918
-[SSL] Actual client MAC:   a684b7de758b508f44bce066db0f6e2e385fe918
-[SSL] ✓ Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1070 bytes
-[SSL]   msg[0]: 143 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 9f816ef4680d68f7916348ce
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 883 bytes on socket (total pending: 883)
-[SSL] TLS record: type=0x17 ver=0x303 len=878 (pending: 883)
-[SSL] Decrypted 858 bytes of application data
-[SSL] Raw app data (858b): 50 4f 53 54 20 2f 72 65 64 69 72 65 63 74 6f 72 2f 67 65 74 53 65 72 76 65 72 49 6e 73 74 61 6e
-[HTTP-Blaze] Request:
-POST /redirector/getServerInstance HTTP/1.1
-Host: winter15.gosredirector.ea.com:42230
-Content-Length: 665
-User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
-Content-Type: application/xml
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstancerequest>
-  <blazesdkversion>15.1.1.3.0</blazesdkversion>
-  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
-  <clientname>FIFA17</clientname>
-  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
-  <clientplatform>pc</clientplatform>
-  <client
-[HTTP-Blaze] POST /redirector/getServerInstance (body: 665 bytes)
-[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
-[HTTP-Blaze] secure=1
-[HTTP-Blaze] Response (417 bytes):
-HTTP/1.1 200 OK
-Content-Type: application/xml
-Content-Length: 322
-Connection: keep-alive
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstanceinfo>
-  <address member="0">
-    <valu>
-      <hostname>127.0.0.1</hostname>
-      <ip>2130706433</ip>
-      <port>10041</port>
-    </valu>
-  </address
-[HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 2 connected: 127.0.0.1:52940
-[Main] S2: received 128 bytes (total: 128)
-[Main]   0000: 16 03 00 00 7b 01 00 00 77 03 03 69 dd 49 fb 16  ....{...w..i.I..
-[Main]   0010: c6 da 7c 4a 9f 04 b9 6f 98 f7 84 f1 fc f2 b7 51  ..|J...o.......Q
-[Main]   0020: 81 08 dc 7f e3 93 83 ee c4 3f 4b 20 d1 96 97 21  .........?K ...!
-[Main]   0030: 60 d8 b5 83 87 15 6f fe 14 92 c2 c2 8d 84 7a d4  `.....o.......z.
-[Main] S2: TLS detected, starting handshake
-[SSL] ClientHello: version=0x303 random=69dd49fb16c6da7c...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 89 a2 22 c8 88
-  0010: 2c d9 67 fa b8 70 31 8c ea 13 49 49 92 e9 97 1d
-  0020: 29 7d 55 32 7b f1 f7 e8 7a a5 42 4c 00 a8 50 19
-  0030: 14 d1 6d aa 30 71 d5 1c 4a 29 55 f9 bb 98 99 c0
-  0040: aa c3 b7 8c 5a c9 1d d6 2b ca 5a 03 11 ac 96 07
-  0050: 37 cd c9 65 33 a3 99 5f 2e e6 dd a8 4b d7 b1 1c
-  0060: e9 f4 1c f9 b6 4c 5d 92 51 e8 3b 98 ff db 89 69
-  0070: 71 3a 05 08 4e 47 e9 97 89 dc f5 be 9d 16 15 90
-  0080: 44 da eb f4 91 b3 6e 57 cc ed e5
-[SSL] Record: type=0x16 ver=0x303 len=134
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
-[SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 2965befc9619f6565b08b64847def11c...
-[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 44 eb a1 e9 37
-  0010: cf 73 c5 e0 d6 33 91 eb 55 4d 77 2d 1e 3c 51 72
-  0020: 90 eb ef 94 bd b5 8b 53 00 94 99 9f 1e ee 28
-[SSL] Record: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 4aaaa5b9fd8b33b99b65dc9eb8c5fbe7
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c56b33b59e2ed86c83c2dd2f22b23af723ed9dc505b42f0f6c4b2a354c1c5f569
-[SSL] Client Finished plaintext (16 bytes): 1400000c56b33b59e2ed86c83c2dd2f2
-[SSL] Client Finished MAC: 2b23af723ed9dc505b42f0f6c4b2a354c1c5f569
-[SSL] Client verify_data:   56b33b59e2ed86c83c2dd2f2
-[SSL] Expected verify_data:  56b33b59e2ed86c83c2dd2f2
-[SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 2b23af723ed9dc505b42f0f6c4b2a354c1c5f569
-[SSL] Actual client MAC:   2b23af723ed9dc505b42f0f6c4b2a354c1c5f569
-[SSL] ✓ Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
+--- BLAZE SERVER LOG ---
+c
 [SSL] Server Finished hash input: 6 messages, total 1050 bytes
 [SSL]   msg[0]: 123 bytes, starts=0x1
 [SSL]   msg[1]: 74 bytes, starts=0x2
@@ -215,3 +66,59 @@ Connection: keep-alive
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S2 disconnected
+[AUTO-LOG] Pushed results for: S2 disconnect
+[SSL-CONN] Socket closed
+
+--- LSX SERVER LOG ---
+[19:53:43.847] [LSX] === LSX Origin SDK Server ===
+[19:53:43.849] [LSX] Mode: STANDALONE (replacing STP)
+[19:53:43.849] [LSX] Listening on port 4218
+[19:53:43.849] [LSX] Waiting for game connection...
+
+--- DLL LOG ---
+[21:53:46.617] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[21:53:46.617] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[21:53:46.617] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[21:53:46.617] PID: 91384
+[21:53:46.770] PATCHED: cert bypass at 000000014613244B
+[21:53:46.960] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[21:53:46.960] PATCHED: FUN_1470db3c0 body -> fake auth code
+[21:53:47.000] PATCHED: auth flag at 00000001473CE785
+[21:53:47.047] PATCHED: IsLoggedIntoEA -> true
+[21:53:47.047] PATCHED: IsLoggedIntoNetwork -> true
+[21:53:47.161] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[21:53:47.161] PATCHED: SDK gate -> always 1
+[21:53:47.172] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[21:53:47.172] PATCHED: Login vtable check -> return 1
+[21:53:47.172] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:53:47.172] LOGIN SilentLogin: already patched
+[21:53:47.172] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:53:47.172] LOGIN ExpressLogin: already patched
+[21:53:47.172] PATCHED: PreAuth disconnect NOPed at +61
+[21:53:47.172] PATCHED: 1 calls NOPed in FUN_146e19a00
+[21:53:47.172] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[21:53:47.172] PREAUTH_HANDLER: Cave at 00000000005B0000, 61 bytes
+[21:53:47.172] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000005B0000)
+[21:53:47.316] PATCHED: Origin SDK check at 00000001470A8430
+[21:53:47.316] All patches in 703 ms
+[21:53:47.316] patches: 8 (cert=1 orig=1 auth=1 flag=1 login=2)
+[21:53:47.316] AUTH: Checking login gate globals...
+[21:53:47.316] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[21:53:47.316] AUTH: DAT_144b86bdf = 0 (error flag)
+[21:53:47.316] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[21:53:53.060] AUTH: Slot cleared at 5700 ms
+[21:53:53.060] AUTH: OnlineMgr=0x45D83E70
+[21:53:53.060] AUTH: slot=0x0 cave=0
+[21:53:53.060] AUTH: Using fake vtable (real not captured)
+[21:53:53.060] AUTH: Injected fake request 0000000064790000 into slot
+[21:53:58.060] AUTH: cave=1 slot=0x0
+[21:53:58.060] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[21:53:58.060] AUTH: req[+0xd8]=0x99C9D38 req[+0xe8]=1
+[21:53:58.060] AUTH: state=2. Auth ready.
+[21:53:58.060] AUTH: OnlineMgr+0xb10 = 0x45D8A6E0
+[21:53:58.060] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45D8A960
+[21:53:58.060] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[21:53:58.060] AUTH: Found 0 objects with vtables in BlazeHub
+[21:53:58.060] AUTH: BlazeHub(0000000045D8A960)+0x53f = 1
+[21:53:58.060] AUTH: Starting continuous +0x53f flag enforcer...
+
