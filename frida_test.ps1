@@ -57,29 +57,26 @@ Start-Sleep 3
 # Launch game
 Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe
+# Wait for game to start
 for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
+Start-Sleep 5
 
-# Navigate menus
-Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
-
-# Wait for first connection attempt + auth injection
-Start-Sleep 20; FEnter; Start-Sleep 2
-
-# Get PID
+# Attach Frida EARLY - before menu navigation
 $fifaProc = Get-Process -Name FIFA17 -EA SilentlyContinue
-if (-not $fifaProc) {
-    Write-Host "[ERROR] FIFA17 not running!" -ForegroundColor Red
-    exit 1
-}
+if (-not $fifaProc) { Write-Host "[ERROR] FIFA17 not running!" -ForegroundColor Red; exit 1 }
 $fifaPid = $fifaProc.Id
 Write-Host "[FRIDA] Attaching to FIFA17 PID $fifaPid..." -ForegroundColor Yellow
-
-# Run Frida - capture output for 20 seconds
 $fridaJob = Start-Job -ScriptBlock {
     param($fpid, $script)
     frida -p $fpid -l $script 2>&1
 } -ArgumentList $fifaPid, $fridaScript
-Start-Sleep 3
+Start-Sleep 5
+
+# Navigate menus (Frida is already attached)
+FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
+
+# Wait for first connection + auth injection
+Start-Sleep 20; FEnter; Start-Sleep 2
 
 # Trigger connection with Q
 Write-Host "[TEST] Pressing Q to trigger connection..." -ForegroundColor Yellow
