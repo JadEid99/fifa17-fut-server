@@ -230,7 +230,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v87 (ALL login type vtables patched + SDK + auth) ===");
+    Log("=== FIFA 17 v89 (continuous 0x53f enforcer + all vtables + SDK + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -352,7 +352,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception creating fake SDK object"); }
     
-    Log("AUTH: Polling for slot to clear...");
+    Log("AUTH: Polling for slot to clear + forcing 0x53f flag...");
     Sleep(1000);
     
     for (int wait = 0; wait < 300; wait++) {
@@ -362,6 +362,15 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 uint64_t om = *pOM;
                 uint8_t* pAuthFail = (uint8_t*)(om + 0x4ece);
                 if (*pAuthFail != 0) { *pAuthFail = 0; Log("AUTH: Cleared +0x4ece at %d ms", 1000+wait*100); }
+                // Force +0x53f flag on every poll iteration
+                uint64_t cm = *(uint64_t*)(om + 0xb10);
+                if (cm != 0) {
+                    uint64_t bh = *(uint64_t*)(cm + 0xf8);
+                    if (bh != 0) {
+                        uint8_t* pF = (uint8_t*)(bh + 0x53f);
+                        if (*pF == 0) { *pF = 1; }
+                    }
+                }
                 // Still try to capture vtable if we missed it
                 uint64_t* pSlot = (uint64_t*)(om + 0x4ea0);
                 if (*pSlot != 0 && realVtable == 0) {
@@ -446,6 +455,26 @@ static DWORD WINAPI PatchThread(LPVOID) {
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception"); }
     
 done:
+    // Keep forcing +0x53f flag continuously in background
+    // This ensures it's set before any connection attempt
+    Log("AUTH: Starting continuous +0x53f flag enforcer...");
+    for (int i = 0; i < 6000; i++) { // 10 minutes
+        __try {
+            uint64_t* pOM = (uint64_t*)0x1448a3b20;
+            if (*pOM != 0) {
+                uint64_t om = *pOM;
+                uint64_t cm = *(uint64_t*)(om + 0xb10);
+                if (cm != 0) {
+                    uint64_t bh = *(uint64_t*)(cm + 0xf8);
+                    if (bh != 0) {
+                        uint8_t* pF = (uint8_t*)(bh + 0x53f);
+                        if (*pF == 0) { *pF = 1; }
+                    }
+                }
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        Sleep(100);
+    }
     return 0;
 }
 
