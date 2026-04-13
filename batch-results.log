@@ -1,28 +1,18 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-13 21:18:36) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-13 21:26:38) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-68f00515db7263594
-[SSL] Actual client MAC:   7733b1d78411cf268922fda68f00515db7263594
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1018 bytes
-[SSL]   msg[0]: 91 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 658af68fe08911e8aefd6541
+bytes, starts=0x14
+[SSL] Server verify_data: 9d87f33b7dd4d13958dd09aa
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
 [SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
 [SSL] Decrypted 219 bytes of application data
-[SSL] Raw app data (219b): 00 00 00 cb 00 00 00 09 00 07 00 00 00 00 00 00 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203 msgType=0x0 msgId=0 err=0
+[SSL] Raw app data (219b): 00 00 00 cb 00 00 00 09 00 07 00 00 02 00 00 00 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2
+[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203 msgType=0x2000 msgId=0 err=0
 [PreAuth] Variant: full
 [PreAuth] Request TDF:
 [PreAuth]   CDAT (struct) {
@@ -57,60 +47,70 @@
 [SSL-DATA] Received 41 bytes on socket (total pending: 41)
 [SSL] TLS record: type=0x17 ver=0x303 len=36 (pending: 41)
 [SSL] Decrypted 16 bytes of application data
-[SSL] Raw app data (16b): 00 00 00 00 00 00 00 00 00 00 00 00 01 80 00 00
-[Blaze-Enc] comp=0x0000 cmd=0x0000 len=0 msgType=0x1000 msgId=0 err=0
+[SSL] Raw app data (16b): 00 00 00 00 00 00 00 00 00 00 00 00 03 80 00 00
+[Blaze-Enc] comp=0x0000 cmd=0x0000 len=0 msgType=0x3000 msgId=0 err=0
 [Blaze] Unhandled comp=0x0 cmd=0x0
 [Blaze-Enc] Response header hex (14b): 00 00 00 00 00 00 00 00 00 00 00 00 01 00
 [Blaze-Enc] Sent encrypted reply (16 bytes)
+[SSL-DATA] Received 41 bytes on socket (total pending: 41)
+[SSL] TLS record: type=0x17 ver=0x303 len=36 (pending: 41)
+[SSL] Decrypted 16 bytes of application data
+[SSL] Raw app data (16b): 00 00 00 00 00 00 00 09 00 02 00 00 04 00 00 00
+[Blaze-Enc] comp=0x0009 cmd=0x0002 len=0 msgType=0x0 msgId=0 err=0
+[Blaze-Enc] Response header hex (14b): 00 00 00 0a 00 00 00 09 00 02 00 00 01 00
+[Blaze-Enc] Sent encrypted reply (26 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): f5 7f 35 89 53 ea 2e e5 83 58 0b f1 c6 1b db 69 0b 62 22 1c fe bf
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 00 57 11 61 21 67 c6 3d 6d 71 34 c6 3f f0 c5 20 67 b2 3b 0d 37 34
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Main] S1 disconnected
+[Main] S2 disconnected
 [SSL-CONN] Socket closed
 
 --- DLL LOG (last 3000 chars) ---
-[21:16:48.438] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[21:16:48.438] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[21:16:48.438] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[21:16:48.438] PID: 95348
-[21:16:48.598] PATCHED: cert bypass at 000000014613244B
-[21:16:48.774] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[21:16:48.774] PATCHED: FUN_1470db3c0 body -> fake auth code
-[21:16:48.816] PATCHED: auth flag at 00000001473CE785
-[21:16:48.862] PATCHED: IsLoggedIntoEA -> true
-[21:16:48.862] PATCHED: IsLoggedIntoNetwork -> true
-[21:16:48.955] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[21:16:48.955] PATCHED: SDK gate -> always 1
-[21:16:48.969] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[21:16:48.969] PATCHED: Login vtable check -> return 1
-[21:16:48.969] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:16:48.969] LOGIN SilentLogin: already patched
-[21:16:48.969] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:16:48.969] LOGIN ExpressLogin: already patched
-[21:16:48.969] PATCHED: PreAuth disconnect NOPed (for proactive Login)
-[21:16:49.122] PATCHED: Origin SDK check at 00000001470A8430
-[21:16:49.122] All patches in 672 ms
-[21:16:49.122] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[21:16:49.122] AUTH: Checking login gate globals...
-[21:16:49.122] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[21:16:49.122] AUTH: DAT_144b86bdf = 0 (error flag)
-[21:16:49.122] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[21:16:54.952] AUTH: Slot cleared at 5800 ms
-[21:16:54.952] AUTH: OnlineMgr=0x45DD3E70
-[21:16:54.952] AUTH: slot=0x0 cave=0
-[21:16:54.952] AUTH: Using fake vtable (real not captured)
-[21:16:54.952] AUTH: Injected fake request 0000000064820000 into slot
-[21:16:59.953] AUTH: cave=1 slot=0x0
-[21:16:59.953] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[21:16:59.953] AUTH: req[+0xd8]=0x9A6A0C8 req[+0xe8]=1
-[21:16:59.953] AUTH: state=2. Auth ready.
-[21:16:59.953] AUTH: OnlineMgr+0xb10 = 0x45DDA6E0
-[21:16:59.953] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45DDA960
-[21:16:59.953] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[21:16:59.953] AUTH: Found 0 objects with vtables in BlazeHub
-[21:16:59.953] AUTH: BlazeHub(0000000045DDA960)+0x53f = 1
-[21:16:59.953] AUTH: Starting continuous +0x53f flag enforcer...
+[21:24:49.633] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[21:24:49.633] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[21:24:49.634] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[21:24:49.634] PID: 104948
+[21:24:49.791] PATCHED: cert bypass at 000000014613244B
+[21:24:49.953] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[21:24:49.953] PATCHED: FUN_1470db3c0 body -> fake auth code
+[21:24:49.995] PATCHED: auth flag at 00000001473CE785
+[21:24:50.040] PATCHED: IsLoggedIntoEA -> true
+[21:24:50.040] PATCHED: IsLoggedIntoNetwork -> true
+[21:24:50.116] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[21:24:50.116] PATCHED: SDK gate -> always 1
+[21:24:50.128] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[21:24:50.128] PATCHED: Login vtable check -> return 1
+[21:24:50.128] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:24:50.128] LOGIN SilentLogin: already patched
+[21:24:50.128] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:24:50.128] LOGIN ExpressLogin: already patched
+[21:24:50.128] PATCHED: PreAuth disconnect NOPed (for proactive Login)
+[21:24:50.128] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[21:24:50.128] PREAUTH_HANDLER: Cave at 00000000009D0000, 61 bytes
+[21:24:50.128] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000009D0000)
+[21:24:50.274] PATCHED: Origin SDK check at 00000001470A8430
+[21:24:50.275] All patches in 640 ms
+[21:24:50.275] patches: 8 (cert=1 orig=1 auth=1 flag=1 login=2)
+[21:24:50.275] AUTH: Checking login gate globals...
+[21:24:50.275] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[21:24:50.275] AUTH: DAT_144b86bdf = 0 (error flag)
+[21:24:50.275] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[21:24:56.112] AUTH: Slot cleared at 5800 ms
+[21:24:56.112] AUTH: OnlineMgr=0x45CF3E70
+[21:24:56.112] AUTH: slot=0x0 cave=0
+[21:24:56.112] AUTH: Using fake vtable (real not captured)
+[21:24:56.112] AUTH: Injected fake request 00000000647E0000 into slot
+[21:25:01.113] AUTH: cave=1 slot=0x0
+[21:25:01.113] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[21:25:01.113] AUTH: req[+0xd8]=0x99E9930 req[+0xe8]=1
+[21:25:01.113] AUTH: state=2. Auth ready.
+[21:25:01.113] AUTH: OnlineMgr+0xb10 = 0x45CFA6E0
+[21:25:01.113] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45CFA960
+[21:25:01.113] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[21:25:01.113] AUTH: Found 0 objects with vtables in BlazeHub
+[21:25:01.113] AUTH: BlazeHub(0000000045CFA960)+0x53f = 1
+[21:25:01.113] AUTH: Starting continuous +0x53f flag enforcer...
 
