@@ -172,7 +172,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v68 (patches + auth re-injection) ===");
+    Log("=== FIFA 17 v69 (patches + fast auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -194,8 +194,24 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
     // executing. We wait for the 15s timeout to complete, then re-inject a fake
     // request object so the game processes it with our patched function.
-    Log("AUTH: Waiting 18s for STP timeout to complete...");
-    Sleep(18000);
+    Log("AUTH: Waiting 2s for init, then polling for slot to clear...");
+    Sleep(2000);
+    
+    // Poll until the OnlineManager exists and the auth slot is cleared
+    // (meaning the original auth request completed)
+    for (int wait = 0; wait < 200; wait++) { // up to 20s
+        __try {
+            uint64_t* pOM = (uint64_t*)0x1448a3b20;
+            if (*pOM != 0) {
+                uint64_t* pSlot = (uint64_t*)(*pOM + 0x4ea0);
+                if (*pSlot == 0 && g_caveExecuted == 0) {
+                    Log("AUTH: Slot cleared after %d ms, injecting now", 2000 + wait*100);
+                    break;
+                }
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        Sleep(100);
+    }
     
     __try {
         uint64_t* pOM = (uint64_t*)0x1448a3b20;
