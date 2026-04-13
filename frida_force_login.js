@@ -17,37 +17,42 @@ Interceptor.attach(addr(0x6db7490), {
         
         // Read LoginSM from the REAL BlazeHub
         try {
-            var loginSM = blazeHubAddr.add(0x750).readPointer();
-            console.log('[BlazeHub] +0x750 LoginSM=' + loginSM);
+            var connMgr = blazeHubAddr.add(0x750).readPointer();
+            console.log('[BlazeHub] +0x750 ConnMgr=' + connMgr);
             
-            if (loginSM.compare(ptr(0x1000)) > 0) {
-                // Looks like a valid pointer
-                var activeType = loginSM.add(0x28).readPointer();
+            if (connMgr.compare(ptr(0x10000)) > 0) {
+                // LoginStateMachine is at ConnMgr + 0x1db0
+                var loginSM = connMgr.add(0x1db0);
+                console.log('[ConnMgr] LoginSM at ' + loginSM);
+                
+                // LoginSM layout: [0]=vtable, [+0x08]=type1, [+0x10]=type2, [+0x20]=type4, [+0x28]=active
+                var lsmVtable = loginSM.readPointer();
+                var active = loginSM.add(0x28).readPointer();
                 var type1 = loginSM.add(0x08).readPointer();
                 var type2 = loginSM.add(0x10).readPointer();
-                var type4 = loginSM.add(0x20).readPointer();
-                console.log('[LoginSM] +0x08=' + type1 + ' +0x10=' + type2 + ' +0x20=' + type4 + ' +0x28(active)=' + activeType);
+                console.log('[LoginSM] vtable=' + lsmVtable + ' active=' + active + ' type1=' + type1 + ' type2=' + type2);
                 
-                if (!activeType.isNull()) {
-                    var vtable = activeType.readPointer();
-                    var checkFn = vtable.add(0x10).readPointer();
-                    console.log('[LoginSM] ActiveType vtable=' + vtable + ' checkFn=' + checkFn);
+                if (!active.isNull() && active.compare(ptr(0x10000)) > 0) {
+                    var atVtable = active.readPointer();
+                    var checkFn = atVtable.add(0x10).readPointer();
+                    console.log('[LoginSM] ActiveType vtable=' + atVtable + ' checkFn=' + checkFn);
                     
-                    // Call the check function on the game thread
                     var check = new NativeFunction(checkFn, 'uint8', ['pointer']);
-                    var r = check(activeType);
+                    var r = check(active);
                     console.log('[LoginSM] >>> CheckFn returned: ' + r + ' <<<');
                     
-                    // Read +0x30 on activeType (this is what the original check function reads)
-                    var val30 = activeType.add(0x30).readPointer();
-                    console.log('[LoginSM] ActiveType+0x30=' + val30);
+                    // Read what the check function reads at +0x30
+                    try {
+                        var val30 = active.add(0x30).readPointer();
+                        console.log('[LoginSM] ActiveType+0x30=' + val30);
+                    } catch(e2) {}
+                } else {
+                    console.log('[LoginSM] Active type is NULL or invalid: ' + active);
                 }
                 
-                // Also check the state at loginSM+0x30 (state field)
-                var state = loginSM.add(0x30).readU32();
-                console.log('[LoginSM] +0x30 state=' + state);
-            } else {
-                console.log('[BlazeHub] LoginSM is NOT a valid pointer!');
+                // Also dump raw bytes around the LoginSM to verify structure
+                var raw = loginSM.readByteArray(64);
+                console.log('[LoginSM] raw: ' + Array.from(new Uint8Array(raw)).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' '));
             }
         } catch(e) {
             console.log('[BlazeHub] Error: ' + e.message);
