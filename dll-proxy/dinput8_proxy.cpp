@@ -172,7 +172,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v72 (early vtable capture + auth re-injection) ===");
+    Log("=== FIFA 17 v73 (login gate diagnostic + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -206,7 +206,28 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
     // executing. We wait for the 15s timeout to complete, then re-inject a fake
     // request object so the game processes it with our patched function.
-    Log("AUTH: Polling for slot to clear (vtable=%s)...", realVtable ? "captured" : "NOT captured");
+    Log("AUTH: Checking login gate globals...");
+    __try {
+        uint64_t* pSdkMgr = (uint64_t*)0x144b86bf8;
+        uint8_t* pSdkErr = (uint8_t*)0x144b86bdf;
+        Log("AUTH: DAT_144b86bf8 = 0x%llX (Origin SDK manager)", *pSdkMgr);
+        Log("AUTH: DAT_144b86bdf = %d (error flag)", *pSdkErr);
+        // FUN_1471a5da0 returns 1 if bf8!=0 AND bdf==0
+        // If bf8 is 0, the login flow is completely blocked
+        if (*pSdkMgr == 0) {
+            Log("AUTH: >>> SDK manager is NULL - this blocks ALL login! <<<");
+            Log("AUTH: Writing a non-zero value to unblock...");
+            // Write 1 to make the check pass (it just needs to be non-zero)
+            *pSdkMgr = 1;
+            Log("AUTH: DAT_144b86bf8 = 0x%llX (after write)", *pSdkMgr);
+        }
+        if (*pSdkErr != 0) {
+            Log("AUTH: >>> Error flag is set - clearing it <<<");
+            *pSdkErr = 0;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception checking globals"); }
+    
+    Log("AUTH: Polling for slot to clear...");
     Sleep(1000);
     
     for (int wait = 0; wait < 300; wait++) {
