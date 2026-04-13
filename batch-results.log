@@ -1,37 +1,116 @@
-﻿=== Frida Login Trace (2026-04-13 17:59:00) ===
+﻿=== Frida Login Trace (2026-04-13 18:04:40) ===
 
 --- FRIDA OUTPUT (last 3000 chars) ---
-____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-=== FIFA 17 Login Flow Tracer ===
-Base: 0x140000000
-[HOOK] FUN_1471a5da0 (SDK gate) at 0x1431a5da0
-[HOOK] FUN_1471995b0 (get SDK mgr) at 0x1431995b0
-[HOOK] FUN_146e19a00 (PreAuth complete) at 0x142e19a00
-[HOOK] FUN_146db3e40 (Blaze disconnect) at 0x142db3e40
-[HOOK] FUN_146db6af0 (LoginSM setup) at 0x142db6af0
-[HOOK] FUN_146e19680 (ConnMgr create) at 0x142e19680
-[HOOK] FUN_146e18170 (send RPC) at 0x142e18170
-[HOOK] FUN_146e1e460 (post-PreAuth) at 0x142e1e460
-[HOOK] FUN_146e1c3f0 (PreAuth processor) at 0x142e1c3f0
-[HOOK] FUN_146f2a270 (LOGIN SENDER) at 0x142f2a270
-[HOOK] FUN_146da9570 (schedule callback) at 0x142da9570
-[HOOK] FUN_146dad43c (callback dispatch) at 0x142dad43c
-[HOOK] FUN_146e156a0 (login type check) at 0x142e156a0
-[HOOK] FUN_146f199c0 (auth token proc) at 0x142f199c0
-[HOOK] FUN_1470db3c0 (AuthCodeSync) at 0x1430db3c0
-[HOOK] FUN_146124a40 (DirtySDK status) at 0x142124a40
-=== All hooks installed. Press Q in game to trigger connection. ===
+ get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "conn" (0x636f6e6e)
+[<] DirtySDK -> 0x2b6f6e6c
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "conn" (0x636f6e6e)
+[<] DirtySDK -> 0x2b6f6e6c
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "conn" (0x636f6e6e)
+[<] DirtySDK -> 0x2b6f6e6c
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] get_SDK_mgr
+[<] get_SDK_mgr -> 0x45b76c70
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] DirtySDK "conn" (0x636f6e6e)
+[<] DirtySDK -> 0x2b6f6e6c
+[>] DirtySDK "open" (0x6f70656e)
+[<] DirtySDK -> 0x1
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
+[>] auth_token_proc p1=0x45cf8d08
+[<] auth_token_proc -> 0x0
 
 --- BLAZE SERVER LOG (last 2000 chars) ---
 Waiting for Blaze data...
@@ -77,7 +156,7 @@ Waiting for Blaze data...
 [Blaze-Enc] Sent encrypted reply (16 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 22 0b 5f 44 f3 39 92 fc c7 1a 13 4f 4e a7 a3 8b 1b f4 76 67 97 f2
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): e2 24 88 5b be 86 d0 0c 31 7c a5 5b 45 d8 97 53 4c fa d9 3f ae 49
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -85,38 +164,38 @@ Waiting for Blaze data...
 [SSL-CONN] Socket closed
 
 --- DLL LOG (last 2000 chars) ---
-ED: IsLoggedIntoEA -> true
-[17:57:44.680] PATCHED: IsLoggedIntoNetwork -> true
-[17:57:44.767] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[17:57:44.767] PATCHED: SDK gate -> always 1
-[17:57:44.767] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[17:57:44.778] PATCHED: Login vtable check -> return 1
-[17:57:44.778] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[17:57:44.778] LOGIN SilentLogin: already patched
-[17:57:44.778] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[17:57:44.778] LOGIN ExpressLogin: already patched
-[17:57:44.778] PATCHED: PreAuth disconnect NOPed (for proactive Login)
-[17:57:44.926] PATCHED: cert bypass at 000000014613244B
-[17:57:44.967] PATCHED: Origin SDK check at 00000001470A8430
-[17:57:44.967] All patches in 797 ms
-[17:57:44.967] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[17:57:44.967] AUTH: Checking login gate globals...
-[17:57:44.967] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[17:57:44.967] AUTH: DAT_144b86bdf = 0 (error flag)
-[17:57:44.967] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[17:57:50.494] AUTH: Slot cleared at 5500 ms
-[17:57:50.494] AUTH: OnlineMgr=0x45DA3E70
-[17:57:50.494] AUTH: slot=0x0 cave=0
-[17:57:50.494] AUTH: Using fake vtable (real not captured)
-[17:57:50.494] AUTH: Injected fake request 00000000647B0000 into slot
-[17:57:55.495] AUTH: cave=1 slot=0x0
-[17:57:55.495] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[17:57:55.495] AUTH: req[+0xd8]=0x9A39D38 req[+0xe8]=1
-[17:57:55.495] AUTH: state=2. Auth ready.
-[17:57:55.495] AUTH: OnlineMgr+0xb10 = 0x45DAA6E0
-[17:57:55.495] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45DAA960
-[17:57:55.495] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[17:57:55.495] AUTH: Found 0 objects with vtables in BlazeHub
-[17:57:55.495] AUTH: BlazeHub(0000000045DAA960)+0x53f = 1
-[17:57:55.495] AUTH: Starting continuous +0x53f flag enforcer...
+CHED: auth flag at 00000001473CE785
+[18:03:25.435] PATCHED: IsLoggedIntoEA -> true
+[18:03:25.435] PATCHED: IsLoggedIntoNetwork -> true
+[18:03:25.538] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[18:03:25.538] PATCHED: SDK gate -> always 1
+[18:03:25.550] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[18:03:25.550] PATCHED: Login vtable check -> return 1
+[18:03:25.550] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:03:25.550] LOGIN SilentLogin: already patched
+[18:03:25.550] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:03:25.550] LOGIN ExpressLogin: already patched
+[18:03:25.550] PATCHED: PreAuth disconnect NOPed (for proactive Login)
+[18:03:25.701] PATCHED: Origin SDK check at 00000001470A8430
+[18:03:25.701] All patches in 672 ms
+[18:03:25.701] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
+[18:03:25.701] AUTH: Checking login gate globals...
+[18:03:25.701] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[18:03:25.701] AUTH: DAT_144b86bdf = 0 (error flag)
+[18:03:25.701] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[18:03:31.443] AUTH: Slot cleared at 5700 ms
+[18:03:31.443] AUTH: OnlineMgr=0x45CF3E70
+[18:03:31.443] AUTH: slot=0x0 cave=0
+[18:03:31.443] AUTH: Using fake vtable (real not captured)
+[18:03:31.443] AUTH: Injected fake request 00000000647A0000 into slot
+[18:03:36.444] AUTH: cave=1 slot=0x0
+[18:03:36.444] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[18:03:36.444] AUTH: req[+0xd8]=0x99B9930 req[+0xe8]=1
+[18:03:36.444] AUTH: state=2. Auth ready.
+[18:03:36.444] AUTH: OnlineMgr+0xb10 = 0x45CFA6E0
+[18:03:36.444] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45CFA960
+[18:03:36.444] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[18:03:36.444] AUTH: Found 0 objects with vtables in BlazeHub
+[18:03:36.444] AUTH: BlazeHub(0000000045CFA960)+0x53f = 1
+[18:03:36.444] AUTH: Starting continuous +0x53f flag enforcer...
 
