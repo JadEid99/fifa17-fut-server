@@ -117,9 +117,49 @@ static void PatchOriginCheck() {
 }
 
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
-static volatile int g_caveExecuted = 0; // marker: set to 1 by code cave when executed
+static volatile int g_caveExecuted = 0;
+
+// Patch 3: Replace FUN_1470db3c0 (OriginRequestAuthCodeSync wrapper) body
+// Instead of patching the CALL SITE (which fires before our patch),
+// we patch the FUNCTION BODY. The function exists in .text from the start.
+// 
+// FUN_1470db3c0 signature: (RCX=sdk, RDX=clientId, R8=&outAuthPtr, R9=&outAuthLen, [RSP+0x28]=0)
+// We replace it with: write fake auth code to [R8] and length to [R9], return 0
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
+    
+    // The function starts with: SUB RSP, 0x38 / MOV [RSP+0x30], RBX / ...
+    // then calls FUN_1470dbf30(0x3000000, "OriginRequestAuthCodeSync_entered")
+    // Pattern: look for the string "OriginRequestAuthCodeSync" in executable memory
+    // and find the function that references it
+    
+    // Alternative: use the known fixed address. The game is NOT ASLR'd
+    // (confirmed: addresses are consistent across runs)
+    // FUN_1470db3c0 is at offset 0x070db3c0 from base 0x140000000
+    
+    BYTE* gameBase = (BYTE*)GetModuleHandleA(NULL);
+    if (!gameBase) { Log("AUTH: GetModuleHandle failed"); return; }
+    
+    // Check if the game base is what we expect
+    Log("AUTH: Game base = %p", gameBase);
+    
+    // FUN_1470db3c0 is at base + 0x30db3c0
+    // But the offset depends on the dump vs runtime. Let's use pattern matching instead.
+    // Pattern: the function calls FUN_1470e2840 (which we patched to B0 01 90...)
+    // Before our patch, FUN_1470e2840 starts with: 31 C0 48 39 05
+    // The CALL to it from FUN_1470db3c0 is: E8 XX XX XX XX / 84 C0 (TEST AL, AL)
+    // After the call: 84 C0 / 74 XX (JZ = if false, error path)
+    // We can search for: E8 XX XX XX XX 84 C0 74 followed by another E8 (call to FUN_1470e3560)
+    
+    // Actually, let's use a simpler pattern. The function has a unique string reference.
+    // Search for the LEA instruction that loads "OriginRequestAuthCodeSync_entered"
+    // The string is at 0x143936158. LEA RDX, [rip + offset] = 48 8D 15 XX XX XX XX
+    
+    // Even simpler: search for the pattern at the call site we already found
+    // Pattern from v56: 85 C0 0F 85 8D 00 00 00 4C 39 74 24
+    // This is AFTER the CALL. The CALL is 5 bytes before: E8 XX XX XX XX
+    // So the function being called is at: callAddr + 5 + displacement
+    
     BYTE pat[] = {0x85,0xC0,0x0F,0x85,0x8D,0x00,0x00,0x00,0x4C,0x39,0x74,0x24};
     MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
@@ -128,35 +168,52 @@ static void PatchAuthBypass() {
             BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
             __try { for (SIZE_T j = 0; j+12 < size; j++) {
                 if (memcmp(base+j, pat, 12)!=0) continue;
-                BYTE* ca = base+j-5;
-                BYTE* cave = (BYTE*)VirtualAlloc(NULL, 4096, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-                if (!cave) return;
-                uint64_t aa = (uint64_t)g_fakeAuthCode, al = strlen(g_fakeAuthCode); int o=0;
-                // First: write marker to g_caveExecuted so we know the cave ran
-                // MOV RAX, &g_caveExecuted
+                
+                // Found the pattern. The CALL is at base+j-5
+                BYTE* callInstr = base + j - 5;
+                if (callInstr[0] != 0xE8) {
+                    Log("AUTH: Pattern found but no CALL before it at %p (byte=0x%02X)", callInstr, callInstr[0]);
+                    continue;
+                }
+                
+                // Calculate the target function address
+                int32_t callDisp = *(int32_t*)(callInstr + 1);
+                BYTE* targetFunc = callInstr + 5 + callDisp;
+                Log("AUTH: Found call to FUN_1470db3c0 at %p, target = %p", callInstr, targetFunc);
+                
+                // Now patch the TARGET FUNCTION (FUN_1470db3c0) body
+                // Replace the first ~40 bytes with our fake auth code logic
+                // The function takes: RCX=sdk, RDX=clientId, R8=&outAuthPtr, R9=&outAuthLen
+                // We need to: MOV [R8], &g_fakeAuthCode / MOV [R9], strlen / XOR EAX,EAX / RET
+                
+                uint64_t aa = (uint64_t)g_fakeAuthCode;
+                uint64_t al = strlen(g_fakeAuthCode);
                 uint64_t markerAddr = (uint64_t)&g_caveExecuted;
-                cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&markerAddr,8); o+=8;
-                // MOV DWORD [RAX], 1
-                cave[o++]=0xC7; cave[o++]=0x00; cave[o++]=0x01; cave[o++]=0x00; cave[o++]=0x00; cave[o++]=0x00;
-                // Now the actual auth code logic:
-                // MOV RAX, &g_fakeAuthCode
-                cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&aa,8); o+=8;
-                // MOV [R8], RAX
-                cave[o++]=0x49; cave[o++]=0x89; cave[o++]=0x00;
-                // MOV RAX, strlen
-                cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&al,8); o+=8;
-                // MOV [R9], RAX
-                cave[o++]=0x49; cave[o++]=0x89; cave[o++]=0x01;
-                // XOR EAX, EAX (return 0 = success)
-                cave[o++]=0x31; cave[o++]=0xC0;
-                // RET
-                cave[o++]=0xC3;
-                uint64_t cv = (uint64_t)cave; DWORD op;
-                Log("AUTH CAVE: marker at %p, cave at %p, authcode at %p", &g_caveExecuted, cave, g_fakeAuthCode);
-                if (VirtualProtect(ca, 13, PAGE_EXECUTE_READWRITE, &op)) {
-                    ca[0]=0x48; ca[1]=0xB8; memcpy(ca+2,&cv,8); ca[10]=0xFF; ca[11]=0xD0; ca[12]=0x90;
-                    VirtualProtect(ca, 13, op, &op);
-                    Log("PATCHED: auth call -> cave at %p", cave);
+                
+                DWORD op;
+                if (VirtualProtect(targetFunc, 48, PAGE_EXECUTE_READWRITE, &op)) {
+                    Log("AUTH: Original bytes at target: %02X %02X %02X %02X %02X %02X %02X %02X",
+                        targetFunc[0],targetFunc[1],targetFunc[2],targetFunc[3],
+                        targetFunc[4],targetFunc[5],targetFunc[6],targetFunc[7]);
+                    
+                    int o = 0;
+                    // Write marker: MOV RAX, &g_caveExecuted / MOV DWORD [RAX], 1
+                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&markerAddr,8); o+=8;
+                    targetFunc[o++]=0xC7; targetFunc[o++]=0x00; 
+                    targetFunc[o++]=0x01; targetFunc[o++]=0x00; targetFunc[o++]=0x00; targetFunc[o++]=0x00;
+                    // MOV RAX, &g_fakeAuthCode / MOV [R8], RAX
+                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&aa,8); o+=8;
+                    targetFunc[o++]=0x49; targetFunc[o++]=0x89; targetFunc[o++]=0x00;
+                    // MOV RAX, strlen / MOV [R9], RAX
+                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&al,8); o+=8;
+                    targetFunc[o++]=0x49; targetFunc[o++]=0x89; targetFunc[o++]=0x01;
+                    // XOR EAX, EAX (return 0 = success)
+                    targetFunc[o++]=0x31; targetFunc[o++]=0xC0;
+                    // RET
+                    targetFunc[o++]=0xC3;
+                    
+                    VirtualProtect(targetFunc, 48, op, &op);
+                    Log("PATCHED: FUN_1470db3c0 body at %p -> fake auth code (marker at %p)", targetFunc, &g_caveExecuted);
                 }
                 g_authBypassDone=1; g_patched++; return;
             }} __except(EXCEPTION_EXECUTE_HANDLER) {}
