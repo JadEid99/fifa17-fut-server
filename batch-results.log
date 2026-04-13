@@ -1,22 +1,22 @@
-﻿=== LSX + connect() hook test (2026-04-13 16:17:32) ===
+﻿=== LSX + connect() hook test (2026-04-13 16:22:36) ===
 BLAZE RESULT: SECOND_CONNECTION
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
 d: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 532092eff92b730ed1260d51c76587a2
+[SSL] RC4 decryption initialized with clientWriteKey: 90f35977a7b9cdef9b84142735826495
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c8bbb56f422d48c7de53f38f9950a8b4a4133472c34496d870052841b08237cab
-[SSL] Client Finished plaintext (16 bytes): 1400000c8bbb56f422d48c7de53f38f9
-[SSL] Client Finished MAC: 950a8b4a4133472c34496d870052841b08237cab
-[SSL] Client verify_data:   8bbb56f422d48c7de53f38f9
-[SSL] Expected verify_data:  8bbb56f422d48c7de53f38f9
+[SSL] Decrypted hex: 1400000c710c0caf97865451c5eb57b2a21768ebed5eda5b831086123a0424796f65419e
+[SSL] Client Finished plaintext (16 bytes): 1400000c710c0caf97865451c5eb57b2
+[SSL] Client Finished MAC: a21768ebed5eda5b831086123a0424796f65419e
+[SSL] Client verify_data:   710c0caf97865451c5eb57b2
+[SSL] Expected verify_data:  710c0caf97865451c5eb57b2
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 950a8b4a4133472c34496d870052841b08237cab
-[SSL] Actual client MAC:   950a8b4a4133472c34496d870052841b08237cab
+[SSL] Expected client MAC: a21768ebed5eda5b831086123a0424796f65419e
+[SSL] Actual client MAC:   a21768ebed5eda5b831086123a0424796f65419e
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1050 bytes
@@ -26,7 +26,7 @@ d: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: beb8e6724583d42994692ffe
+[SSL] Server verify_data: 86baa578199b91a1393da127
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -63,7 +63,7 @@ d: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): d0 88 77 55 3c 7e 53 8b ea 8f 84 9e 67 1c 88 65 d6 ea e3 5f 2b f8
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 63 36 06 6a e5 b2 b0 be 94 7f fe 94 f8 cd ae 2e 99 d7 b3 74 73 45
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -71,50 +71,50 @@ d: type=0x14 ver=0x303 len=1
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[14:16:08.868] [LSX] === LSX Origin SDK Server ===
-[14:16:08.870] [LSX] Mode: STANDALONE (replacing STP)
-[14:16:08.870] [LSX] Listening on port 4218
-[14:16:08.871] [LSX] Waiting for game connection...
+[14:21:12.552] [LSX] === LSX Origin SDK Server ===
+[14:21:12.554] [LSX] Mode: STANDALONE (replacing STP)
+[14:21:12.554] [LSX] Listening on port 4218
+[14:21:12.554] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[16:16:11.703] === FIFA 17 v87 (ALL login type vtables patched + SDK + auth) ===
-[16:16:11.703] PID: 105636
-[16:16:11.868] PATCHED: cert bypass at 000000014613244B
-[16:16:12.043] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[16:16:12.043] PATCHED: FUN_1470db3c0 body -> fake auth code
-[16:16:12.084] PATCHED: auth flag at 00000001473CE785
-[16:16:12.129] PATCHED: IsLoggedIntoEA -> true
-[16:16:12.129] PATCHED: IsLoggedIntoNetwork -> true
-[16:16:12.205] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[16:16:12.205] PATCHED: SDK gate -> always 1
-[16:16:12.205] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[16:16:12.205] PATCHED: Login vtable check -> return 1
-[16:16:12.217] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[16:16:12.217] LOGIN SilentLogin: already patched
-[16:16:12.217] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[16:16:12.217] LOGIN ExpressLogin: already patched
-[16:16:12.217] PREAUTH: Not patching disconnect (normal callback flow)
-[16:16:12.363] PATCHED: Origin SDK check at 00000001470A8430
-[16:16:12.363] All patches in 672 ms
-[16:16:12.363] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[16:16:12.363] AUTH: Checking login gate globals...
-[16:16:12.363] AUTH: DAT_144b86bf8 = 0x0 (Origin SDK manager)
-[16:16:12.363] AUTH: DAT_144b86bdf = 0 (error flag)
-[16:16:12.363] AUTH: SDK manager is NULL. Creating fake object...
-[16:16:12.363] AUTH: +0x188 stub: dynamic Blaze hub reader (41 bytes)
-[16:16:12.363] AUTH: Fake SDK object at 0000000000A00000, vtable at 00000000009F0000
-[16:16:12.363] AUTH: DAT_144b86bf8 = 0xA00000 (after write)
-[16:16:12.363] AUTH: vtable[0x138/8] = ret1 (login OK), all others = ret0 (safe)
-[16:16:12.363] AUTH: Polling for slot to clear...
-[16:16:17.994] AUTH: Slot cleared at 5600 ms
-[16:16:17.994] AUTH: OnlineMgr=0x45D23E70
-[16:16:17.994] AUTH: slot=0x0 cave=0
-[16:16:17.994] AUTH: Using fake vtable (real not captured)
-[16:16:17.994] AUTH: Injected fake request 00000000647A0000 into slot
-[16:16:22.994] AUTH: cave=1 slot=0x0
-[16:16:22.994] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[16:16:22.994] AUTH: req[+0xd8]=0x99F9930 req[+0xe8]=1
-[16:16:22.994] AUTH: state=2. Auth ready.
-[16:16:22.994] AUTH: BlazeHub(0000000045D2A960)+0x53f = 0
-[16:16:22.994] AUTH: Forced +0x53f = 1
+[16:21:15.399] === FIFA 17 v89 (continuous 0x53f enforcer + all vtables + SDK + auth) ===
+[16:21:15.399] PID: 105484
+[16:21:15.562] PATCHED: cert bypass at 000000014613244B
+[16:21:15.727] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[16:21:15.727] PATCHED: FUN_1470db3c0 body -> fake auth code
+[16:21:15.770] PATCHED: auth flag at 00000001473CE785
+[16:21:15.820] PATCHED: IsLoggedIntoEA -> true
+[16:21:15.820] PATCHED: IsLoggedIntoNetwork -> true
+[16:21:15.945] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[16:21:15.945] PATCHED: SDK gate -> always 1
+[16:21:15.945] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[16:21:15.945] PATCHED: Login vtable check -> return 1
+[16:21:15.957] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:21:15.957] LOGIN SilentLogin: already patched
+[16:21:15.957] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:21:15.957] LOGIN ExpressLogin: already patched
+[16:21:15.957] PREAUTH: Not patching disconnect (normal callback flow)
+[16:21:16.103] PATCHED: Origin SDK check at 00000001470A8430
+[16:21:16.103] All patches in 703 ms
+[16:21:16.103] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:21:16.103] AUTH: Checking login gate globals...
+[16:21:16.103] AUTH: DAT_144b86bf8 = 0x0 (Origin SDK manager)
+[16:21:16.103] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:21:16.103] AUTH: SDK manager is NULL. Creating fake object...
+[16:21:16.103] AUTH: +0x188 stub: dynamic Blaze hub reader (41 bytes)
+[16:21:16.103] AUTH: Fake SDK object at 00000000039B0000, vtable at 00000000009A0000
+[16:21:16.103] AUTH: DAT_144b86bf8 = 0x39B0000 (after write)
+[16:21:16.103] AUTH: vtable[0x138/8] = ret1 (login OK), all others = ret0 (safe)
+[16:21:16.103] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:21:21.734] AUTH: Slot cleared at 5600 ms
+[16:21:21.734] AUTH: OnlineMgr=0x45D13E70
+[16:21:21.734] AUTH: slot=0x0 cave=0
+[16:21:21.734] AUTH: Using fake vtable (real not captured)
+[16:21:21.734] AUTH: Injected fake request 00000000647A0000 into slot
+[16:21:26.735] AUTH: cave=1 slot=0x0
+[16:21:26.735] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:21:26.735] AUTH: req[+0xd8]=0x99BA0C8 req[+0xe8]=1
+[16:21:26.735] AUTH: state=2. Auth ready.
+[16:21:26.735] AUTH: BlazeHub(0000000045D1A960)+0x53f = 1
+[16:21:26.735] AUTH: Starting continuous +0x53f flag enforcer...
 
