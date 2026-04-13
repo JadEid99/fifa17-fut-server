@@ -145,22 +145,51 @@ static void PatchAuthFlag() {
 // Patch 7: FUN_1471a5da0 (SDK gate) -> always return 1
 // This gates the ENTIRE login flow. DAT_144b86bf8 is NULL so it returns 0.
 // Game base is always 0x140000000 (no ASLR). Function at fixed address.
+// ALSO patches FUN_146e19a00 (PreAuth completion) to skip disconnect.
 static void PatchSdkGateCheck() {
     if (g_sdkGateDone) return;
+    
+    // Part A: SDK gate -> always return 1
     BYTE* func = (BYTE*)0x1471a5da0;
     __try {
-        Log("SDK GATE: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
-            func, func[0],func[1],func[2],func[3],func[4],func[5],func[6],func[7]);
-        if (func[0] != 0x48) { Log("SDK GATE: unexpected byte, skipping"); return; }
-        DWORD op;
-        if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
-            func[0]=0xB0; func[1]=0x01; func[2]=0xC3;
-            for (int k=3; k<16; k++) func[k]=0x90;
-            VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: SDK gate at %p -> always 1 (login unblocked!)", func);
-            g_sdkGateDone=1; g_patched++;
+        Log("SDK GATE: addr=%p bytes=%02X %02X %02X %02X", func, func[0],func[1],func[2],func[3]);
+        if (func[0] == 0x48) {
+            DWORD op;
+            if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
+                func[0]=0xB0; func[1]=0x01; func[2]=0xC3;
+                for (int k=3; k<16; k++) func[k]=0x90;
+                VirtualProtect(func, 16, op, &op);
+                Log("PATCHED: SDK gate -> always 1");
+            }
         }
-    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("SDK GATE: exception"); }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    
+    // Part B: PreAuth completion handler -> NOP the disconnect call
+    // FUN_146e19a00 calls FUN_146db3e40 to disconnect after PreAuth.
+    // We NOP that CALL so the connection stays open for Login.
+    BYTE* pah = (BYTE*)0x146e19a00;
+    __try {
+        Log("PREAUTH: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
+            pah, pah[0],pah[1],pah[2],pah[3],pah[4],pah[5],pah[6],pah[7]);
+        for (int i = 0; i < 80; i++) {
+            if (pah[i] == 0xE8) {
+                int32_t disp = *(int32_t*)(pah + i + 1);
+                BYTE* target = pah + i + 5 + disp;
+                if (target == (BYTE*)0x146db3e40) {
+                    Log("PREAUTH: Found disconnect CALL at +%d -> %p", i, target);
+                    DWORD op;
+                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
+                        for (int k=0; k<5; k++) pah[i+k]=0x90;
+                        VirtualProtect(pah + i, 5, op, &op);
+                        Log("PATCHED: PreAuth disconnect NOPed! Connection stays open.");
+                    }
+                    break;
+                }
+            }
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("PREAUTH: exception"); }
+    
+    g_sdkGateDone = 1; g_patched++;
 }
 
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
@@ -193,7 +222,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v79 (direct reconnect call + fake SDK + gate + auth) ===");
+    Log("=== FIFA 17 v80 (PreAuth disconnect NOP + fake SDK + gate + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
