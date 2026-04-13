@@ -164,46 +164,38 @@ static void PatchSdkGateCheck() {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
-    // Part B: Patch Login type0 vtable[0x10] AND NOP PreAuth disconnect
-    __try {
-        // Patch vtable function
-        uint64_t* vtable = (uint64_t*)0x14389f938;
-        uint64_t funcAddr = vtable[2];
-        Log("LOGIN TYPE0: vtable=%p, [+0x10] func = 0x%llX", vtable, funcAddr);
-        if (funcAddr > 0x140000000 && funcAddr < 0x150000000) {
-            BYTE* lcf = (BYTE*)funcAddr;
-            Log("LOGIN TYPE0: bytes=%02X %02X %02X %02X", lcf[0],lcf[1],lcf[2],lcf[3]);
-            DWORD op;
-            if (VirtualProtect(lcf, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                lcf[0]=0xB0; lcf[1]=0x01; lcf[2]=0xC3;
-                VirtualProtect(lcf, 8, op, &op);
-                Log("PATCHED: Login type0 check -> return 1 (PROCEED to login!)");
-            }
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {}
-    
-    // Part B: NOP the disconnect in PreAuth completion handler
-    // After PreAuth, FUN_146e19a00 checks a DIFFERENT vtable[0x10] on the connection
-    // object and disconnects if non-zero. We NOP that disconnect call.
-    __try {
-        BYTE* pah = (BYTE*)0x146e19a00;
-        for (int i = 0; i < 80; i++) {
-            if (pah[i] == 0xE8) {
-                int32_t disp = *(int32_t*)(pah + i + 1);
-                BYTE* target = pah + i + 5 + disp;
-                if (target == (BYTE*)0x146db3e40) {
-                    Log("PREAUTH: disconnect CALL at +%d", i);
+    // Part B: Patch ALL login type vtable[0x10] functions to return 1
+    // Type 0 (Login): vtable at 0x14389f938
+    // Type 1 (SilentLogin): vtable at 0x14389fa70
+    // Type 3 (ExpressLogin): vtable at 0x14389fb98
+    uint64_t vtables[] = { 0x14389f938, 0x14389fa70, 0x14389fb98 };
+    const char* names[] = { "Login", "SilentLogin", "ExpressLogin" };
+    for (int v = 0; v < 3; v++) {
+        __try {
+            uint64_t* vt = (uint64_t*)vtables[v];
+            uint64_t fa = vt[2]; // +0x10 = index 2
+            if (fa > 0x140000000 && fa < 0x150000000) {
+                BYTE* f = (BYTE*)fa;
+                Log("LOGIN %s: vtable=%p [+0x10]=0x%llX bytes=%02X %02X %02X",
+                    names[v], vt, fa, f[0], f[1], f[2]);
+                // Only patch if not already patched (B0 01 C3)
+                if (f[0] != 0xB0 || f[1] != 0x01) {
                     DWORD op;
-                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
-                        for (int k=0; k<5; k++) pah[i+k]=0x90;
-                        VirtualProtect(pah + i, 5, op, &op);
-                        Log("PATCHED: PreAuth disconnect NOPed");
+                    if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                        f[0]=0xB0; f[1]=0x01; f[2]=0xC3;
+                        VirtualProtect(f, 8, op, &op);
+                        Log("PATCHED: %s vtable check -> return 1", names[v]);
                     }
-                    break;
+                } else {
+                    Log("LOGIN %s: already patched", names[v]);
                 }
             }
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    }
+    
+    // Part C: Don't NOP PreAuth disconnect - let normal callback flow work
+    // PreAuth → disconnect → callback → check login type → send Login on new connection
+    Log("PREAUTH: Not patching disconnect (normal callback flow)");
     
     g_sdkGateDone = 1; g_patched++;
 }
@@ -238,7 +230,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v86 (vtable=1 + PreAuth NOP + SDK + auth) ===");
+    Log("=== FIFA 17 v87 (ALL login type vtables patched + SDK + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
