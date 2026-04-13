@@ -215,44 +215,66 @@ function decodeVarInt(buf, offset) {
 // Blaze Packet Codec
 // ============================================================
 
-const HEADER_SIZE = 16;
+// ============================================================
+// Blaze Packet Header (12 bytes, from BlazePK-rs / PocketRelay)
+// ============================================================
+// [0-1]   u16  payload length (or low 16 bits if extended)
+// [2-3]   u16  component
+// [4-5]   u16  command
+// [6-7]   u16  error
+// [8]     u8   message type (0x00=request, 0x10=response, 0x20=notify, 0x30=error)
+// [9]     u8   extended flag (0x10 if length > 0xFFFF, else 0x00)
+// [10-11] u16  message id
+// If extended: [12-13] u16 high bits of length
+const HEADER_SIZE = 12;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
-  // Fire2 frame format: [4-byte payload length] [12-byte Blaze header]
-  // The 12-byte Blaze header at offset 4:
-  //   [4-5]   uint16 secondary length/flags (often 0 or same as component high bits)
-  //   [6-7]   uint16 component
-  //   [8-9]   uint16 command
-  //   [10-11] uint16 error
-  //   [12-15] uint32 msgType(upper 16) + msgId(lower 16)
-  const length = buf.readUInt32BE(0);
-  const component = buf.readUInt16BE(6);
-  const command = buf.readUInt16BE(8);
-  const error = buf.readUInt16BE(10);
-  const msgTypeAndId = buf.readUInt32BE(12);
-  const msgType = (msgTypeAndId >>> 16) & 0xFFFF;
-  const msgId = msgTypeAndId & 0xFFFF;
-  return { length, component, command, error, msgType, msgId };
+  let length = buf.readUInt16BE(0);
+  const component = buf.readUInt16BE(2);
+  const command = buf.readUInt16BE(4);
+  const error = buf.readUInt16BE(6);
+  const msgTypeByte = buf[8];   // 0x00=req, 0x10=resp, 0x20=notify, 0x30=error
+  const extendedFlag = buf[9];  // 0x10 if extended length
+  const msgId = buf.readUInt16BE(10);
+  // Map type byte to our msgType values for compatibility
+  const msgType = msgTypeByte << 8; // 0x00->0x0000, 0x10->0x1000, 0x20->0x2000, 0x30->0x3000
+  const isExtended = extendedFlag === 0x10;
+  if (isExtended && buf.length >= 14) {
+    length += (buf[12] << 24) | (buf[13] << 16);
+  }
+  return { length, component, command, error, msgType, msgId, isExtended };
 }
 function encodeHeader(h) {
-  const buf = Buffer.alloc(HEADER_SIZE);
-  buf.writeUInt32BE(h.length, 0);           // payload length
-  buf.writeUInt16BE(0, 4);                  // padding/flags
-  buf.writeUInt16BE(h.component, 6);        // component
-  buf.writeUInt16BE(h.command, 8);          // command
-  buf.writeUInt16BE(h.error, 10);           // error
-  // Pack msgType into upper 16 bits, msgId into lower 16 bits
-  const msgTypeAndId = ((h.msgType & 0xFFFF) << 16) | ((h.msgId || 0) & 0xFFFF);
-  buf.writeUInt32BE(msgTypeAndId >>> 0, 12);
+  const length = h.length || 0;
+  const isExtended = length > 0xFFFF;
+  const headerSize = isExtended ? 14 : 12;
+  const buf = Buffer.alloc(headerSize);
+  buf.writeUInt16BE(length & 0xFFFF, 0);    // payload length (low 16 bits)
+  buf.writeUInt16BE(h.component, 2);        // component
+  buf.writeUInt16BE(h.command, 4);          // command
+  buf.writeUInt16BE(h.error || 0, 6);       // error
+  // Message type: convert from our 0x1000/0x2000/0x3000 format to byte format
+  let typeByte = 0x00;
+  if (h.msgType === 0x1000) typeByte = 0x10;       // response
+  else if (h.msgType === 0x2000) typeByte = 0x20;   // notify
+  else if (h.msgType === 0x3000) typeByte = 0x30;   // error
+  buf[8] = typeByte;
+  buf[9] = isExtended ? 0x10 : 0x00;       // extended flag
+  buf.writeUInt16BE(h.msgId || 0, 10);      // message id
+  if (isExtended) {
+    buf[12] = (length >> 24) & 0xFF;
+    buf[13] = (length >> 16) & 0xFF;
+  }
   return buf;
 }
 function readPacket(buf) {
   if (buf.length < HEADER_SIZE) return null;
   const header = decodeHeader(buf);
   if (!header) return null;
-  const total = HEADER_SIZE + header.length;
+  const actualHeaderSize = header.isExtended ? 14 : 12;
+  const total = actualHeaderSize + header.length;
   if (buf.length < total) return null;
-  return { packet: { header, body: buf.subarray(HEADER_SIZE, total) }, remaining: buf.subarray(total) };
+  return { packet: { header, body: buf.subarray(actualHeaderSize, total) }, remaining: buf.subarray(total) };
 }
 function buildReply(req, body, error = 0) {
   const h = encodeHeader({ length: body.length, component: req.header.component, command: req.header.command, error, msgType: error ? 0x3000 : 0x1000, msgId: req.header.msgId });
@@ -825,6 +847,10 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
           // Feed into application buffer
           blazeBuf = Buffer.concat([blazeBuf, plaintext]);
           
+          // Log raw decrypted application data hex (first 32 bytes)
+          const hexDump = Array.from(plaintext.subarray(0, Math.min(plaintext.length, 32))).map(b => b.toString(16).padStart(2, '0')).join(' ');
+          console.log(`[SSL] Raw app data (${plaintext.length}b): ${hexDump}`);
+          
           // Check if this is HTTP or raw Blaze
           const firstLine = blazeBuf.toString('ascii', 0, Math.min(blazeBuf.length, 20));
           
@@ -838,9 +864,11 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
             while (result) {
               blazeBuf = result.remaining;
               const pkt = result.packet;
-              console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length}`);
+              console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length} msgType=0x${pkt.header.msgType.toString(16)} msgId=${pkt.header.msgId} err=${pkt.header.error}`);
               const resp = handleBlazePacket(pkt);
               if (resp) {
+                // Log response header bytes before encryption
+                console.log(`[Blaze-Enc] Response header hex (${Math.min(resp.length, 14)}b): ${Array.from(resp.subarray(0, Math.min(resp.length, 14))).map(b => b.toString(16).padStart(2, '0')).join(' ')}`);
                 const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
@@ -1429,25 +1457,9 @@ function handlePreAuth(pkt) {
   }
   
   if (variant === 'alt_header') {
-    // Test 3: Alternative header - msgType at offset 4 instead of 12
-    console.log('[PreAuth] Sending with alt header (msgType at offset 4)');
-    const enc = new TdfEncoder();
-    enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0005, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7802]);
-    enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();
-    enc.writeString('INST', 'fifa17-fut-server').writeString('NASP', 'cem_ea_id').writeString('PILD', '').writeString('PLAT', 'pc');
-    enc.writeStructStart('QOSS').writeStructStart('BWPS').writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'prod-sjc').writeStructEnd();
-    enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
-    enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
-    const body = enc.build();
-    // Build header manually with msgType at offset 4
-    const hdr = Buffer.alloc(16);
-    hdr.writeUInt32BE(body.length, 0);
-    hdr.writeUInt16BE(0x1000, 4);  // msgType at offset 4
-    hdr.writeUInt16BE(pkt.header.component, 6);
-    hdr.writeUInt16BE(pkt.header.command, 8);
-    hdr.writeUInt16BE(0, 10);
-    hdr.writeUInt32BE(pkt.header.msgId || 0, 12);  // msgId at offset 12
-    return Buffer.concat([hdr, body]);
+    // Obsolete test variant - now using correct 12-byte header
+    console.log('[PreAuth] alt_header variant deprecated, using buildReply');
+    return buildReply(pkt, Buffer.alloc(0));
   }
   
   if (variant === '12byte') {
@@ -1461,14 +1473,8 @@ function handlePreAuth(pkt) {
     enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
     enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
     const body = enc.build();
-    // Classic 12-byte Blaze header
-    const hdr = Buffer.alloc(12);
-    hdr.writeUInt16BE(body.length, 0);
-    hdr.writeUInt16BE(pkt.header.component, 2);
-    hdr.writeUInt16BE(pkt.header.command, 4);
-    hdr.writeUInt16BE(0, 6);
-    hdr.writeUInt32BE(0x10000000 | (pkt.header.msgId || 0), 8);
-    return Buffer.concat([hdr, body]);
+    // This variant is now the same as buildReply since we fixed the header format
+    return buildReply(pkt, body);
   }
   
   // Use BF4 emulator's captured real EA server PreAuth response
