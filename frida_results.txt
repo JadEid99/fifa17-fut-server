@@ -10,11 +10,12 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 v7 === Base=0x140000000
+=== FIFA 17 v8 === Base=0x140000000
 === Ready. ===
-[Local::PID::100272 ]-> [PreAuth_RPC_send] called with callback at param2
-[RESPONSE_HANDLER] >>> CALLED! param1=0x45b27ff0 param2=0x0 param3=0x40050000
-[RESPONSE_HANDLER] param3!=0 -> LOGIN ATTEMPT
-[send_RPC] cm=0x45b27f38 fn=0x146e19a00
-[RESPONSE_HANDLER] returned
-[PreAuth_complete] connMgr=0x45b27ff0 result=0x40050000
+[Local::PID::94720 ]-> [RESPONSE_HANDLER] param1=0x45b67ff0 param2=0x0 param3=0x40050000
+[RESPONSE_HANDLER] >>> FORCING param3=0 to trigger PreAuth processing! <<<
+frida : Error: access violation accessing 0xb8
+    + CategoryInfo          : NotSpecified: (Error: access violation accessing 0xb8:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at <anonymous> (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:21)
