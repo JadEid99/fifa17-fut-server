@@ -193,7 +193,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v77 (fake SDK with Blaze hub + gate + auth) ===");
+    Log("=== FIFA 17 v78 (dynamic Blaze hub stub + fake SDK + gate + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -256,29 +256,40 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 BYTE* stubRet1 = fakeVtable + 0x310;
                 stubRet1[0] = 0xB0; stubRet1[1] = 0x01; stubRet1[2] = 0xC3; // MOV AL,1 / RET
                 
-                // Stub 3: return the Blaze hub pointer (for +0x188)
-                // The Blaze hub is at *(*(OnlineMgr + 0xb10) + 0xf8)
-                // We read it at patch time and hardcode it in the stub
+                // Stub 3: dynamically return the Blaze hub pointer (for +0x188)
+                // Instead of hardcoding, the stub reads it at call time:
+                //   MOV RAX, [0x1448a3b20]     ; OnlineManager ptr
+                //   TEST RAX, RAX
+                //   JZ .ret0
+                //   MOV RAX, [RAX + 0xb10]     ; connection manager
+                //   TEST RAX, RAX
+                //   JZ .ret0
+                //   MOV RAX, [RAX + 0xf8]      ; Blaze hub
+                //   RET
+                // .ret0: XOR EAX,EAX / RET
                 BYTE* stubRetHub = fakeVtable + 0x320;
-                uint64_t blazeHub = 0;
-                uint64_t* pOM2 = (uint64_t*)0x1448a3b20;
-                if (*pOM2 != 0) {
-                    uint64_t connMgr = *(uint64_t*)(*pOM2 + 0xb10);
-                    if (connMgr != 0) {
-                        blazeHub = *(uint64_t*)(connMgr + 0xf8);
-                        Log("AUTH: Blaze hub at 0x%llX (from OnlineMgr+0xb10+0xf8)", blazeHub);
-                    }
-                }
-                if (blazeHub != 0) {
-                    // MOV RAX, <blazeHub address> / RET
-                    stubRetHub[0] = 0x48; stubRetHub[1] = 0xB8;
-                    memcpy(stubRetHub + 2, &blazeHub, 8);
-                    stubRetHub[10] = 0xC3;
-                } else {
-                    // Fallback: return 0
-                    stubRetHub[0] = 0x31; stubRetHub[1] = 0xC0; stubRetHub[2] = 0xC3;
-                    Log("AUTH: WARNING - Blaze hub is NULL, +0x188 will return 0");
-                }
+                int h = 0;
+                // MOV RAX, [0x1448a3b20]  = 48 A1 <8-byte abs addr>
+                // Actually x64 doesn't have MOV RAX,[abs64] for memory. Use:
+                // MOV RAX, 0x1448a3b20 / MOV RAX, [RAX]
+                uint64_t omAddr = 0x1448a3b20;
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0xB8; memcpy(stubRetHub+h, &omAddr, 8); h+=8; // MOV RAX, imm64
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0x8B; stubRetHub[h++]=0x00;                   // MOV RAX, [RAX]
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0x85; stubRetHub[h++]=0xC0;                   // TEST RAX, RAX
+                stubRetHub[h++]=0x74; stubRetHub[h++]=0x14;                                         // JZ +20 (to ret0)
+                // MOV RAX, [RAX + 0xb10]
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0x8B; stubRetHub[h++]=0x80;
+                stubRetHub[h++]=0x10; stubRetHub[h++]=0x0B; stubRetHub[h++]=0x00; stubRetHub[h++]=0x00; // disp32 = 0xb10
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0x85; stubRetHub[h++]=0xC0;                   // TEST RAX, RAX
+                stubRetHub[h++]=0x74; stubRetHub[h++]=0x08;                                         // JZ +8 (to ret0)
+                // MOV RAX, [RAX + 0xf8]
+                stubRetHub[h++]=0x48; stubRetHub[h++]=0x8B; stubRetHub[h++]=0x80;
+                stubRetHub[h++]=0xF8; stubRetHub[h++]=0x00; stubRetHub[h++]=0x00; stubRetHub[h++]=0x00; // disp32 = 0xf8
+                stubRetHub[h++]=0xC3;                                                               // RET
+                // ret0:
+                stubRetHub[h++]=0x31; stubRetHub[h++]=0xC0;                                         // XOR EAX, EAX
+                stubRetHub[h++]=0xC3;                                                               // RET
+                Log("AUTH: +0x188 stub: dynamic Blaze hub reader (%d bytes)", h);
                 
                 // Fill all vtable entries with stubRet0 (safe default)
                 uint64_t ret0Addr = (uint64_t)stubRet0;
