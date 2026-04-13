@@ -198,26 +198,26 @@ static void PatchOriginCheck() {
     }
 }
 
-// Patch 3: Auth token bypass - skip Origin auth entirely, set authenticated flag
-// At 146f19a11: CALL OriginRequestAuthCodeSync (5 bytes)
-// At 146f19a16: TEST EAX,EAX (2 bytes)  
-// At 146f19a18: JNZ error (6 bytes)
-// Total: 13 bytes from 146f19a11 to 146f19a1e
-// Target: 146f19a75 (MOV byte [RSI+0xe8], 1)
-// We replace all 13 bytes with: MOV byte [RSI+0xe8],1 (7 bytes) + JMP +0x5C (2 bytes) + NOPs
-// JMP offset: from 146f19a1c (after JMP instruction) to 146f19a7c = 0x60
-// Wait: from 146f19a11+9 = 146f19a1a to 146f19a7c = 0x62. Let me recalculate.
-// Patch starts at 146f19a11 (the CALL)
-// MOV byte [RSI+0xe8],1 = c6 86 e8 00 00 00 01 (7 bytes, ends at 146f19a18)
-// JMP rel8 to 146f19a7c: from 146f19a1a (after JMP) to 146f19a7c = 0x62
-// But 0x62 > 0x7F so we need JMP rel8... 0x62 fits in signed byte (98 decimal, < 127)
-// Actually 0x62 = 98 which fits. eb 62.
-// Wait: 146f19a18 + 2 = 146f19a1a. Target 146f19a7c. Offset = 0x7c - 0x1a = 0x62. Yes.
+// Patch 3: Replace OriginRequestAuthCodeSync with fake auth code provider
+// Instead of skipping the auth call, we REPLACE it with code that provides
+// a fake auth code. This way the game gets a token and can build the Login request.
+//
+// The CALL at 146f19a11 calls FUN_1470db3c0 which takes:
+//   RCX = origin SDK object
+//   RDX = some param  
+//   R8 = pointer to output auth code pointer (local_res18 at [RSP+0x60])
+//   R9 = pointer to output auth code length (local_res10 at [RSP+0x58])
+//
+// We allocate a code cave that:
+//   1. Writes a fake auth code string pointer to [R8]
+//   2. Writes the auth code length to [R9]  
+//   3. Returns 0 (success)
+static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
+static char* g_fakeAuthPtr = g_fakeAuthCode;
+
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
     
-    // Pattern: the CALL to OriginRequestAuthCodeSync followed by TEST EAX,EAX / JNZ
-    // We search for TEST EAX,EAX / JNZ with specific displacement
     BYTE pattern[] = { 0x85, 0xC0, 0x0F, 0x85, 0x8D, 0x00, 0x00, 0x00, 0x4C, 0x39, 0x74, 0x24 };
     int patternLen = sizeof(pattern);
     
@@ -236,44 +236,100 @@ static void PatchAuthBypass() {
                 for (SIZE_T j = 0; j + patternLen < size; j++) {
                     if (memcmp(base + j, pattern, patternLen) != 0) continue;
                     
-                    // base+j = TEST EAX,EAX (146f19a16)
-                    // base+j-5 = CALL instruction (146f19a11)
-                    // We patch from CALL (j-5) through JNZ end (j+8), total 13 bytes
-                    BYTE* patchStart = base + j - 5; // CALL address
+                    BYTE* callAddr = base + j - 5; // The CALL instruction
+                    Log("Found auth call at %p", callAddr);
                     
-                    Log("Found auth call+check at %p", patchStart);
-                    
-                    DWORD oldProtect;
-                    if (VirtualProtect(patchStart, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        // Bytes 0-6: MOV byte ptr [RSI+0xe8], 1
-                        patchStart[0] = 0xC6;
-                        patchStart[1] = 0x86;
-                        patchStart[2] = 0xE8;
-                        patchStart[3] = 0x00;
-                        patchStart[4] = 0x00;
-                        patchStart[5] = 0x00;
-                        patchStart[6] = 0x01;
-                        // Bytes 7-8: JMP to 146f19a7c (the JMP LAB_146f19ad0 after success)
-                        // From patchStart+9 to target: target is at patchStart + 5 + 0x62 + 2 = ...
-                        // patchStart = j-5 relative to base
-                        // JMP is at patchStart+7, instruction ends at patchStart+9
-                        // Target is at base+j + 0x66 (146f19a7c - 146f19a16 = 0x66, plus j)
-                        // Offset = (base+j+0x66) - (patchStart+9) = (base+j+0x66) - (base+j-5+9) = 0x66+5-9 = 0x62
-                        patchStart[7] = 0xEB;
-                        patchStart[8] = 0x62;
-                        // Bytes 9-12: NOPs (padding)
-                        patchStart[9] = 0x90;
-                        patchStart[10] = 0x90;
-                        patchStart[11] = 0x90;
-                        patchStart[12] = 0x90;
-                        
-                        VirtualProtect(patchStart, 13, oldProtect, &oldProtect);
-                        
-                        Log("  Patched: C6 86 E8 00 00 00 01 EB 62 90 90 90 90");
-                        Log("PATCHED: Auth -> set [RSI+0xe8]=1 + JMP to continue");
-                        g_authBypassDone = 1;
-                        g_patched++;
+                    // Allocate a code cave near the call site
+                    // We need executable memory for our fake function
+                    BYTE* cave = (BYTE*)VirtualAlloc(NULL, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+                    if (!cave) {
+                        Log("Failed to allocate code cave");
+                        return;
                     }
+                    
+                    // Get addresses of our fake auth code
+                    uint64_t authCodeAddr = (uint64_t)g_fakeAuthCode;
+                    uint64_t authCodeLen = strlen(g_fakeAuthCode);
+                    
+                    // Write the fake function in the code cave:
+                    // MOV RAX, authCodeAddr    ; 48 B8 <8 bytes>
+                    // MOV [R8], RAX            ; 49 89 00
+                    // MOV RAX, authCodeLen     ; 48 B8 <8 bytes>
+                    // MOV [R9], RAX            ; 49 89 01
+                    // XOR EAX, EAX             ; 31 C0 (return 0 = success)
+                    // RET                      ; C3
+                    int off = 0;
+                    cave[off++] = 0x48; cave[off++] = 0xB8; // MOV RAX, imm64
+                    memcpy(cave + off, &authCodeAddr, 8); off += 8;
+                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x00; // MOV [R8], RAX
+                    cave[off++] = 0x48; cave[off++] = 0xB8; // MOV RAX, imm64
+                    memcpy(cave + off, &authCodeLen, 8); off += 8;
+                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x01; // MOV [R9], RAX
+                    cave[off++] = 0x31; cave[off++] = 0xC0; // XOR EAX, EAX
+                    cave[off++] = 0xC3; // RET
+                    
+                    Log("Code cave at %p, fake auth code at %p (\"%s\", len=%llu)", 
+                        cave, g_fakeAuthCode, g_fakeAuthCode, authCodeLen);
+                    
+                    // Now patch the CALL instruction to call our cave instead
+                    // CALL rel32: E8 <4-byte offset>
+                    // offset = target - (callAddr + 5)
+                    int64_t callOffset = (int64_t)cave - (int64_t)(callAddr + 5);
+                    
+                    if (callOffset > INT32_MAX || callOffset < INT32_MIN) {
+                        Log("Code cave too far for rel32 call (offset=%lld)", callOffset);
+                        // Use absolute jump instead: replace CALL with JMP to cave
+                        // But we also need to handle the return... 
+                        // Alternative: NOP the CALL and use the TEST+JNZ space
+                        
+                        // NOP the original CALL (5 bytes)
+                        DWORD oldProtect;
+                        if (VirtualProtect(callAddr, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                            // Write: MOV qword [RSP+0x60], fakeAuthAddr (can't do imm64 to mem)
+                            // Instead: just NOP the call, set EAX=0, NOP the JNZ
+                            // And write the fake auth code pointers from our DLL thread
+                            
+                            // Actually, let's use a different approach:
+                            // Rewrite the cave to use an absolute indirect call
+                            // Or just NOP everything and handle it differently
+                            
+                            // Simplest: NOP the CALL, XOR EAX (success), NOP the JNZ,
+                            // NOP the null checks, and pre-write fake values to the stack
+                            // But we can't write to RSP from here...
+                            
+                            // Let me try: replace CALL with indirect call through a pointer
+                            // FF 15 [rip+offset] = CALL [rip+offset] (6 bytes)
+                            // We need a pointer to our cave somewhere nearby
+                            
+                            // Store cave pointer right after the patched area
+                            // Actually, use the code cave itself to store the pointer
+                            uint64_t caveAddr = (uint64_t)cave;
+                            // Write pointer at cave+64
+                            memcpy(cave + 64, &caveAddr, 8);
+                            
+                            // Use MOV RAX, imm64 + CALL RAX (12 bytes, fits in 13)
+                            callAddr[0] = 0x48; callAddr[1] = 0xB8; // MOV RAX, imm64
+                            memcpy(callAddr + 2, &caveAddr, 8);
+                            callAddr[10] = 0xFF; callAddr[11] = 0xD0; // CALL RAX
+                            callAddr[12] = 0x90; // NOP
+                            
+                            VirtualProtect(callAddr, 13, oldProtect, &oldProtect);
+                            Log("Patched CALL to use absolute address via MOV RAX + CALL RAX");
+                        }
+                    } else {
+                        // Relative call fits
+                        DWORD oldProtect;
+                        if (VirtualProtect(callAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                            callAddr[0] = 0xE8;
+                            *(int32_t*)(callAddr + 1) = (int32_t)callOffset;
+                            VirtualProtect(callAddr, 5, oldProtect, &oldProtect);
+                            Log("Patched CALL with relative offset %d", (int32_t)callOffset);
+                        }
+                    }
+                    
+                    Log("PATCHED: OriginRequestAuthCodeSync -> fake auth code provider");
+                    g_authBypassDone = 1;
+                    g_patched++;
                     return;
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
