@@ -877,7 +877,8 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   loginEnc.writeString('TSUI', '');
                   loginEnc.writeString('TURI', '');
                   const loginBody = loginEnc.build();
-                  const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, msgType: 0x1000, msgId: 1 });
+                  // Send as SilentLogin NOTIFICATION (msgType=0x2000, not response)
+                  const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, msgType: 0x2000, msgId: 0 });
                   const loginPkt = Buffer.concat([loginHdr, loginBody]);
                   const encLogin = encryptRecord(0x17, [0x03, 0x03], loginPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encLogin);
@@ -900,7 +901,7 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   postEnc.writeString('STIM', '');
                   postEnc.writeStructEnd();
                   const postBody = postEnc.build();
-                  const postHdr = encodeHeader({ length: postBody.length, component: 0x0009, command: 0x0008, error: 0, msgType: 0x1000, msgId: 2 });
+                  const postHdr = encodeHeader({ length: postBody.length, component: 0x0009, command: 0x0008, error: 0, msgType: 0x2000, msgId: 0 });
                   const postPkt = Buffer.concat([postHdr, postBody]);
                   const encPost = encryptRecord(0x17, [0x03, 0x03], postPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encPost);
