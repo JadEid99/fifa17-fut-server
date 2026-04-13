@@ -10,12 +10,15 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 Force Login === Base=0x140000000
+=== FIFA 17 Force Login v2 === Base=0x140000000
 === Ready. Trigger connection. ===
-[Local::PID::100916 ]-> [send_RPC] >>> cm=0x45bf7f38 cb=0x45bf7ff0 fn=0x146e19a00
-[PreAuth] Complete! connMgr=0x45bf7ff0 result=0x40050000
-[PreAuth] OnlineMgr=0x45d73e70
-[PreAuth] BlazeHub=0x45d7a960
-[PreAuth] LoginSM=0x100000002
-[PreAuth] ActiveType=0x0
-[PreAuth] Handler returned: 0x45bf9d60
+[Local::PID::103828 ]-> [send_RPC] cm=0x45b17f38 cb=0x45b17ff0 fn=0x146e19a00
+[PreAuth] Complete! connMgr=0x45b17ff0 result=0x40050000
+[BlazeHub] handler p1=0x45b17330 result=0x40050000
+[BlazeHub] +0x750 LoginSM=0x45b17ff0
+[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
+[BlazeHub] Error: access violation accessing 0x10
+[BlazeHub] handler p1=0x45b17330 result=0x802c0000
+[BlazeHub] +0x750 LoginSM=0x45b17ff0
+[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
+[BlazeHub] Error: access violation accessing 0x10

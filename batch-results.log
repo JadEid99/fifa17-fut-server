@@ -1,4 +1,4 @@
-﻿=== Frida Login Trace (2026-04-13 18:22:54) ===
+﻿=== Frida Login Trace (2026-04-13 18:26:58) ===
 
 --- FRIDA OUTPUT (last 3000 chars) ---
 ____
@@ -13,15 +13,18 @@ ____
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 Force Login === Base=0x140000000
+=== FIFA 17 Force Login v2 === Base=0x140000000
 === Ready. Trigger connection. ===
-[Local::PID::100916 ]-> [send_RPC] >>> cm=0x45bf7f38 cb=0x45bf7ff0 fn=0x146e19a00
-[PreAuth] Complete! connMgr=0x45bf7ff0 result=0x40050000
-[PreAuth] OnlineMgr=0x45d73e70
-[PreAuth] BlazeHub=0x45d7a960
-[PreAuth] LoginSM=0x100000002
-[PreAuth] ActiveType=0x0
-[PreAuth] Handler returned: 0x45bf9d60
+[Local::PID::103828 ]-> [send_RPC] cm=0x45b17f38 cb=0x45b17ff0 fn=0x146e19a00
+[PreAuth] Complete! connMgr=0x45b17ff0 result=0x40050000
+[BlazeHub] handler p1=0x45b17330 result=0x40050000
+[BlazeHub] +0x750 LoginSM=0x45b17ff0
+[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
+[BlazeHub] Error: access violation accessing 0x10
+[BlazeHub] handler p1=0x45b17330 result=0x802c0000
+[BlazeHub] +0x750 LoginSM=0x45b17ff0
+[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
+[BlazeHub] Error: access violation accessing 0x10
 
 --- BLAZE SERVER LOG (last 2000 chars) ---
 Waiting for Blaze data...
@@ -67,7 +70,7 @@ Waiting for Blaze data...
 [Blaze-Enc] Sent encrypted reply (16 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 16 3f 2d 23 bf 57 58 0e 63 00 b7 09 65 21 7f 3f 63 50 d5 10 51 5f
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 22 38 4f d6 51 f1 1a 1b 2d e9 60 d2 26 4b 81 8d 76 a5 b9 a2 00 27
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -76,37 +79,37 @@ Waiting for Blaze data...
 
 --- DLL LOG (last 2000 chars) ---
 CHED: auth flag at 00000001473CE785
-[18:21:39.969] PATCHED: IsLoggedIntoEA -> true
-[18:21:39.969] PATCHED: IsLoggedIntoNetwork -> true
-[18:21:40.054] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[18:21:40.054] PATCHED: SDK gate -> always 1
-[18:21:40.066] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[18:21:40.066] PATCHED: Login vtable check -> return 1
-[18:21:40.066] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[18:21:40.066] LOGIN SilentLogin: already patched
-[18:21:40.066] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[18:21:40.066] LOGIN ExpressLogin: already patched
-[18:21:40.066] PATCHED: PreAuth disconnect NOPed (for proactive Login)
-[18:21:40.227] PATCHED: Origin SDK check at 00000001470A8430
-[18:21:40.227] All patches in 657 ms
-[18:21:40.227] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[18:21:40.227] AUTH: Checking login gate globals...
-[18:21:40.227] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[18:21:40.227] AUTH: DAT_144b86bdf = 0 (error flag)
-[18:21:40.227] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[18:21:46.070] AUTH: Slot cleared at 5800 ms
-[18:21:46.070] AUTH: OnlineMgr=0x45D73E70
-[18:21:46.070] AUTH: slot=0x0 cave=0
-[18:21:46.070] AUTH: Using fake vtable (real not captured)
-[18:21:46.070] AUTH: Injected fake request 00000000647B0000 into slot
-[18:21:51.071] AUTH: cave=1 slot=0x0
-[18:21:51.071] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[18:21:51.071] AUTH: req[+0xd8]=0x99B9930 req[+0xe8]=1
-[18:21:51.071] AUTH: state=2. Auth ready.
-[18:21:51.071] AUTH: OnlineMgr+0xb10 = 0x45D7A6E0
-[18:21:51.071] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45D7A960
-[18:21:51.071] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[18:21:51.071] AUTH: Found 0 objects with vtables in BlazeHub
-[18:21:51.071] AUTH: BlazeHub(0000000045D7A960)+0x53f = 1
-[18:21:51.071] AUTH: Starting continuous +0x53f flag enforcer...
+[18:25:45.098] PATCHED: IsLoggedIntoEA -> true
+[18:25:45.098] PATCHED: IsLoggedIntoNetwork -> true
+[18:25:45.191] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[18:25:45.191] PATCHED: SDK gate -> always 1
+[18:25:45.203] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[18:25:45.203] PATCHED: Login vtable check -> return 1
+[18:25:45.203] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:25:45.203] LOGIN SilentLogin: already patched
+[18:25:45.203] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:25:45.203] LOGIN ExpressLogin: already patched
+[18:25:45.203] PATCHED: PreAuth disconnect NOPed (for proactive Login)
+[18:25:45.352] PATCHED: Origin SDK check at 00000001470A8430
+[18:25:45.352] All patches in 672 ms
+[18:25:45.352] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
+[18:25:45.352] AUTH: Checking login gate globals...
+[18:25:45.352] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[18:25:45.352] AUTH: DAT_144b86bdf = 0 (error flag)
+[18:25:45.352] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[18:25:50.991] AUTH: Slot cleared at 5600 ms
+[18:25:50.991] AUTH: OnlineMgr=0x45C93E70
+[18:25:50.991] AUTH: slot=0x0 cave=0
+[18:25:50.991] AUTH: Using fake vtable (real not captured)
+[18:25:50.991] AUTH: Injected fake request 00000000647B0000 into slot
+[18:25:55.991] AUTH: cave=1 slot=0x0
+[18:25:55.991] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[18:25:55.991] AUTH: req[+0xd8]=0x99B9D38 req[+0xe8]=1
+[18:25:55.991] AUTH: state=2. Auth ready.
+[18:25:55.991] AUTH: OnlineMgr+0xb10 = 0x45C9A6E0
+[18:25:55.991] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45C9A960
+[18:25:55.991] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[18:25:55.991] AUTH: Found 0 objects with vtables in BlazeHub
+[18:25:55.991] AUTH: BlazeHub(0000000045C9A960)+0x53f = 1
+[18:25:55.991] AUTH: Starting continuous +0x53f flag enforcer...
 
