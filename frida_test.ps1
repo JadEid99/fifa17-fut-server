@@ -5,7 +5,7 @@ $repoRoot = $PSScriptRoot
 $gameDir = "D:\Games\FIFA 17"
 $gameExe = "$gameDir\FIFA17.exe"
 $logFile = "$gameDir\fifa17_ssl_bypass.log"
-$fridaScript = "$repoRoot\frida_login_trace.js"
+$fridaScript = "$repoRoot\frida_force_login.js"
 $fridaResults = "$repoRoot\frida_results.txt"
 $resultsFile = "$repoRoot\batch-results.log"
 
