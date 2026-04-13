@@ -230,7 +230,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v90 (callback chain diagnostic + all patches) ===");
+    Log("=== FIFA 17 v91 (safe callback chain trace) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -437,35 +437,23 @@ static DWORD WINAPI PatchThread(LPVOID) {
             uint32_t* pSt = (uint32_t*)(om + 0x13b8);
             Log("AUTH: state=%d. Auth ready.", *pSt);
             
-            // Diagnostic: read the callback vtable to understand what function
-            // gets called after PreAuth disconnect
+            // Diagnostic: trace the callback chain with null checks at each step
             uint64_t cm2 = *(uint64_t*)(om + 0xb10);
+            Log("AUTH: OnlineMgr+0xb10 = 0x%llX", cm2);
             if (cm2 != 0) {
-                uint64_t connMgrObj = *(uint64_t*)(cm2 + 0xf8);
-                if (connMgrObj != 0) {
-                    // The login state machine is at *(connMgrObj + 0x750)
-                    uint64_t loginSM = *(uint64_t*)(connMgrObj + 0x750);
+                uint64_t bHub = *(uint64_t*)(cm2 + 0xf8);
+                Log("AUTH: +0xb10+0xf8 (BlazeHub) = 0x%llX", bHub);
+                if (bHub != 0) {
+                    uint64_t loginSM = *(uint64_t*)(bHub + 0x750);
+                    Log("AUTH: BlazeHub+0x750 (LoginSM) = 0x%llX", loginSM);
                     if (loginSM != 0) {
-                        // The callback object is at loginSM + 0x1cb0
-                        uint64_t cbObj = loginSM + 0x1cb0;
-                        uint64_t cbVtable = *(uint64_t*)cbObj;
-                        uint64_t cbFunc = *(uint64_t*)(cbVtable + 0x10);
-                        Log("AUTH: LoginSM=%p cbObj=%p vtable=%p vtable[2]=%p",
-                            (void*)loginSM, (void*)cbObj, (void*)cbVtable, (void*)cbFunc);
-                        
-                        // Also check the login state machine's active login type
-                        // param_1[5] = active type, param_1[2] = type at +0x10
-                        uint64_t activeType = *(uint64_t*)(loginSM + 0x28); // param_1[5]
-                        uint64_t type2 = *(uint64_t*)(loginSM + 0x10); // param_1[2]
-                        Log("AUTH: LoginSM active=%p type2=%p", (void*)activeType, (void*)type2);
-                        if (activeType != 0) {
-                            uint64_t atVtable = *(uint64_t*)activeType;
-                            uint64_t atCheck = *(uint64_t*)(atVtable + 0x10);
-                            Log("AUTH: ActiveType vtable=%p [+0x10]=%p", (void*)atVtable, (void*)atCheck);
-                        }
-                    } else { Log("AUTH: LoginSM is NULL at connMgr+0x750"); }
-                }
-            }
+                        uint64_t activeType = *(uint64_t*)(loginSM + 0x28);
+                        Log("AUTH: LoginSM+0x28 (activeType) = 0x%llX", activeType);
+                    } else {
+                        Log("AUTH: >>> LoginSM is NULL! This is why Login never fires. <<<");
+                    }
+                } else { Log("AUTH: BlazeHub is NULL"); }
+            } else { Log("AUTH: ConnMgr wrapper is NULL"); }
             
             // Force the +0x53f flag on the Blaze hub
             // This flag gates the post-PreAuth callback chain
