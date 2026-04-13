@@ -347,7 +347,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
         Log("AUTH-RETRIGGER: Exception reading game memory");
     }
     
-    // Second dump after more time (catch state after connection attempt)
+    // Second dump + force reconnect attempt
     Sleep(30000);
     __try {
         uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
@@ -356,10 +356,20 @@ static DWORD WINAPI PatchThread(LPVOID) {
         uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
         Log("AUTH-DUMP2: DAT_1448a3ac3 = %d", *pOnlineFlag);
         if (onlineMgr != 0) {
-            uint64_t* pAuthSlot = (uint64_t*)(onlineMgr + 0x4ea0);
-            Log("AUTH-DUMP2: [+0x4ea0] = 0x%llX", *pAuthSlot);
-            uint64_t* pAuthSlot2 = (uint64_t*)(onlineMgr + 0x4ea8);
-            Log("AUTH-DUMP2: [+0x4ea8] = 0x%llX", *pAuthSlot2);
+            uint32_t* pState = (uint32_t*)(onlineMgr + 0x13b8);
+            uint16_t* pFlag = (uint16_t*)(onlineMgr + 0x13b4);
+            uint8_t* pDisc = (uint8_t*)(onlineMgr + 0x13a8);
+            Log("AUTH-DUMP2: [+0x13b8]=%d [+0x13b4]=0x%X [+0x13a8]=%d", *pState, *pFlag, *pDisc);
+            
+            // Try to force a reconnect by resetting the disconnect state
+            // Set +0x13a8 = 0 (not disconnecting)
+            // Set +0x13b4 = 0 (no disconnect flag)  
+            // Set +0x13b8 = 0 (clear disconnect reason)
+            Log("AUTH-DUMP2: Forcing reconnect - clearing disconnect state");
+            *pDisc = 0;
+            *pFlag = 0;
+            *pState = 0;
+            Log("AUTH-DUMP2: State cleared. Game should attempt reconnect on next tick.");
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("AUTH-DUMP2: Exception");
