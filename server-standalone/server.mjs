@@ -286,16 +286,18 @@ function encodeHeader(h) {
   buf.writeUInt16BE(h.command, 8);           // command
   buf.writeUInt16BE(h.error || 0, 10);       // error code
   if (h.notify) {
-    // Notifications: seq=0, flags=0
-    buf[12] = 0x00;
+    // Notifications: type=0x20, ext=0, id=0
+    buf[12] = 0x20;
     buf[13] = 0x00;
+    buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Response: echo the request's sequence byte
+    // Response to a request: echo the sequence byte, no error flag
+    // We've tried: same seq, seq+1, type|seq. None confirmed working yet.
+    // Current best guess: echo same seq byte (RPC matching by seq number)
     buf[12] = h.seqByte;
-    buf[13] = h.error ? 0x80 : 0x00; // set error flag if error
+    buf[13] = h.error ? 0x80 : 0x00;
   } else {
-    // Fallback: use msgId bytes
-    buf[12] = (h.msgId >> 8) & 0xFF;
+    buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
   }
   buf.writeUInt16BE(h.extId || 0, 14);      // extended id
