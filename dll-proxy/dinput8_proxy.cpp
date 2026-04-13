@@ -182,26 +182,10 @@ static void PatchSdkGateCheck() {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
-    // Also NOP the disconnect call in PreAuth handler (belt + suspenders)
-    __try {
-        BYTE* pah = (BYTE*)0x146e19a00;
-        for (int i = 0; i < 80; i++) {
-            if (pah[i] == 0xE8) {
-                int32_t disp = *(int32_t*)(pah + i + 1);
-                BYTE* target = pah + i + 5 + disp;
-                if (target == (BYTE*)0x146db3e40) {
-                    Log("PREAUTH: disconnect CALL at +%d", i);
-                    DWORD op;
-                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
-                        for (int k=0; k<5; k++) pah[i+k]=0x90;
-                        VirtualProtect(pah + i, 5, op, &op);
-                        Log("PATCHED: PreAuth disconnect NOPed");
-                    }
-                    break;
-                }
-            }
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    // Part B: DON'T NOP the PreAuth disconnect. Let the normal flow happen:
+    // PreAuth → disconnect → callback → check auth → reconnect with Login
+    // The auth token is available, SDK gate returns 1, so the callback should proceed.
+    Log("PREAUTH: NOT patching disconnect (letting normal callback flow work)");
     
     g_sdkGateDone = 1; g_patched++;
 }
@@ -236,7 +220,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v83 (auth ready before Q press + vtable + NOP + SDK) ===");
+    Log("=== FIFA 17 v84 (no PreAuth NOP, natural flow + vtable + SDK + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
