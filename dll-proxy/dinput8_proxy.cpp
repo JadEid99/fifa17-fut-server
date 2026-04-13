@@ -1,15 +1,15 @@
 /**
- * dinput8.dll Proxy - v68
+ * dinput8.dll Proxy - v97
  * 
  * Patch 1: Cert verification bypass (JNZ -> JMP)
  * Patch 2: Origin SDK availability check (always true)
  * Patch 3: FUN_1470db3c0 body replacement (fake auth code, instant return)
  * Patch 4: Auth bypass flag ([RBX+0x2061]=1)
  * Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork (always true)
- * 
- * After patches: Re-inject fake auth request into the cleared slot so the
- * game's tick function processes it with our patched FUN_1470db3c0.
- * Then clear disconnect state to trigger reconnect with Login.
+ * Patch 7: SDK gate + login vtable + PreAuth disconnect NOP
+ * Patch 8: FUN_146e1cf10 (PreAuth response handler) -> always call post_PreAuth
+ *          Bypasses the RPC framework entirely - even if PreAuth response parsing
+ *          fails (ERR_TIMEOUT), we still trigger the Login flow.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -216,6 +216,113 @@ static void PatchSdkGateCheck() {
     g_sdkGateDone = 1; g_patched++;
 }
 
+// Patch 8: Replace FUN_146e1cf10 (PreAuth response handler) to always call post_PreAuth
+// When param_3 != 0 (ERR_TIMEOUT), the game skips PreAuth processing and never calls
+// FUN_146e1e460 (post_PreAuth). We patch the function to:
+// 1. Set default config values (pingPeriod=15000ms, requestTimeout=60s, idleTimeout=90s)
+// 2. Call FUN_146e1e460(param_1) to trigger the PostAuth/Login flow
+// 3. Return (skip the else branch that schedules the error callback)
+static int g_preAuthPatchDone = 0;
+static void PatchPreAuthHandler() {
+    if (g_preAuthPatchDone) return;
+    
+    // FUN_146e1cf10 is at a fixed address (no ASLR)
+    BYTE* func = (BYTE*)0x146e1cf10;
+    
+    __try {
+        Log("PREAUTH_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
+            func, func[0], func[1], func[2], func[3], func[4], func[5]);
+        
+        // We need to write a code cave that:
+        // 1. Sets *(uint32_t*)(param_1 + 0xd1c) = 15000  (pingPeriod default)
+        // 2. Sets *(int*)(param_1 + 0x278) = 60           (defaultRequestTimeout)
+        // 3. Sets *(int*)(param_1 + 0xd28) = 90           (connIdleTimeout)
+        // 4. Calls FUN_146e1e460(param_1)
+        // 5. Returns
+        //
+        // param_1 is in RCX (first arg, Windows x64 calling convention)
+        
+        // Allocate a code cave
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        if (!cave) { Log("PREAUTH_HANDLER: cave alloc failed"); return; }
+        
+        int o = 0;
+        
+        // Save RCX (param_1) in a non-volatile register
+        // PUSH RBX
+        cave[o++] = 0x53;
+        // PUSH RBP  (align stack to 16 bytes)
+        cave[o++] = 0x55;
+        // SUB RSP, 0x28 (shadow space for calls)
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28;
+        // MOV RBX, RCX (save param_1)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB;
+        
+        // Set pingPeriod: MOV DWORD PTR [RBX + 0xd1c], 15000 (0x3A98)
+        // C7 83 1C0D0000 983A0000
+        cave[o++] = 0xC7; cave[o++] = 0x83;
+        cave[o++] = 0x1C; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x98; cave[o++] = 0x3A; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // Set defaultRequestTimeout: MOV DWORD PTR [RBX + 0x278], 60 (0x3C)
+        // C7 83 78020000 3C000000
+        cave[o++] = 0xC7; cave[o++] = 0x83;
+        cave[o++] = 0x78; cave[o++] = 0x02; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x3C; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // Set connIdleTimeout: MOV DWORD PTR [RBX + 0xD28], 90 (0x5A)
+        // C7 83 280D0000 5A000000
+        cave[o++] = 0xC7; cave[o++] = 0x83;
+        cave[o++] = 0x28; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x5A; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // Call FUN_146e1e460(param_1)
+        // MOV RCX, RBX (param_1)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
+        // MOV RAX, 0x146e1e460
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t postPreAuth = 0x146e1e460;
+        memcpy(cave + o, &postPreAuth, 8); o += 8;
+        // CALL RAX
+        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        
+        // Cleanup and return
+        // ADD RSP, 0x28
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
+        // POP RBP
+        cave[o++] = 0x5D;
+        // POP RBX
+        cave[o++] = 0x5B;
+        // RET
+        cave[o++] = 0xC3;
+        
+        Log("PREAUTH_HANDLER: Cave at %p, %d bytes", cave, o);
+        
+        // Now patch FUN_146e1cf10 to jump to our cave
+        // We need to replace the first few bytes with: JMP cave
+        // MOV RAX, cave_addr / JMP RAX = 12 bytes
+        DWORD op;
+        if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
+            int p = 0;
+            // MOV RAX, cave_addr (10 bytes)
+            func[p++] = 0x48; func[p++] = 0xB8;
+            uint64_t caveAddr = (uint64_t)cave;
+            memcpy(func + p, &caveAddr, 8); p += 8;
+            // JMP RAX (2 bytes)
+            func[p++] = 0xFF; func[p++] = 0xE0;
+            // NOP remaining bytes
+            while (p < 16) func[p++] = 0x90;
+            
+            VirtualProtect(func, 16, op, &op);
+            Log("PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at %p)", cave);
+            g_preAuthPatchDone = 1;
+            g_patched++;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("PREAUTH_HANDLER: Exception");
+    }
+}
+
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
 static void PatchIsLoggedInFunctions() {
     BYTE pat[]={0x48,0x83,0xEC,0x28,0x31,0xC9,0xE8};
@@ -260,6 +367,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
+            if(!g_preAuthPatchDone) PatchPreAuthHandler();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
                 uint64_t* pOM = (uint64_t*)0x1448a3b20;
@@ -272,7 +380,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
