@@ -193,7 +193,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v78 (dynamic Blaze hub stub + fake SDK + gate + auth) ===");
+    Log("=== FIFA 17 v79 (direct reconnect call + fake SDK + gate + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -385,13 +385,25 @@ static DWORD WINAPI PatchThread(LPVOID) {
             Log("AUTH: >>> CAVE EXECUTED! Auth code provided! <<<");
             Log("AUTH: req[+0xd8]=0x%llX req[+0xe8]=%d", *(uint64_t*)(fr+0xd8), *(uint8_t*)(fr+0xe8));
             
-            // Clear disconnect state to trigger reconnect
+            // Clear disconnect state AND trigger reconnect by calling FUN_146f39b20(0,0)
+            // This is the same function the Q key triggers
             uint32_t* pSt = (uint32_t*)(om + 0x13b8);
-            Log("AUTH: state=%d, clearing...", *pSt);
+            Log("AUTH: state=%d, triggering reconnect...", *pSt);
             *(uint8_t*)(om + 0x13a8) = 0;
             *(uint16_t*)(om + 0x13b4) = 0;
             *pSt = 0;
-            Log("AUTH: State cleared. Reconnect should happen now.");
+            
+            // Call FUN_146f39b20(0, 0) to trigger a fresh connection attempt
+            // This is the "go online" function - same as pressing Q
+            typedef void (__fastcall *GoOnline_t)(uint32_t, uint8_t);
+            GoOnline_t goOnline = (GoOnline_t)0x146f39b20;
+            __try {
+                Log("AUTH: Calling FUN_146f39b20(0,0) to trigger reconnect...");
+                goOnline(0, 0);
+                Log("AUTH: FUN_146f39b20 returned! Reconnect initiated.");
+            } __except(EXCEPTION_EXECUTE_HANDLER) {
+                Log("AUTH: Exception calling FUN_146f39b20");
+            }
         } else {
             Log("AUTH: Cave NOT executed after 5s");
             Log("AUTH: state=%d", *(uint32_t*)(om + 0x13b8));
