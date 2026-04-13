@@ -1,44 +1,60 @@
-# FIFA 17 Private Server - Session Status
+# FIFA 17 Private Server - End of Day 3 Status
 
-## BREAKTHROUGH: Connection stays open after PreAuth!
+## What We Know For Certain
 
-v80 NOPs the disconnect call in the PreAuth completion handler (FUN_146e19a00).
-For the first time, the game stays connected after PreAuth and sends additional
-data (comp=0x0000 cmd=0x0000 — a keepalive/ping).
+1. **DAT_144b86bf8 = NULL** — The Origin SDK manager is never created by the STP emulator.
+   This blocks `FUN_1471a5da0` (returns 0) which gates the entire login flow.
 
-Previously: PreAuth → immediate close_notify → disconnect (every single test)
-Now: PreAuth → keepalive packet → then disconnect
+2. **The Blaze flow is: PreAuth → disconnect → callback → Login on new connection.**
+   PreAuth and Login happen on SEPARATE TCP connections. This is by design.
 
-## What's working (8 patches)
-1. Cert bypass (JNZ→JMP)
-2. Origin SDK availability (always true)
-3. FUN_1470db3c0 body (fake auth code provider)
-4. Telemetry auth flag
-5. IsLoggedIntoEA (always true)
-6. IsLoggedIntoNetwork (always true)
-7. SDK gate FUN_1471a5da0 (always return 1) — unblocks login flow
-7b. PreAuth completion handler (NOP disconnect call) — keeps connection open
-8. Fake SDK manager object at DAT_144b86bf8 with vtable stubs
-9. Auth request re-injection (cave executes, auth code stored)
+3. **The post-PreAuth callback chain requires `BlazeHub+0x53f = 1`.**
+   We force this flag, but the callback still doesn't trigger Login.
 
-## Root cause found
-DAT_144b86bf8 (Origin SDK manager) is NULL. The STP emulator doesn't create it.
-This blocks FUN_1471a5da0 which gates the entire login flow.
-We create a fake object with vtable stubs and patch the gate function.
+4. **All 3 login type vtable[0x10] functions point to the same code (`0x146E156A0`).**
+   We patched it to return 1. This should allow the callback to proceed.
 
-## Next steps
-1. The game sends a keepalive (comp=0 cmd=0) after PreAuth but then disconnects.
-   Need to understand what the game expects next — possibly PostAuth or Login.
-2. The Blaze SDK's connection state machine may need more conditions satisfied
-   before it proceeds to Login.
-3. The fake SDK object's vtable[0x188] returns the Blaze hub dynamically.
-   Need to verify this works when the game actually calls it.
+5. **The auth token is stored in a temporary request object that gets destroyed.**
+   The Blaze SDK never reads it because the destructor (which should transfer it)
+   uses our fake vtable with RET stubs.
 
-## Key addresses (fixed, no ASLR)
-- FUN_1471a5da0: SDK gate (patched to return 1)
-- FUN_146e19a00: PreAuth completion handler (disconnect NOPed at +61)
-- FUN_146f2a270: Login sender (called via callback, not directly)
-- FUN_146f39b20: "Go online" function (Q key trigger)
-- DAT_144b86bf8: Origin SDK manager (NULL, we write fake object)
-- DAT_1448a3b20: OnlineManager pointer
-- DAT_1448a3ac3: Online mode flag (1 = active)
+6. **The PreAuth NOP keeps the connection open** — game sends a keepalive then disconnects.
+   But no Login is sent on the open connection.
+
+## What's NOT Working
+
+The post-PreAuth callback fires (`FUN_146da9570` schedules `FUN_146dad43c`) but
+the Login connection is never initiated. Despite:
+- SDK gate returning 1
+- All login type vtables returning 1
+- BlazeHub+0x53f = 1
+- Fake SDK object in place
+- Auth token stored (cave executes)
+
+## Remaining Options
+
+### Option A: Find the EXACT remaining blocker in the callback chain
+Trace `FUN_146dad43c` → vtable dispatch → what function is called → what it checks.
+This requires more Ghidra analysis. Could find the answer or could find yet another flag.
+
+### Option B: Patch the game binary to skip auth entirely
+Find the function that decides "send Login or disconnect" and patch it to always
+send Login. This is what BF3 blaze-server did (patched exe). Requires finding the
+exact decision point in the Blaze SDK's connection state machine.
+
+### Option C: Build a more complete Origin emulator
+Replace the STP emulator with one that creates a proper Origin SDK manager object
+(DAT_144b86bf8) with all the right vtable entries. This would make the game's
+natural flow work without any patches. Very complex.
+
+### Option D: Intercept at the network level
+Instead of patching the game, intercept the Blaze protocol at the network level.
+When the game sends PreAuth, our proxy responds AND immediately sends a Login
+request on behalf of the game. The server processes both and sends back session data.
+This requires understanding the exact Login request format.
+
+## Recommendation
+Option B is the most direct. We need to find the ONE function in the Blaze SDK
+that decides "I have auth, proceed to Login" vs "no auth, disconnect." We've been
+patching around it but haven't found it yet. The Ghidra export has the answer —
+we just need to trace the right path.
