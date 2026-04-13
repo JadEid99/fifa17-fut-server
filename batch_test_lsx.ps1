@@ -51,31 +51,8 @@ Kill-All
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
 
-# Step 1: Start LSX server (diagnostic only)
-Write-Host "[LSX] Starting LSX server on port 4218 (diagnostic)..." -ForegroundColor Yellow
-$lsxJob = Start-Job -ScriptBlock { 
-    param($r)
-    $env:LSX_PORT = "4218"
-    node "$r\server-standalone\lsx-origin-server.mjs" 2>&1 
-} -ArgumentList $repoRoot
-Start-Sleep 2
-
-# DON'T start Blaze server yet - wait for auth injection to complete
-# The DLL needs ~12s (patches 0.7s + STP timeout 5.5s + auth inject 5s)
-# If Blaze server isn't running, the game's auto-connect fails harmlessly
-# Then when we start Blaze and trigger reconnect, auth is ready
-
-# Launch game WITHOUT Blaze server
-Write-Host "[GAME] Launching FIFA 17 (Blaze server delayed)..." -ForegroundColor Yellow
-Start-Process $gameExe
-for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
-Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
-# Wait for auth injection to complete (~12s from game start)
-# Then start Blaze server and dismiss the connection error
-Start-Sleep 15
-
-# NOW start Blaze server (auth should be ready)
-Write-Host "[BLAZE] Starting Blaze server (auth should be ready now)..." -ForegroundColor Yellow
+# Step 1: Start Blaze server FIRST
+Write-Host "[BLAZE] Starting Blaze server..." -ForegroundColor Yellow
 $blazeJob = Start-Job -ScriptBlock { 
     param($r)
     $env:PREAUTH_VARIANT="full"
@@ -84,8 +61,22 @@ $blazeJob = Start-Job -ScriptBlock {
 } -ArgumentList $repoRoot
 Start-Sleep 3
 
-# Dismiss the first connection error
-FEnter; Start-Sleep 2
+# Start LSX server (diagnostic only)
+Write-Host "[LSX] Starting LSX server on port 4218 (diagnostic)..." -ForegroundColor Yellow
+$lsxJob = Start-Job -ScriptBlock { 
+    param($r)
+    $env:LSX_PORT = "4218"
+    node "$r\server-standalone\lsx-origin-server.mjs" 2>&1 
+} -ArgumentList $repoRoot
+Start-Sleep 2
+
+# Launch game
+Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
+Start-Process $gameExe
+for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
+Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
+# Wait for first connection attempt + auth injection
+Start-Sleep 20; FEnter; Start-Sleep 2
 
 # Blaze server already running from before game launch
 # Just trigger connection attempt
