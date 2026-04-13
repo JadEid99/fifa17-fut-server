@@ -291,13 +291,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== Done. patches: %d ===", g_patched);
     
     // After all patches are applied, try to re-trigger the auth token request.
-    // The auth request at DAT_1448a3b20 + 0x4ea0 fires once during init and gets
-    // cleared. Our auth code cave patch wasn't applied in time. Now that it IS
-    // applied, we need to re-populate the auth request slot so it fires again.
-    //
-    // DAT_1448a3b20 is the OnlineManager object pointer (at fixed address in .data)
-    // The auth request array starts at +0x4e98 (type marker) with slots at +0x4ea0, +0x4ea8
-    Sleep(2000); // Wait for game to be fully initialized
+    // Wait for OnlineManager to be fully initialized (it's NULL at 2s, try 15s)
+    Sleep(15000);
     __try {
         // Read the OnlineManager pointer from the known global address
         // DAT_1448a3b20 is at address 0x1448a3b20 in the game's address space
@@ -352,6 +347,24 @@ static DWORD WINAPI PatchThread(LPVOID) {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("AUTH-RETRIGGER: Exception reading game memory");
+    }
+    
+    // Second dump after more time (catch state after connection attempt)
+    Sleep(30000);
+    __try {
+        uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
+        uint64_t onlineMgr = *pOnlineMgr;
+        Log("AUTH-DUMP2: DAT_1448a3b20 = 0x%llX (after 45s)", onlineMgr);
+        uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
+        Log("AUTH-DUMP2: DAT_1448a3ac3 = %d", *pOnlineFlag);
+        if (onlineMgr != 0) {
+            uint64_t* pAuthSlot = (uint64_t*)(onlineMgr + 0x4ea0);
+            Log("AUTH-DUMP2: [+0x4ea0] = 0x%llX", *pAuthSlot);
+            uint64_t* pAuthSlot2 = (uint64_t*)(onlineMgr + 0x4ea8);
+            Log("AUTH-DUMP2: [+0x4ea8] = 0x%llX", *pAuthSlot2);
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("AUTH-DUMP2: Exception");
     }
     return 0;
 }

@@ -75,7 +75,8 @@ Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe
 for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
-Start-Sleep 10; FEnter; Start-Sleep 2
+# Wait for connection attempt #1 to complete and fail dialog to appear
+Start-Sleep 20; FEnter; Start-Sleep 2
 
 # Blaze server already running from before game launch
 # Just trigger connection attempt
