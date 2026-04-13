@@ -42,6 +42,20 @@ hk(0x6124a40, 'DirtySDK_status', function(a) {
 // 17. FUN_146db7490 - BlazeHub callback handler (called after PreAuth)
 hk(0x6db7490, 'BlazeHub_handler', function(a) {
     console.log('[>] BlazeHub_handler p1=' + a[0] + ' p2=' + a[1]);
+    // Dump the first 64 bytes of this function to understand what it does
+    try {
+        var funcBytes = addr(0x6db7490).readByteArray(64);
+        console.log('[>] BlazeHub_handler bytes: ' + Array.from(new Uint8Array(funcBytes)).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' '));
+    } catch(e) {}
+    // Also read the object state
+    try {
+        var obj = a[0];
+        // Read key offsets on the BlazeHub object
+        var off750 = obj.add(0x750).readPointer();
+        var off788 = obj.add(0x788).readPointer();
+        var off53f = obj.add(0x53f).readU8();
+        console.log('[>] BlazeHub state: +0x750=' + off750 + ' +0x788=' + off788 + ' +0x53f=' + off53f);
+    } catch(e) { console.log('[>] BlazeHub state read error: ' + e.message); }
 }, function(r) { console.log('[<] BlazeHub_handler -> ' + r); });
 
 // 18. The parent function that contains the PreAuth response processing
