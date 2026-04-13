@@ -142,89 +142,25 @@ static void PatchAuthFlag() {
     }
 }
 
-// Patch 7: FUN_1471a5da0 (SDK gate check) -> always return 1
-// This function gates the ENTIRE login flow. If it returns 0, no Login is ever sent.
-// Original: if (DAT_144b86bf8 != 0 && DAT_144b86bdf == 0) return 1; return 0;
-// Pattern: 48 83 3D XX XX XX XX 00 (CMP QWORD [rip+XX], 0) near 80 3D XX XX XX XX 00 (CMP BYTE [rip+XX], 0)
+// Patch 7: FUN_1471a5da0 (SDK gate) -> always return 1
+// This gates the ENTIRE login flow. DAT_144b86bf8 is NULL so it returns 0.
+// Game base is always 0x140000000 (no ASLR). Function at fixed address.
 static void PatchSdkGateCheck() {
     if (g_sdkGateDone) return;
-    // The function is small (~20 bytes). It starts with CMP QWORD [rip+XX], 0
-    // which is: 48 83 3D XX XX XX XX 00
-    // Then JE (74 XX), then CMP BYTE [rip+XX], 0 = 80 3D XX XX XX XX 00
-    // Then JNE (75 XX), then MOV AL, 1 (B0 01), RET (C3)
-    // Pattern: 48 83 3D ... 00 74 ... 80 3D ... 00 75 ... B0 01 C3
-    // We search for: B0 01 C3 (MOV AL,1 / RET) preceded by 75 XX (JNE) 
-    // and followed by XOR EAX,EAX (31 C0) or MOV AL,0 (B0 00) + RET (C3)
-    
-    // Simpler: search for the exact sequence B0 01 C3 B0 00 C3 or B0 01 C3 31 C0 C3
-    // which is the end of this function (return 1 / return 0)
-    BYTE pat1[] = { 0xB0, 0x01, 0xC3, 0x31, 0xC0, 0xC3 }; // MOV AL,1 / RET / XOR EAX,EAX / RET
-    BYTE pat2[] = { 0xB0, 0x01, 0xC3, 0xB0, 0x00, 0xC3 }; // MOV AL,1 / RET / MOV AL,0 / RET
-    
-    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
-    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
-        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
-            __try { for(SIZE_T j=0;j+20<s;j++) {
-                int match = 0;
-                if (memcmp(b+j, pat1, 6)==0) match = 1;
-                if (memcmp(b+j, pat2, 6)==0) match = 2;
-                if (!match) continue;
-                
-                // Verify: look backwards for the CMP QWORD [rip+XX], 0 pattern
-                // It should be within ~15 bytes before our match
-                int found48 = 0;
-                for (int k = 3; k < 20; k++) {
-                    if (b[j-k] == 0x48 && b[j-k+1] == 0x83 && b[j-k+2] == 0x3D && b[j-k+7] == 0x00) {
-                        found48 = 1;
-                        break;
-                    }
-                }
-                if (!found48) continue;
-                
-                // Also verify: there should be a 80 3D (CMP BYTE [rip+XX], 0) between
-                int found80 = 0;
-                for (int k = 1; k < 15; k++) {
-                    if (b[j-k] == 0x80 && b[j-k+1] == 0x3D) {
-                        found80 = 1;
-                        break;
-                    }
-                }
-                if (!found80) continue;
-                
-                // Found the function! The "return 0" path is at b+j+3 (after the B0 01 C3)
-                // We want to patch the "return 0" to also return 1
-                // Just change the byte at j+3 or j+4 to make it return 1
-                BYTE* retZero = b + j + 3;
-                Log("Found SDK gate at %p (match=%d)", b+j, match);
-                
-                // But better: find the function start and replace the whole thing
-                // The function start is the 48 83 3D we found above
-                BYTE* funcStart = NULL;
-                for (int k = 3; k < 25; k++) {
-                    if (b[j-k] == 0x48 && b[j-k+1] == 0x83 && b[j-k+2] == 0x3D) {
-                        funcStart = b + j - k;
-                        break;
-                    }
-                }
-                
-                if (funcStart) {
-                    DWORD op;
-                    int funcLen = (int)((b + j + 6) - funcStart);
-                    Log("  Function at %p, length %d bytes", funcStart, funcLen);
-                    if (VirtualProtect(funcStart, funcLen, PAGE_EXECUTE_READWRITE, &op)) {
-                        // Replace entire function with: MOV AL, 1 / RET / NOP...
-                        funcStart[0] = 0xB0; funcStart[1] = 0x01; funcStart[2] = 0xC3;
-                        for (int k = 3; k < funcLen; k++) funcStart[k] = 0x90;
-                        VirtualProtect(funcStart, funcLen, op, &op);
-                        Log("PATCHED: SDK gate -> always returns 1 (login unblocked!)");
-                        g_sdkGateDone = 1; g_patched++;
-                    }
-                }
-                return;
-            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
-    }
+    BYTE* func = (BYTE*)0x1471a5da0;
+    __try {
+        Log("SDK GATE: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
+            func, func[0],func[1],func[2],func[3],func[4],func[5],func[6],func[7]);
+        if (func[0] != 0x48) { Log("SDK GATE: unexpected byte, skipping"); return; }
+        DWORD op;
+        if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
+            func[0]=0xB0; func[1]=0x01; func[2]=0xC3;
+            for (int k=3; k<16; k++) func[k]=0x90;
+            VirtualProtect(func, 16, op, &op);
+            Log("PATCHED: SDK gate at %p -> always 1 (login unblocked!)", func);
+            g_sdkGateDone=1; g_patched++;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("SDK GATE: exception"); }
 }
 
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
