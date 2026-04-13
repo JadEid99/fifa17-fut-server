@@ -1,102 +1,46 @@
-﻿=== LSX + connect() hook test (2026-04-13 13:32:36) ===
-BLAZE RESULT: SECOND_CONNECTION
+﻿=== LSX + connect() hook test (2026-04-13 13:46:32) ===
+BLAZE RESULT: UNKNOWN
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
-d: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: f6b29721c863443758a9113b284813ce
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c13704755cff21ff1d7646d64aeacda79c5bbe81fba6759a03e71c480ee4dd5a2
-[SSL] Client Finished plaintext (16 bytes): 1400000c13704755cff21ff1d7646d64
-[SSL] Client Finished MAC: aeacda79c5bbe81fba6759a03e71c480ee4dd5a2
-[SSL] Client verify_data:   13704755cff21ff1d7646d64
-[SSL] Expected verify_data:  13704755cff21ff1d7646d64
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: aeacda79c5bbe81fba6759a03e71c480ee4dd5a2
-[SSL] Actual client MAC:   aeacda79c5bbe81fba6759a03e71c480ee4dd5a2
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1050 bytes
-[SSL]   msg[0]: 123 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 03772da0f6f9bfe884fe0213
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 244 bytes on socket (total pending: 244)
-[SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
-[SSL] Decrypted 219 bytes of application data
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = 1701729619
-[PreAuth]     SVCN (str) = "fifa-2017-pc"
-[PreAuth]     TYPE (int) = 0
-[PreAuth]   }
-[PreAuth]   CINF (struct) {
-[PreAuth]     BSDK (str) = "15.1.1.3.0"
-[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
-[PreAuth]     CLNT (str) = "FIFA17"
-[PreAuth]     CPFT (int) = 4
-[PreAuth]     CSKU (str) = "FIFAPC"
-[PreAuth]     CVER (str) = "3175939"
-[PreAuth]     DSDK (str) = "15.1.2.1.0"
-[PreAuth]     ENV  (str) = "prod"
-[PreAuth]     LOC  (int) = 1701729619
-[PreAuth]     PTVR (str) = "1.1"
-[PreAuth]   }
-[PreAuth]   FCCR (struct) {
-[PreAuth]     CFID (str) = "BlazeSDK"
-[PreAuth]   }
-[PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending BF4-based response (829 bytes)
-[Blaze-Enc] Sent encrypted reply (845 bytes)
-[Blaze-Enc] Sending proactive SilentLogin response after PreAuth...
-[Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): e3 2e 8e 63 50 f0 ff 09 58 79 e9 91 2e d1 33 46 b8 0f c8 46 a8 de
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Main] S2 disconnected
-[SSL-CONN] Socket closed
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
 
 --- LSX SERVER LOG ---
-[11:31:02.807] [LSX] === LSX Origin SDK Server ===
-[11:31:02.809] [LSX] Mode: STANDALONE (replacing STP)
-[11:31:02.809] [LSX] Listening on port 4218
-[11:31:02.809] [LSX] Waiting for game connection...
+[11:45:01.032] [LSX] === LSX Origin SDK Server ===
+[11:45:01.034] [LSX] Mode: STANDALONE (replacing STP)
+[11:45:01.034] [LSX] Listening on port 4218
+[11:45:01.034] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[13:31:05.637] === FIFA 17 v72 (early vtable capture + auth re-injection) ===
-[13:31:05.637] PID: 103312
-[13:31:05.796] PATCHED: cert bypass at 000000014613244B
-[13:31:05.963] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[13:31:05.963] PATCHED: FUN_1470db3c0 body -> fake auth code
-[13:31:06.006] PATCHED: auth flag at 00000001473CE785
-[13:31:06.056] PATCHED: IsLoggedIntoEA -> true
-[13:31:06.057] PATCHED: IsLoggedIntoNetwork -> true
-[13:31:06.283] PATCHED: Origin SDK check at 00000001470A8430
-[13:31:06.283] All patches in 641 ms
-[13:31:06.283] patches: 6 (cert=1 orig=1 auth=1 flag=1 login=2)
-[13:31:06.283] AUTH: Polling for slot to clear (vtable=NOT captured)...
-[13:31:11.832] AUTH: Slot cleared at 5500 ms
-[13:31:11.832] AUTH: OnlineMgr=0x45CE3E70
-[13:31:11.832] AUTH: slot=0x0 cave=0
-[13:31:11.832] AUTH: Using fake vtable (real not captured)
-[13:31:11.832] AUTH: Injected fake request 0000000064770000 into slot
-[13:31:16.833] AUTH: cave=1 slot=0x0
-[13:31:16.833] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[13:31:16.833] AUTH: req[+0xd8]=0x9999930 req[+0xe8]=1
-[13:31:16.833] AUTH: state=2, clearing...
-[13:31:16.833] AUTH: State cleared. Reconnect should happen now.
+[13:45:03.826] === FIFA 17 v73 (login gate diagnostic + auth re-injection) ===
+[13:45:03.827] PID: 32604
+[13:45:03.976] PATCHED: cert bypass at 000000014613244B
+[13:45:04.127] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[13:45:04.127] PATCHED: FUN_1470db3c0 body -> fake auth code
+[13:45:04.170] PATCHED: auth flag at 00000001473CE785
+[13:45:04.213] PATCHED: IsLoggedIntoEA -> true
+[13:45:04.213] PATCHED: IsLoggedIntoNetwork -> true
+[13:45:04.439] PATCHED: Origin SDK check at 00000001470A8430
+[13:45:04.439] All patches in 609 ms
+[13:45:04.439] patches: 6 (cert=1 orig=1 auth=1 flag=1 login=2)
+[13:45:04.439] AUTH: Checking login gate globals...
+[13:45:04.439] AUTH: DAT_144b86bf8 = 0x0 (Origin SDK manager)
+[13:45:04.451] AUTH: DAT_144b86bdf = 0 (error flag)
+[13:45:04.451] AUTH: >>> SDK manager is NULL - this blocks ALL login! <<<
+[13:45:04.451] AUTH: Writing a non-zero value to unblock...
+[13:45:04.451] AUTH: DAT_144b86bf8 = 0x1 (after write)
+[13:45:04.451] AUTH: Polling for slot to clear...
 
