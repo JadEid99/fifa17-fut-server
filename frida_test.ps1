@@ -71,14 +71,14 @@ if (-not $fifaProc) {
     Write-Host "[ERROR] FIFA17 not running!" -ForegroundColor Red
     exit 1
 }
-$pid = $fifaProc.Id
-Write-Host "[FRIDA] Attaching to FIFA17 PID $pid..." -ForegroundColor Yellow
+$fifaPid = $fifaProc.Id
+Write-Host "[FRIDA] Attaching to FIFA17 PID $fifaPid..." -ForegroundColor Yellow
 
 # Run Frida - capture output for 20 seconds
 $fridaJob = Start-Job -ScriptBlock {
-    param($pid, $script)
-    frida -p $pid -l $script 2>&1
-} -ArgumentList $pid, $fridaScript
+    param($fpid, $script)
+    frida -p $fpid -l $script 2>&1
+} -ArgumentList $fifaPid, $fridaScript
 Start-Sleep 3
 
 # Trigger connection with Q
