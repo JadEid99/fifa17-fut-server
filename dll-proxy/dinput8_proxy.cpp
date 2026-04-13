@@ -123,13 +123,16 @@ static void HookWinsockConnect() {
         pConnect[0], pConnect[1], pConnect[2], pConnect[3], pConnect[4], pConnect[5], pConnect[6], pConnect[7],
         pConnect[8], pConnect[9], pConnect[10], pConnect[11], pConnect[12], pConnect[13], pConnect[14], pConnect[15]);
     
-    // We'll overwrite the first 14 bytes with:
-    //   MOV RAX, <address of HookedConnect>  ; 48 B8 <8 bytes>
-    //   JMP RAX                              ; FF E0
-    //   NOP NOP                              ; 90 90
-    // Total: 12 bytes (MOV RAX imm64 = 10, JMP RAX = 2)
+    // Original bytes at connect():
+    // 48 8B C4          mov rax, rsp          (3 bytes)
+    // 48 89 58 08       mov [rax+8], rbx      (4 bytes)  = 7
+    // 48 89 68 10       mov [rax+10h], rbp    (4 bytes)  = 11
+    // 48 89 70 18       mov [rax+18h], rsi    (4 bytes)  = 15
+    // 57                push rdi              (1 byte)   = 16
+    // We need to overwrite at least 12 bytes (MOV RAX imm64 + JMP RAX)
+    // but must align to instruction boundaries. 16 bytes covers 5 complete instructions.
     
-    const int HOOK_SIZE = 14; // overwrite 14 bytes to be safe (align to instruction boundary)
+    const int HOOK_SIZE = 16;
     
     // Step 1: Create trampoline - copy original bytes + jump back
     // Allocate executable memory for the trampoline
@@ -350,7 +353,7 @@ static void PatchAuthFlag() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v59 (cert + Origin + auth + flag + inline connect hook) ===");
+    Log("=== FIFA 17 SSL Bypass v60 (cert + Origin + auth + flag + inline connect hook) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     // Hook connect() FIRST (before game tries to connect to STP)

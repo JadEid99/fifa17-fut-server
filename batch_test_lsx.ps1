@@ -51,19 +51,20 @@ Kill-All
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
 
-# Start LSX proxy server on port 4218 (proxy mode -> forwards to STP on 4216)
-Write-Host "[LSX] Starting LSX proxy on port 4218 (proxy to STP on 4216)..." -ForegroundColor Yellow
+# Start LSX server on port 4218 in STANDALONE mode
+# The DLL hooks connect() to redirect game's 4216 -> 4218
+# We handle everything ourselves (no proxy to STP needed)
+Write-Host "[LSX] Starting LSX server on port 4218 (standalone)..." -ForegroundColor Yellow
 $lsxJob = Start-Job -ScriptBlock { 
     param($r)
     $env:LSX_PORT = "4218"
-    $env:STP_PORT = "4216"
-    node "$r\server-standalone\lsx-origin-server.mjs" --proxy 2>&1 
+    node "$r\server-standalone\lsx-origin-server.mjs" 2>&1 
 } -ArgumentList $repoRoot
 Start-Sleep 2
 
 $lsxOut = Receive-Job $lsxJob 2>&1 | Out-String
 if ($lsxOut -match "listening|Listening") {
-    Write-Host "[LSX] Proxy started on port 4218" -ForegroundColor Green
+    Write-Host "[LSX] Server started on port 4218" -ForegroundColor Green
 } else {
     Write-Host "[LSX] Output: $lsxOut" -ForegroundColor Red
 }
