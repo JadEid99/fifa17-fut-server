@@ -39,4 +39,15 @@ hk(0x6124a40, 'DirtySDK_status', function(a) {
     console.log('[>] DirtySDK "' + s + '" (0x' + t.toString(16) + ')');
 }, function(r) { console.log('[<] DirtySDK -> ' + r); });
 
+// 17. FUN_146db7490 - BlazeHub callback handler (called after PreAuth)
+hk(0x6db7490, 'BlazeHub_handler', function(a) {
+    console.log('[>] BlazeHub_handler p1=' + a[0] + ' p2=' + a[1]);
+}, function(r) { console.log('[<] BlazeHub_handler -> ' + r); });
+
+// 18. The parent function that contains the PreAuth response processing
+// This is the function with param_3==0 (PreAuth) vs param_3!=0 (Login) paths
+hk(0x6e1c5e0, 'PreAuth_response_handler', function(a) {
+    console.log('[>] PreAuth_response_handler p1=' + a[0] + ' p2=' + a[1] + ' p3=' + a[2]);
+});
+
 console.log('=== Hooks ready. Trigger connection now. ===');
