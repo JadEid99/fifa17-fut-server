@@ -193,7 +193,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v74 (SDK gate patch + auth re-injection) ===");
+    Log("=== FIFA 17 v76 (fake SDK object + SDK gate + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -235,10 +235,47 @@ static DWORD WINAPI PatchThread(LPVOID) {
         Log("AUTH: DAT_144b86bf8 = 0x%llX (Origin SDK manager)", *pSdkMgr);
         Log("AUTH: DAT_144b86bdf = %d (error flag)", *pSdkErr);
         if (*pSdkMgr == 0) {
-            Log("AUTH: >>> SDK manager is NULL - login gate blocked <<<");
-            Log("AUTH: NOT writing to global (would crash). FUN_1471a5da0 patch handles this.");
+            Log("AUTH: SDK manager is NULL. Creating fake object...");
+            // Allocate a fake SDK manager object with a vtable
+            // The login flow accesses vtable offsets: +0x138, +0x188, +0x60, +0xa8, etc.
+            // We need a vtable large enough and all entries pointing to safe stubs.
+            
+            // Allocate fake vtable (0x200 bytes = 64 entries, covers up to offset +0x1F8)
+            BYTE* fakeVtable = (BYTE*)VirtualAlloc(NULL, 0x400, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            // Allocate fake object (0x1000 bytes for safety)
+            BYTE* fakeObj = (BYTE*)VirtualAlloc(NULL, 0x1000, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+            if (fakeVtable && fakeObj) {
+                memset(fakeObj, 0, 0x1000);
+                
+                // Create stub functions in the vtable memory:
+                // Stub 1: return 0 (for most vtable calls) - XOR EAX,EAX / RET
+                BYTE* stubRet0 = fakeVtable + 0x300;
+                stubRet0[0] = 0x31; stubRet0[1] = 0xC0; stubRet0[2] = 0xC3; // XOR EAX,EAX / RET
+                
+                // Stub 2: return 1 (for +0x138 which must return 1 for login)
+                BYTE* stubRet1 = fakeVtable + 0x310;
+                stubRet1[0] = 0xB0; stubRet1[1] = 0x01; stubRet1[2] = 0xC3; // MOV AL,1 / RET
+                
+                // Fill all vtable entries with stubRet0 (safe default)
+                uint64_t ret0Addr = (uint64_t)stubRet0;
+                uint64_t ret1Addr = (uint64_t)stubRet1;
+                for (int i = 0; i < 64; i++) {
+                    memcpy(fakeVtable + i*8, &ret0Addr, 8);
+                }
+                // Override +0x138 to return 1 (login gate)
+                memcpy(fakeVtable + 0x138, &ret1Addr, 8);
+                
+                // Set the object's vtable pointer
+                *(uint64_t*)fakeObj = (uint64_t)fakeVtable;
+                
+                // Write the fake object pointer to DAT_144b86bf8
+                *pSdkMgr = (uint64_t)fakeObj;
+                Log("AUTH: Fake SDK object at %p, vtable at %p", fakeObj, fakeVtable);
+                Log("AUTH: DAT_144b86bf8 = 0x%llX (after write)", *pSdkMgr);
+                Log("AUTH: vtable[0x138/8] = ret1 (login OK), all others = ret0 (safe)");
+            }
         }
-    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception checking globals"); }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception creating fake SDK object"); }
     
     Log("AUTH: Polling for slot to clear...");
     Sleep(1000);
