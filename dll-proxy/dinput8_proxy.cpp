@@ -1,14 +1,22 @@
 /**
- * dinput8.dll Proxy - v53: Permanent code patches for cert bypass + Origin SDK bypass
+ * dinput8.dll Proxy - v58: All patches + Winsock connect() hook for LSX proxy
  * 
- * Patch 1: Cert verification bypass (from v52)
+ * Patch 1: Cert verification bypass
  *   CMP byte ptr [RBP + 0x384], 0x0 / JNZ -> JMP
  * 
  * Patch 2: Origin SDK availability check
  *   FUN_1470e2840 returns DAT_144b7c7a0 != 0
- *   We patch it to always return 1 (true)
- *   Original: 31 c0 48 39 05 XX XX XX XX 0f 95 d0 c3
- *   Patched:  b0 01 90 90 90 90 90 90 90 90 90 90 c3
+ *   Patched to always return 1 (true)
+ * 
+ * Patch 3: Auth code provider (code cave)
+ *   Replaces OriginRequestAuthCodeSync call with fake auth code
+ * 
+ * Patch 4: Auth bypass flag
+ *   Forces [RBX+0x2061]=1
+ * 
+ * Patch 5 (NEW): Winsock connect() hook
+ *   Redirects connections to port 4216 (STP) -> port 4218 (our LSX proxy)
+ *   This lets STP run normally for Denuvo while our proxy injects Origin auth
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -67,66 +75,134 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
+// ============================================================
+// Patch 5: Winsock connect() hook
+// Redirects connections to 127.0.0.1:4216 -> 127.0.0.1:4218
+// This lets STP emulator run on 4216 for Denuvo,
+// while our LSX proxy on 4218 intercepts Origin auth traffic
+// ============================================================
+
+#define STP_PORT 4216
+#define LSX_PROXY_PORT 4218
+
+typedef int (WSAAPI *connect_t)(SOCKET s, const struct sockaddr* name, int namelen);
+static connect_t g_realConnect = NULL;
+
+static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namelen) {
+    if (name && name->sa_family == AF_INET) {
+        struct sockaddr_in* addr = (struct sockaddr_in*)name;
+        unsigned short port = ntohs(addr->sin_port);
+        unsigned long ip = ntohl(addr->sin_addr.s_addr);
+        
+        if (port == STP_PORT && ip == 0x7F000001) { // 127.0.0.1:4216
+            Log("HOOK: Redirecting connect() 127.0.0.1:%d -> 127.0.0.1:%d", STP_PORT, LSX_PROXY_PORT);
+            struct sockaddr_in newAddr = *addr;
+            newAddr.sin_port = htons(LSX_PROXY_PORT);
+            return g_realConnect(s, (struct sockaddr*)&newAddr, namelen);
+        }
+    }
+    return g_realConnect(s, name, namelen);
+}
+
+// IAT hook: find connect() in the import table and replace it
+static void HookWinsockConnect() {
+    HMODULE hModule = GetModuleHandleA(NULL); // main exe
+    if (!hModule) { Log("HOOK: GetModuleHandle failed"); return; }
+    
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
+    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)hModule + dosHeader->e_lfanew);
+    
+    DWORD importDirRVA = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
+    if (!importDirRVA) { Log("HOOK: No import directory"); return; }
+    
+    PIMAGE_IMPORT_DESCRIPTOR importDesc = (PIMAGE_IMPORT_DESCRIPTOR)((BYTE*)hModule + importDirRVA);
+    
+    for (; importDesc->Name; importDesc++) {
+        const char* dllName = (const char*)((BYTE*)hModule + importDesc->Name);
+        
+        // Look for ws2_32.dll or WSOCK32.dll
+        if (_stricmp(dllName, "ws2_32.dll") != 0 && _stricmp(dllName, "WSOCK32.dll") != 0)
+            continue;
+        
+        Log("HOOK: Found %s in IAT", dllName);
+        
+        PIMAGE_THUNK_DATA origThunk = (PIMAGE_THUNK_DATA)((BYTE*)hModule + importDesc->OriginalFirstThunk);
+        PIMAGE_THUNK_DATA thunk = (PIMAGE_THUNK_DATA)((BYTE*)hModule + importDesc->FirstThunk);
+        
+        for (; origThunk->u1.AddressOfData; origThunk++, thunk++) {
+            if (origThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG64) continue; // skip ordinal imports
+            
+            PIMAGE_IMPORT_BY_NAME importByName = (PIMAGE_IMPORT_BY_NAME)((BYTE*)hModule + origThunk->u1.AddressOfData);
+            
+            if (strcmp(importByName->Name, "connect") == 0) {
+                Log("HOOK: Found connect() at IAT entry %p (current value: %p)", &thunk->u1.Function, (void*)thunk->u1.Function);
+                
+                g_realConnect = (connect_t)thunk->u1.Function;
+                
+                DWORD oldProtect;
+                if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
+                    thunk->u1.Function = (ULONGLONG)HookedConnect;
+                    VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
+                    Log("HOOK: connect() hooked! 4216 -> 4218 redirect active");
+                } else {
+                    Log("HOOK: VirtualProtect failed: %lu", GetLastError());
+                }
+                return;
+            }
+        }
+    }
+    
+    // If not found in IAT, try hooking via GetProcAddress detour
+    Log("HOOK: connect() not found in IAT, trying direct hook");
+    HMODULE ws2 = GetModuleHandleA("ws2_32.dll");
+    if (ws2) {
+        g_realConnect = (connect_t)GetProcAddress(ws2, "connect");
+        if (g_realConnect) {
+            Log("HOOK: Found connect() at %p via GetProcAddress", g_realConnect);
+            // For direct hook, we'd need a trampoline. For now, just log.
+            // The IAT hook should work for most cases.
+            Log("HOOK: WARNING - IAT hook failed, direct hook not implemented yet");
+        }
+    }
+}
+
+// ============================================================
+// Patches 1-4 (unchanged from v56)
+// ============================================================
+
 static int g_codePatchDone = 0;
 static int g_originPatchDone = 0;
 static int g_authBypassDone = 0;
 static int g_authFlagDone = 0;
 static int g_patched = 0;
 
-// Patch the cert verification code directly
-// Find: 80 bd 84 03 00 00 00 0f 85 (CMP [RBP+0x384],0 / JNZ)
-// Change JNZ to JMP: 0f 85 XX XX XX XX -> e9 XX XX XX XX 90
 static void PatchCertCheck() {
     if (g_codePatchDone) return;
-    
-    // Search executable memory for the byte pattern
     BYTE pattern[] = { 0x80, 0xBD, 0x84, 0x03, 0x00, 0x00, 0x00, 0x0F, 0x85 };
     int patternLen = sizeof(pattern);
-    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
             (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
              mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
-            
             __try {
                 for (SIZE_T j = 0; j + patternLen + 4 < size; j++) {
                     if (memcmp(base + j, pattern, patternLen) != 0) continue;
-                    
-                    // Found the pattern! The JNZ is at offset j+7
                     BYTE* jnzAddr = base + j + 7;
-                    Log("Found cert check at %p (pattern at %p)", jnzAddr, base + j);
-                    Log("  Before: %02X %02X %02X %02X %02X %02X",
-                        jnzAddr[0], jnzAddr[1], jnzAddr[2], jnzAddr[3], jnzAddr[4], jnzAddr[5]);
-                    
-                    // Change JNZ (0F 85 xx xx xx xx) to JMP (E9 xx xx xx xx 90)
-                    // JNZ rel32: opcode is 2 bytes (0F 85), displacement is 4 bytes
-                    // JMP rel32: opcode is 1 byte (E9), displacement is 4 bytes
-                    // We need to adjust: the JMP displacement must account for
-                    // the instruction being 1 byte shorter (5 vs 6 bytes)
+                    Log("Found cert check at %p", jnzAddr);
                     DWORD oldProtect;
                     if (VirtualProtect(jnzAddr, 6, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        // Read the original 4-byte displacement from JNZ
                         int32_t origDisp = *(int32_t*)(jnzAddr + 2);
-                        // JMP is 1 byte shorter, so add 1 to displacement
                         int32_t newDisp = origDisp + 1;
-                        jnzAddr[0] = 0xE9;  // JMP rel32
+                        jnzAddr[0] = 0xE9;
                         *(int32_t*)(jnzAddr + 1) = newDisp;
-                        jnzAddr[5] = 0x90;  // NOP
+                        jnzAddr[5] = 0x90;
                         VirtualProtect(jnzAddr, 6, oldProtect, &oldProtect);
-                        
-                        Log("  After:  %02X %02X %02X %02X %02X %02X",
-                            jnzAddr[0], jnzAddr[1], jnzAddr[2], jnzAddr[3], jnzAddr[4], jnzAddr[5]);
-                        Log("PATCHED: JNZ -> JMP (cert verification permanently bypassed)");
-                        g_codePatchDone = 1;
-                        g_patched++;
-                    } else {
-                        Log("VirtualProtect failed: %lu", GetLastError());
+                        Log("PATCHED: JNZ -> JMP (cert bypass)");
+                        g_codePatchDone = 1; g_patched++;
                     }
                     return;
                 }
@@ -137,57 +213,31 @@ static void PatchCertCheck() {
     }
 }
 
-// Patch 2: Origin SDK availability check
-// Find: 31 c0 48 39 05 XX XX XX XX 0f 95 d0 c3
-// This is FUN_1470e2840 which returns (DAT_144b7c7a0 != 0)
-// Patch to: b0 01 + NOPs + c3 (always return 1)
 static void PatchOriginCheck() {
     if (g_originPatchDone) return;
-    
-    // Pattern: XOR EAX,EAX / CMP [rip+XX], RAX / SETNZ AL / RET
     BYTE pattern[] = { 0x31, 0xC0, 0x48, 0x39, 0x05 };
     BYTE suffix[] = { 0x0F, 0x95, 0xD0, 0xC3 };
-    int patternLen = sizeof(pattern);
-    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
             (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
              mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
-            
             __try {
                 for (SIZE_T j = 0; j + 13 < size; j++) {
-                    if (memcmp(base + j, pattern, patternLen) != 0) continue;
-                    // Check suffix at offset +9 (after 4-byte displacement)
+                    if (memcmp(base + j, pattern, sizeof(pattern)) != 0) continue;
                     if (memcmp(base + j + 9, suffix, sizeof(suffix)) != 0) continue;
-                    
                     BYTE* funcAddr = base + j;
                     Log("Found Origin SDK check at %p", funcAddr);
-                    Log("  Before: %02X %02X %02X %02X %02X ... %02X %02X %02X %02X",
-                        funcAddr[0], funcAddr[1], funcAddr[2], funcAddr[3], funcAddr[4],
-                        funcAddr[9], funcAddr[10], funcAddr[11], funcAddr[12]);
-                    
                     DWORD oldProtect;
                     if (VirtualProtect(funcAddr, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        // MOV AL, 1
-                        funcAddr[0] = 0xB0;
-                        funcAddr[1] = 0x01;
-                        // NOP out the CMP and SETNZ (bytes 2-11)
+                        funcAddr[0] = 0xB0; funcAddr[1] = 0x01;
                         for (int k = 2; k < 12; k++) funcAddr[k] = 0x90;
-                        // RET is already at byte 12
                         VirtualProtect(funcAddr, 13, oldProtect, &oldProtect);
-                        
-                        Log("  After:  %02X %02X %02X %02X %02X ... %02X %02X %02X %02X",
-                            funcAddr[0], funcAddr[1], funcAddr[2], funcAddr[3], funcAddr[4],
-                            funcAddr[9], funcAddr[10], funcAddr[11], funcAddr[12]);
-                        Log("PATCHED: Origin SDK check -> always returns true");
-                        g_originPatchDone = 1;
-                        g_patched++;
+                        Log("PATCHED: Origin SDK check -> always true");
+                        g_originPatchDone = 1; g_patched++;
                     }
                     return;
                 }
@@ -198,138 +248,49 @@ static void PatchOriginCheck() {
     }
 }
 
-// Patch 3: Replace OriginRequestAuthCodeSync with fake auth code provider
-// Instead of skipping the auth call, we REPLACE it with code that provides
-// a fake auth code. This way the game gets a token and can build the Login request.
-//
-// The CALL at 146f19a11 calls FUN_1470db3c0 which takes:
-//   RCX = origin SDK object
-//   RDX = some param  
-//   R8 = pointer to output auth code pointer (local_res18 at [RSP+0x60])
-//   R9 = pointer to output auth code length (local_res10 at [RSP+0x58])
-//
-// We allocate a code cave that:
-//   1. Writes a fake auth code string pointer to [R8]
-//   2. Writes the auth code length to [R9]  
-//   3. Returns 0 (success)
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
-static char* g_fakeAuthPtr = g_fakeAuthCode;
 
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
-    
     BYTE pattern[] = { 0x85, 0xC0, 0x0F, 0x85, 0x8D, 0x00, 0x00, 0x00, 0x4C, 0x39, 0x74, 0x24 };
     int patternLen = sizeof(pattern);
-    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
             (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
              mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
-            
             __try {
                 for (SIZE_T j = 0; j + patternLen < size; j++) {
                     if (memcmp(base + j, pattern, patternLen) != 0) continue;
-                    
-                    BYTE* callAddr = base + j - 5; // The CALL instruction
+                    BYTE* callAddr = base + j - 5;
                     Log("Found auth call at %p", callAddr);
-                    
-                    // Allocate a code cave near the call site
-                    // We need executable memory for our fake function
                     BYTE* cave = (BYTE*)VirtualAlloc(NULL, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-                    if (!cave) {
-                        Log("Failed to allocate code cave");
-                        return;
-                    }
-                    
-                    // Get addresses of our fake auth code
+                    if (!cave) { Log("Failed to allocate code cave"); return; }
                     uint64_t authCodeAddr = (uint64_t)g_fakeAuthCode;
                     uint64_t authCodeLen = strlen(g_fakeAuthCode);
-                    
-                    // Write the fake function in the code cave:
-                    // MOV RAX, authCodeAddr    ; 48 B8 <8 bytes>
-                    // MOV [R8], RAX            ; 49 89 00
-                    // MOV RAX, authCodeLen     ; 48 B8 <8 bytes>
-                    // MOV [R9], RAX            ; 49 89 01
-                    // XOR EAX, EAX             ; 31 C0 (return 0 = success)
-                    // RET                      ; C3
                     int off = 0;
-                    cave[off++] = 0x48; cave[off++] = 0xB8; // MOV RAX, imm64
+                    cave[off++] = 0x48; cave[off++] = 0xB8;
                     memcpy(cave + off, &authCodeAddr, 8); off += 8;
-                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x00; // MOV [R8], RAX
-                    cave[off++] = 0x48; cave[off++] = 0xB8; // MOV RAX, imm64
+                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x00;
+                    cave[off++] = 0x48; cave[off++] = 0xB8;
                     memcpy(cave + off, &authCodeLen, 8); off += 8;
-                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x01; // MOV [R9], RAX
-                    cave[off++] = 0x31; cave[off++] = 0xC0; // XOR EAX, EAX
-                    cave[off++] = 0xC3; // RET
-                    
-                    Log("Code cave at %p, fake auth code at %p (\"%s\", len=%llu)", 
-                        cave, g_fakeAuthCode, g_fakeAuthCode, authCodeLen);
-                    
-                    // Now patch the CALL instruction to call our cave instead
-                    // CALL rel32: E8 <4-byte offset>
-                    // offset = target - (callAddr + 5)
-                    int64_t callOffset = (int64_t)cave - (int64_t)(callAddr + 5);
-                    
-                    if (callOffset > INT32_MAX || callOffset < INT32_MIN) {
-                        Log("Code cave too far for rel32 call (offset=%lld)", callOffset);
-                        // Use absolute jump instead: replace CALL with JMP to cave
-                        // But we also need to handle the return... 
-                        // Alternative: NOP the CALL and use the TEST+JNZ space
-                        
-                        // NOP the original CALL (5 bytes)
-                        DWORD oldProtect;
-                        if (VirtualProtect(callAddr, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                            // Write: MOV qword [RSP+0x60], fakeAuthAddr (can't do imm64 to mem)
-                            // Instead: just NOP the call, set EAX=0, NOP the JNZ
-                            // And write the fake auth code pointers from our DLL thread
-                            
-                            // Actually, let's use a different approach:
-                            // Rewrite the cave to use an absolute indirect call
-                            // Or just NOP everything and handle it differently
-                            
-                            // Simplest: NOP the CALL, XOR EAX (success), NOP the JNZ,
-                            // NOP the null checks, and pre-write fake values to the stack
-                            // But we can't write to RSP from here...
-                            
-                            // Let me try: replace CALL with indirect call through a pointer
-                            // FF 15 [rip+offset] = CALL [rip+offset] (6 bytes)
-                            // We need a pointer to our cave somewhere nearby
-                            
-                            // Store cave pointer right after the patched area
-                            // Actually, use the code cave itself to store the pointer
-                            uint64_t caveAddr = (uint64_t)cave;
-                            // Write pointer at cave+64
-                            memcpy(cave + 64, &caveAddr, 8);
-                            
-                            // Use MOV RAX, imm64 + CALL RAX (12 bytes, fits in 13)
-                            callAddr[0] = 0x48; callAddr[1] = 0xB8; // MOV RAX, imm64
-                            memcpy(callAddr + 2, &caveAddr, 8);
-                            callAddr[10] = 0xFF; callAddr[11] = 0xD0; // CALL RAX
-                            callAddr[12] = 0x90; // NOP
-                            
-                            VirtualProtect(callAddr, 13, oldProtect, &oldProtect);
-                            Log("Patched CALL to use absolute address via MOV RAX + CALL RAX");
-                        }
-                    } else {
-                        // Relative call fits
-                        DWORD oldProtect;
-                        if (VirtualProtect(callAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                            callAddr[0] = 0xE8;
-                            *(int32_t*)(callAddr + 1) = (int32_t)callOffset;
-                            VirtualProtect(callAddr, 5, oldProtect, &oldProtect);
-                            Log("Patched CALL with relative offset %d", (int32_t)callOffset);
-                        }
+                    cave[off++] = 0x49; cave[off++] = 0x89; cave[off++] = 0x01;
+                    cave[off++] = 0x31; cave[off++] = 0xC0;
+                    cave[off++] = 0xC3;
+                    uint64_t caveAddr = (uint64_t)cave;
+                    DWORD oldProtect;
+                    if (VirtualProtect(callAddr, 13, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+                        callAddr[0] = 0x48; callAddr[1] = 0xB8;
+                        memcpy(callAddr + 2, &caveAddr, 8);
+                        callAddr[10] = 0xFF; callAddr[11] = 0xD0;
+                        callAddr[12] = 0x90;
+                        VirtualProtect(callAddr, 13, oldProtect, &oldProtect);
+                        Log("PATCHED: Auth call -> code cave at %p", cave);
                     }
-                    
-                    Log("PATCHED: OriginRequestAuthCodeSync -> fake auth code provider");
-                    g_authBypassDone = 1;
-                    g_patched++;
+                    g_authBypassDone = 1; g_patched++;
                     return;
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
@@ -339,55 +300,32 @@ static void PatchAuthBypass() {
     }
 }
 
-// Patch 4: Force authentication bypass flag
-// At 1473ce785: MOV byte [RBX+0x2061], DIL  (40 88 BB 61 20 00 00)
-// Change to:    MOV byte [RBX+0x2061], 1    (C6 83 61 20 00 00 01)
-// This forces the built-in "auth bypass" flag to always be set to 1
 static void PatchAuthFlag() {
     if (g_authFlagDone) return;
-    
     BYTE pattern[] = { 0x40, 0x88, 0xBB, 0x61, 0x20, 0x00, 0x00 };
     int patternLen = sizeof(pattern);
-    
     MEMORY_BASIC_INFORMATION mbi;
     BYTE* addr = NULL;
-    
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
             (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE ||
              mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            
             BYTE* base = (BYTE*)mbi.BaseAddress;
             SIZE_T size = mbi.RegionSize;
-            
             __try {
                 for (SIZE_T j = 0; j + patternLen < size; j++) {
                     if (memcmp(base + j, pattern, patternLen) != 0) continue;
-                    
                     BYTE* patchAddr = base + j;
-                    Log("Found auth flag write at %p", patchAddr);
-                    Log("  Before: %02X %02X %02X %02X %02X %02X %02X",
-                        patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
-                        patchAddr[4], patchAddr[5], patchAddr[6]);
-                    
+                    Log("Found auth flag at %p", patchAddr);
                     DWORD oldProtect;
                     if (VirtualProtect(patchAddr, 7, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-                        // MOV byte ptr [RBX+0x2061], 1
-                        patchAddr[0] = 0xC6;
-                        patchAddr[1] = 0x83;
-                        patchAddr[2] = 0x61;
-                        patchAddr[3] = 0x20;
-                        patchAddr[4] = 0x00;
-                        patchAddr[5] = 0x00;
+                        patchAddr[0] = 0xC6; patchAddr[1] = 0x83;
+                        patchAddr[2] = 0x61; patchAddr[3] = 0x20;
+                        patchAddr[4] = 0x00; patchAddr[5] = 0x00;
                         patchAddr[6] = 0x01;
                         VirtualProtect(patchAddr, 7, oldProtect, &oldProtect);
-                        
-                        Log("  After:  %02X %02X %02X %02X %02X %02X %02X",
-                            patchAddr[0], patchAddr[1], patchAddr[2], patchAddr[3],
-                            patchAddr[4], patchAddr[5], patchAddr[6]);
-                        Log("PATCHED: Auth bypass flag -> always set to 1");
-                        g_authFlagDone = 1;
-                        g_patched++;
+                        Log("PATCHED: Auth flag -> always 1");
+                        g_authFlagDone = 1; g_patched++;
                     }
                     return;
                 }
@@ -398,14 +336,20 @@ static void PatchAuthFlag() {
     }
 }
 
+// ============================================================
+// Main patch thread
+// ============================================================
+
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v56 (cert + Origin + auth bypass + auth flag) ===");
+    Log("=== FIFA 17 SSL Bypass v58 (cert + Origin + auth + flag + connect hook) ===");
     Log("PID: %lu", GetCurrentProcessId());
+    
+    // Hook connect() FIRST (before game tries to connect to STP)
+    HookWinsockConnect();
     
     DWORD startTick = GetTickCount();
     for (int i = 0; i < 3000; i++) {
         Sleep(100);
-        
         __try {
             if (!g_codePatchDone) PatchCertCheck();
             if (!g_originPatchDone) PatchOriginCheck();
@@ -419,16 +363,15 @@ static DWORD WINAPI PatchThread(LPVOID) {
         }
         
         if (i % 100 == 0 && i > 0) {
-            DWORD elapsed = GetTickCount() - startTick;
             Log("Scanning... %lu ms (cert=%d, origin=%d, auth=%d, flag=%d)", 
-                elapsed, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone);
+                GetTickCount() - startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone);
         }
     }
     
-    if (!g_codePatchDone) Log("WARNING: Could not find cert check pattern");
-    if (!g_originPatchDone) Log("WARNING: Could not find Origin SDK check pattern");
-    if (!g_authBypassDone) Log("WARNING: Could not find auth check pattern");
-    if (!g_authFlagDone) Log("WARNING: Could not find auth flag pattern");
+    if (!g_codePatchDone) Log("WARNING: cert check pattern not found");
+    if (!g_originPatchDone) Log("WARNING: Origin SDK check pattern not found");
+    if (!g_authBypassDone) Log("WARNING: auth check pattern not found");
+    if (!g_authFlagDone) Log("WARNING: auth flag pattern not found");
     
     Log("=== Done. patches: %d ===", g_patched);
     return 0;

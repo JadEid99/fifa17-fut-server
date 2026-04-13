@@ -27,8 +27,8 @@
 import net from 'net';
 import crypto from 'crypto';
 
-const LISTEN_PORT = 4216;
-const STP_PORT = 4217;
+const LISTEN_PORT = parseInt(process.env.LSX_PORT || '4218');
+const STP_PORT = parseInt(process.env.STP_PORT || '4216');
 const PROXY_MODE = process.argv.includes('--proxy');
 
 // ============================================================
