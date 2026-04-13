@@ -1,32 +1,28 @@
-﻿=== LSX + connect() hook test (2026-04-13 15:23:04) ===
-BLAZE RESULT: SECOND_CONNECTION
+﻿=== LSX + connect() hook test (2026-04-13 15:29:14) ===
+BLAZE RESULT: PREAUTH_REPLIED
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
-d: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 4cf971b6090ca7d4f21eb9a2af6d7393
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
+es
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000cfb86311a54a0d7d0714fe7b79231c9d205a043323f30aa7fb1893eb0dbf7e216
-[SSL] Client Finished plaintext (16 bytes): 1400000cfb86311a54a0d7d0714fe7b7
-[SSL] Client Finished MAC: 9231c9d205a043323f30aa7fb1893eb0dbf7e216
-[SSL] Client verify_data:   fb86311a54a0d7d0714fe7b7
-[SSL] Expected verify_data:  fb86311a54a0d7d0714fe7b7
+[SSL] Decrypted hex: 1400000c6daadd33d5728b082cf6181293b94438efaf3013db6fd1168246c3d8794ac918
+[SSL] Client Finished plaintext (16 bytes): 1400000c6daadd33d5728b082cf61812
+[SSL] Client Finished MAC: 93b94438efaf3013db6fd1168246c3d8794ac918
+[SSL] Client verify_data:   6daadd33d5728b082cf61812
+[SSL] Expected verify_data:  6daadd33d5728b082cf61812
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 9231c9d205a043323f30aa7fb1893eb0dbf7e216
-[SSL] Actual client MAC:   9231c9d205a043323f30aa7fb1893eb0dbf7e216
+[SSL] Expected client MAC: 93b94438efaf3013db6fd1168246c3d8794ac918
+[SSL] Actual client MAC:   93b94438efaf3013db6fd1168246c3d8794ac918
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1050 bytes
-[SSL]   msg[0]: 123 bytes, starts=0x1
+[SSL] Server Finished hash input: 6 messages, total 1018 bytes
+[SSL]   msg[0]: 91 bytes, starts=0x1
 [SSL]   msg[1]: 74 bytes, starts=0x2
 [SSL]   msg[2]: 699 bytes, starts=0xb
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 2badc90353f8ad78adc957e6
+[SSL] Server verify_data: acb7de7eefc71db8eabf2ca4
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -61,56 +57,64 @@ d: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent encrypted reply (845 bytes)
 [Blaze-Enc] Sending proactive SilentLogin response after PreAuth...
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
+[SSL-DATA] Received 41 bytes on socket (total pending: 41)
+[SSL] TLS record: type=0x17 ver=0x303 len=36 (pending: 41)
+[SSL] Decrypted 16 bytes of application data
+[Blaze-Enc] comp=0x0000 cmd=0x0000 len=0
+[Blaze] Unhandled comp=0x0 cmd=0x0
+[Blaze-Enc] Sent encrypted reply (16 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): c0 c1 6a 7d 2f b8 85 83 0b ee 7c eb 33 13 f6 8e 16 ac e0 c2 a2 b9
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): b9 fb 38 d9 33 e0 2b 40 a8 c7 9d f2 12 f9 e7 87 c0 0b eb c5 60 19
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Main] S2 disconnected
+[Main] S1 disconnected
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[13:21:30.705] [LSX] === LSX Origin SDK Server ===
-[13:21:30.707] [LSX] Mode: STANDALONE (replacing STP)
-[13:21:30.707] [LSX] Listening on port 4218
-[13:21:30.707] [LSX] Waiting for game connection...
+[13:27:41.302] [LSX] === LSX Origin SDK Server ===
+[13:27:41.304] [LSX] Mode: STANDALONE (replacing STP)
+[13:27:41.304] [LSX] Listening on port 4218
+[13:27:41.304] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[15:21:33.506] === FIFA 17 v81 (Login type0 check patch + fake SDK + gate + auth) ===
-[15:21:33.506] PID: 100236
-[15:21:33.665] PATCHED: cert bypass at 000000014613244B
-[15:21:33.814] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[15:21:33.814] PATCHED: FUN_1470db3c0 body -> fake auth code
-[15:21:33.853] PATCHED: auth flag at 00000001473CE785
-[15:21:33.896] PATCHED: IsLoggedIntoEA -> true
-[15:21:33.896] PATCHED: IsLoggedIntoNetwork -> true
-[15:21:33.972] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[15:21:33.972] PATCHED: SDK gate -> always 1
-[15:21:33.972] LOGIN TYPE0: vtable=000000014389F938, [+0x10] func = 0x146E156A0
-[15:21:33.972] LOGIN TYPE0: func bytes=48 8B 41 30 48 89 CA 48
-[15:21:33.983] PATCHED: Login type0 check -> always return 0 (proceed to Login!)
-[15:21:34.128] PATCHED: Origin SDK check at 00000001470A8430
-[15:21:34.128] All patches in 610 ms
-[15:21:34.128] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[15:21:34.128] AUTH: Checking login gate globals...
-[15:21:34.128] AUTH: DAT_144b86bf8 = 0x0 (Origin SDK manager)
-[15:21:34.128] AUTH: DAT_144b86bdf = 0 (error flag)
-[15:21:34.128] AUTH: SDK manager is NULL. Creating fake object...
-[15:21:34.128] AUTH: +0x188 stub: dynamic Blaze hub reader (41 bytes)
-[15:21:34.128] AUTH: Fake SDK object at 0000000003C30000, vtable at 0000000003C20000
-[15:21:34.128] AUTH: DAT_144b86bf8 = 0x3C30000 (after write)
-[15:21:34.128] AUTH: vtable[0x138/8] = ret1 (login OK), all others = ret0 (safe)
-[15:21:34.128] AUTH: Polling for slot to clear...
-[15:21:39.768] AUTH: Slot cleared at 5600 ms
-[15:21:39.768] AUTH: OnlineMgr=0x45DC3E70
-[15:21:39.768] AUTH: slot=0x0 cave=0
-[15:21:39.768] AUTH: Using fake vtable (real not captured)
-[15:21:39.768] AUTH: Injected fake request 000000007FFD0000 into slot
-[15:21:44.768] AUTH: cave=1 slot=0x0
-[15:21:44.768] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[15:21:44.768] AUTH: req[+0xd8]=0x9C1A0B0 req[+0xe8]=1
-[15:21:44.768] AUTH: state=2, triggering reconnect...
-[15:21:44.768] AUTH: Calling FUN_146f39b20(0,0) to trigger reconnect...
-[15:21:44.919] AUTH: FUN_146f39b20 returned! Reconnect initiated.
+[15:27:44.102] === FIFA 17 v82 (vtable patch + PreAuth NOP + fake SDK + gate + auth) ===
+[15:27:44.102] PID: 104436
+[15:27:44.276] PATCHED: cert bypass at 000000014613244B
+[15:27:44.439] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[15:27:44.439] PATCHED: FUN_1470db3c0 body -> fake auth code
+[15:27:44.489] PATCHED: auth flag at 00000001473CE785
+[15:27:44.535] PATCHED: IsLoggedIntoEA -> true
+[15:27:44.535] PATCHED: IsLoggedIntoNetwork -> true
+[15:27:44.648] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[15:27:44.648] PATCHED: SDK gate -> always 1
+[15:27:44.648] LOGIN TYPE0: vtable=000000014389F938, [+0x10] func = 0x146E156A0
+[15:27:44.649] LOGIN TYPE0: bytes=48 8B 41 30
+[15:27:44.660] PATCHED: Login type0 check -> return 0
+[15:27:44.660] PREAUTH: disconnect CALL at +61
+[15:27:44.660] PATCHED: PreAuth disconnect NOPed
+[15:27:44.811] PATCHED: Origin SDK check at 00000001470A8430
+[15:27:44.811] All patches in 703 ms
+[15:27:44.811] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
+[15:27:44.811] AUTH: Checking login gate globals...
+[15:27:44.811] AUTH: DAT_144b86bf8 = 0x0 (Origin SDK manager)
+[15:27:44.811] AUTH: DAT_144b86bdf = 0 (error flag)
+[15:27:44.811] AUTH: SDK manager is NULL. Creating fake object...
+[15:27:44.811] AUTH: +0x188 stub: dynamic Blaze hub reader (41 bytes)
+[15:27:44.811] AUTH: Fake SDK object at 0000000000A10000, vtable at 0000000000A00000
+[15:27:44.811] AUTH: DAT_144b86bf8 = 0xA10000 (after write)
+[15:27:44.811] AUTH: vtable[0x138/8] = ret1 (login OK), all others = ret0 (safe)
+[15:27:44.811] AUTH: Polling for slot to clear...
+[15:27:50.342] AUTH: Slot cleared at 5500 ms
+[15:27:50.342] AUTH: OnlineMgr=0x45D83E70
+[15:27:50.342] AUTH: slot=0x0 cave=0
+[15:27:50.342] AUTH: Using fake vtable (real not captured)
+[15:27:50.342] AUTH: Injected fake request 0000000064780000 into slot
+[15:27:55.342] AUTH: cave=1 slot=0x0
+[15:27:55.342] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[15:27:55.342] AUTH: req[+0xd8]=0x99F9930 req[+0xe8]=1
+[15:27:55.342] AUTH: state=2, triggering reconnect...
+[15:27:55.342] AUTH: Calling FUN_146f39b20(0,0) to trigger reconnect...
+[15:27:55.493] AUTH: FUN_146f39b20 returned! Reconnect initiated.
 
