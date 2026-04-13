@@ -117,6 +117,7 @@ static void PatchOriginCheck() {
 }
 
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
+static volatile int g_caveExecuted = 0; // marker: set to 1 by code cave when executed
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
     BYTE pat[] = {0x85,0xC0,0x0F,0x85,0x8D,0x00,0x00,0x00,0x4C,0x39,0x74,0x24};
@@ -131,12 +132,27 @@ static void PatchAuthBypass() {
                 BYTE* cave = (BYTE*)VirtualAlloc(NULL, 4096, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
                 if (!cave) return;
                 uint64_t aa = (uint64_t)g_fakeAuthCode, al = strlen(g_fakeAuthCode); int o=0;
+                // First: write marker to g_caveExecuted so we know the cave ran
+                // MOV RAX, &g_caveExecuted
+                uint64_t markerAddr = (uint64_t)&g_caveExecuted;
+                cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&markerAddr,8); o+=8;
+                // MOV DWORD [RAX], 1
+                cave[o++]=0xC7; cave[o++]=0x00; cave[o++]=0x01; cave[o++]=0x00; cave[o++]=0x00; cave[o++]=0x00;
+                // Now the actual auth code logic:
+                // MOV RAX, &g_fakeAuthCode
                 cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&aa,8); o+=8;
+                // MOV [R8], RAX
                 cave[o++]=0x49; cave[o++]=0x89; cave[o++]=0x00;
+                // MOV RAX, strlen
                 cave[o++]=0x48; cave[o++]=0xB8; memcpy(cave+o,&al,8); o+=8;
+                // MOV [R9], RAX
                 cave[o++]=0x49; cave[o++]=0x89; cave[o++]=0x01;
-                cave[o++]=0x31; cave[o++]=0xC0; cave[o++]=0xC3;
+                // XOR EAX, EAX (return 0 = success)
+                cave[o++]=0x31; cave[o++]=0xC0;
+                // RET
+                cave[o++]=0xC3;
                 uint64_t cv = (uint64_t)cave; DWORD op;
+                Log("AUTH CAVE: marker at %p, cave at %p, authcode at %p", &g_caveExecuted, cave, g_fakeAuthCode);
                 if (VirtualProtect(ca, 13, PAGE_EXECUTE_READWRITE, &op)) {
                     ca[0]=0x48; ca[1]=0xB8; memcpy(ca+2,&cv,8); ca[10]=0xFF; ca[11]=0xD0; ca[12]=0x90;
                     VirtualProtect(ca, 13, op, &op);
@@ -340,6 +356,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
             
             uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
             Log("AUTH-RETRIGGER: DAT_1448a3ac3 = %d (online mode flag)", *pOnlineFlag);
+            Log("AUTH-RETRIGGER: g_caveExecuted = %d (was auth code cave called?)", g_caveExecuted);
         } else {
             Log("AUTH-RETRIGGER: OnlineManager is NULL!");
         }
