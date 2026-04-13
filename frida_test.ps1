@@ -81,7 +81,7 @@ Start-Sleep 20; FEnter; Start-Sleep 2
 # Trigger connection with Q
 Write-Host "[TEST] Pressing Q to trigger connection..." -ForegroundColor Yellow
 FQ
-Start-Sleep 15
+Start-Sleep 30
 
 # Collect Frida output
 Write-Host "[COLLECT] Gathering Frida results..." -ForegroundColor Yellow
