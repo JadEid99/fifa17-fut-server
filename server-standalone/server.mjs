@@ -888,8 +888,9 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
                 
-                // After PreAuth, proactively send a SilentLogin response as notification
-                if (pkt.header.component === 0x0009 && pkt.header.command === 0x0007) {
+                // DISABLED: Proactive notifications were confusing the game
+                // The DLL v97 patch now handles post-PreAuth flow directly
+                if (false && pkt.header.component === 0x0009 && pkt.header.command === 0x0007) {
                   console.log('[Blaze-Enc] Sending proactive login sequence after PreAuth...');
                   
                   // 1. SilentLogin response (comp=0x0001, cmd=0x0032)
