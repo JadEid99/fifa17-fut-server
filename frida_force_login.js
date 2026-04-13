@@ -5,7 +5,7 @@
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== FIFA 17 v11 === Base=' + base);
+console.log('=== FIFA 17 v12 === Base=' + base);
 
 // Fix type2=NULL in the response handler
 Interceptor.attach(addr(0x6e1cf10), {
@@ -39,14 +39,15 @@ Interceptor.attach(addr(0x6e19a00), {
 Interceptor.attach(addr(0x6e18170), {
     onEnter: function(a) { console.log('[send_RPC] >>> fn=' + a[3]); }
 });
-// Delay disconnect by 2 seconds to let Login RPC transmit
-var realDisconnect = new NativeFunction(addr(0x6db3e40), 'void', ['pointer']);
+// Block BOTH disconnect functions
 Interceptor.replace(addr(0x6db3e40), new NativeCallback(function(p1) {
-    console.log('[DISCONNECT] Delaying 2s to let Login RPC send...');
-    Thread.sleep(2);
-    console.log('[DISCONNECT] Now disconnecting');
-    realDisconnect(p1);
+    console.log('[DISCONNECT] BLOCKED');
 }, 'void', ['pointer']));
+
+// Also block the connection cleanup function
+Interceptor.replace(addr(0x6db8e40), new NativeCallback(function(p1, p2) {
+    console.log('[CONN_CLEANUP] BLOCKED');
+}, 'void', ['pointer', 'pointer']));
 Interceptor.attach(addr(0x6e1e460), {
     onEnter: function(a) { console.log('[post_PreAuth] >>> CALLED!'); }
 });
