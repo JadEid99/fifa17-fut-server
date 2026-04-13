@@ -164,29 +164,31 @@ static void PatchSdkGateCheck() {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
-    // Part B: PreAuth completion handler -> NOP the disconnect call
-    // FUN_146e19a00 calls FUN_146db3e40 to disconnect after PreAuth.
-    // We NOP that CALL so the connection stays open for Login.
-    BYTE* pah = (BYTE*)0x146e19a00;
+    // Part B: Patch the Login type 0 vtable[0x10] function to return 0
+    // This function is called by the PreAuth handler to decide "should disconnect?"
+    // If it returns 0, the connection stays open and proceeds to Login.
+    // The vtable is at fixed address 0x14389f938. Entry at +0x10 is the function.
     __try {
-        Log("PREAUTH: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
-            pah, pah[0],pah[1],pah[2],pah[3],pah[4],pah[5],pah[6],pah[7]);
-        for (int i = 0; i < 80; i++) {
-            if (pah[i] == 0xE8) {
-                int32_t disp = *(int32_t*)(pah + i + 1);
-                BYTE* target = pah + i + 5 + disp;
-                if (target == (BYTE*)0x146db3e40) {
-                    Log("PREAUTH: Found disconnect CALL at +%d -> %p", i, target);
-                    DWORD op;
-                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
-                        for (int k=0; k<5; k++) pah[i+k]=0x90;
-                        VirtualProtect(pah + i, 5, op, &op);
-                        Log("PATCHED: PreAuth disconnect NOPed! Connection stays open.");
-                    }
-                    break;
-                }
+        uint64_t* vtable = (uint64_t*)0x14389f938;
+        uint64_t funcAddr = vtable[2]; // +0x10 = index 2
+        Log("LOGIN TYPE0: vtable=%p, [+0x10] func = 0x%llX", vtable, funcAddr);
+        
+        if (funcAddr > 0x140000000 && funcAddr < 0x150000000) {
+            BYTE* loginCheckFunc = (BYTE*)funcAddr;
+            Log("LOGIN TYPE0: func bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
+                loginCheckFunc[0],loginCheckFunc[1],loginCheckFunc[2],loginCheckFunc[3],
+                loginCheckFunc[4],loginCheckFunc[5],loginCheckFunc[6],loginCheckFunc[7]);
+            
+            // Patch to: XOR EAX,EAX / RET (return 0 = don't disconnect = proceed to Login)
+            DWORD op;
+            if (VirtualProtect(loginCheckFunc, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                loginCheckFunc[0] = 0x31; loginCheckFunc[1] = 0xC0; // XOR EAX, EAX
+                loginCheckFunc[2] = 0xC3; // RET
+                VirtualProtect(loginCheckFunc, 8, op, &op);
+                Log("PATCHED: Login type0 check -> always return 0 (proceed to Login!)");
             }
         }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("LOGIN TYPE0: exception"); }
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("PREAUTH: exception"); }
     
     g_sdkGateDone = 1; g_patched++;
@@ -222,7 +224,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v80 (PreAuth disconnect NOP + fake SDK + gate + auth) ===");
+    Log("=== FIFA 17 v81 (Login type0 check patch + fake SDK + gate + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
