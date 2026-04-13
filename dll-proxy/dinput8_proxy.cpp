@@ -246,7 +246,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v94 (PreAuth NOP + proactive Login+PostAuth from server) ===");
+    Log("=== FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -288,7 +288,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
         Log("AUTH: DAT_144b86bf8 = 0x%llX (Origin SDK manager)", *pSdkMgr);
         Log("AUTH: DAT_144b86bdf = %d (error flag)", *pSdkErr);
         if (*pSdkMgr == 0) {
-            Log("AUTH: SDK manager is NULL. Creating fake object...");
+            Log("AUTH: SDK manager STILL NULL (DllMain didn't set it). Creating now...");
+            // Same fake object creation as DllMain (fallback)
             // Allocate a fake SDK manager object with a vtable
             // The login flow accesses vtable offsets: +0x138, +0x188, +0x60, +0xa8, etc.
             // We need a vtable large enough and all entries pointing to safe stubs.
@@ -526,6 +527,66 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
         DisableThreadLibraryCalls(hModule);
         InitializeCriticalSection(&g_logCS);
         LoadRealDinput8();
+        
+        // CRITICAL: Create fake SDK object BEFORE game init runs
+        // DAT_144b86bf8 must be non-NULL when the BlazeHub is created,
+        // otherwise the login state machine is never initialized.
+        // DllMain runs before the game's entry point, so this is early enough.
+        __try {
+            uint64_t* pSdkMgr = (uint64_t*)0x144b86bf8;
+            if (*pSdkMgr == 0) {
+                // Allocate fake vtable (0x400 bytes = covers up to offset +0x1F8)
+                BYTE* fv = (BYTE*)VirtualAlloc(NULL, 0x400, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+                // Allocate fake object (0x1000 bytes)
+                BYTE* fo = (BYTE*)VirtualAlloc(NULL, 0x1000, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+                if (fv && fo) {
+                    memset(fo, 0, 0x1000);
+                    // Stub: XOR EAX,EAX / RET (return 0)
+                    BYTE* stubRet0 = fv + 0x300;
+                    stubRet0[0] = 0x31; stubRet0[1] = 0xC0; stubRet0[2] = 0xC3;
+                    // Stub: MOV AL,1 / RET (return 1)
+                    BYTE* stubRet1 = fv + 0x310;
+                    stubRet1[0] = 0xB0; stubRet1[1] = 0x01; stubRet1[2] = 0xC3;
+                    // Dynamic Blaze hub reader stub
+                    BYTE* stubHub = fv + 0x320;
+                    uint64_t omAddr = 0x1448a3b20;
+                    int h = 0;
+                    stubHub[h++]=0x48; stubHub[h++]=0xB8; memcpy(stubHub+h,&omAddr,8); h+=8;
+                    stubHub[h++]=0x48; stubHub[h++]=0x8B; stubHub[h++]=0x00;
+                    stubHub[h++]=0x48; stubHub[h++]=0x85; stubHub[h++]=0xC0;
+                    stubHub[h++]=0x74; stubHub[h++]=0x14;
+                    stubHub[h++]=0x48; stubHub[h++]=0x8B; stubHub[h++]=0x80;
+                    stubHub[h++]=0x10; stubHub[h++]=0x0B; stubHub[h++]=0x00; stubHub[h++]=0x00;
+                    stubHub[h++]=0x48; stubHub[h++]=0x85; stubHub[h++]=0xC0;
+                    stubHub[h++]=0x74; stubHub[h++]=0x08;
+                    stubHub[h++]=0x48; stubHub[h++]=0x8B; stubHub[h++]=0x80;
+                    stubHub[h++]=0xF8; stubHub[h++]=0x00; stubHub[h++]=0x00; stubHub[h++]=0x00;
+                    stubHub[h++]=0xC3;
+                    stubHub[h++]=0x31; stubHub[h++]=0xC0; stubHub[h++]=0xC3;
+                    
+                    // Fill vtable with ret0
+                    uint64_t r0 = (uint64_t)stubRet0;
+                    uint64_t r1 = (uint64_t)stubRet1;
+                    uint64_t rh = (uint64_t)stubHub;
+                    for (int i = 0; i < 64; i++) memcpy(fv+i*8, &r0, 8);
+                    memcpy(fv + 0x138, &r1, 8); // login permission = 1
+                    memcpy(fv + 0x188, &rh, 8); // Blaze hub reader
+                    
+                    *(uint64_t*)fo = (uint64_t)fv; // vtable pointer
+                    // Set +0x3a0 to a fake user ID (used by FUN_1470da6d0)
+                    *(uint64_t*)(fo + 0x3a0) = 33068179;
+                    
+                    *pSdkMgr = (uint64_t)fo;
+                    // Can't use Log() here safely (logCS might not be ready)
+                    // but we initialized it above, so it should be fine
+                    Log("EARLY: Fake SDK object at %p, vtable at %p", fo, fv);
+                    Log("EARLY: DAT_144b86bf8 = 0x%llX (set BEFORE game init)", *pSdkMgr);
+                }
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {
+            // If the address isn't mapped yet, we'll set it in the background thread
+        }
+        
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
         if (g_realDinput8) FreeLibrary(g_realDinput8);
