@@ -1,118 +1,104 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-13 21:02:48) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-13 21:13:25) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-7703159a3a8b143e7831f05406416914e72ead360d0c004a03c58184cc834a
-[SSL] Client Finished plaintext (16 bytes): 1400000c237703159a3a8b143e7831f0
-[SSL] Client Finished MAC: 5406416914e72ead360d0c004a03c58184cc834a
-[SSL] Client verify_data:   237703159a3a8b143e7831f0
-[SSL] Expected verify_data:  237703159a3a8b143e7831f0
+t, explicit len: 128)
+[SSL] Decrypted PMS: 48 bytes, version=0x303
+[SSL] Master secret derived: 5d94b474580fc3490d6c2fb8cafd920a...
+[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
+[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 34 2f c5 ae b1
+  0010: 47 40 0f eb c1 2a 2f 29 88 67 c0 32 70 07 1e 45
+  0020: bb ab 70 72 20 5b 4a 0c d0 e7 81 6f 1b ca aa
+[SSL] Record: type=0x14 ver=0x303 len=1
+[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
+[SSL] RC4 decryption initialized with clientWriteKey: 907e4d526f05263a334a242f373e4eac
+[SSL] Record: type=0x16 ver=0x303 len=36
+[SSL] Encrypted handshake record (client Finished): 36 bytes
+[SSL] Decrypted client Finished record: 36 bytes
+[SSL] Decrypted hex: 1400000cf1ab9bfdefdadc625311cfcf867ba25cdf133b72e03a2e9c92eac465a8207f3a
+[SSL] Client Finished plaintext (16 bytes): 1400000cf1ab9bfdefdadc625311cfcf
+[SSL] Client Finished MAC: 867ba25cdf133b72e03a2e9c92eac465a8207f3a
+[SSL] Client verify_data:   f1ab9bfdefdadc625311cfcf
+[SSL] Expected verify_data:  f1ab9bfdefdadc625311cfcf
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 5406416914e72ead360d0c004a03c58184cc834a
-[SSL] Actual client MAC:   5406416914e72ead360d0c004a03c58184cc834a
+[SSL] Expected client MAC: 867ba25cdf133b72e03a2e9c92eac465a8207f3a
+[SSL] Actual client MAC:   867ba25cdf133b72e03a2e9c92eac465a8207f3a
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1018 bytes
-[SSL]   msg[0]: 91 bytes, starts=0x1
+[SSL] Server Finished hash input: 6 messages, total 1050 bytes
+[SSL]   msg[0]: 123 bytes, starts=0x1
 [SSL]   msg[1]: 74 bytes, starts=0x2
 [SSL]   msg[2]: 699 bytes, starts=0xb
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: a40a54103e1f471dff0e3e76
+[SSL] Server verify_data: fc471185c38e54ccce79379c
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
 [SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
 [SSL] Decrypted 219 bytes of application data
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = 1701729619
-[PreAuth]     SVCN (str) = "fifa-2017-pc"
-[PreAuth]     TYPE (int) = 0
-[PreAuth]   }
-[PreAuth]   CINF (struct) {
-[PreAuth]     BSDK (str) = "15.1.1.3.0"
-[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
-[PreAuth]     CLNT (str) = "FIFA17"
-[PreAuth]     CPFT (int) = 4
-[PreAuth]     CSKU (str) = "FIFAPC"
-[PreAuth]     CVER (str) = "3175939"
-[PreAuth]     DSDK (str) = "15.1.2.1.0"
-[PreAuth]     ENV  (str) = "prod"
-[PreAuth]     LOC  (int) = 1701729619
-[PreAuth]     PTVR (str) = "1.1"
-[PreAuth]   }
-[PreAuth]   FCCR (struct) {
-[PreAuth]     CFID (str) = "BlazeSDK"
-[PreAuth]   }
-[PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending BF4-based response (829 bytes)
-[Blaze-Enc] Sent encrypted reply (845 bytes)
-[Blaze-Enc] Sending proactive login sequence after PreAuth...
-[Blaze-Enc] Sent proactive SilentLogin (210 bytes)
-[Blaze-Enc] Sent proactive PostAuth (142 bytes)
-[Blaze-Enc] Sent proactive UserSession (60 bytes)
+[SSL] Raw app data (219b): 00 00 00 cb 00 00 00 09 00 07 00 00 02 00 00 00 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2
+[Blaze-Enc] comp=0x00cb cmd=0x0000 len=0 msgType=0x0 msgId=0 err=9
+[Blaze] Unhandled comp=0xcb cmd=0x0
+[Blaze-Enc] Response header hex (12b): 00 00 00 cb 00 00 00 00 10 00 00 00
+[Blaze-Enc] Sent encrypted reply (12 bytes)
 [SSL-DATA] Received 41 bytes on socket (total pending: 41)
 [SSL] TLS record: type=0x17 ver=0x303 len=36 (pending: 41)
 [SSL] Decrypted 16 bytes of application data
-[Blaze-Enc] comp=0x0000 cmd=0x0000 len=0
-[Blaze] Unhandled comp=0x0 cmd=0x0
-[Blaze-Enc] Sent encrypted reply (16 bytes)
+[SSL] Raw app data (16b): 00 00 00 00 00 00 00 00 00 00 00 00 03 80 00 00
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 92 f6 92 c1 b7 1d 72 30 ba cd 7e c3 e1 9c 14 ac 98 71 12 56 01 72
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): de a1 99 52 a5 99 01 7d 12 a5 29 4e 20 aa 2a 27 31 02 23 02 97 69
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Main] S1 disconnected
+[Main] S2 disconnected
 [SSL-CONN] Socket closed
 
 --- DLL LOG (last 3000 chars) ---
-[21:01:00.539] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[21:01:00.539] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[21:01:00.539] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[21:01:00.539] PID: 88004
-[21:01:00.697] PATCHED: cert bypass at 000000014613244B
-[21:01:00.901] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[21:01:00.901] PATCHED: FUN_1470db3c0 body -> fake auth code
-[21:01:00.954] PATCHED: auth flag at 00000001473CE785
-[21:01:01.000] PATCHED: IsLoggedIntoEA -> true
-[21:01:01.000] PATCHED: IsLoggedIntoNetwork -> true
-[21:01:01.076] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[21:01:01.076] PATCHED: SDK gate -> always 1
-[21:01:01.087] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[21:01:01.087] PATCHED: Login vtable check -> return 1
-[21:01:01.087] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:01:01.087] LOGIN SilentLogin: already patched
-[21:01:01.087] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:01:01.087] LOGIN ExpressLogin: already patched
-[21:01:01.087] PATCHED: PreAuth disconnect NOPed (for proactive Login)
-[21:01:01.240] PATCHED: Origin SDK check at 00000001470A8430
-[21:01:01.240] All patches in 703 ms
-[21:01:01.240] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
-[21:01:01.240] AUTH: Checking login gate globals...
-[21:01:01.240] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[21:01:01.240] AUTH: DAT_144b86bdf = 0 (error flag)
-[21:01:01.240] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[21:01:07.082] AUTH: Slot cleared at 5800 ms
-[21:01:07.082] AUTH: OnlineMgr=0x45CF3E70
-[21:01:07.082] AUTH: slot=0x0 cave=0
-[21:01:07.082] AUTH: Using fake vtable (real not captured)
-[21:01:07.082] AUTH: Injected fake request 00000000647E0000 into slot
-[21:01:12.083] AUTH: cave=1 slot=0x0
-[21:01:12.083] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[21:01:12.083] AUTH: req[+0xd8]=0x99B9930 req[+0xe8]=1
-[21:01:12.083] AUTH: state=2. Auth ready.
-[21:01:12.083] AUTH: OnlineMgr+0xb10 = 0x45CFA6E0
-[21:01:12.083] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45CFA960
-[21:01:12.083] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[21:01:12.083] AUTH: Found 0 objects with vtables in BlazeHub
-[21:01:12.083] AUTH: BlazeHub(0000000045CFA960)+0x53f = 1
-[21:01:12.083] AUTH: Starting continuous +0x53f flag enforcer...
+[21:11:39.564] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[21:11:39.564] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[21:11:39.564] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[21:11:39.564] PID: 24328
+[21:11:39.722] PATCHED: cert bypass at 000000014613244B
+[21:11:39.884] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[21:11:39.884] PATCHED: FUN_1470db3c0 body -> fake auth code
+[21:11:39.926] PATCHED: auth flag at 00000001473CE785
+[21:11:39.978] PATCHED: IsLoggedIntoEA -> true
+[21:11:39.978] PATCHED: IsLoggedIntoNetwork -> true
+[21:11:40.053] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[21:11:40.053] PATCHED: SDK gate -> always 1
+[21:11:40.065] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[21:11:40.065] PATCHED: Login vtable check -> return 1
+[21:11:40.065] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:11:40.065] LOGIN SilentLogin: already patched
+[21:11:40.065] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:11:40.065] LOGIN ExpressLogin: already patched
+[21:11:40.065] PATCHED: PreAuth disconnect NOPed (for proactive Login)
+[21:11:40.224] PATCHED: Origin SDK check at 00000001470A8430
+[21:11:40.224] All patches in 657 ms
+[21:11:40.224] patches: 7 (cert=1 orig=1 auth=1 flag=1 login=2)
+[21:11:40.224] AUTH: Checking login gate globals...
+[21:11:40.224] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[21:11:40.224] AUTH: DAT_144b86bdf = 0 (error flag)
+[21:11:40.224] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[21:11:46.062] AUTH: Slot cleared at 5800 ms
+[21:11:46.062] AUTH: OnlineMgr=0x45CF3E70
+[21:11:46.062] AUTH: slot=0x0 cave=0
+[21:11:46.062] AUTH: Using fake vtable (real not captured)
+[21:11:46.062] AUTH: Injected fake request 00000000647C0000 into slot
+[21:11:51.063] AUTH: cave=1 slot=0x0
+[21:11:51.063] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[21:11:51.063] AUTH: req[+0xd8]=0x99B9930 req[+0xe8]=1
+[21:11:51.063] AUTH: state=2. Auth ready.
+[21:11:51.063] AUTH: OnlineMgr+0xb10 = 0x45CFA6E0
+[21:11:51.063] AUTH: +0xb10+0xf8 (BlazeHub) = 0x45CFA960
+[21:11:51.063] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[21:11:51.063] AUTH: Found 0 objects with vtables in BlazeHub
+[21:11:51.063] AUTH: BlazeHub(0000000045CFA960)+0x53f = 1
+[21:11:51.063] AUTH: Starting continuous +0x53f flag enforcer...
 
