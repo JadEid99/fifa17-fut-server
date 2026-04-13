@@ -1,28 +1,61 @@
-# FIFA 17 Private Server - FINAL STATUS
+# FIFA 17 Private Server - Current Status
 
-## CORE PROBLEM (CONFIRMED)
-The game NEVER reaches the Login code path. x64dbg confirmed that address
-146f19a11 (OriginRequestAuthCodeSync call) is NEVER executed during a
-connection attempt. All our auth patches are irrelevant because the game
-decides not to attempt login at a higher level in its state machine.
+## BREAKTHROUGH: LSX Origin SDK Server Built
 
-The game does: PreAuth → close_notify → done. This is hardcoded behavior.
-The Login flow is triggered by something ELSE that we haven't identified.
+We built a full LSX protocol server (`server-standalone/lsx-origin-server.mjs`) that
+replaces the STP Origin emulator on port 4216. This server:
 
-## WHAT WE NEED TO FIND
-The game's online state machine that decides "attempt login now."
-This is likely triggered by:
-1. A successful Origin SDK session (which the STP emulator doesn't provide)
-2. A specific event from the STP emulator on port 4216
-3. A UI-level trigger that we're not activating
+1. Implements the Challenge/ChallengeResponse handshake (AES-128-ECB, verified against
+   origin-sdk Rust crate test vectors)
+2. Sends a `Login` event with `IsLoggedIn=true` — this tells the game "you're logged
+   in to Origin" which should trigger the Blaze login flow
+3. Handles `GetAuthCode` requests — returns auth codes the game needs for Blaze login
+4. Handles all other Origin SDK requests (GetProfile, GetConfig, etc.)
+
+**Tested end-to-end**: Challenge → ChallengeResponse → ChallengeAccepted → Login event
+→ GetAuthCode request → AuthCode response. All crypto matches the Rust crate exactly.
+
+## WHAT THIS SHOULD FIX
+
+The core problem was: the game does PreAuth → close_notify → done, and NEVER sends
+a Blaze Login request. We confirmed via x64dbg that the OriginRequestAuthCodeSync
+function at 146f19a11 is NEVER called.
+
+The hypothesis: the game's state machine requires a successful Origin SDK session
+(Login event + auth tokens) before it will attempt a Blaze login. The STP emulator
+only handles Denuvo licensing — it does NOT send Login events or handle GetAuthCode.
+
+Our LSX server provides exactly what was missing.
+
+## HOW TO TEST
+
+Run `batch_test_lsx.ps1` on the Windows PC. It will:
+1. Build and deploy the DLL
+2. Disable the STP emulator (rename to .bak)
+3. Start our LSX server on port 4216
+4. Launch the game
+5. Start the Blaze server
+6. Trigger a connection attempt
+7. Collect results and restore STP
+
+**Two possible outcomes:**
+- **Game starts normally**: Our LSX server handles both Denuvo and Origin auth.
+  If the game then sends a Blaze Login → we've solved the core problem!
+- **Game fails to start**: Denuvo needs something specific from STP that we don't
+  provide. In that case, use proxy mode (--proxy) with STP on port 4217.
+
+## FILES
+
+- `server-standalone/lsx-origin-server.mjs` — LSX Origin SDK server (standalone + proxy modes)
+- `server-standalone/test-lsx-client.mjs` — Test client (verified working)
+- `batch_test_lsx.ps1` — Automated test script
+- `server-standalone/server.mjs` — Blaze/TLS server (unchanged)
+- `dll-proxy/dinput8_proxy.cpp` — DLL patches (unchanged)
 
 ## WHAT WORKS
-- All TLS/Blaze infrastructure (PreAuth, TDF encoding, etc.)
-- DLL patches (cert, Origin SDK check, auth code provider, auth flag)
-- The game parses our PreAuth response correctly
 
-## NEXT APPROACH
-1. Use the origin-sdk Rust crate to understand the LSX protocol on port 4216
-2. Build a replacement LSX server that provides proper Origin session + auth tokens
-3. OR: find the game's online state machine in Ghidra and force it to "login" state
-4. OR: find a more complete Origin emulator (anadius) that works with FIFA 17
+- TLS 1.2 handshake with RC4-SHA (redirector + main server)
+- Blaze PreAuth parsing and response
+- DLL patches (cert bypass, Origin SDK check, auth code provider, auth flag)
+- LSX Challenge/ChallengeResponse handshake
+- LSX Login event + GetAuthCode handling
