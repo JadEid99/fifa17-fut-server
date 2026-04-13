@@ -1,92 +1,44 @@
-﻿=== LSX + connect() hook test (2026-04-13 09:09:58) ===
-BLAZE RESULT: PREAUTH_REPLIED
+﻿=== LSX + connect() hook test (2026-04-13 09:14:18) ===
+BLAZE RESULT: UNKNOWN
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
-rd: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 2a7b1909c1741f1f761b4a7b4d2fc7b6
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000cdde2f8d1f499db63acba91ce1212a0a5d0dd95ae9e0273be121b74227ab49b08
-[SSL] Client Finished plaintext (16 bytes): 1400000cdde2f8d1f499db63acba91ce
-[SSL] Client Finished MAC: 1212a0a5d0dd95ae9e0273be121b74227ab49b08
-[SSL] Client verify_data:   dde2f8d1f499db63acba91ce
-[SSL] Expected verify_data:  dde2f8d1f499db63acba91ce
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 1212a0a5d0dd95ae9e0273be121b74227ab49b08
-[SSL] Actual client MAC:   1212a0a5d0dd95ae9e0273be121b74227ab49b08
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1018 bytes
-[SSL]   msg[0]: 91 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: b027e4efaf7fd85cf3d44d05
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 244 bytes on socket (total pending: 244)
-[SSL] TLS record: type=0x17 ver=0x303 len=239 (pending: 244)
-[SSL] Decrypted 219 bytes of application data
-[Blaze-Enc] comp=0x0009 cmd=0x0007 len=203
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = 1701729619
-[PreAuth]     SVCN (str) = "fifa-2017-pc"
-[PreAuth]     TYPE (int) = 0
-[PreAuth]   }
-[PreAuth]   CINF (struct) {
-[PreAuth]     BSDK (str) = "15.1.1.3.0"
-[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
-[PreAuth]     CLNT (str) = "FIFA17"
-[PreAuth]     CPFT (int) = 4
-[PreAuth]     CSKU (str) = "FIFAPC"
-[PreAuth]     CVER (str) = "3175939"
-[PreAuth]     DSDK (str) = "15.1.2.1.0"
-[PreAuth]     ENV  (str) = "prod"
-[PreAuth]     LOC  (int) = 1701729619
-[PreAuth]     PTVR (str) = "1.1"
-[PreAuth]   }
-[PreAuth]   FCCR (struct) {
-[PreAuth]     CFID (str) = "BlazeSDK"
-[PreAuth]   }
-[PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending BF4-based response (829 bytes)
-[Blaze-Enc] Sent encrypted reply (845 bytes)
-[Blaze-Enc] Sending proactive SilentLogin response after PreAuth...
-[Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 0d dd 9b c4 8f 02 e2 1e d6 48 13 05 75 2e 38 2a ef b8 f4 98 bf 5e
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Main] S1 disconnected
-[SSL-CONN] Socket closed
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
 
 --- LSX SERVER LOG ---
 
 
 --- DLL LOG ---
-[09:08:45.985] === FIFA 17 SSL Bypass v58 (cert + Origin + auth + flag + connect hook) ===
-[09:08:45.985] PID: 99768
-[09:08:45.985] HOOK: connect() not found in IAT, trying direct hook
-[09:08:45.985] HOOK: Found connect() at 00007FFD6EB11A50 via GetProcAddress
-[09:08:45.985] HOOK: WARNING - IAT hook failed, direct hook not implemented yet
-[09:08:46.144] Found cert check at 000000014613244B
-[09:08:46.144] PATCHED: JNZ -> JMP (cert bypass)
-[09:08:46.304] Found auth call at 0000000146F19A11
-[09:08:46.304] PATCHED: Auth call -> code cave at 00000000001D0000
-[09:08:46.351] Found auth flag at 00000001473CE785
-[09:08:46.351] PATCHED: Auth flag -> always 1
-[09:08:46.506] Found Origin SDK check at 00000001470A8430
-[09:08:46.517] PATCHED: Origin SDK check -> always true
-[09:08:46.517] All patches applied after 531 ms
-[09:08:46.517] === Done. patches: 4 ===
+[09:13:08.360] === FIFA 17 SSL Bypass v59 (cert + Origin + auth + flag + inline connect hook) ===
+[09:13:08.361] PID: 77580
+[09:13:08.361] HOOK: connect() at 00007FFD6EB11A50
+[09:13:08.361] HOOK: First 16 bytes: 48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 57
+[09:13:08.361] HOOK: Inline hook installed on connect() at 00007FFD6EB11A50
+[09:13:08.361] HOOK: Trampoline at 00000000001C0000 (original 14 bytes + jump back)
+[09:13:08.361] HOOK: HookedConnect at 00007FFD505912C0
+[09:13:08.361] HOOK: 4216 -> 4218 redirect ACTIVE
+[09:13:08.524] Found cert check at 000000014613244B
+[09:13:08.524] PATCHED: JNZ -> JMP (cert bypass)
+[09:13:08.692] Found auth call at 0000000146F19A11
+[09:13:08.692] PATCHED: Auth call -> code cave at 00000000001E0000
+[09:13:08.747] Found auth flag at 00000001473CE785
+[09:13:08.747] PATCHED: Auth flag -> always 1
+[09:13:08.896] Found Origin SDK check at 00000001470A8430
+[09:13:08.896] PATCHED: Origin SDK check -> always true
+[09:13:08.896] All patches applied after 547 ms
+[09:13:08.896] === Done. patches: 4 ===
+[09:13:09.254] HOOK: Redirecting connect() 127.0.0.1:4216 -> 127.0.0.1:4218
 
