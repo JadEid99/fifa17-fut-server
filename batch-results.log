@@ -1,20 +1,20 @@
-﻿=== BATCH v31 (2026-04-13 08:27:11) ===
+﻿=== BATCH v31 (2026-04-13 08:41:52) ===
 [1] DLL v52 code patch | PREAUTH_REPLIED
 SERVER:
 rd: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 28482897ed431e0b8511863b540d9003
+[SSL] RC4 decryption initialized with clientWriteKey: 2765b58ddd62bcd6c5c1b963bb2a4e1f
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000cb14e1e02f58399eecd2ad4ea2757eb97a199d914f9a99d00ade4ba302514aa90
-[SSL] Client Finished plaintext (16 bytes): 1400000cb14e1e02f58399eecd2ad4ea
-[SSL] Client Finished MAC: 2757eb97a199d914f9a99d00ade4ba302514aa90
-[SSL] Client verify_data:   b14e1e02f58399eecd2ad4ea
-[SSL] Expected verify_data:  b14e1e02f58399eecd2ad4ea
+[SSL] Decrypted hex: 1400000c3c1c2d846e1f9b6f0d889c07325a2bc7f12ba708e5084f435130e9c7bd94a305
+[SSL] Client Finished plaintext (16 bytes): 1400000c3c1c2d846e1f9b6f0d889c07
+[SSL] Client Finished MAC: 325a2bc7f12ba708e5084f435130e9c7bd94a305
+[SSL] Client verify_data:   3c1c2d846e1f9b6f0d889c07
+[SSL] Expected verify_data:  3c1c2d846e1f9b6f0d889c07
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 2757eb97a199d914f9a99d00ade4ba302514aa90
-[SSL] Actual client MAC:   2757eb97a199d914f9a99d00ade4ba302514aa90
+[SSL] Expected client MAC: 325a2bc7f12ba708e5084f435130e9c7bd94a305
+[SSL] Actual client MAC:   325a2bc7f12ba708e5084f435130e9c7bd94a305
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1018 bytes
@@ -24,7 +24,7 @@ rd: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: f80aaf86538c32358d6b9e32
+[SSL] Server verify_data: 3ff500b25793a76859b71e78
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -61,31 +61,33 @@ rd: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 54 1c 3a 00 f6 f3 85 b5 06 f0 50 b0 aa 15 8e f4 6b 47 49 13 bd 54
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 73 4f 71 fc f9 a4 6a 84 aa 45 24 01 ff 35 ed c7 da 6f 51 61 0d cb
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
 [Main] S1 disconnected
 [SSL-CONN] Socket closed
 DLL:
-[08:25:59.275] === FIFA 17 SSL Bypass v56 (cert + Origin + auth bypass + auth flag) ===
-[08:25:59.275] PID: 97480
-[08:25:59.448] Found cert check at 000000014613244B (pattern at 0000000146132444)
-[08:25:59.448]   Before: 0F 85 8E 02 00 00
-[08:25:59.448]   After:  E9 8F 02 00 00 90
-[08:25:59.448] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
-[08:25:59.688] Found auth call+check at 0000000146F19A11
-[08:25:59.688]   Patched: C6 86 E8 00 00 00 01 EB 62 90 90 90 90
-[08:25:59.688] PATCHED: Auth -> set [RSI+0xe8]=1 + JMP to continue
-[08:25:59.731] Found auth flag write at 00000001473CE785
-[08:25:59.731]   Before: 40 88 BB 61 20 00 00
-[08:25:59.731]   After:  C6 83 61 20 00 00 01
-[08:25:59.731] PATCHED: Auth bypass flag -> always set to 1
-[08:25:59.872] Found Origin SDK check at 00000001470A8430
-[08:25:59.872]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
-[08:25:59.872]   After:  B0 01 90 90 90 ... 90 90 90 C3
-[08:25:59.872] PATCHED: Origin SDK check -> always returns true
-[08:25:59.872] All patches applied after 594 ms
-[08:25:59.872] === Done. patches: 4 ===
+[08:40:39.895] === FIFA 17 SSL Bypass v56 (cert + Origin + auth bypass + auth flag) ===
+[08:40:39.895] PID: 95132
+[08:40:40.046] Found cert check at 000000014613244B (pattern at 0000000146132444)
+[08:40:40.046]   Before: 0F 85 8E 02 00 00
+[08:40:40.046]   After:  E9 8F 02 00 00 90
+[08:40:40.046] PATCHED: JNZ -> JMP (cert verification permanently bypassed)
+[08:40:40.199] Found auth call at 0000000146F19A11
+[08:40:40.199] Code cave at 00000000001D0000, fake auth code at 00007FFD53214000 ("FAKEAUTHCODE1234567890", len=22)
+[08:40:40.199] Code cave too far for rel32 call (offset=-5483305494)
+[08:40:40.199] Patched CALL to use absolute address via MOV RAX + CALL RAX
+[08:40:40.199] PATCHED: OriginRequestAuthCodeSync -> fake auth code provider
+[08:40:40.251] Found auth flag write at 00000001473CE785
+[08:40:40.251]   Before: 40 88 BB 61 20 00 00
+[08:40:40.251]   After:  C6 83 61 20 00 00 01
+[08:40:40.251] PATCHED: Auth bypass flag -> always set to 1
+[08:40:40.389] Found Origin SDK check at 00000001470A8430
+[08:40:40.389]   Before: 31 C0 48 39 05 ... 0F 95 D0 C3
+[08:40:40.389]   After:  B0 01 90 90 90 ... 90 90 90 C3
+[08:40:40.389] PATCHED: Origin SDK check -> always returns true
+[08:40:40.389] All patches applied after 484 ms
+[08:40:40.389] === Done. patches: 4 ===
 
 
