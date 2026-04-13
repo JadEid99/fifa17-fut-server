@@ -291,55 +291,53 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== Done. patches: %d ===", g_patched);
     
     // After all patches are applied, try to re-trigger the auth token request.
-    // Wait for OnlineManager to be fully initialized (it's NULL at 2s, try 15s)
+    // Wait for OnlineManager to be fully initialized
     Sleep(15000);
     __try {
-        // Read the OnlineManager pointer from the known global address
-        // DAT_1448a3b20 is at address 0x1448a3b20 in the game's address space
         uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
         uint64_t onlineMgr = *pOnlineMgr;
         Log("AUTH-RETRIGGER: DAT_1448a3b20 = 0x%llX", onlineMgr);
         
         if (onlineMgr != 0) {
-            // Check the auth request slot at +0x4ea0
             uint64_t* pAuthSlot = (uint64_t*)(onlineMgr + 0x4ea0);
             uint64_t authSlotVal = *pAuthSlot;
             Log("AUTH-RETRIGGER: [+0x4ea0] = 0x%llX (auth request slot)", authSlotVal);
             
-            // Check +0x4ea8 too
             uint64_t* pAuthSlot2 = (uint64_t*)(onlineMgr + 0x4ea8);
             uint64_t authSlot2Val = *pAuthSlot2;
             Log("AUTH-RETRIGGER: [+0x4ea8] = 0x%llX (auth request slot 2)", authSlot2Val);
             
-            // Check the auth code result at the request object
-            // FUN_146f199c0 reads *param_1 (the request pointer) and if non-zero,
-            // calls OriginRequestAuthCodeSync, then stores result at [lVar1+0xd8]
-            // and sets [lVar1+0xe8]=1
-            if (authSlotVal != 0) {
-                uint64_t* pAuthResult = (uint64_t*)(authSlotVal + 0xd8);
-                uint8_t* pAuthFlag = (uint8_t*)(authSlotVal + 0xe8);
-                Log("AUTH-RETRIGGER: Auth object at 0x%llX: [+0xd8]=0x%llX [+0xe8]=%d",
-                    authSlotVal, *pAuthResult, *pAuthFlag);
-                
-                // If the auth flag is not set, force it
-                if (*pAuthFlag == 0) {
-                    Log("AUTH-RETRIGGER: Auth flag not set, forcing [+0xe8]=1");
-                    *pAuthFlag = 1;
-                    // Also write a fake auth token at [+0xd8] if empty
-                    if (*pAuthResult == 0) {
-                        Log("AUTH-RETRIGGER: No auth token, writing fake token pointer");
-                        // We can't easily create a proper token object here,
-                        // but setting the flag might be enough
-                    }
+            // The auth request object was at +0x4ea0 before being cleared.
+            // But the Blaze connection object at +0xb10 might have the auth state.
+            // Let's dump key offsets around the online manager to find auth state.
+            uint64_t blazeConn = *(uint64_t*)(onlineMgr + 0xb10);
+            Log("AUTH-RETRIGGER: [+0xb10] = 0x%llX (Blaze connection?)", blazeConn);
+            
+            // Check the connection state at various offsets
+            uint32_t state7c = *(uint32_t*)(onlineMgr + 0x7c);
+            uint32_t state98 = *(uint32_t*)(onlineMgr + 0x98);
+            uint32_t state13ac = *(uint32_t*)(onlineMgr + 0x13ac);
+            uint32_t state13b4 = *(uint32_t*)(onlineMgr + 0x13b4);
+            uint32_t state13b8 = *(uint32_t*)(onlineMgr + 0x13b8);
+            Log("AUTH-RETRIGGER: [+0x7c]=%d [+0x98]=%d [+0x13ac]=%d [+0x13b4]=%d [+0x13b8]=%d",
+                state7c, state98, state13ac, state13b4, state13b8);
+            
+            // Scan for the auth code string in the online manager's memory
+            // Our fake auth code is "FAKEAUTHCODE1234567890"
+            char* scanBase = (char*)onlineMgr;
+            for (int off = 0; off < 0x5000; off += 8) {
+                uint64_t val = *(uint64_t*)(scanBase + off);
+                if (val != 0 && val < 0x200000000000ULL && val > 0x100000000ULL) {
+                    // Looks like a pointer, check if it points to our auth code
+                    __try {
+                        char* str = (char*)val;
+                        if (str[0] == 'F' && str[1] == 'A' && str[2] == 'K' && str[3] == 'E') {
+                            Log("AUTH-RETRIGGER: Found FAKE auth code ref at +0x%X -> 0x%llX", off, val);
+                        }
+                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
                 }
-            } else {
-                Log("AUTH-RETRIGGER: Auth slot is NULL - request was already consumed and cleared");
-                // The slot was cleared. We can't easily re-populate it because
-                // we'd need a valid request object pointer. But we can try to
-                // directly set the auth state on the Blaze connection.
             }
             
-            // Also check DAT_1448a3ac3 (online mode flag)
             uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
             Log("AUTH-RETRIGGER: DAT_1448a3ac3 = %d (online mode flag)", *pOnlineFlag);
         } else {
