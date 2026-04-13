@@ -10,27 +10,11 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 Force Login v6 === Base=0x140000000
+=== FIFA 17 v7 === Base=0x140000000
 === Ready. ===
-[Local::PID::98140 ]-> [send_RPC] >>> CALLED!
-[PreAuth #1] connMgr=0x45b77ff0
-[Fix] BlazeHub=0x45b77330 ConnMgr(from hub)=0x45b77ff0
-[Fix] LoginSM=0x45b79da0
-[Fix] LoginSM raw (80 bytes):
-[Fix]   +0x0 = 0x1438a07c8
-[Fix]   +0x8 = 0x45b77330
-[Fix]   +0x10 = 0x0
-[Fix]   +0x18 = 0x0
-[Fix]   +0x20 = 0x0
-[Fix]   +0x28 = 0x143889e60
-[Fix]   +0x30 = 0x80000000
-[Fix]   +0x38 = 0x143889db8
-[Fix]   +0x40 = 0x80000000
-[Fix]   +0x48 = 0x0
-[Fix] type2=0x0
-[Fix] >>> type2 is NULL! Looking for SilentLogin type object... <<<
-[Fix] SilentLogin candidate at 0x45b7a2b0 vtable=0x0
-[Fix] ExpressLogin candidate at 0x45b7a300 vtable=0x0
-[Fix] LoginType0 candidate at 0x45b79dd8 vtable=0x143889db8
-[Fix] >>> Writing LoginType0 into type2! <<<
-[Fix] type2 is now: 0x45b79dd8
+[Local::PID::100272 ]-> [PreAuth_RPC_send] called with callback at param2
+[RESPONSE_HANDLER] >>> CALLED! param1=0x45b27ff0 param2=0x0 param3=0x40050000
+[RESPONSE_HANDLER] param3!=0 -> LOGIN ATTEMPT
+[send_RPC] cm=0x45b27f38 fn=0x146e19a00
+[RESPONSE_HANDLER] returned
+[PreAuth_complete] connMgr=0x45b27ff0 result=0x40050000
