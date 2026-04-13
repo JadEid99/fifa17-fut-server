@@ -216,65 +216,66 @@ function decodeVarInt(buf, offset) {
 // ============================================================
 
 // ============================================================
-// Blaze Packet Header (12 bytes, from BlazePK-rs / PocketRelay)
+// Blaze Packet Header — FIFA 17 Fire2 Format (16 bytes)
 // ============================================================
-// [0-1]   u16  payload length (or low 16 bits if extended)
-// [2-3]   u16  component
-// [4-5]   u16  command
-// [6-7]   u16  error
-// [8]     u8   message type (0x00=request, 0x10=response, 0x20=notify, 0x30=error)
-// [9]     u8   extended flag (0x10 if length > 0xFFFF, else 0x00)
-// [10-11] u16  message id
-// If extended: [12-13] u16 high bits of length
-const HEADER_SIZE = 12;
+// FIFA 17 uses BlazeSDK 15.1.x with Fire2 framing which wraps
+// the standard 12-byte Blaze header with a 4-byte frame length.
+//
+// Confirmed from raw packet capture:
+//   00 00 00 cb  00 00  00 09  00 07  00 00  02 00  00 00
+//   [frame len]  [blen] [comp] [cmd ] [err ] [ty,x] [id  ]
+//
+// [0-3]   u32  frame/payload length
+// [4-5]   u16  blaze-level length (usually 0 or same as frame length for small packets)
+// [6-7]   u16  component
+// [8-9]   u16  command
+// [10-11] u16  error
+// [12]    u8   message type (0x00=request, 0x01=response, 0x02=notify, 0x03=error)
+// [13]    u8   extended flag / options
+// [14-15] u16  message id
+//
+// Note: type values are 0x00-0x03 (NOT 0x00/0x10/0x20/0x30 like BlazePK-rs ME3 format)
+const HEADER_SIZE = 16;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
-  let length = buf.readUInt16BE(0);
-  const component = buf.readUInt16BE(2);
-  const command = buf.readUInt16BE(4);
-  const error = buf.readUInt16BE(6);
-  const msgTypeByte = buf[8];   // 0x00=req, 0x10=resp, 0x20=notify, 0x30=error
-  const extendedFlag = buf[9];  // 0x10 if extended length
-  const msgId = buf.readUInt16BE(10);
-  // Map type byte to our msgType values for compatibility
-  const msgType = msgTypeByte << 8; // 0x00->0x0000, 0x10->0x1000, 0x20->0x2000, 0x30->0x3000
-  const isExtended = extendedFlag === 0x10;
-  if (isExtended && buf.length >= 14) {
-    length += (buf[12] << 24) | (buf[13] << 16);
-  }
-  return { length, component, command, error, msgType, msgId, isExtended };
+  const length = buf.readUInt32BE(0);
+  const component = buf.readUInt16BE(6);
+  const command = buf.readUInt16BE(8);
+  const error = buf.readUInt16BE(10);
+  const typeByte = buf[12];   // 0x00=req, 0x01=resp, 0x02=notify, 0x03=error
+  const extByte = buf[13];
+  const msgId = buf.readUInt16BE(14);
+  // Map to our internal msgType values for compatibility
+  let msgType = 0x0000;
+  if (typeByte === 0x01) msgType = 0x1000;       // response
+  else if (typeByte === 0x02) msgType = 0x2000;   // notify
+  else if (typeByte === 0x03) msgType = 0x3000;   // error
+  return { length, component, command, error, msgType, msgId };
 }
 function encodeHeader(h) {
-  const length = h.length || 0;
-  const isExtended = length > 0xFFFF;
-  const headerSize = isExtended ? 14 : 12;
-  const buf = Buffer.alloc(headerSize);
-  buf.writeUInt16BE(length & 0xFFFF, 0);    // payload length (low 16 bits)
-  buf.writeUInt16BE(h.component, 2);        // component
-  buf.writeUInt16BE(h.command, 4);          // command
-  buf.writeUInt16BE(h.error || 0, 6);       // error
-  // Message type: convert from our 0x1000/0x2000/0x3000 format to byte format
-  let typeByte = 0x00;
-  if (h.msgType === 0x1000) typeByte = 0x10;       // response
-  else if (h.msgType === 0x2000) typeByte = 0x20;   // notify
-  else if (h.msgType === 0x3000) typeByte = 0x30;   // error
-  buf[8] = typeByte;
-  buf[9] = isExtended ? 0x10 : 0x00;       // extended flag
-  buf.writeUInt16BE(h.msgId || 0, 10);      // message id
-  if (isExtended) {
-    buf[12] = (length >> 24) & 0xFF;
-    buf[13] = (length >> 16) & 0xFF;
-  }
+  const buf = Buffer.alloc(HEADER_SIZE);
+  buf.writeUInt32BE(h.length || 0, 0);      // frame/payload length
+  buf.writeUInt16BE(0, 4);                   // blaze-level length (0 for normal packets)
+  buf.writeUInt16BE(h.component, 6);         // component
+  buf.writeUInt16BE(h.command, 8);           // command
+  buf.writeUInt16BE(h.error || 0, 10);       // error
+  // Message type: convert from our 0x1000/0x2000/0x3000 to Fire2 byte values
+  let typeByte = 0x00; // request
+  if (h.msgType === 0x1000) typeByte = 0x01;       // response
+  else if (h.msgType === 0x2000) typeByte = 0x02;   // notify
+  else if (h.msgType === 0x3000) typeByte = 0x03;   // error
+  buf[12] = typeByte;
+  buf[13] = 0x00;                            // extended/options
+  buf.writeUInt16BE(h.msgId || 0, 14);       // message id
   return buf;
 }
 function readPacket(buf) {
   if (buf.length < HEADER_SIZE) return null;
   const header = decodeHeader(buf);
   if (!header) return null;
-  const actualHeaderSize = header.isExtended ? 14 : 12;
-  const total = actualHeaderSize + header.length;
+  const total = HEADER_SIZE + header.length;
   if (buf.length < total) return null;
-  return { packet: { header, body: buf.subarray(actualHeaderSize, total) }, remaining: buf.subarray(total) };
+  return { packet: { header, body: buf.subarray(HEADER_SIZE, total) }, remaining: buf.subarray(total) };
 }
 function buildReply(req, body, error = 0) {
   const h = encodeHeader({ length: body.length, component: req.header.component, command: req.header.command, error, msgType: error ? 0x3000 : 0x1000, msgId: req.header.msgId });
