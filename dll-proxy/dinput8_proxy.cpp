@@ -193,7 +193,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v76 (fake SDK object + SDK gate + auth re-injection) ===");
+    Log("=== FIFA 17 v77 (fake SDK with Blaze hub + gate + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -256,14 +256,41 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 BYTE* stubRet1 = fakeVtable + 0x310;
                 stubRet1[0] = 0xB0; stubRet1[1] = 0x01; stubRet1[2] = 0xC3; // MOV AL,1 / RET
                 
+                // Stub 3: return the Blaze hub pointer (for +0x188)
+                // The Blaze hub is at *(*(OnlineMgr + 0xb10) + 0xf8)
+                // We read it at patch time and hardcode it in the stub
+                BYTE* stubRetHub = fakeVtable + 0x320;
+                uint64_t blazeHub = 0;
+                uint64_t* pOM2 = (uint64_t*)0x1448a3b20;
+                if (*pOM2 != 0) {
+                    uint64_t connMgr = *(uint64_t*)(*pOM2 + 0xb10);
+                    if (connMgr != 0) {
+                        blazeHub = *(uint64_t*)(connMgr + 0xf8);
+                        Log("AUTH: Blaze hub at 0x%llX (from OnlineMgr+0xb10+0xf8)", blazeHub);
+                    }
+                }
+                if (blazeHub != 0) {
+                    // MOV RAX, <blazeHub address> / RET
+                    stubRetHub[0] = 0x48; stubRetHub[1] = 0xB8;
+                    memcpy(stubRetHub + 2, &blazeHub, 8);
+                    stubRetHub[10] = 0xC3;
+                } else {
+                    // Fallback: return 0
+                    stubRetHub[0] = 0x31; stubRetHub[1] = 0xC0; stubRetHub[2] = 0xC3;
+                    Log("AUTH: WARNING - Blaze hub is NULL, +0x188 will return 0");
+                }
+                
                 // Fill all vtable entries with stubRet0 (safe default)
                 uint64_t ret0Addr = (uint64_t)stubRet0;
                 uint64_t ret1Addr = (uint64_t)stubRet1;
+                uint64_t retHubAddr = (uint64_t)stubRetHub;
                 for (int i = 0; i < 64; i++) {
                     memcpy(fakeVtable + i*8, &ret0Addr, 8);
                 }
-                // Override +0x138 to return 1 (login gate)
+                // Override +0x138 to return 1 (login permission)
                 memcpy(fakeVtable + 0x138, &ret1Addr, 8);
+                // Override +0x188 to return Blaze hub (connection object)
+                memcpy(fakeVtable + 0x188, &retHubAddr, 8);
                 
                 // Set the object's vtable pointer
                 *(uint64_t*)fakeObj = (uint64_t)fakeVtable;
