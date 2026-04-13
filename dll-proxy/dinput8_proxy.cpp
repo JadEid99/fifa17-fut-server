@@ -262,12 +262,14 @@ static void LogConnections() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v63 (cert + Origin + auth + flag + IsLoggedIn x2) ===");
+    Log("=== FIFA 17 SSL Bypass v64 (cert + Origin + auth + flag + IsLoggedIn x2) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
+    // Apply patches as fast as possible - no sleep between attempts
+    // The auth token request fires during init and is one-shot,
+    // so we MUST patch before it executes
     DWORD startTick = GetTickCount();
-    for (int i = 0; i < 3000; i++) {
-        Sleep(100);
+    for (int i = 0; i < 30000; i++) {
         __try {
             if (!g_codePatchDone) PatchCertCheck();
             if (!g_originPatchDone) PatchOriginCheck();
@@ -279,9 +281,13 @@ static DWORD WINAPI PatchThread(LPVOID) {
             Log("All patches applied after %lu ms", GetTickCount() - startTick);
             break;
         }
-        if (i % 100 == 0 && i > 0)
-            Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
-                GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
+        // Only sleep every 100 iterations (10ms effective) to stay fast
+        if (i % 100 == 0 && i > 0) {
+            Sleep(1);
+            if (i % 10000 == 0)
+                Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
+                    GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
+        }
     }
     if (!g_codePatchDone) Log("WARNING: cert pattern not found");
     if (!g_originPatchDone) Log("WARNING: Origin SDK pattern not found");

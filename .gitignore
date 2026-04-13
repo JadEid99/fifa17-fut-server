@@ -18,3 +18,6 @@ ssl-proxy/target/
 *.srl
 blaze-key.der
 blaze-cert.der
+
+# Ghidra exports (too large for git)
+ghidra/
