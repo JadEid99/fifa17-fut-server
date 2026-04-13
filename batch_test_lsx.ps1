@@ -51,8 +51,17 @@ Kill-All
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
 
-# Start LSX server on port 4218 in STANDALONE mode (diagnostic only)
-# The game still talks to STP on 4216 - we're just observing
+# Step 1: Start Blaze server FIRST (before game, so attempt #1 succeeds)
+Write-Host "[BLAZE] Starting Blaze server BEFORE game..." -ForegroundColor Yellow
+$blazeJob = Start-Job -ScriptBlock { 
+    param($r)
+    $env:PREAUTH_VARIANT="full"
+    $env:REDIRECT_SECURE="1"
+    node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 
+} -ArgumentList $repoRoot
+Start-Sleep 3
+
+# Start LSX server on port 4218 (diagnostic)
 Write-Host "[LSX] Starting LSX server on port 4218 (diagnostic)..." -ForegroundColor Yellow
 $lsxJob = Start-Job -ScriptBlock { 
     param($r)
@@ -61,24 +70,15 @@ $lsxJob = Start-Job -ScriptBlock {
 } -ArgumentList $repoRoot
 Start-Sleep 2
 
-# Launch game (STP emulator stays on 4216, DLL hooks connect to redirect to 4218)
+# Launch game AFTER servers are running
 Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe
 for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 Start-Sleep 10; FEnter; Start-Sleep 2
 
-# Start Blaze server
-Write-Host "[BLAZE] Starting Blaze server..." -ForegroundColor Yellow
-$blazeJob = Start-Job -ScriptBlock { 
-    param($r)
-    $env:PREAUTH_VARIANT="full"
-    $env:REDIRECT_SECURE="1"
-    node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 
-} -ArgumentList $repoRoot
-Start-Sleep 2
-
-# Trigger connection
+# Blaze server already running from before game launch
+# Just trigger connection attempt
 Write-Host "[TEST] Triggering connection (Q key)..." -ForegroundColor Yellow
 FQ
 Start-Sleep 30
