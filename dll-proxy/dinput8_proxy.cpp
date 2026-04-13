@@ -444,16 +444,23 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 uint64_t bHub = *(uint64_t*)(cm2 + 0xf8);
                 Log("AUTH: +0xb10+0xf8 (BlazeHub) = 0x%llX", bHub);
                 if (bHub != 0) {
-                    // Dump a range around +0x750 to find the login state machine
-                    Log("AUTH: BlazeHub dump around +0x740:");
-                    for (int off = 0x740; off <= 0x790; off += 8) {
+                    // Scan BlazeHub for heap pointers that could be the login state machine
+                    Log("AUTH: Scanning BlazeHub for ConnectionManager pointers...");
+                    int found = 0;
+                    for (int off = 0; off < 0x2000 && found < 20; off += 8) {
                         uint64_t val = *(uint64_t*)(bHub + off);
-                        Log("AUTH:   +0x%X = 0x%llX %s", off, val,
-                            (val > 0x140000000ULL && val < 0x150000000ULL) ? "(code ptr?)" :
-                            (val > 0x10000000ULL && val < 0x800000000ULL) ? "(heap ptr?)" : "");
+                        // Look for heap pointers (allocated objects)
+                        if (val > 0x40000000ULL && val < 0x80000000ULL) {
+                            // Check if this pointer's first 8 bytes look like a vtable
+                            // (vtable pointers are in the 0x140000000-0x150000000 range)
+                            uint64_t possibleVtable = *(uint64_t*)val;
+                            if (possibleVtable > 0x140000000ULL && possibleVtable < 0x150000000ULL) {
+                                Log("AUTH:   +0x%X = 0x%llX -> vtable=0x%llX", off, val, possibleVtable);
+                                found++;
+                            }
+                        }
                     }
-                    uint64_t loginSM = *(uint64_t*)(bHub + 0x750);
-                    Log("AUTH: BlazeHub+0x750 (LoginSM) = 0x%llX", loginSM);
+                    Log("AUTH: Found %d objects with vtables in BlazeHub", found);
                 } else { Log("AUTH: BlazeHub is NULL"); }
             } else { Log("AUTH: ConnMgr wrapper is NULL"); }
             
