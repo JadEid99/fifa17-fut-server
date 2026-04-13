@@ -1,61 +1,44 @@
-# FIFA 17 Private Server - Current Status
+# FIFA 17 Private Server - Session Status
 
-## BREAKTHROUGH: LSX Origin SDK Server Built
+## BREAKTHROUGH: Connection stays open after PreAuth!
 
-We built a full LSX protocol server (`server-standalone/lsx-origin-server.mjs`) that
-replaces the STP Origin emulator on port 4216. This server:
+v80 NOPs the disconnect call in the PreAuth completion handler (FUN_146e19a00).
+For the first time, the game stays connected after PreAuth and sends additional
+data (comp=0x0000 cmd=0x0000 — a keepalive/ping).
 
-1. Implements the Challenge/ChallengeResponse handshake (AES-128-ECB, verified against
-   origin-sdk Rust crate test vectors)
-2. Sends a `Login` event with `IsLoggedIn=true` — this tells the game "you're logged
-   in to Origin" which should trigger the Blaze login flow
-3. Handles `GetAuthCode` requests — returns auth codes the game needs for Blaze login
-4. Handles all other Origin SDK requests (GetProfile, GetConfig, etc.)
+Previously: PreAuth → immediate close_notify → disconnect (every single test)
+Now: PreAuth → keepalive packet → then disconnect
 
-**Tested end-to-end**: Challenge → ChallengeResponse → ChallengeAccepted → Login event
-→ GetAuthCode request → AuthCode response. All crypto matches the Rust crate exactly.
+## What's working (8 patches)
+1. Cert bypass (JNZ→JMP)
+2. Origin SDK availability (always true)
+3. FUN_1470db3c0 body (fake auth code provider)
+4. Telemetry auth flag
+5. IsLoggedIntoEA (always true)
+6. IsLoggedIntoNetwork (always true)
+7. SDK gate FUN_1471a5da0 (always return 1) — unblocks login flow
+7b. PreAuth completion handler (NOP disconnect call) — keeps connection open
+8. Fake SDK manager object at DAT_144b86bf8 with vtable stubs
+9. Auth request re-injection (cave executes, auth code stored)
 
-## WHAT THIS SHOULD FIX
+## Root cause found
+DAT_144b86bf8 (Origin SDK manager) is NULL. The STP emulator doesn't create it.
+This blocks FUN_1471a5da0 which gates the entire login flow.
+We create a fake object with vtable stubs and patch the gate function.
 
-The core problem was: the game does PreAuth → close_notify → done, and NEVER sends
-a Blaze Login request. We confirmed via x64dbg that the OriginRequestAuthCodeSync
-function at 146f19a11 is NEVER called.
+## Next steps
+1. The game sends a keepalive (comp=0 cmd=0) after PreAuth but then disconnects.
+   Need to understand what the game expects next — possibly PostAuth or Login.
+2. The Blaze SDK's connection state machine may need more conditions satisfied
+   before it proceeds to Login.
+3. The fake SDK object's vtable[0x188] returns the Blaze hub dynamically.
+   Need to verify this works when the game actually calls it.
 
-The hypothesis: the game's state machine requires a successful Origin SDK session
-(Login event + auth tokens) before it will attempt a Blaze login. The STP emulator
-only handles Denuvo licensing — it does NOT send Login events or handle GetAuthCode.
-
-Our LSX server provides exactly what was missing.
-
-## HOW TO TEST
-
-Run `batch_test_lsx.ps1` on the Windows PC. It will:
-1. Build and deploy the DLL
-2. Disable the STP emulator (rename to .bak)
-3. Start our LSX server on port 4216
-4. Launch the game
-5. Start the Blaze server
-6. Trigger a connection attempt
-7. Collect results and restore STP
-
-**Two possible outcomes:**
-- **Game starts normally**: Our LSX server handles both Denuvo and Origin auth.
-  If the game then sends a Blaze Login → we've solved the core problem!
-- **Game fails to start**: Denuvo needs something specific from STP that we don't
-  provide. In that case, use proxy mode (--proxy) with STP on port 4217.
-
-## FILES
-
-- `server-standalone/lsx-origin-server.mjs` — LSX Origin SDK server (standalone + proxy modes)
-- `server-standalone/test-lsx-client.mjs` — Test client (verified working)
-- `batch_test_lsx.ps1` — Automated test script
-- `server-standalone/server.mjs` — Blaze/TLS server (unchanged)
-- `dll-proxy/dinput8_proxy.cpp` — DLL patches (unchanged)
-
-## WHAT WORKS
-
-- TLS 1.2 handshake with RC4-SHA (redirector + main server)
-- Blaze PreAuth parsing and response
-- DLL patches (cert bypass, Origin SDK check, auth code provider, auth flag)
-- LSX Challenge/ChallengeResponse handshake
-- LSX Login event + GetAuthCode handling
+## Key addresses (fixed, no ASLR)
+- FUN_1471a5da0: SDK gate (patched to return 1)
+- FUN_146e19a00: PreAuth completion handler (disconnect NOPed at +61)
+- FUN_146f2a270: Login sender (called via callback, not directly)
+- FUN_146f39b20: "Go online" function (Q key trigger)
+- DAT_144b86bf8: Origin SDK manager (NULL, we write fake object)
+- DAT_1448a3b20: OnlineManager pointer
+- DAT_1448a3ac3: Online mode flag (1 = active)
