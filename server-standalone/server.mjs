@@ -14,8 +14,34 @@ import fs from 'fs';
 import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, '..');
+
+// Auto-logging: capture console output and push after each disconnect
+let sessionLog = [];
+const origLog = console.log;
+console.log = function(...args) {
+  const msg = args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ');
+  sessionLog.push(msg);
+  origLog.apply(console, args);
+};
+
+function flushAndPush(label) {
+  try {
+    const logPath = path.join(repoRoot, 'batch-results.log');
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const last200 = sessionLog.slice(-200).join('\n');
+    const content = `=== ${label} (${timestamp}) ===\n\n${last200}\n`;
+    fs.writeFileSync(logPath, content, 'utf8');
+    sessionLog = [];
+    execSync('git add batch-results.log && git commit -m "auto-log: ' + label + '" && git push', { cwd: repoRoot, stdio: 'ignore', timeout: 15000 });
+    origLog('[AUTO-LOG] Pushed results for: ' + label);
+  } catch (e) {
+    origLog('[AUTO-LOG] Push failed: ' + e.message);
+  }
+}
 
 const REDIRECTOR_PORT = 42230;
 const MAIN_BLAZE_PORT = 10041;
@@ -1215,7 +1241,10 @@ function startMainServer() {
       }
     };
     socket.on('data', initialHandler);
-    socket.on('close', () => console.log(`[Main] S${sid} disconnected`));
+    socket.on('close', () => {
+      console.log(`[Main] S${sid} disconnected`);
+      flushAndPush(`S${sid} disconnect`);
+    });
     socket.on('error', (e) => console.log(`[Main] S${sid} error: ${e.message}`));
   });
   server.listen(MAIN_BLAZE_PORT, '0.0.0.0', () => console.log(`[Main] Blaze server on port ${MAIN_BLAZE_PORT}`));
