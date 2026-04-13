@@ -193,9 +193,25 @@ static void PatchSdkGateCheck() {
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
     }
     
-    // Part C: Don't NOP PreAuth disconnect - let normal callback flow work
-    // PreAuth → disconnect → callback → check login type → send Login on new connection
-    Log("PREAUTH: Not patching disconnect (normal callback flow)");
+    // Part C: NOP the PreAuth disconnect so connection stays open for proactive responses
+    __try {
+        BYTE* pah = (BYTE*)0x146e19a00;
+        for (int i = 0; i < 80; i++) {
+            if (pah[i] == 0xE8) {
+                int32_t disp = *(int32_t*)(pah + i + 1);
+                BYTE* target = pah + i + 5 + disp;
+                if (target == (BYTE*)0x146db3e40) {
+                    DWORD op;
+                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
+                        for (int k=0; k<5; k++) pah[i+k]=0x90;
+                        VirtualProtect(pah + i, 5, op, &op);
+                        Log("PATCHED: PreAuth disconnect NOPed (for proactive Login)");
+                    }
+                    break;
+                }
+            }
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
     g_sdkGateDone = 1; g_patched++;
 }
@@ -230,7 +246,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v91 (safe callback chain trace) ===");
+    Log("=== FIFA 17 v94 (PreAuth NOP + proactive Login+PostAuth from server) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();

@@ -847,7 +847,9 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                 
                 // After PreAuth, proactively send a SilentLogin response as notification
                 if (pkt.header.component === 0x0009 && pkt.header.command === 0x0007) {
-                  console.log('[Blaze-Enc] Sending proactive SilentLogin response after PreAuth...');
+                  console.log('[Blaze-Enc] Sending proactive login sequence after PreAuth...');
+                  
+                  // 1. SilentLogin response (comp=0x0001, cmd=0x0032)
                   const loginEnc = new TdfEncoder();
                   loginEnc.writeInteger('AGUP', 0);
                   loginEnc.writeString('LDHT', '');
@@ -875,12 +877,49 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   loginEnc.writeString('TSUI', '');
                   loginEnc.writeString('TURI', '');
                   const loginBody = loginEnc.build();
-                  // Send as SilentLogin response (comp=0x0001, cmd=0x0032, msgType=0x1000)
                   const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, msgType: 0x1000, msgId: 1 });
                   const loginPkt = Buffer.concat([loginHdr, loginBody]);
                   const encLogin = encryptRecord(0x17, [0x03, 0x03], loginPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encLogin);
-                  console.log(`[Blaze-Enc] Sent proactive SilentLogin response (${loginPkt.length} bytes)`);
+                  console.log(`[Blaze-Enc] Sent proactive SilentLogin (${loginPkt.length} bytes)`);
+                  
+                  // 2. PostAuth response (comp=0x0009, cmd=0x0008)
+                  const postEnc = new TdfEncoder();
+                  // Telemetry config
+                  postEnc.writeStructStart('TELE');
+                  postEnc.writeString('ADRS', '127.0.0.1');
+                  postEnc.writeInteger('ANON', 0);
+                  postEnc.writeString('DPTS', 'ut/bf/fifa17');
+                  postEnc.writeInteger('LOC ', 1701729619);
+                  postEnc.writeString('NOOK', '');
+                  postEnc.writeInteger('PORT', 9988);
+                  postEnc.writeInteger('SDLY', 15000);
+                  postEnc.writeString('SESS', 'telemetry_session');
+                  postEnc.writeString('SKEY', 'telemetry_key');
+                  postEnc.writeInteger('SPCT', 75);
+                  postEnc.writeString('STIM', '');
+                  postEnc.writeStructEnd();
+                  const postBody = postEnc.build();
+                  const postHdr = encodeHeader({ length: postBody.length, component: 0x0009, command: 0x0008, error: 0, msgType: 0x1000, msgId: 2 });
+                  const postPkt = Buffer.concat([postHdr, postBody]);
+                  const encPost = encryptRecord(0x17, [0x03, 0x03], postPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+                  socket.write(encPost);
+                  console.log(`[Blaze-Enc] Sent proactive PostAuth (${postPkt.length} bytes)`);
+                  
+                  // 3. UserSession notification (comp=0x7802, cmd=0x0002) - async
+                  const userEnc = new TdfEncoder();
+                  userEnc.writeStructStart('USER');
+                  userEnc.writeInteger('AID ', 2000000001);
+                  userEnc.writeInteger('ALOC', 1701729619);
+                  userEnc.writeInteger('ID  ', 1000000001);
+                  userEnc.writeString('NAME', 'Player');
+                  userEnc.writeStructEnd();
+                  const userBody = userEnc.build();
+                  const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, msgType: 0x2000, msgId: 0 });
+                  const userPkt = Buffer.concat([userHdr, userBody]);
+                  const encUser = encryptRecord(0x17, [0x03, 0x03], userPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
+                  socket.write(encUser);
+                  console.log(`[Blaze-Enc] Sent proactive UserSession (${userPkt.length} bytes)`);
                 }
               }
               result = readPacket(blazeBuf);
