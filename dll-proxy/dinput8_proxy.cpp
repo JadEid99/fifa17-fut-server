@@ -175,9 +175,9 @@ static void PatchSdkGateCheck() {
             Log("LOGIN TYPE0: bytes=%02X %02X %02X %02X", lcf[0],lcf[1],lcf[2],lcf[3]);
             DWORD op;
             if (VirtualProtect(lcf, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                lcf[0]=0x31; lcf[1]=0xC0; lcf[2]=0xC3;
+                lcf[0]=0xB0; lcf[1]=0x01; lcf[2]=0xC3;
                 VirtualProtect(lcf, 8, op, &op);
-                Log("PATCHED: Login type0 check -> return 0");
+                Log("PATCHED: Login type0 check -> return 1 (PROCEED to login!)");
             }
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
@@ -220,7 +220,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v84 (no PreAuth NOP, natural flow + vtable + SDK + auth) ===");
+    Log("=== FIFA 17 v85 (vtable return 1 FIX + SDK + auth) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
