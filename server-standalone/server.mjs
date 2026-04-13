@@ -1102,6 +1102,12 @@ function handleBlazePacket(pkt) {
   const { component: comp, command: cmd } = pkt.header;
   const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: true };
   
+  // Skip null/error packets — don't respond to acks or error notifications from the game
+  if (comp === 0x0000 && cmd === 0x0000) {
+    console.log(`[Blaze] Ignoring null packet (seq=${pkt.header.seqByte} flags=0x${(pkt.header.flagByte||0).toString(16)})`);
+    return null; // no response
+  }
+  
   if (comp === 0x0005 && cmd === 0x0001) {
     console.log(`[Blaze] GetServerInstance -> ${TARGET_HOST}:${MAIN_BLAZE_PORT}`);
     const enc = new TdfEncoder();
