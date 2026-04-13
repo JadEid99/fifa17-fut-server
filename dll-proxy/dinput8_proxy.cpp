@@ -172,7 +172,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v69 (patches + fast auth re-injection) ===");
+    Log("=== FIFA 17 v70 (patches + auth fail suppression + re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -194,18 +194,28 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
     // executing. We wait for the 15s timeout to complete, then re-inject a fake
     // request object so the game processes it with our patched function.
-    Log("AUTH: Waiting 2s for init, then polling for slot to clear...");
+    Log("AUTH: Polling for OnlineMgr + clearing auth fail flag...");
     Sleep(2000);
     
-    // Poll until the OnlineManager exists and the auth slot is cleared
-    // (meaning the original auth request completed)
-    for (int wait = 0; wait < 200; wait++) { // up to 20s
+    // Poll: clear +0x4ece (auth fail flag) as soon as it's set,
+    // AND wait for auth slot to clear (original request completed)
+    int slotCleared = 0;
+    for (int wait = 0; wait < 300; wait++) { // up to 30s
         __try {
             uint64_t* pOM = (uint64_t*)0x1448a3b20;
             if (*pOM != 0) {
-                uint64_t* pSlot = (uint64_t*)(*pOM + 0x4ea0);
-                if (*pSlot == 0 && g_caveExecuted == 0) {
-                    Log("AUTH: Slot cleared after %d ms, injecting now", 2000 + wait*100);
+                uint64_t om = *pOM;
+                // Keep clearing the auth fail flag so the game doesn't disconnect
+                uint8_t* pAuthFail = (uint8_t*)(om + 0x4ece);
+                if (*pAuthFail != 0) {
+                    *pAuthFail = 0;
+                    Log("AUTH: Cleared +0x4ece auth fail flag at %d ms", 2000 + wait*100);
+                }
+                // Check if auth slot is cleared (original request done)
+                uint64_t* pSlot = (uint64_t*)(om + 0x4ea0);
+                if (*pSlot == 0 && !slotCleared && wait > 10) {
+                    slotCleared = 1;
+                    Log("AUTH: Slot cleared at %d ms", 2000 + wait*100);
                     break;
                 }
             }
