@@ -1,22 +1,22 @@
-﻿=== LSX + connect() hook test (2026-04-13 10:18:51) ===
+﻿=== LSX + connect() hook test (2026-04-13 10:29:47) ===
 BLAZE RESULT: PREAUTH_REPLIED
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
 rd: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 8b0f14458ba4bc8d8f2e09d520f12931
+[SSL] RC4 decryption initialized with clientWriteKey: df8b3e59399c73634e0b1bca13f32c89
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c7c9bf65b445b8ca391681dccd0556b452ab93495f6fc6206170208977af19c75
-[SSL] Client Finished plaintext (16 bytes): 1400000c7c9bf65b445b8ca391681dcc
-[SSL] Client Finished MAC: d0556b452ab93495f6fc6206170208977af19c75
-[SSL] Client verify_data:   7c9bf65b445b8ca391681dcc
-[SSL] Expected verify_data:  7c9bf65b445b8ca391681dcc
+[SSL] Decrypted hex: 1400000ce28e1ea1ca406be99e35e568f8b63c775e094fe8da1a4c5a77126fa5ea41eaac
+[SSL] Client Finished plaintext (16 bytes): 1400000ce28e1ea1ca406be99e35e568
+[SSL] Client Finished MAC: f8b63c775e094fe8da1a4c5a77126fa5ea41eaac
+[SSL] Client verify_data:   e28e1ea1ca406be99e35e568
+[SSL] Expected verify_data:  e28e1ea1ca406be99e35e568
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: d0556b452ab93495f6fc6206170208977af19c75
-[SSL] Actual client MAC:   d0556b452ab93495f6fc6206170208977af19c75
+[SSL] Expected client MAC: f8b63c775e094fe8da1a4c5a77126fa5ea41eaac
+[SSL] Actual client MAC:   f8b63c775e094fe8da1a4c5a77126fa5ea41eaac
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1018 bytes
@@ -26,7 +26,7 @@ rd: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: ea82505ff4aa1e977db45ae5
+[SSL] Server verify_data: 32b369db171f26454b56556f
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -63,7 +63,7 @@ rd: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): a7 f3 5f c5 91 36 90 6d 2c 15 21 7d f6 60 b7 36 6b da 6b ac 48 bd
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 89 07 42 f8 a2 80 0c 70 71 12 2f b0 58 0c d5 ef de d8 f9 b2 fb f7
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -71,22 +71,24 @@ rd: type=0x14 ver=0x303 len=1
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[08:17:36.195] [LSX] === LSX Origin SDK Server ===
-[08:17:36.197] [LSX] Mode: STANDALONE (replacing STP)
-[08:17:36.197] [LSX] Listening on port 4218
-[08:17:36.197] [LSX] Waiting for game connection...
+[08:28:34.083] [LSX] === LSX Origin SDK Server ===
+[08:28:34.086] [LSX] Mode: STANDALONE (replacing STP)
+[08:28:34.086] [LSX] Listening on port 4218
+[08:28:34.087] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[10:17:39.259] === FIFA 17 SSL Bypass v64 (cert + Origin + auth + flag + IsLoggedIn x2) ===
-[10:17:39.259] PID: 85844
-[10:17:39.660] PATCHED: auth flag at 00000001473CE785
-[10:17:39.703] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
-[10:17:39.703] PATCHED: IsLoggedIntoEA -> always returns true
-[10:17:39.703] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
-[10:17:39.703] PATCHED: IsLoggedIntoNetwork -> always returns true
-[10:17:39.810] PATCHED: cert bypass at 000000014613244B
-[10:17:39.847] PATCHED: Origin SDK check at 00000001470A8430
-[10:17:39.893] PATCHED: auth call -> cave at 00000000001F0000
-[10:17:39.893] All patches applied after 625 ms
-[10:17:39.893] === Done. patches: 6 ===
+[10:28:36.911] === FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===
+[10:28:36.911] PID: 96636
+[10:28:37.076] PATCHED: cert bypass at 000000014613244B
+[10:28:37.226] PATCHED: auth call -> cave at 00000000001D0000
+[10:28:37.271] PATCHED: auth flag at 00000001473CE785
+[10:28:37.316] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
+[10:28:37.316] PATCHED: IsLoggedIntoEA -> always returns true
+[10:28:37.316] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
+[10:28:37.316] PATCHED: IsLoggedIntoNetwork -> always returns true
+[10:28:37.536] PATCHED: Origin SDK check at 00000001470A8430
+[10:28:37.536] All patches applied after 625 ms
+[10:28:37.536] === Done. patches: 6 ===
+[10:28:39.554] AUTH-RETRIGGER: DAT_1448a3b20 = 0x0
+[10:28:39.554] AUTH-RETRIGGER: OnlineManager is NULL!
 
