@@ -1,22 +1,22 @@
-﻿=== LSX + connect() hook test (2026-04-13 10:43:41) ===
+﻿=== LSX + connect() hook test (2026-04-13 10:48:36) ===
 BLAZE RESULT: SECOND_CONNECTION
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
 d: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: a87d82eb32f2f055af207f04e9ae0bb1
+[SSL] RC4 decryption initialized with clientWriteKey: 847e4fe754963bbe13df799dac483a5a
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000ca0f70f30c5952980c06d5627ee68901b3718849360ad52552cacc52ae90e989e
-[SSL] Client Finished plaintext (16 bytes): 1400000ca0f70f30c5952980c06d5627
-[SSL] Client Finished MAC: ee68901b3718849360ad52552cacc52ae90e989e
-[SSL] Client verify_data:   a0f70f30c5952980c06d5627
-[SSL] Expected verify_data:  a0f70f30c5952980c06d5627
+[SSL] Decrypted hex: 1400000cc1a5fa90a8e0751a72abfae6486d9b1090fb70cfaa001502b298610a8709e28f
+[SSL] Client Finished plaintext (16 bytes): 1400000cc1a5fa90a8e0751a72abfae6
+[SSL] Client Finished MAC: 486d9b1090fb70cfaa001502b298610a8709e28f
+[SSL] Client verify_data:   c1a5fa90a8e0751a72abfae6
+[SSL] Expected verify_data:  c1a5fa90a8e0751a72abfae6
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: ee68901b3718849360ad52552cacc52ae90e989e
-[SSL] Actual client MAC:   ee68901b3718849360ad52552cacc52ae90e989e
+[SSL] Expected client MAC: 486d9b1090fb70cfaa001502b298610a8709e28f
+[SSL] Actual client MAC:   486d9b1090fb70cfaa001502b298610a8709e28f
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1050 bytes
@@ -26,7 +26,7 @@ d: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 0b1160d52e37dc041d6e5632
+[SSL] Server verify_data: 3dcbf026a6a84331a095fab8
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -63,7 +63,7 @@ d: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): e6 54 c0 96 4b a6 5c 2f 3c 79 4f 9d bc 8a ae d8 25 fb 52 98 28 5c
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 7d e9 fa 91 eb 3b 8f 5d f5 89 00 1a 4a e0 48 c9 52 0f 46 13 b7 76
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -71,33 +71,35 @@ d: type=0x14 ver=0x303 len=1
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[08:42:17.583] [LSX] === LSX Origin SDK Server ===
-[08:42:17.586] [LSX] Mode: STANDALONE (replacing STP)
-[08:42:17.586] [LSX] Listening on port 4218
-[08:42:17.586] [LSX] Waiting for game connection...
+[08:47:12.465] [LSX] === LSX Origin SDK Server ===
+[08:47:12.467] [LSX] Mode: STANDALONE (replacing STP)
+[08:47:12.467] [LSX] Listening on port 4218
+[08:47:12.467] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[10:42:20.430] === FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===
-[10:42:20.430] PID: 85604
-[10:42:20.600] PATCHED: cert bypass at 000000014613244B
-[10:42:20.763] PATCHED: auth call -> cave at 00000000001D0000
-[10:42:20.804] PATCHED: auth flag at 00000001473CE785
-[10:42:20.848] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
-[10:42:20.848] PATCHED: IsLoggedIntoEA -> always returns true
-[10:42:20.848] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
-[10:42:20.848] PATCHED: IsLoggedIntoNetwork -> always returns true
-[10:42:21.064] PATCHED: Origin SDK check at 00000001470A8430
-[10:42:21.064] All patches applied after 625 ms
-[10:42:21.064] === Done. patches: 6 ===
-[10:42:36.086] AUTH-RETRIGGER: DAT_1448a3b20 = 0x45CD3E70
-[10:42:36.086] AUTH-RETRIGGER: [+0x4ea0] = 0x0 (auth request slot)
-[10:42:36.086] AUTH-RETRIGGER: [+0x4ea8] = 0x0 (auth request slot 2)
-[10:42:36.086] AUTH-RETRIGGER: [+0xb10] = 0x45CDA6E0 (Blaze connection?)
-[10:42:36.086] AUTH-RETRIGGER: [+0x7c]=0 [+0x98]=0 [+0x13ac]=0 [+0x13b4]=0 [+0x13b8]=2
-[10:42:36.086] AUTH-RETRIGGER: DAT_1448a3ac3 = 1 (online mode flag)
-[10:43:06.087] AUTH-DUMP2: DAT_1448a3b20 = 0x45CD3E70 (after 45s)
-[10:43:06.087] AUTH-DUMP2: DAT_1448a3ac3 = 1
-[10:43:06.087] AUTH-DUMP2: [+0x13b8]=2 [+0x13b4]=0x0 [+0x13a8]=0
-[10:43:06.087] AUTH-DUMP2: Forcing reconnect - clearing disconnect state
-[10:43:06.087] AUTH-DUMP2: State cleared. Game should attempt reconnect on next tick.
+[10:47:15.304] === FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===
+[10:47:15.304] PID: 96284
+[10:47:15.465] PATCHED: cert bypass at 000000014613244B
+[10:47:15.631] AUTH CAVE: marker at 00007FFD50525B9C, cave at 00000000001E0000, authcode at 00007FFD50525000
+[10:47:15.631] PATCHED: auth call -> cave at 00000000001E0000
+[10:47:15.673] PATCHED: auth flag at 00000001473CE785
+[10:47:15.718] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
+[10:47:15.718] PATCHED: IsLoggedIntoEA -> always returns true
+[10:47:15.718] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
+[10:47:15.718] PATCHED: IsLoggedIntoNetwork -> always returns true
+[10:47:15.940] PATCHED: Origin SDK check at 00000001470A8430
+[10:47:15.952] All patches applied after 641 ms
+[10:47:15.952] === Done. patches: 6 ===
+[10:47:30.962] AUTH-RETRIGGER: DAT_1448a3b20 = 0x45D63E70
+[10:47:30.962] AUTH-RETRIGGER: [+0x4ea0] = 0x0 (auth request slot)
+[10:47:30.962] AUTH-RETRIGGER: [+0x4ea8] = 0x0 (auth request slot 2)
+[10:47:30.962] AUTH-RETRIGGER: [+0xb10] = 0x45D6A6E0 (Blaze connection?)
+[10:47:30.962] AUTH-RETRIGGER: [+0x7c]=0 [+0x98]=0 [+0x13ac]=0 [+0x13b4]=0 [+0x13b8]=2
+[10:47:30.962] AUTH-RETRIGGER: DAT_1448a3ac3 = 1 (online mode flag)
+[10:47:30.962] AUTH-RETRIGGER: g_caveExecuted = 0 (was auth code cave called?)
+[10:48:00.963] AUTH-DUMP2: DAT_1448a3b20 = 0x45D63E70 (after 45s)
+[10:48:00.963] AUTH-DUMP2: DAT_1448a3ac3 = 1
+[10:48:00.963] AUTH-DUMP2: [+0x13b8]=2 [+0x13b4]=0x0 [+0x13a8]=0
+[10:48:00.963] AUTH-DUMP2: Forcing reconnect - clearing disconnect state
+[10:48:00.963] AUTH-DUMP2: State cleared. Game should attempt reconnect on next tick.
 
