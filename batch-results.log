@@ -1,22 +1,22 @@
-﻿=== LSX + connect() hook test (2026-04-13 10:38:46) ===
+﻿=== LSX + connect() hook test (2026-04-13 10:43:41) ===
 BLAZE RESULT: SECOND_CONNECTION
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
 d: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 1e59bc5eba26d635e2781f1b5adf756b
+[SSL] RC4 decryption initialized with clientWriteKey: a87d82eb32f2f055af207f04e9ae0bb1
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000cc37d33bd734c15cbf8f6cc9c6074806908c5595005b7204a4bc94012967c80b9
-[SSL] Client Finished plaintext (16 bytes): 1400000cc37d33bd734c15cbf8f6cc9c
-[SSL] Client Finished MAC: 6074806908c5595005b7204a4bc94012967c80b9
-[SSL] Client verify_data:   c37d33bd734c15cbf8f6cc9c
-[SSL] Expected verify_data:  c37d33bd734c15cbf8f6cc9c
+[SSL] Decrypted hex: 1400000ca0f70f30c5952980c06d5627ee68901b3718849360ad52552cacc52ae90e989e
+[SSL] Client Finished plaintext (16 bytes): 1400000ca0f70f30c5952980c06d5627
+[SSL] Client Finished MAC: ee68901b3718849360ad52552cacc52ae90e989e
+[SSL] Client verify_data:   a0f70f30c5952980c06d5627
+[SSL] Expected verify_data:  a0f70f30c5952980c06d5627
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 6074806908c5595005b7204a4bc94012967c80b9
-[SSL] Actual client MAC:   6074806908c5595005b7204a4bc94012967c80b9
+[SSL] Expected client MAC: ee68901b3718849360ad52552cacc52ae90e989e
+[SSL] Actual client MAC:   ee68901b3718849360ad52552cacc52ae90e989e
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1050 bytes
@@ -26,7 +26,7 @@ d: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 3fd97b90a97fbc4747f7e081
+[SSL] Server verify_data: 0b1160d52e37dc041d6e5632
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -63,7 +63,7 @@ d: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 06 2b 39 15 76 4c cc 5c fc 84 41 10 71 df ce b7 60 63 88 9b 5f 63
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): e6 54 c0 96 4b a6 5c 2f 3c 79 4f 9d bc 8a ae d8 25 fb 52 98 28 5c
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -71,32 +71,33 @@ d: type=0x14 ver=0x303 len=1
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[08:37:22.612] [LSX] === LSX Origin SDK Server ===
-[08:37:22.615] [LSX] Mode: STANDALONE (replacing STP)
-[08:37:22.615] [LSX] Listening on port 4218
-[08:37:22.615] [LSX] Waiting for game connection...
+[08:42:17.583] [LSX] === LSX Origin SDK Server ===
+[08:42:17.586] [LSX] Mode: STANDALONE (replacing STP)
+[08:42:17.586] [LSX] Listening on port 4218
+[08:42:17.586] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[10:37:25.420] === FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===
-[10:37:25.420] PID: 103032
-[10:37:25.578] PATCHED: cert bypass at 000000014613244B
-[10:37:25.728] PATCHED: auth call -> cave at 00000000001D0000
-[10:37:25.768] PATCHED: auth flag at 00000001473CE785
-[10:37:25.811] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
-[10:37:25.811] PATCHED: IsLoggedIntoEA -> always returns true
-[10:37:25.811] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
-[10:37:25.811] PATCHED: IsLoggedIntoNetwork -> always returns true
-[10:37:26.043] PATCHED: Origin SDK check at 00000001470A8430
-[10:37:26.043] All patches applied after 625 ms
-[10:37:26.043] === Done. patches: 6 ===
-[10:37:41.065] AUTH-RETRIGGER: DAT_1448a3b20 = 0x45C83E70
-[10:37:41.065] AUTH-RETRIGGER: [+0x4ea0] = 0x0 (auth request slot)
-[10:37:41.065] AUTH-RETRIGGER: [+0x4ea8] = 0x0 (auth request slot 2)
-[10:37:41.065] AUTH-RETRIGGER: [+0xb10] = 0x45C8A6E0 (Blaze connection?)
-[10:37:41.065] AUTH-RETRIGGER: [+0x7c]=0 [+0x98]=0 [+0x13ac]=0 [+0x13b4]=0 [+0x13b8]=2
-[10:37:41.065] AUTH-RETRIGGER: DAT_1448a3ac3 = 1 (online mode flag)
-[10:38:11.066] AUTH-DUMP2: DAT_1448a3b20 = 0x45C83E70 (after 45s)
-[10:38:11.066] AUTH-DUMP2: DAT_1448a3ac3 = 1
-[10:38:11.066] AUTH-DUMP2: [+0x4ea0] = 0x0
-[10:38:11.066] AUTH-DUMP2: [+0x4ea8] = 0x0
+[10:42:20.430] === FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===
+[10:42:20.430] PID: 85604
+[10:42:20.600] PATCHED: cert bypass at 000000014613244B
+[10:42:20.763] PATCHED: auth call -> cave at 00000000001D0000
+[10:42:20.804] PATCHED: auth flag at 00000001473CE785
+[10:42:20.848] Found IsLoggedIntoEA at 00000001472D43C0 (vtable+0xE0)
+[10:42:20.848] PATCHED: IsLoggedIntoEA -> always returns true
+[10:42:20.848] Found IsLoggedIntoNetwork at 00000001472D4400 (vtable+0xD8)
+[10:42:20.848] PATCHED: IsLoggedIntoNetwork -> always returns true
+[10:42:21.064] PATCHED: Origin SDK check at 00000001470A8430
+[10:42:21.064] All patches applied after 625 ms
+[10:42:21.064] === Done. patches: 6 ===
+[10:42:36.086] AUTH-RETRIGGER: DAT_1448a3b20 = 0x45CD3E70
+[10:42:36.086] AUTH-RETRIGGER: [+0x4ea0] = 0x0 (auth request slot)
+[10:42:36.086] AUTH-RETRIGGER: [+0x4ea8] = 0x0 (auth request slot 2)
+[10:42:36.086] AUTH-RETRIGGER: [+0xb10] = 0x45CDA6E0 (Blaze connection?)
+[10:42:36.086] AUTH-RETRIGGER: [+0x7c]=0 [+0x98]=0 [+0x13ac]=0 [+0x13b4]=0 [+0x13b8]=2
+[10:42:36.086] AUTH-RETRIGGER: DAT_1448a3ac3 = 1 (online mode flag)
+[10:43:06.087] AUTH-DUMP2: DAT_1448a3b20 = 0x45CD3E70 (after 45s)
+[10:43:06.087] AUTH-DUMP2: DAT_1448a3ac3 = 1
+[10:43:06.087] AUTH-DUMP2: [+0x13b8]=2 [+0x13b4]=0x0 [+0x13a8]=0
+[10:43:06.087] AUTH-DUMP2: Forcing reconnect - clearing disconnect state
+[10:43:06.087] AUTH-DUMP2: State cleared. Game should attempt reconnect on next tick.
 
