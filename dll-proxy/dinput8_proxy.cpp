@@ -172,10 +172,11 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v71 (real vtable capture + auth re-injection) ===");
+    Log("=== FIFA 17 v72 (early vtable capture + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
+    uint64_t realVtable = 0;
     for (int i=0; i<3000; i++) {
         Sleep(100);
         __try {
@@ -184,6 +185,17 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
+            // Try to capture the real vtable from the auth request object
+            if (realVtable == 0) {
+                uint64_t* pOM = (uint64_t*)0x1448a3b20;
+                if (*pOM != 0) {
+                    uint64_t* pSlot = (uint64_t*)(*pOM + 0x4ea0);
+                    if (*pSlot != 0) {
+                        realVtable = *(uint64_t*)(*pSlot);
+                        Log("AUTH: Captured vtable 0x%llX from slot 0x%llX at %lu ms", realVtable, *pSlot, GetTickCount()-st);
+                    }
+                }
+            }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
@@ -194,33 +206,24 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
     // executing. We wait for the 15s timeout to complete, then re-inject a fake
     // request object so the game processes it with our patched function.
-    Log("AUTH: Polling for OnlineMgr + capturing real vtable...");
-    Sleep(2000);
+    Log("AUTH: Polling for slot to clear (vtable=%s)...", realVtable ? "captured" : "NOT captured");
+    Sleep(1000);
     
-    uint64_t realVtable = 0;
-    int slotCleared = 0;
     for (int wait = 0; wait < 300; wait++) {
         __try {
             uint64_t* pOM = (uint64_t*)0x1448a3b20;
             if (*pOM != 0) {
                 uint64_t om = *pOM;
-                // Clear auth fail flag
                 uint8_t* pAuthFail = (uint8_t*)(om + 0x4ece);
-                if (*pAuthFail != 0) {
-                    *pAuthFail = 0;
-                    Log("AUTH: Cleared +0x4ece at %d ms", 2000 + wait*100);
-                }
-                // Capture the real vtable from the original request object
+                if (*pAuthFail != 0) { *pAuthFail = 0; Log("AUTH: Cleared +0x4ece at %d ms", 1000+wait*100); }
+                // Still try to capture vtable if we missed it
                 uint64_t* pSlot = (uint64_t*)(om + 0x4ea0);
                 if (*pSlot != 0 && realVtable == 0) {
-                    uint64_t reqObj = *pSlot;
-                    realVtable = *(uint64_t*)reqObj;
-                    Log("AUTH: Captured real vtable 0x%llX from request obj 0x%llX", realVtable, reqObj);
+                    realVtable = *(uint64_t*)(*pSlot);
+                    Log("AUTH: Late vtable capture 0x%llX", realVtable);
                 }
-                // Check if slot cleared
-                if (*pSlot == 0 && !slotCleared && wait > 10) {
-                    slotCleared = 1;
-                    Log("AUTH: Slot cleared at %d ms", 2000 + wait*100);
+                if (*pSlot == 0 && g_caveExecuted == 0) {
+                    Log("AUTH: Slot cleared at %d ms", 1000+wait*100);
                     break;
                 }
             }
