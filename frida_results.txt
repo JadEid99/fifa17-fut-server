@@ -12,13 +12,17 @@
 Attaching...
 === FIFA 17 Force Login v2 === Base=0x140000000
 === Ready. Trigger connection. ===
-[Local::PID::103828 ]-> [send_RPC] cm=0x45b17f38 cb=0x45b17ff0 fn=0x146e19a00
-[PreAuth] Complete! connMgr=0x45b17ff0 result=0x40050000
-[BlazeHub] handler p1=0x45b17330 result=0x40050000
-[BlazeHub] +0x750 LoginSM=0x45b17ff0
-[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
-[BlazeHub] Error: access violation accessing 0x10
-[BlazeHub] handler p1=0x45b17330 result=0x802c0000
-[BlazeHub] +0x750 LoginSM=0x45b17ff0
-[LoginSM] +0x08=0x45b17330 +0x10=0x143883018 +0x20=0x3130322d61666966 +0x28(active)=0x63702d37
-[BlazeHub] Error: access violation accessing 0x10
+[Local::PID::9288 ]-> [send_RPC] cm=0x45be7f38 cb=0x45be7ff0 fn=0x146e19a00
+[PreAuth] Complete! connMgr=0x45be7ff0 result=0x40050000
+[BlazeHub] handler p1=0x45be7330 result=0x40050000
+[BlazeHub] +0x750 ConnMgr=0x45be7ff0
+[ConnMgr] LoginSM at 0x45be9da0
+[LoginSM] vtable=0x1438a07c8 active=0x143889e60 type1=0x45be7330 type2=0x0
+[LoginSM] ActiveType vtable=0x146dd7ee0 checkFn=0x48245c8948ffffff
+[BlazeHub] Error: access violation accessing 0xffffffffffffffff
+[BlazeHub] handler p1=0x45be7330 result=0x802c0000
+[BlazeHub] +0x750 ConnMgr=0x45be7ff0
+[ConnMgr] LoginSM at 0x45be9da0
+[LoginSM] vtable=0x1438a07c8 active=0x143889e60 type1=0x45be7330 type2=0x0
+[LoginSM] ActiveType vtable=0x146dd7ee0 checkFn=0x48245c8948ffffff
+[BlazeHub] Error: access violation accessing 0xffffffffffffffff
