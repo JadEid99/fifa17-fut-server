@@ -5,7 +5,7 @@
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== FIFA 17 v12 === Base=' + base);
+console.log('=== FIFA 17 v13 === Base=' + base);
 
 // Fix type2=NULL in the response handler
 Interceptor.attach(addr(0x6e1cf10), {
@@ -39,15 +39,17 @@ Interceptor.attach(addr(0x6e19a00), {
 Interceptor.attach(addr(0x6e18170), {
     onEnter: function(a) { console.log('[send_RPC] >>> fn=' + a[3]); }
 });
-// Block BOTH disconnect functions
+// Block ALL close/disconnect/cleanup functions
 Interceptor.replace(addr(0x6db3e40), new NativeCallback(function(p1) {
     console.log('[DISCONNECT] BLOCKED');
 }, 'void', ['pointer']));
-
-// Also block the connection cleanup function
 Interceptor.replace(addr(0x6db8e40), new NativeCallback(function(p1, p2) {
     console.log('[CONN_CLEANUP] BLOCKED');
 }, 'void', ['pointer', 'pointer']));
+// Block ProtoSSL close (sends close_notify)
+Interceptor.replace(addr(0x212e770), new NativeCallback(function(p1) {
+    console.log('[PROTOSSL_CLOSE] BLOCKED');
+}, 'void', ['pointer']));
 Interceptor.attach(addr(0x6e1e460), {
     onEnter: function(a) { console.log('[post_PreAuth] >>> CALLED!'); }
 });
