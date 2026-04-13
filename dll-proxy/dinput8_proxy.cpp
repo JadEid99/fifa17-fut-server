@@ -426,7 +426,19 @@ static DWORD WINAPI PatchThread(LPVOID) {
             // The Q key press from the batch script will trigger the reconnect
             // on the game's main thread, which is the correct way
             uint32_t* pSt = (uint32_t*)(om + 0x13b8);
-            Log("AUTH: state=%d. Auth ready. Waiting for Q press to trigger reconnect.", *pSt);
+            Log("AUTH: state=%d. Auth ready.", *pSt);
+            
+            // Force the +0x53f flag on the Blaze hub
+            // This flag gates the post-PreAuth callback chain
+            uint64_t connMgr = *(uint64_t*)(om + 0xb10);
+            if (connMgr != 0) {
+                uint64_t bHub = *(uint64_t*)(connMgr + 0xf8);
+                if (bHub != 0) {
+                    uint8_t* pFlag = (uint8_t*)(bHub + 0x53f);
+                    Log("AUTH: BlazeHub(%p)+0x53f = %d", (void*)bHub, *pFlag);
+                    if (*pFlag == 0) { *pFlag = 1; Log("AUTH: Forced +0x53f = 1"); }
+                } else { Log("AUTH: BlazeHub is NULL"); }
+            } else { Log("AUTH: ConnMgr is NULL"); }
         } else {
             Log("AUTH: Cave NOT executed after 5s");
             Log("AUTH: state=%d", *(uint32_t*)(om + 0x13b8));
