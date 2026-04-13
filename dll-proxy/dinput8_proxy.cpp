@@ -104,66 +104,75 @@ static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
     return g_realConnect(s, name, namelen);
 }
 
-// IAT hook: find connect() in the import table and replace it
+// Inline hook: patch the first bytes of the real connect() function
+// to jump to our HookedConnect, and create a trampoline with the
+// original bytes + jump back for calling the real function.
 static void HookWinsockConnect() {
-    HMODULE hModule = GetModuleHandleA(NULL); // main exe
-    if (!hModule) { Log("HOOK: GetModuleHandle failed"); return; }
-    
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hModule;
-    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((BYTE*)hModule + dosHeader->e_lfanew);
-    
-    DWORD importDirRVA = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
-    if (!importDirRVA) { Log("HOOK: No import directory"); return; }
-    
-    PIMAGE_IMPORT_DESCRIPTOR importDesc = (PIMAGE_IMPORT_DESCRIPTOR)((BYTE*)hModule + importDirRVA);
-    
-    for (; importDesc->Name; importDesc++) {
-        const char* dllName = (const char*)((BYTE*)hModule + importDesc->Name);
-        
-        // Look for ws2_32.dll or WSOCK32.dll
-        if (_stricmp(dllName, "ws2_32.dll") != 0 && _stricmp(dllName, "WSOCK32.dll") != 0)
-            continue;
-        
-        Log("HOOK: Found %s in IAT", dllName);
-        
-        PIMAGE_THUNK_DATA origThunk = (PIMAGE_THUNK_DATA)((BYTE*)hModule + importDesc->OriginalFirstThunk);
-        PIMAGE_THUNK_DATA thunk = (PIMAGE_THUNK_DATA)((BYTE*)hModule + importDesc->FirstThunk);
-        
-        for (; origThunk->u1.AddressOfData; origThunk++, thunk++) {
-            if (origThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG64) continue; // skip ordinal imports
-            
-            PIMAGE_IMPORT_BY_NAME importByName = (PIMAGE_IMPORT_BY_NAME)((BYTE*)hModule + origThunk->u1.AddressOfData);
-            
-            if (strcmp(importByName->Name, "connect") == 0) {
-                Log("HOOK: Found connect() at IAT entry %p (current value: %p)", &thunk->u1.Function, (void*)thunk->u1.Function);
-                
-                g_realConnect = (connect_t)thunk->u1.Function;
-                
-                DWORD oldProtect;
-                if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
-                    thunk->u1.Function = (ULONGLONG)HookedConnect;
-                    VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
-                    Log("HOOK: connect() hooked! 4216 -> 4218 redirect active");
-                } else {
-                    Log("HOOK: VirtualProtect failed: %lu", GetLastError());
-                }
-                return;
-            }
-        }
-    }
-    
-    // If not found in IAT, try hooking via GetProcAddress detour
-    Log("HOOK: connect() not found in IAT, trying direct hook");
     HMODULE ws2 = GetModuleHandleA("ws2_32.dll");
-    if (ws2) {
-        g_realConnect = (connect_t)GetProcAddress(ws2, "connect");
-        if (g_realConnect) {
-            Log("HOOK: Found connect() at %p via GetProcAddress", g_realConnect);
-            // For direct hook, we'd need a trampoline. For now, just log.
-            // The IAT hook should work for most cases.
-            Log("HOOK: WARNING - IAT hook failed, direct hook not implemented yet");
-        }
+    if (!ws2) {
+        // ws2_32 might not be loaded yet, load it
+        ws2 = LoadLibraryA("ws2_32.dll");
     }
+    if (!ws2) { Log("HOOK: ws2_32.dll not found"); return; }
+    
+    BYTE* pConnect = (BYTE*)GetProcAddress(ws2, "connect");
+    if (!pConnect) { Log("HOOK: connect() not found in ws2_32.dll"); return; }
+    
+    Log("HOOK: connect() at %p", pConnect);
+    Log("HOOK: First 16 bytes: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+        pConnect[0], pConnect[1], pConnect[2], pConnect[3], pConnect[4], pConnect[5], pConnect[6], pConnect[7],
+        pConnect[8], pConnect[9], pConnect[10], pConnect[11], pConnect[12], pConnect[13], pConnect[14], pConnect[15]);
+    
+    // We'll overwrite the first 14 bytes with:
+    //   MOV RAX, <address of HookedConnect>  ; 48 B8 <8 bytes>
+    //   JMP RAX                              ; FF E0
+    //   NOP NOP                              ; 90 90
+    // Total: 12 bytes (MOV RAX imm64 = 10, JMP RAX = 2)
+    
+    const int HOOK_SIZE = 14; // overwrite 14 bytes to be safe (align to instruction boundary)
+    
+    // Step 1: Create trampoline - copy original bytes + jump back
+    // Allocate executable memory for the trampoline
+    BYTE* trampoline = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!trampoline) { Log("HOOK: VirtualAlloc for trampoline failed"); return; }
+    
+    // Copy original bytes
+    DWORD oldProtect;
+    if (!VirtualProtect(pConnect, HOOK_SIZE, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        Log("HOOK: VirtualProtect failed on connect(): %lu", GetLastError());
+        return;
+    }
+    
+    memcpy(trampoline, pConnect, HOOK_SIZE);
+    
+    // Add jump back to original function + HOOK_SIZE
+    // MOV RAX, <address>; JMP RAX
+    uint64_t jumpBackAddr = (uint64_t)(pConnect + HOOK_SIZE);
+    trampoline[HOOK_SIZE] = 0x48;
+    trampoline[HOOK_SIZE + 1] = 0xB8;
+    memcpy(trampoline + HOOK_SIZE + 2, &jumpBackAddr, 8);
+    trampoline[HOOK_SIZE + 10] = 0xFF;
+    trampoline[HOOK_SIZE + 11] = 0xE0;
+    
+    // Store trampoline pointer — g_realConnect points to the trampoline
+    // so HookedConnect can call the original function
+    g_realConnect = (connect_t)trampoline;
+    // Step 2: Overwrite connect() with jump to HookedConnect
+    uint64_t hookAddr = (uint64_t)HookedConnect;
+    pConnect[0] = 0x48;
+    pConnect[1] = 0xB8;
+    memcpy(pConnect + 2, &hookAddr, 8);
+    pConnect[10] = 0xFF;
+    pConnect[11] = 0xE0;
+    // NOP remaining bytes
+    for (int i = 12; i < HOOK_SIZE; i++) pConnect[i] = 0x90;
+    
+    VirtualProtect(pConnect, HOOK_SIZE, oldProtect, &oldProtect);
+    
+    Log("HOOK: Inline hook installed on connect() at %p", pConnect);
+    Log("HOOK: Trampoline at %p (original %d bytes + jump back)", trampoline, HOOK_SIZE);
+    Log("HOOK: HookedConnect at %p", HookedConnect);
+    Log("HOOK: 4216 -> 4218 redirect ACTIVE");
 }
 
 // ============================================================
@@ -341,7 +350,7 @@ static void PatchAuthFlag() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v58 (cert + Origin + auth + flag + connect hook) ===");
+    Log("=== FIFA 17 SSL Bypass v59 (cert + Origin + auth + flag + inline connect hook) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     // Hook connect() FIRST (before game tries to connect to STP)
