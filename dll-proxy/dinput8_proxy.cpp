@@ -236,7 +236,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v82 (vtable patch + PreAuth NOP + fake SDK + gate + auth) ===");
+    Log("=== FIFA 17 v83 (auth ready before Q press + vtable + NOP + SDK) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -428,25 +428,11 @@ static DWORD WINAPI PatchThread(LPVOID) {
             Log("AUTH: >>> CAVE EXECUTED! Auth code provided! <<<");
             Log("AUTH: req[+0xd8]=0x%llX req[+0xe8]=%d", *(uint64_t*)(fr+0xd8), *(uint8_t*)(fr+0xe8));
             
-            // Clear disconnect state AND trigger reconnect by calling FUN_146f39b20(0,0)
-            // This is the same function the Q key triggers
+            // Don't call FUN_146f39b20 from DLL thread - it doesn't work
+            // The Q key press from the batch script will trigger the reconnect
+            // on the game's main thread, which is the correct way
             uint32_t* pSt = (uint32_t*)(om + 0x13b8);
-            Log("AUTH: state=%d, triggering reconnect...", *pSt);
-            *(uint8_t*)(om + 0x13a8) = 0;
-            *(uint16_t*)(om + 0x13b4) = 0;
-            *pSt = 0;
-            
-            // Call FUN_146f39b20(0, 0) to trigger a fresh connection attempt
-            // This is the "go online" function - same as pressing Q
-            typedef void (__fastcall *GoOnline_t)(uint32_t, uint8_t);
-            GoOnline_t goOnline = (GoOnline_t)0x146f39b20;
-            __try {
-                Log("AUTH: Calling FUN_146f39b20(0,0) to trigger reconnect...");
-                goOnline(0, 0);
-                Log("AUTH: FUN_146f39b20 returned! Reconnect initiated.");
-            } __except(EXCEPTION_EXECUTE_HANDLER) {
-                Log("AUTH: Exception calling FUN_146f39b20");
-            }
+            Log("AUTH: state=%d. Auth ready. Waiting for Q press to trigger reconnect.", *pSt);
         } else {
             Log("AUTH: Cave NOT executed after 5s");
             Log("AUTH: state=%d", *(uint32_t*)(om + 0x13b8));
