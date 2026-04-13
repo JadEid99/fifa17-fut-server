@@ -1,32 +1,28 @@
-# FIFA 17 Private Server - STATUS UPDATE
+# FIFA 17 Private Server - FINAL STATUS
 
-## DEFINITIVE CONCLUSION
-PreAuth → close_notify is HARDCODED behavior. The game ALWAYS closes after PreAuth.
-Login happens on a SEPARATE connection that is never initiated because Origin auth fails.
+## CORE PROBLEM (CONFIRMED)
+The game NEVER reaches the Login code path. x64dbg confirmed that address
+146f19a11 (OriginRequestAuthCodeSync call) is NEVER executed during a
+connection attempt. All our auth patches are irrelevant because the game
+decides not to attempt login at a higher level in its state machine.
 
-Proven by:
-- Real BF4 EA server response → same close_notify
-- Proactive SilentLogin sent after PreAuth → game ignores it, still closes
-- x64dbg: Origin auth function (146f19a11) NEVER called
-- x64dbg: Only ONE winsock connect() call (to redirector 42230)
-- Game makes exactly: redirector HTTP → main server PreAuth → close. That's it.
+The game does: PreAuth → close_notify → done. This is hardcoded behavior.
+The Login flow is triggered by something ELSE that we haven't identified.
 
-## THE REAL BLOCKER
-The game needs the Origin SDK to provide an auth token. The STP emulator
-handles Denuvo licensing but NOT Origin online auth. Without a real auth token,
-the game never initiates the Login connection.
+## WHAT WE NEED TO FIND
+The game's online state machine that decides "attempt login now."
+This is likely triggered by:
+1. A successful Origin SDK session (which the STP emulator doesn't provide)
+2. A specific event from the STP emulator on port 4216
+3. A UI-level trigger that we're not activating
 
-## SOLUTION OPTIONS
-1. Write a replacement Origin SDK DLL (stp-origin_emu.dll replacement)
-   that provides fake auth tokens
-2. Patch the game's online state machine to skip to "logged in" state
-3. Find and hook the specific function that initiates the Login connection
-   and call it directly from our DLL
+## WHAT WORKS
+- All TLS/Blaze infrastructure (PreAuth, TDF encoding, etc.)
+- DLL patches (cert, Origin SDK check, auth code provider, auth flag)
+- The game parses our PreAuth response correctly
 
-## FOR NEXT SESSION
-- Option 2 is most promising: find the game's "online state" variable in Ghidra
-  and patch it to "logged in" after PreAuth
-- Search for strings like "LOGGED_IN" or "CONNECTED" or state values
-- The game's FE (front-end) code at addresses 146f7xxxx manages online state
-- FUN_146f7c7e0 at 146f7b279 calls the auth token request - trace its caller
-  to find the state machine
+## NEXT APPROACH
+1. Use the origin-sdk Rust crate to understand the LSX protocol on port 4216
+2. Build a replacement LSX server that provides proper Origin session + auth tokens
+3. OR: find the game's online state machine in Ghidra and force it to "login" state
+4. OR: find a more complete Origin emulator (anadius) that works with FIFA 17
