@@ -189,7 +189,6 @@ static void PatchSdkGateCheck() {
             }
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("LOGIN TYPE0: exception"); }
-    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("PREAUTH: exception"); }
     
     g_sdkGateDone = 1; g_patched++;
 }
