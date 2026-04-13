@@ -1,22 +1,22 @@
-﻿=== LSX + connect() hook test (2026-04-13 13:22:35) ===
+﻿=== LSX + connect() hook test (2026-04-13 13:27:59) ===
 BLAZE RESULT: SECOND_CONNECTION
 LSX RESULT: NO_ACTIVITY
 
 --- BLAZE SERVER LOG ---
 d: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 5ec1703358cf3d009c83c27304ff0db1
+[SSL] RC4 decryption initialized with clientWriteKey: cc021b8236aa161c14072b566be235de
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c5545aabaa03950b0b75eba9abe03ebba5fb416a8f4f012d8d88e9182e61d0444
-[SSL] Client Finished plaintext (16 bytes): 1400000c5545aabaa03950b0b75eba9a
-[SSL] Client Finished MAC: be03ebba5fb416a8f4f012d8d88e9182e61d0444
-[SSL] Client verify_data:   5545aabaa03950b0b75eba9a
-[SSL] Expected verify_data:  5545aabaa03950b0b75eba9a
+[SSL] Decrypted hex: 1400000c36a0a6bbe38a99a35236746a1a2ce40eb9f2e4f98cbea2d06159389ec87c9514
+[SSL] Client Finished plaintext (16 bytes): 1400000c36a0a6bbe38a99a35236746a
+[SSL] Client Finished MAC: 1a2ce40eb9f2e4f98cbea2d06159389ec87c9514
+[SSL] Client verify_data:   36a0a6bbe38a99a35236746a
+[SSL] Expected verify_data:  36a0a6bbe38a99a35236746a
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: be03ebba5fb416a8f4f012d8d88e9182e61d0444
-[SSL] Actual client MAC:   be03ebba5fb416a8f4f012d8d88e9182e61d0444
+[SSL] Expected client MAC: 1a2ce40eb9f2e4f98cbea2d06159389ec87c9514
+[SSL] Actual client MAC:   1a2ce40eb9f2e4f98cbea2d06159389ec87c9514
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1050 bytes
@@ -26,7 +26,7 @@ d: type=0x14 ver=0x303 len=1
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 8e6e963bcc98edcb3e72db75
+[SSL] Server verify_data: ab383e6783e7f221efd270ec
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 244 bytes on socket (total pending: 244)
@@ -63,7 +63,7 @@ d: type=0x14 ver=0x303 len=1
 [Blaze-Enc] Sent proactive SilentLogin response (210 bytes)
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 16 dd e1 89 d4 64 d8 a4 90 70 fc 1b 9f e4 ec a1 f5 5f 01 59 f2 04
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): ba 7e e6 3a 62 48 05 77 48 85 fe 66 82 3b 4e ea 78 1b 57 73 58 85
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
@@ -71,31 +71,32 @@ d: type=0x14 ver=0x303 len=1
 [SSL-CONN] Socket closed
 
 --- LSX SERVER LOG ---
-[11:21:01.953] [LSX] === LSX Origin SDK Server ===
-[11:21:01.956] [LSX] Mode: STANDALONE (replacing STP)
-[11:21:01.956] [LSX] Listening on port 4218
-[11:21:01.956] [LSX] Waiting for game connection...
+[11:26:25.395] [LSX] === LSX Origin SDK Server ===
+[11:26:25.398] [LSX] Mode: STANDALONE (replacing STP)
+[11:26:25.398] [LSX] Listening on port 4218
+[11:26:25.398] [LSX] Waiting for game connection...
 
 --- DLL LOG ---
-[13:21:04.792] === FIFA 17 v70 (patches + auth fail suppression + re-injection) ===
-[13:21:04.792] PID: 82168
-[13:21:04.950] PATCHED: cert bypass at 000000014613244B
-[13:21:05.113] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[13:21:05.113] PATCHED: FUN_1470db3c0 body -> fake auth code
-[13:21:05.155] PATCHED: auth flag at 00000001473CE785
-[13:21:05.200] PATCHED: IsLoggedIntoEA -> true
-[13:21:05.200] PATCHED: IsLoggedIntoNetwork -> true
-[13:21:05.422] PATCHED: Origin SDK check at 00000001470A8430
-[13:21:05.422] All patches in 625 ms
-[13:21:05.422] patches: 6 (cert=1 orig=1 auth=1 flag=1 login=2)
-[13:21:05.422] AUTH: Polling for OnlineMgr + clearing auth fail flag...
-[13:21:11.156] AUTH: Slot cleared at 5700 ms
-[13:21:11.156] AUTH: OnlineMgr=0x45D63E70
-[13:21:11.156] AUTH: slot=0x0 cave=0
-[13:21:11.156] AUTH: Injected fake request 0000000064760000 into slot
-[13:21:16.156] AUTH: cave=1 slot=0x0
-[13:21:16.156] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[13:21:16.156] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[13:21:16.156] AUTH: state=2, clearing...
-[13:21:16.156] AUTH: State cleared. Reconnect should happen now.
+[13:26:28.226] === FIFA 17 v71 (real vtable capture + auth re-injection) ===
+[13:26:28.226] PID: 109732
+[13:26:28.377] PATCHED: cert bypass at 000000014613244B
+[13:26:28.535] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[13:26:28.535] PATCHED: FUN_1470db3c0 body -> fake auth code
+[13:26:28.576] PATCHED: auth flag at 00000001473CE785
+[13:26:28.621] PATCHED: IsLoggedIntoEA -> true
+[13:26:28.621] PATCHED: IsLoggedIntoNetwork -> true
+[13:26:28.849] PATCHED: Origin SDK check at 00000001470A8430
+[13:26:28.849] All patches in 625 ms
+[13:26:28.849] patches: 6 (cert=1 orig=1 auth=1 flag=1 login=2)
+[13:26:28.849] AUTH: Polling for OnlineMgr + capturing real vtable...
+[13:26:34.585] AUTH: Slot cleared at 5700 ms
+[13:26:34.585] AUTH: OnlineMgr=0x45C73E70
+[13:26:34.585] AUTH: slot=0x0 cave=0
+[13:26:34.585] AUTH: Using fake vtable (real not captured)
+[13:26:34.585] AUTH: Injected fake request 0000000064760000 into slot
+[13:26:39.586] AUTH: cave=1 slot=0x0
+[13:26:39.586] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[13:26:39.586] AUTH: req[+0xd8]=0x9999D38 req[+0xe8]=1
+[13:26:39.586] AUTH: state=2, clearing...
+[13:26:39.586] AUTH: State cleared. Reconnect should happen now.
 
