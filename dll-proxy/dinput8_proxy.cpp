@@ -172,7 +172,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v70 (patches + auth fail suppression + re-injection) ===");
+    Log("=== FIFA 17 v71 (real vtable capture + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -194,25 +194,30 @@ static DWORD WINAPI PatchThread(LPVOID) {
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
     // executing. We wait for the 15s timeout to complete, then re-inject a fake
     // request object so the game processes it with our patched function.
-    Log("AUTH: Polling for OnlineMgr + clearing auth fail flag...");
+    Log("AUTH: Polling for OnlineMgr + capturing real vtable...");
     Sleep(2000);
     
-    // Poll: clear +0x4ece (auth fail flag) as soon as it's set,
-    // AND wait for auth slot to clear (original request completed)
+    uint64_t realVtable = 0;
     int slotCleared = 0;
-    for (int wait = 0; wait < 300; wait++) { // up to 30s
+    for (int wait = 0; wait < 300; wait++) {
         __try {
             uint64_t* pOM = (uint64_t*)0x1448a3b20;
             if (*pOM != 0) {
                 uint64_t om = *pOM;
-                // Keep clearing the auth fail flag so the game doesn't disconnect
+                // Clear auth fail flag
                 uint8_t* pAuthFail = (uint8_t*)(om + 0x4ece);
                 if (*pAuthFail != 0) {
                     *pAuthFail = 0;
-                    Log("AUTH: Cleared +0x4ece auth fail flag at %d ms", 2000 + wait*100);
+                    Log("AUTH: Cleared +0x4ece at %d ms", 2000 + wait*100);
                 }
-                // Check if auth slot is cleared (original request done)
+                // Capture the real vtable from the original request object
                 uint64_t* pSlot = (uint64_t*)(om + 0x4ea0);
+                if (*pSlot != 0 && realVtable == 0) {
+                    uint64_t reqObj = *pSlot;
+                    realVtable = *(uint64_t*)reqObj;
+                    Log("AUTH: Captured real vtable 0x%llX from request obj 0x%llX", realVtable, reqObj);
+                }
+                // Check if slot cleared
                 if (*pSlot == 0 && !slotCleared && wait > 10) {
                     slotCleared = 1;
                     Log("AUTH: Slot cleared at %d ms", 2000 + wait*100);
@@ -236,16 +241,25 @@ static DWORD WINAPI PatchThread(LPVOID) {
         
         // Allocate fake request object
         BYTE* fr = (BYTE*)VirtualAlloc(NULL, 0x200, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-        BYTE* fv = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-        if (!fr || !fv) { Log("AUTH: alloc failed"); goto done; }
+        if (!fr) { Log("AUTH: alloc failed"); goto done; }
         memset(fr, 0, 0x200);
         
-        // Fake vtable: all entries point to a RET stub
-        fv[32] = 0xC3; // RET instruction
-        uint64_t ra = (uint64_t)(fv + 32);
-        for (int k=0; k<4; k++) memcpy(fv+k*8, &ra, 8);
-        *(uint64_t*)fr = (uint64_t)fv;           // +0x00: vtable
-        strcpy((char*)(fr+0x18), "FIFA17_PC");    // +0x18: client ID
+        if (realVtable != 0) {
+            // Use the REAL vtable from the original request object
+            // This ensures the destructor properly transfers the auth token
+            *(uint64_t*)fr = realVtable;
+            Log("AUTH: Using real vtable 0x%llX", realVtable);
+        } else {
+            // Fallback: fake vtable with RET stubs
+            BYTE* fv = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            if (!fv) { Log("AUTH: vtable alloc failed"); goto done; }
+            fv[32] = 0xC3;
+            uint64_t ra = (uint64_t)(fv + 32);
+            for (int k=0; k<4; k++) memcpy(fv+k*8, &ra, 8);
+            *(uint64_t*)fr = (uint64_t)fv;
+            Log("AUTH: Using fake vtable (real not captured)");
+        }
+        strcpy((char*)(fr+0x18), "FIFA17_PC");
         
         // Inject into slot
         *pSlot = (uint64_t)fr;
