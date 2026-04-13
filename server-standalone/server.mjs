@@ -218,23 +218,23 @@ function decodeVarInt(buf, offset) {
 // ============================================================
 // Blaze Packet Header — FIFA 17 Fire2 Format (16 bytes)
 // ============================================================
-// FIFA 17 uses BlazeSDK 15.1.x with Fire2 framing which wraps
-// the standard 12-byte Blaze header with a 4-byte frame length.
+// Confirmed from raw packet captures:
+//   PreAuth req:  00 00 00 cb  00 00  00 09  00 07  00 00  02 00  00 00
+//   Error/ack:    00 00 00 00  00 00  00 00  00 00  00 00  03 80  00 00
+//   Ping req:     00 00 00 00  00 00  00 09  00 02  00 00  04 00  00 00
 //
-// Confirmed from raw packet capture:
-//   00 00 00 cb  00 00  00 09  00 07  00 00  02 00  00 00
-//   [frame len]  [blen] [comp] [cmd ] [err ] [ty,x] [id  ]
-//
-// [0-3]   u32  frame/payload length
-// [4-5]   u16  blaze-level length (usually 0 or same as frame length for small packets)
+// [0-3]   u32  payload length
+// [4-5]   u16  secondary/blaze length (usually 0)
 // [6-7]   u16  component
 // [8-9]   u16  command
-// [10-11] u16  error
-// [12]    u8   message type (0x00=request, 0x01=response, 0x02=notify, 0x03=error)
-// [13]    u8   extended flag / options
-// [14-15] u16  message id
+// [10-11] u16  error code
+// [12]    u8   message sequence/id number (increments: 2, 3, 4...)
+// [13]    u8   message flags (0x00=normal, 0x80=error/special)
+// [14-15] u16  extended id (usually 0)
 //
-// Note: type values are 0x00-0x03 (NOT 0x00/0x10/0x20/0x30 like BlazePK-rs ME3 format)
+// For RESPONSES: byte 12 must match the request's byte 12 (sequence number)
+//                byte 13 bit 0x80 may indicate error
+// For NOTIFICATIONS: byte 12 = 0, byte 13 = 0
 const HEADER_SIZE = 16;
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
@@ -242,31 +242,37 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  const typeByte = buf[12];   // 0x00=req, 0x01=resp, 0x02=notify, 0x03=error
-  const extByte = buf[13];
-  const msgId = buf.readUInt16BE(14);
-  // Map to our internal msgType values for compatibility
-  let msgType = 0x0000;
-  if (typeByte === 0x01) msgType = 0x1000;       // response
-  else if (typeByte === 0x02) msgType = 0x2000;   // notify
-  else if (typeByte === 0x03) msgType = 0x3000;   // error
-  return { length, component, command, error, msgType, msgId };
+  const seqByte = buf[12];    // sequence/message number
+  const flagByte = buf[13];   // flags (0x80 = error?)
+  const extId = buf.readUInt16BE(14);
+  // Derive msgType from flags for compatibility
+  let msgType = 0x0000; // request
+  if (flagByte & 0x80) msgType = 0x3000; // error
+  // Use seqByte as msgId for response matching
+  const msgId = (seqByte << 8) | flagByte; // preserve both bytes for echo
+  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
-  buf.writeUInt32BE(h.length || 0, 0);      // frame/payload length
-  buf.writeUInt16BE(0, 4);                   // blaze-level length (0 for normal packets)
+  buf.writeUInt32BE(h.length || 0, 0);      // payload length
+  buf.writeUInt16BE(0, 4);                   // secondary length
   buf.writeUInt16BE(h.component, 6);         // component
   buf.writeUInt16BE(h.command, 8);           // command
-  buf.writeUInt16BE(h.error || 0, 10);       // error
-  // Message type: convert from our 0x1000/0x2000/0x3000 to Fire2 byte values
-  let typeByte = 0x00; // request
-  if (h.msgType === 0x1000) typeByte = 0x01;       // response
-  else if (h.msgType === 0x2000) typeByte = 0x02;   // notify
-  else if (h.msgType === 0x3000) typeByte = 0x03;   // error
-  buf[12] = typeByte;
-  buf[13] = 0x00;                            // extended/options
-  buf.writeUInt16BE(h.msgId || 0, 14);       // message id
+  buf.writeUInt16BE(h.error || 0, 10);       // error code
+  if (h.notify) {
+    // Notifications: seq=0, flags=0
+    buf[12] = 0x00;
+    buf[13] = 0x00;
+  } else if (h.seqByte !== undefined) {
+    // Response: echo the request's sequence byte
+    buf[12] = h.seqByte;
+    buf[13] = h.error ? 0x80 : 0x00; // set error flag if error
+  } else {
+    // Fallback: use msgId bytes
+    buf[12] = (h.msgId >> 8) & 0xFF;
+    buf[13] = h.error ? 0x80 : 0x00;
+  }
+  buf.writeUInt16BE(h.extId || 0, 14);      // extended id
   return buf;
 }
 function readPacket(buf) {
@@ -278,7 +284,15 @@ function readPacket(buf) {
   return { packet: { header, body: buf.subarray(HEADER_SIZE, total) }, remaining: buf.subarray(total) };
 }
 function buildReply(req, body, error = 0) {
-  const h = encodeHeader({ length: body.length, component: req.header.component, command: req.header.command, error, msgType: error ? 0x3000 : 0x1000, msgId: req.header.msgId });
+  const h = encodeHeader({ 
+    length: body.length, 
+    component: req.header.component, 
+    command: req.header.command, 
+    error, 
+    seqByte: req.header.seqByte,  // echo the request's sequence number
+    extId: req.header.extId || 0,
+    msgId: req.header.msgId 
+  });
   return Buffer.concat([h, body]);
 }
 function ipToInt(ip) { const p = ip.split('.'); if (p.length !== 4) return 0; return p.reduce((a, o) => (a << 8) | parseInt(o), 0) >>> 0; }
@@ -907,7 +921,7 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   loginEnc.writeString('TURI', '');
                   const loginBody = loginEnc.build();
                   // Send as SilentLogin NOTIFICATION (msgType=0x2000, not response)
-                  const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, msgType: 0x2000, msgId: 0 });
+                  const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, notify: true });
                   const loginPkt = Buffer.concat([loginHdr, loginBody]);
                   const encLogin = encryptRecord(0x17, [0x03, 0x03], loginPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encLogin);
@@ -930,7 +944,7 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   postEnc.writeString('STIM', '');
                   postEnc.writeStructEnd();
                   const postBody = postEnc.build();
-                  const postHdr = encodeHeader({ length: postBody.length, component: 0x0009, command: 0x0008, error: 0, msgType: 0x2000, msgId: 0 });
+                  const postHdr = encodeHeader({ length: postBody.length, component: 0x0009, command: 0x0008, error: 0, notify: true });
                   const postPkt = Buffer.concat([postHdr, postBody]);
                   const encPost = encryptRecord(0x17, [0x03, 0x03], postPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encPost);
@@ -945,7 +959,7 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
                   userEnc.writeString('NAME', 'Player');
                   userEnc.writeStructEnd();
                   const userBody = userEnc.build();
-                  const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, msgType: 0x2000, msgId: 0 });
+                  const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, notify: true });
                   const userPkt = Buffer.concat([userHdr, userBody]);
                   const encUser = encryptRecord(0x17, [0x03, 0x03], userPkt, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                   socket.write(encUser);
