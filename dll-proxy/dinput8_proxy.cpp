@@ -262,14 +262,12 @@ static void LogConnections() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v64 (cert + Origin + auth + flag + IsLoggedIn x2) ===");
+    Log("=== FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Apply patches as fast as possible - no sleep between attempts
-    // The auth token request fires during init and is one-shot,
-    // so we MUST patch before it executes
     DWORD startTick = GetTickCount();
-    for (int i = 0; i < 30000; i++) {
+    for (int i = 0; i < 3000; i++) {
+        Sleep(100);
         __try {
             if (!g_codePatchDone) PatchCertCheck();
             if (!g_originPatchDone) PatchOriginCheck();
@@ -281,13 +279,9 @@ static DWORD WINAPI PatchThread(LPVOID) {
             Log("All patches applied after %lu ms", GetTickCount() - startTick);
             break;
         }
-        // Only sleep every 100 iterations (10ms effective) to stay fast
-        if (i % 100 == 0 && i > 0) {
-            Sleep(1);
-            if (i % 10000 == 0)
-                Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
-                    GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
-        }
+        if (i % 100 == 0 && i > 0)
+            Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
+                GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     }
     if (!g_codePatchDone) Log("WARNING: cert pattern not found");
     if (!g_originPatchDone) Log("WARNING: Origin SDK pattern not found");
@@ -295,6 +289,70 @@ static DWORD WINAPI PatchThread(LPVOID) {
     if (!g_authFlagDone) Log("WARNING: auth flag pattern not found");
     if (g_loginPatchCount < 2) Log("WARNING: only %d/2 login patches found", g_loginPatchCount);
     Log("=== Done. patches: %d ===", g_patched);
+    
+    // After all patches are applied, try to re-trigger the auth token request.
+    // The auth request at DAT_1448a3b20 + 0x4ea0 fires once during init and gets
+    // cleared. Our auth code cave patch wasn't applied in time. Now that it IS
+    // applied, we need to re-populate the auth request slot so it fires again.
+    //
+    // DAT_1448a3b20 is the OnlineManager object pointer (at fixed address in .data)
+    // The auth request array starts at +0x4e98 (type marker) with slots at +0x4ea0, +0x4ea8
+    Sleep(2000); // Wait for game to be fully initialized
+    __try {
+        // Read the OnlineManager pointer from the known global address
+        // DAT_1448a3b20 is at address 0x1448a3b20 in the game's address space
+        uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
+        uint64_t onlineMgr = *pOnlineMgr;
+        Log("AUTH-RETRIGGER: DAT_1448a3b20 = 0x%llX", onlineMgr);
+        
+        if (onlineMgr != 0) {
+            // Check the auth request slot at +0x4ea0
+            uint64_t* pAuthSlot = (uint64_t*)(onlineMgr + 0x4ea0);
+            uint64_t authSlotVal = *pAuthSlot;
+            Log("AUTH-RETRIGGER: [+0x4ea0] = 0x%llX (auth request slot)", authSlotVal);
+            
+            // Check +0x4ea8 too
+            uint64_t* pAuthSlot2 = (uint64_t*)(onlineMgr + 0x4ea8);
+            uint64_t authSlot2Val = *pAuthSlot2;
+            Log("AUTH-RETRIGGER: [+0x4ea8] = 0x%llX (auth request slot 2)", authSlot2Val);
+            
+            // Check the auth code result at the request object
+            // FUN_146f199c0 reads *param_1 (the request pointer) and if non-zero,
+            // calls OriginRequestAuthCodeSync, then stores result at [lVar1+0xd8]
+            // and sets [lVar1+0xe8]=1
+            if (authSlotVal != 0) {
+                uint64_t* pAuthResult = (uint64_t*)(authSlotVal + 0xd8);
+                uint8_t* pAuthFlag = (uint8_t*)(authSlotVal + 0xe8);
+                Log("AUTH-RETRIGGER: Auth object at 0x%llX: [+0xd8]=0x%llX [+0xe8]=%d",
+                    authSlotVal, *pAuthResult, *pAuthFlag);
+                
+                // If the auth flag is not set, force it
+                if (*pAuthFlag == 0) {
+                    Log("AUTH-RETRIGGER: Auth flag not set, forcing [+0xe8]=1");
+                    *pAuthFlag = 1;
+                    // Also write a fake auth token at [+0xd8] if empty
+                    if (*pAuthResult == 0) {
+                        Log("AUTH-RETRIGGER: No auth token, writing fake token pointer");
+                        // We can't easily create a proper token object here,
+                        // but setting the flag might be enough
+                    }
+                }
+            } else {
+                Log("AUTH-RETRIGGER: Auth slot is NULL - request was already consumed and cleared");
+                // The slot was cleared. We can't easily re-populate it because
+                // we'd need a valid request object pointer. But we can try to
+                // directly set the auth state on the Blaze connection.
+            }
+            
+            // Also check DAT_1448a3ac3 (online mode flag)
+            uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
+            Log("AUTH-RETRIGGER: DAT_1448a3ac3 = %d (online mode flag)", *pOnlineFlag);
+        } else {
+            Log("AUTH-RETRIGGER: OnlineManager is NULL!");
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("AUTH-RETRIGGER: Exception reading game memory");
+    }
     return 0;
 }
 
