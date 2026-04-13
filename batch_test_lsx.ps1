@@ -51,23 +51,15 @@ Kill-All
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
 
-# Start LSX server on port 4218 in STANDALONE mode
-# The DLL hooks connect() to redirect game's 4216 -> 4218
-# We handle everything ourselves (no proxy to STP needed)
-Write-Host "[LSX] Starting LSX server on port 4218 (standalone)..." -ForegroundColor Yellow
+# Start LSX server on port 4218 in STANDALONE mode (diagnostic only)
+# The game still talks to STP on 4216 - we're just observing
+Write-Host "[LSX] Starting LSX server on port 4218 (diagnostic)..." -ForegroundColor Yellow
 $lsxJob = Start-Job -ScriptBlock { 
     param($r)
     $env:LSX_PORT = "4218"
     node "$r\server-standalone\lsx-origin-server.mjs" 2>&1 
 } -ArgumentList $repoRoot
 Start-Sleep 2
-
-$lsxOut = Receive-Job $lsxJob 2>&1 | Out-String
-if ($lsxOut -match "listening|Listening") {
-    Write-Host "[LSX] Server started on port 4218" -ForegroundColor Green
-} else {
-    Write-Host "[LSX] Output: $lsxOut" -ForegroundColor Red
-}
 
 # Launch game (STP emulator stays on 4216, DLL hooks connect to redirect to 4218)
 Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
