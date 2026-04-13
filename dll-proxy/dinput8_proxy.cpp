@@ -53,7 +53,7 @@ static void Log(const char* fmt, ...) {
     LeaveCriticalSection(&g_logCS);
 }
 
-static int g_codePatchDone=0, g_originPatchDone=0, g_authBypassDone=0, g_authFlagDone=0, g_patched=0, g_loginPatchCount=0;
+static int g_codePatchDone=0, g_originPatchDone=0, g_authBypassDone=0, g_authFlagDone=0, g_patched=0, g_loginPatchCount=0, g_sdkGateDone=0;
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
 static volatile int g_caveExecuted = 0;
 
@@ -142,6 +142,91 @@ static void PatchAuthFlag() {
     }
 }
 
+// Patch 7: FUN_1471a5da0 (SDK gate check) -> always return 1
+// This function gates the ENTIRE login flow. If it returns 0, no Login is ever sent.
+// Original: if (DAT_144b86bf8 != 0 && DAT_144b86bdf == 0) return 1; return 0;
+// Pattern: 48 83 3D XX XX XX XX 00 (CMP QWORD [rip+XX], 0) near 80 3D XX XX XX XX 00 (CMP BYTE [rip+XX], 0)
+static void PatchSdkGateCheck() {
+    if (g_sdkGateDone) return;
+    // The function is small (~20 bytes). It starts with CMP QWORD [rip+XX], 0
+    // which is: 48 83 3D XX XX XX XX 00
+    // Then JE (74 XX), then CMP BYTE [rip+XX], 0 = 80 3D XX XX XX XX 00
+    // Then JNE (75 XX), then MOV AL, 1 (B0 01), RET (C3)
+    // Pattern: 48 83 3D ... 00 74 ... 80 3D ... 00 75 ... B0 01 C3
+    // We search for: B0 01 C3 (MOV AL,1 / RET) preceded by 75 XX (JNE) 
+    // and followed by XOR EAX,EAX (31 C0) or MOV AL,0 (B0 00) + RET (C3)
+    
+    // Simpler: search for the exact sequence B0 01 C3 B0 00 C3 or B0 01 C3 31 C0 C3
+    // which is the end of this function (return 1 / return 0)
+    BYTE pat1[] = { 0xB0, 0x01, 0xC3, 0x31, 0xC0, 0xC3 }; // MOV AL,1 / RET / XOR EAX,EAX / RET
+    BYTE pat2[] = { 0xB0, 0x01, 0xC3, 0xB0, 0x00, 0xC3 }; // MOV AL,1 / RET / MOV AL,0 / RET
+    
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
+    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+20<s;j++) {
+                int match = 0;
+                if (memcmp(b+j, pat1, 6)==0) match = 1;
+                if (memcmp(b+j, pat2, 6)==0) match = 2;
+                if (!match) continue;
+                
+                // Verify: look backwards for the CMP QWORD [rip+XX], 0 pattern
+                // It should be within ~15 bytes before our match
+                int found48 = 0;
+                for (int k = 3; k < 20; k++) {
+                    if (b[j-k] == 0x48 && b[j-k+1] == 0x83 && b[j-k+2] == 0x3D && b[j-k+7] == 0x00) {
+                        found48 = 1;
+                        break;
+                    }
+                }
+                if (!found48) continue;
+                
+                // Also verify: there should be a 80 3D (CMP BYTE [rip+XX], 0) between
+                int found80 = 0;
+                for (int k = 1; k < 15; k++) {
+                    if (b[j-k] == 0x80 && b[j-k+1] == 0x3D) {
+                        found80 = 1;
+                        break;
+                    }
+                }
+                if (!found80) continue;
+                
+                // Found the function! The "return 0" path is at b+j+3 (after the B0 01 C3)
+                // We want to patch the "return 0" to also return 1
+                // Just change the byte at j+3 or j+4 to make it return 1
+                BYTE* retZero = b + j + 3;
+                Log("Found SDK gate at %p (match=%d)", b+j, match);
+                
+                // But better: find the function start and replace the whole thing
+                // The function start is the 48 83 3D we found above
+                BYTE* funcStart = NULL;
+                for (int k = 3; k < 25; k++) {
+                    if (b[j-k] == 0x48 && b[j-k+1] == 0x83 && b[j-k+2] == 0x3D) {
+                        funcStart = b + j - k;
+                        break;
+                    }
+                }
+                
+                if (funcStart) {
+                    DWORD op;
+                    int funcLen = (int)((b + j + 6) - funcStart);
+                    Log("  Function at %p, length %d bytes", funcStart, funcLen);
+                    if (VirtualProtect(funcStart, funcLen, PAGE_EXECUTE_READWRITE, &op)) {
+                        // Replace entire function with: MOV AL, 1 / RET / NOP...
+                        funcStart[0] = 0xB0; funcStart[1] = 0x01; funcStart[2] = 0xC3;
+                        for (int k = 3; k < funcLen; k++) funcStart[k] = 0x90;
+                        VirtualProtect(funcStart, funcLen, op, &op);
+                        Log("PATCHED: SDK gate -> always returns 1 (login unblocked!)");
+                        g_sdkGateDone = 1; g_patched++;
+                    }
+                }
+                return;
+            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
+
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
 static void PatchIsLoggedInFunctions() {
     BYTE pat[]={0x48,0x83,0xEC,0x28,0x31,0xC9,0xE8};
@@ -172,7 +257,7 @@ static void PatchIsLoggedInFunctions() {
 // Main thread
 // ============================================================
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 v73 (login gate diagnostic + auth re-injection) ===");
+    Log("=== FIFA 17 v74 (SDK gate patch + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD st = GetTickCount();
@@ -185,6 +270,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
+            if(!g_sdkGateDone) PatchSdkGateCheck();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
                 uint64_t* pOM = (uint64_t*)0x1448a3b20;
@@ -197,7 +283,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
@@ -212,18 +298,9 @@ static DWORD WINAPI PatchThread(LPVOID) {
         uint8_t* pSdkErr = (uint8_t*)0x144b86bdf;
         Log("AUTH: DAT_144b86bf8 = 0x%llX (Origin SDK manager)", *pSdkMgr);
         Log("AUTH: DAT_144b86bdf = %d (error flag)", *pSdkErr);
-        // FUN_1471a5da0 returns 1 if bf8!=0 AND bdf==0
-        // If bf8 is 0, the login flow is completely blocked
         if (*pSdkMgr == 0) {
-            Log("AUTH: >>> SDK manager is NULL - this blocks ALL login! <<<");
-            Log("AUTH: Writing a non-zero value to unblock...");
-            // Write 1 to make the check pass (it just needs to be non-zero)
-            *pSdkMgr = 1;
-            Log("AUTH: DAT_144b86bf8 = 0x%llX (after write)", *pSdkMgr);
-        }
-        if (*pSdkErr != 0) {
-            Log("AUTH: >>> Error flag is set - clearing it <<<");
-            *pSdkErr = 0;
+            Log("AUTH: >>> SDK manager is NULL - login gate blocked <<<");
+            Log("AUTH: NOT writing to global (would crash). FUN_1471a5da0 patch handles this.");
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception checking globals"); }
     
