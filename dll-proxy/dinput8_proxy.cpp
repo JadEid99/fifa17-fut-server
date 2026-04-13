@@ -444,14 +444,16 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 uint64_t bHub = *(uint64_t*)(cm2 + 0xf8);
                 Log("AUTH: +0xb10+0xf8 (BlazeHub) = 0x%llX", bHub);
                 if (bHub != 0) {
+                    // Dump a range around +0x750 to find the login state machine
+                    Log("AUTH: BlazeHub dump around +0x740:");
+                    for (int off = 0x740; off <= 0x790; off += 8) {
+                        uint64_t val = *(uint64_t*)(bHub + off);
+                        Log("AUTH:   +0x%X = 0x%llX %s", off, val,
+                            (val > 0x140000000ULL && val < 0x150000000ULL) ? "(code ptr?)" :
+                            (val > 0x10000000ULL && val < 0x800000000ULL) ? "(heap ptr?)" : "");
+                    }
                     uint64_t loginSM = *(uint64_t*)(bHub + 0x750);
                     Log("AUTH: BlazeHub+0x750 (LoginSM) = 0x%llX", loginSM);
-                    if (loginSM != 0) {
-                        uint64_t activeType = *(uint64_t*)(loginSM + 0x28);
-                        Log("AUTH: LoginSM+0x28 (activeType) = 0x%llX", activeType);
-                    } else {
-                        Log("AUTH: >>> LoginSM is NULL! This is why Login never fires. <<<");
-                    }
                 } else { Log("AUTH: BlazeHub is NULL"); }
             } else { Log("AUTH: ConnMgr wrapper is NULL"); }
             
