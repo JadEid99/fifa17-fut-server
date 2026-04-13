@@ -1,14 +1,15 @@
 /**
- * dinput8.dll Proxy - v61: Patches 1-4 + diagnostic LSX client (no Winsock hooks)
+ * dinput8.dll Proxy - v68
  * 
  * Patch 1: Cert verification bypass (JNZ -> JMP)
  * Patch 2: Origin SDK availability check (always true)
- * Patch 3: Auth code provider (code cave)
+ * Patch 3: FUN_1470db3c0 body replacement (fake auth code, instant return)
  * Patch 4: Auth bypass flag ([RBX+0x2061]=1)
+ * Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork (always true)
  * 
- * NEW: Background LSX client thread connects to our LSX server on port 4218
- * to test if the game responds to Origin auth events. No Winsock hooks -
- * Denuvo-safe. STP emulator stays untouched on port 4216.
+ * After patches: Re-inject fake auth request into the cleared slot so the
+ * game's tick function processes it with our patched FUN_1470db3c0.
+ * Then clear disconnect state to trigger reconnect with Login.
  */
 
 #define WIN32_LEAN_AND_MEAN
@@ -18,30 +19,20 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-
 #pragma comment(lib, "ws2_32.lib")
 
-struct IUnknown;
-typedef IUnknown* LPUNKNOWN;
+struct IUnknown; typedef IUnknown* LPUNKNOWN;
 typedef HRESULT(WINAPI* DirectInput8Create_t)(HINSTANCE, DWORD, REFIID, LPVOID*, LPUNKNOWN);
 static HMODULE g_realDinput8 = NULL;
 static DirectInput8Create_t g_realDirectInput8Create = NULL;
-
 static void LoadRealDinput8() {
     if (g_realDinput8) return;
-    char systemDir[MAX_PATH];
-    GetSystemDirectoryA(systemDir, MAX_PATH);
-    strcat_s(systemDir, "\\dinput8.dll");
-    g_realDinput8 = LoadLibraryA(systemDir);
-    if (g_realDinput8)
-        g_realDirectInput8Create = (DirectInput8Create_t)GetProcAddress(g_realDinput8, "DirectInput8Create");
+    char sd[MAX_PATH]; GetSystemDirectoryA(sd, MAX_PATH); strcat_s(sd, "\\dinput8.dll");
+    g_realDinput8 = LoadLibraryA(sd);
+    if (g_realDinput8) g_realDirectInput8Create = (DirectInput8Create_t)GetProcAddress(g_realDinput8, "DirectInput8Create");
 }
-
 extern "C" {
-    __declspec(dllexport) HRESULT WINAPI DirectInput8Create(HINSTANCE h, DWORD v, REFIID r, LPVOID* p, LPUNKNOWN u) {
-        LoadRealDinput8();
-        return g_realDirectInput8Create ? g_realDirectInput8Create(h, v, r, p, u) : E_FAIL;
-    }
+    __declspec(dllexport) HRESULT WINAPI DirectInput8Create(HINSTANCE h, DWORD v, REFIID r, LPVOID* p, LPUNKNOWN u) { LoadRealDinput8(); return g_realDirectInput8Create ? g_realDirectInput8Create(h,v,r,p,u) : E_FAIL; }
     __declspec(dllexport) HRESULT WINAPI DllCanUnloadNow(void) { return S_FALSE; }
     __declspec(dllexport) HRESULT WINAPI DllGetClassObject(REFCLSID a, REFIID b, LPVOID* c) { return E_FAIL; }
     __declspec(dllexport) HRESULT WINAPI DllRegisterServer(void) { return E_FAIL; }
@@ -56,398 +47,206 @@ static void Log(const char* fmt, ...) {
     if (g_logFile) {
         SYSTEMTIME st; GetLocalTime(&st);
         fprintf(g_logFile, "[%02d:%02d:%02d.%03d] ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
-        va_list args; va_start(args, fmt);
-        vfprintf(g_logFile, fmt, args);
-        va_end(args);
-        fprintf(g_logFile, "\n");
-        fflush(g_logFile);
+        va_list args; va_start(args, fmt); vfprintf(g_logFile, fmt, args); va_end(args);
+        fprintf(g_logFile, "\n"); fflush(g_logFile);
     }
     LeaveCriticalSection(&g_logCS);
 }
 
-// ============================================================
-// Patches 1-4 (proven working, no changes)
-// ============================================================
-static int g_codePatchDone = 0, g_originPatchDone = 0, g_authBypassDone = 0, g_authFlagDone = 0, g_patched = 0;
-
-static void PatchCertCheck() {
-    if (g_codePatchDone) return;
-    BYTE pattern[] = { 0x80, 0xBD, 0x84, 0x03, 0x00, 0x00, 0x00, 0x0F, 0x85 };
-    MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
-            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j + 13 < size; j++) {
-                if (memcmp(base+j, pattern, 9) != 0) continue;
-                BYTE* p = base+j+7; DWORD op;
-                if (VirtualProtect(p, 6, PAGE_EXECUTE_READWRITE, &op)) {
-                    int32_t d = *(int32_t*)(p+2); p[0]=0xE9; *(int32_t*)(p+1)=d+1; p[5]=0x90;
-                    VirtualProtect(p, 6, op, &op);
-                    Log("PATCHED: cert bypass at %p", p); g_codePatchDone=1; g_patched++;
-                } return;
-            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
-    }
-}
-
-static void PatchOriginCheck() {
-    if (g_originPatchDone) return;
-    BYTE pat[] = {0x31,0xC0,0x48,0x39,0x05}; BYTE suf[] = {0x0F,0x95,0xD0,0xC3};
-    MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
-            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j+13 < size; j++) {
-                if (memcmp(base+j, pat, 5)!=0 || memcmp(base+j+9, suf, 4)!=0) continue;
-                BYTE* f = base+j; DWORD op;
-                if (VirtualProtect(f, 13, PAGE_EXECUTE_READWRITE, &op)) {
-                    f[0]=0xB0; f[1]=0x01; for(int k=2;k<12;k++) f[k]=0x90;
-                    VirtualProtect(f, 13, op, &op);
-                    Log("PATCHED: Origin SDK check at %p", f); g_originPatchDone=1; g_patched++;
-                } return;
-            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
-    }
-}
-
+static int g_codePatchDone=0, g_originPatchDone=0, g_authBypassDone=0, g_authFlagDone=0, g_patched=0, g_loginPatchCount=0;
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
 static volatile int g_caveExecuted = 0;
 
-// Patch 3: Replace FUN_1470db3c0 (OriginRequestAuthCodeSync wrapper) body
-// Instead of patching the CALL SITE (which fires before our patch),
-// we patch the FUNCTION BODY. The function exists in .text from the start.
-// 
-// FUN_1470db3c0 signature: (RCX=sdk, RDX=clientId, R8=&outAuthPtr, R9=&outAuthLen, [RSP+0x28]=0)
-// We replace it with: write fake auth code to [R8] and length to [R9], return 0
+// Patch 1: Cert bypass
+static void PatchCertCheck() {
+    if (g_codePatchDone) return;
+    BYTE pat[] = {0x80,0xBD,0x84,0x03,0x00,0x00,0x00,0x0F,0x85};
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a = NULL;
+    while (VirtualQuery(a, &mbi, sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+13<s;j++) { if(memcmp(b+j,pat,9)!=0) continue;
+                BYTE* p=b+j+7; DWORD op;
+                if(VirtualProtect(p,6,PAGE_EXECUTE_READWRITE,&op)) { int32_t d=*(int32_t*)(p+2); p[0]=0xE9; *(int32_t*)(p+1)=d+1; p[5]=0x90; VirtualProtect(p,6,op,&op); Log("PATCHED: cert bypass at %p",p); g_codePatchDone=1; g_patched++; } return;
+            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
+
+// Patch 2: Origin SDK check -> always true
+static void PatchOriginCheck() {
+    if (g_originPatchDone) return;
+    BYTE pat[]={0x31,0xC0,0x48,0x39,0x05}; BYTE suf[]={0x0F,0x95,0xD0,0xC3};
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
+    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+13<s;j++) { if(memcmp(b+j,pat,5)!=0||memcmp(b+j+9,suf,4)!=0) continue;
+                BYTE* f=b+j; DWORD op;
+                if(VirtualProtect(f,13,PAGE_EXECUTE_READWRITE,&op)) { f[0]=0xB0;f[1]=0x01;for(int k=2;k<12;k++)f[k]=0x90; VirtualProtect(f,13,op,&op); Log("PATCHED: Origin SDK check at %p",f); g_originPatchDone=1; g_patched++; } return;
+            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
+
+// Patch 3: Replace FUN_1470db3c0 body with fake auth code provider
 static void PatchAuthBypass() {
     if (g_authBypassDone) return;
-    
-    // The function starts with: SUB RSP, 0x38 / MOV [RSP+0x30], RBX / ...
-    // then calls FUN_1470dbf30(0x3000000, "OriginRequestAuthCodeSync_entered")
-    // Pattern: look for the string "OriginRequestAuthCodeSync" in executable memory
-    // and find the function that references it
-    
-    // Alternative: use the known fixed address. The game is NOT ASLR'd
-    // (confirmed: addresses are consistent across runs)
-    // FUN_1470db3c0 is at offset 0x070db3c0 from base 0x140000000
-    
-    BYTE* gameBase = (BYTE*)GetModuleHandleA(NULL);
-    if (!gameBase) { Log("AUTH: GetModuleHandle failed"); return; }
-    
-    // Check if the game base is what we expect
-    Log("AUTH: Game base = %p", gameBase);
-    
-    // FUN_1470db3c0 is at base + 0x30db3c0
-    // But the offset depends on the dump vs runtime. Let's use pattern matching instead.
-    // Pattern: the function calls FUN_1470e2840 (which we patched to B0 01 90...)
-    // Before our patch, FUN_1470e2840 starts with: 31 C0 48 39 05
-    // The CALL to it from FUN_1470db3c0 is: E8 XX XX XX XX / 84 C0 (TEST AL, AL)
-    // After the call: 84 C0 / 74 XX (JZ = if false, error path)
-    // We can search for: E8 XX XX XX XX 84 C0 74 followed by another E8 (call to FUN_1470e3560)
-    
-    // Actually, let's use a simpler pattern. The function has a unique string reference.
-    // Search for the LEA instruction that loads "OriginRequestAuthCodeSync_entered"
-    // The string is at 0x143936158. LEA RDX, [rip + offset] = 48 8D 15 XX XX XX XX
-    
-    // Even simpler: search for the pattern at the call site we already found
-    // Pattern from v56: 85 C0 0F 85 8D 00 00 00 4C 39 74 24
-    // This is AFTER the CALL. The CALL is 5 bytes before: E8 XX XX XX XX
-    // So the function being called is at: callAddr + 5 + displacement
-    
-    BYTE pat[] = {0x85,0xC0,0x0F,0x85,0x8D,0x00,0x00,0x00,0x4C,0x39,0x74,0x24};
-    MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
-            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j+12 < size; j++) {
-                if (memcmp(base+j, pat, 12)!=0) continue;
-                
-                // Found the pattern. The CALL is at base+j-5
-                BYTE* callInstr = base + j - 5;
-                if (callInstr[0] != 0xE8) {
-                    Log("AUTH: Pattern found but no CALL before it at %p (byte=0x%02X)", callInstr, callInstr[0]);
-                    continue;
-                }
-                
-                // Calculate the target function address
-                int32_t callDisp = *(int32_t*)(callInstr + 1);
-                BYTE* targetFunc = callInstr + 5 + callDisp;
-                Log("AUTH: Found call to FUN_1470db3c0 at %p, target = %p", callInstr, targetFunc);
-                
-                // Now patch the TARGET FUNCTION (FUN_1470db3c0) body
-                // Replace the first ~40 bytes with our fake auth code logic
-                // The function takes: RCX=sdk, RDX=clientId, R8=&outAuthPtr, R9=&outAuthLen
-                // We need to: MOV [R8], &g_fakeAuthCode / MOV [R9], strlen / XOR EAX,EAX / RET
-                
-                uint64_t aa = (uint64_t)g_fakeAuthCode;
-                uint64_t al = strlen(g_fakeAuthCode);
-                uint64_t markerAddr = (uint64_t)&g_caveExecuted;
-                
+    BYTE pat[]={0x85,0xC0,0x0F,0x85,0x8D,0x00,0x00,0x00,0x4C,0x39,0x74,0x24};
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
+    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+12<s;j++) { if(memcmp(b+j,pat,12)!=0) continue;
+                BYTE* callInstr=b+j-5;
+                if(callInstr[0]!=0xE8) continue;
+                int32_t callDisp=*(int32_t*)(callInstr+1);
+                BYTE* targetFunc=callInstr+5+callDisp;
+                Log("AUTH: call site at %p, target FUN_1470db3c0 at %p", callInstr, targetFunc);
+                uint64_t aa=(uint64_t)g_fakeAuthCode, al=strlen(g_fakeAuthCode), ma=(uint64_t)&g_caveExecuted;
                 DWORD op;
-                if (VirtualProtect(targetFunc, 48, PAGE_EXECUTE_READWRITE, &op)) {
-                    Log("AUTH: Original bytes at target: %02X %02X %02X %02X %02X %02X %02X %02X",
-                        targetFunc[0],targetFunc[1],targetFunc[2],targetFunc[3],
-                        targetFunc[4],targetFunc[5],targetFunc[6],targetFunc[7]);
-                    
-                    int o = 0;
-                    // Write marker: MOV RAX, &g_caveExecuted / MOV DWORD [RAX], 1
-                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&markerAddr,8); o+=8;
-                    targetFunc[o++]=0xC7; targetFunc[o++]=0x00; 
-                    targetFunc[o++]=0x01; targetFunc[o++]=0x00; targetFunc[o++]=0x00; targetFunc[o++]=0x00;
-                    // MOV RAX, &g_fakeAuthCode / MOV [R8], RAX
-                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&aa,8); o+=8;
-                    targetFunc[o++]=0x49; targetFunc[o++]=0x89; targetFunc[o++]=0x00;
+                if(VirtualProtect(targetFunc,48,PAGE_EXECUTE_READWRITE,&op)) {
+                    int o=0;
+                    // Write marker
+                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&ma,8);o+=8;
+                    targetFunc[o++]=0xC7;targetFunc[o++]=0x00;targetFunc[o++]=1;targetFunc[o++]=0;targetFunc[o++]=0;targetFunc[o++]=0;
+                    // MOV RAX, &fakeAuthCode / MOV [R8], RAX
+                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&aa,8);o+=8;
+                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x00;
                     // MOV RAX, strlen / MOV [R9], RAX
-                    targetFunc[o++]=0x48; targetFunc[o++]=0xB8; memcpy(targetFunc+o,&al,8); o+=8;
-                    targetFunc[o++]=0x49; targetFunc[o++]=0x89; targetFunc[o++]=0x01;
-                    // XOR EAX, EAX (return 0 = success)
-                    targetFunc[o++]=0x31; targetFunc[o++]=0xC0;
-                    // RET
-                    targetFunc[o++]=0xC3;
-                    
-                    VirtualProtect(targetFunc, 48, op, &op);
-                    Log("PATCHED: FUN_1470db3c0 body at %p -> fake auth code (marker at %p)", targetFunc, &g_caveExecuted);
-                }
-                g_authBypassDone=1; g_patched++; return;
-            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
-    }
-}
-
-static void PatchAuthFlag() {
-    if (g_authFlagDone) return;
-    BYTE pat[] = {0x40,0x88,0xBB,0x61,0x20,0x00,0x00};
-    MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
-            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j+7 < size; j++) {
-                if (memcmp(base+j, pat, 7)!=0) continue;
-                BYTE* p = base+j; DWORD op;
-                if (VirtualProtect(p, 7, PAGE_EXECUTE_READWRITE, &op)) {
-                    p[0]=0xC6; p[1]=0x83; p[2]=0x61; p[3]=0x20; p[4]=0x00; p[5]=0x00; p[6]=0x01;
-                    VirtualProtect(p, 7, op, &op);
-                    Log("PATCHED: auth flag at %p", p); g_authFlagDone=1; g_patched++;
+                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&al,8);o+=8;
+                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x01;
+                    // XOR EAX,EAX / RET
+                    targetFunc[o++]=0x31;targetFunc[o++]=0xC0;targetFunc[o++]=0xC3;
+                    VirtualProtect(targetFunc,48,op,&op);
+                    Log("PATCHED: FUN_1470db3c0 body -> fake auth code"); g_authBypassDone=1; g_patched++;
                 } return;
             }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
     }
 }
 
-// ============================================================
-// Patch 5: Force IsLoggedIntoEA AND IsLoggedIntoNetwork to return true
-// Both functions have identical structure:
-//   SUB RSP,0x28 / XOR ECX,ECX / CALL ... / MOV RCX,[DAT_144b8fee8] / ...
-//   They differ only in the vtable offset (0xd8 vs 0xe0)
-// Pattern: 48 83 EC 28 31 C9 E8 XX XX XX XX 48 8B 0D
-// We patch ALL matches to return true.
-// ============================================================
-static int g_loginPatchCount = 0;
+// Patch 4: Auth flag
+static void PatchAuthFlag() {
+    if (g_authFlagDone) return;
+    BYTE pat[]={0x40,0x88,0xBB,0x61,0x20,0x00,0x00};
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
+    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+7<s;j++) { if(memcmp(b+j,pat,7)!=0) continue;
+                BYTE* p=b+j; DWORD op;
+                if(VirtualProtect(p,7,PAGE_EXECUTE_READWRITE,&op)) { p[0]=0xC6;p[1]=0x83;p[2]=0x61;p[3]=0x20;p[4]=0;p[5]=0;p[6]=1; VirtualProtect(p,7,op,&op); Log("PATCHED: auth flag at %p",p); g_authFlagDone=1; g_patched++; } return;
+            }} __except(EXCEPTION_EXECUTE_HANDLER) {}
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
+    }
+}
 
+// Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
 static void PatchIsLoggedInFunctions() {
-    // Pattern: SUB RSP,0x28 / XOR ECX,ECX / CALL rel32 / MOV RCX,[rip+XX]
-    BYTE pat[] = { 0x48, 0x83, 0xEC, 0x28, 0x31, 0xC9, 0xE8 };
-    BYTE check[] = { 0x48, 0x8B, 0x0D }; // MOV RCX,[rip+XX] at offset +11
-    BYTE check2[] = { 0x48, 0x8B, 0x49, 0x70 }; // MOV RCX,[RCX+0x70] at offset +18
-    
-    MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
-    while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
-        if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
-            (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
-            BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j + 48 < size; j++) {
-                if (memcmp(base+j, pat, 7) != 0) continue;
-                if (memcmp(base+j+11, check, 3) != 0) continue;
-                if (memcmp(base+j+18, check2, 4) != 0) continue;
-                
-                BYTE* func = base + j;
-                
-                // Find the vtable call offset to identify which function this is
-                // At offset +27 (0x1b): 41 FF 90 XX XX XX XX = CALL [R8+XX]
-                int vtableOffset = -1;
-                if (func[0x1b] == 0x41 && func[0x1c] == 0xFF && func[0x1d] == 0x90) {
-                    vtableOffset = *(int*)(func + 0x1e);
-                }
-                
-                const char* name = "unknown";
-                if (vtableOffset == 0xd8) name = "IsLoggedIntoNetwork";
-                else if (vtableOffset == 0xe0) name = "IsLoggedIntoEA";
-                else {
-                    // Skip unknown functions with same pattern
-                    continue;
-                }
-                
-                Log("Found %s at %p (vtable+0x%X)", name, func, vtableOffset);
-                
-                // Find the JMP at the end
-                int jmpOff = -1;
-                for (int k = 0x20; k < 0x30; k++) {
-                    if (func[k] == 0xE9) { jmpOff = k; break; }
-                }
-                if (jmpOff < 0) { Log("  Could not find JMP, skipping"); continue; }
-                
-                int32_t origDisp = *(int32_t*)(func + jmpOff + 1);
-                BYTE* jmpTarget = func + jmpOff + 5 + origDisp;
-                
-                DWORD op;
-                if (VirtualProtect(func, 32, PAGE_EXECUTE_READWRITE, &op)) {
-                    int o = 0;
-                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xEC; func[o++] = 0x28; // SUB RSP,0x28
-                    func[o++] = 0xB0; func[o++] = 0x01;                                       // MOV AL, 1
-                    func[o++] = 0x0F; func[o++] = 0xB6; func[o++] = 0xC8;                     // MOVZX ECX, AL
-                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xC4; func[o++] = 0x28;   // ADD RSP,0x28
-                    func[o++] = 0xE9;                                                          // JMP
-                    int32_t newDisp = (int32_t)(jmpTarget - (func + o + 4));
-                    *(int32_t*)(func + o) = newDisp; o += 4;
-                    while (o < 32) func[o++] = 0x90;
-                    VirtualProtect(func, 32, op, &op);
-                    
-                    Log("PATCHED: %s -> always returns true", name);
-                    g_loginPatchCount++;
-                    g_patched++;
+    BYTE pat[]={0x48,0x83,0xEC,0x28,0x31,0xC9,0xE8};
+    BYTE chk[]={0x48,0x8B,0x0D}; BYTE chk2[]={0x48,0x8B,0x49,0x70};
+    MEMORY_BASIC_INFORMATION mbi; BYTE* a=NULL;
+    while (VirtualQuery(a,&mbi,sizeof(mbi))) {
+        if (mbi.State==MEM_COMMIT && mbi.RegionSize>0x100 && (mbi.Protect==PAGE_EXECUTE_READ||mbi.Protect==PAGE_EXECUTE_READWRITE||mbi.Protect==PAGE_EXECUTE_WRITECOPY)) {
+            BYTE* b=(BYTE*)mbi.BaseAddress; SIZE_T s=mbi.RegionSize;
+            __try { for(SIZE_T j=0;j+48<s;j++) {
+                if(memcmp(b+j,pat,7)!=0||memcmp(b+j+11,chk,3)!=0||memcmp(b+j+18,chk2,4)!=0) continue;
+                BYTE* f=b+j; int vt=-1;
+                if(f[0x1b]==0x41&&f[0x1c]==0xFF&&f[0x1d]==0x90) vt=*(int*)(f+0x1e);
+                const char* nm="?"; if(vt==0xd8) nm="IsLoggedIntoNetwork"; else if(vt==0xe0) nm="IsLoggedIntoEA"; else continue;
+                int jo=-1; for(int k=0x20;k<0x30;k++) if(f[k]==0xE9){jo=k;break;}
+                if(jo<0) continue;
+                int32_t od=*(int32_t*)(f+jo+1); BYTE* jt=f+jo+5+od; DWORD op;
+                if(VirtualProtect(f,32,PAGE_EXECUTE_READWRITE,&op)) {
+                    int o=0; f[o++]=0x48;f[o++]=0x83;f[o++]=0xEC;f[o++]=0x28; f[o++]=0xB0;f[o++]=0x01; f[o++]=0x0F;f[o++]=0xB6;f[o++]=0xC8; f[o++]=0x48;f[o++]=0x83;f[o++]=0xC4;f[o++]=0x28;
+                    f[o++]=0xE9; int32_t nd=(int32_t)(jt-(f+o+4)); *(int32_t*)(f+o)=nd; o+=4; while(o<32)f[o++]=0x90;
+                    VirtualProtect(f,32,op,&op); Log("PATCHED: %s -> true",nm); g_loginPatchCount++; g_patched++;
                 }
             }} __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-        addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
-        if ((ULONG_PTR)addr < (ULONG_PTR)mbi.BaseAddress) break;
+        } a=(BYTE*)mbi.BaseAddress+mbi.RegionSize; if((ULONG_PTR)a<(ULONG_PTR)mbi.BaseAddress) break;
     }
 }
 
-// Log all TCP connections the game has (diagnostic)
-static void LogConnections() {
-    Log("DIAG: Checking TCP connections for PID %lu", GetCurrentProcessId());
-}
-
 // ============================================================
-// Main
+// Main thread
 // ============================================================
-
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v65 (all patches + auth re-trigger) ===");
+    Log("=== FIFA 17 v68 (patches + auth re-injection) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    DWORD startTick = GetTickCount();
-    for (int i = 0; i < 3000; i++) {
+    DWORD st = GetTickCount();
+    for (int i=0; i<3000; i++) {
         Sleep(100);
         __try {
-            if (!g_codePatchDone) PatchCertCheck();
-            if (!g_originPatchDone) PatchOriginCheck();
-            if (!g_authBypassDone) PatchAuthBypass();
-            if (!g_authFlagDone) PatchAuthFlag();
-            if (g_loginPatchCount < 2) PatchIsLoggedInFunctions();
+            if(!g_codePatchDone) PatchCertCheck();
+            if(!g_originPatchDone) PatchOriginCheck();
+            if(!g_authBypassDone) PatchAuthBypass();
+            if(!g_authFlagDone) PatchAuthFlag();
+            if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if (g_codePatchDone && g_originPatchDone && g_authBypassDone && g_authFlagDone && g_loginPatchCount >= 2) {
-            Log("All patches applied after %lu ms", GetTickCount() - startTick);
-            break;
-        }
-        if (i % 100 == 0 && i > 0)
-            Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
-                GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
-    if (!g_codePatchDone) Log("WARNING: cert pattern not found");
-    if (!g_originPatchDone) Log("WARNING: Origin SDK pattern not found");
-    if (!g_authBypassDone) Log("WARNING: auth pattern not found");
-    if (!g_authFlagDone) Log("WARNING: auth flag pattern not found");
-    if (g_loginPatchCount < 2) Log("WARNING: only %d/2 login patches found", g_loginPatchCount);
-    Log("=== Done. patches: %d ===", g_patched);
+    Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
-    // After all patches are applied, try to re-trigger the auth token request.
-    // Wait for OnlineManager to be fully initialized
-    Sleep(15000);
+    // The original auth request fired at ~100ms, called FUN_1470db3c0 (unpatched),
+    // which blocked for 15s in STP timeout, returned error, slot was cleared.
+    // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
+    // executing. We wait for the 15s timeout to complete, then re-inject a fake
+    // request object so the game processes it with our patched function.
+    Log("AUTH: Waiting 18s for STP timeout to complete...");
+    Sleep(18000);
+    
     __try {
-        uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
-        uint64_t onlineMgr = *pOnlineMgr;
-        Log("AUTH-RETRIGGER: DAT_1448a3b20 = 0x%llX", onlineMgr);
+        uint64_t* pOM = (uint64_t*)0x1448a3b20;
+        uint64_t om = *pOM;
+        Log("AUTH: OnlineMgr=0x%llX", om);
+        if (om == 0) { Log("AUTH: NULL!"); goto done; }
         
-        if (onlineMgr != 0) {
-            uint64_t* pAuthSlot = (uint64_t*)(onlineMgr + 0x4ea0);
-            uint64_t authSlotVal = *pAuthSlot;
-            Log("AUTH-RETRIGGER: [+0x4ea0] = 0x%llX (auth request slot)", authSlotVal);
+        uint64_t* pSlot = (uint64_t*)(om + 0x4ea0);
+        Log("AUTH: slot=0x%llX cave=%d", *pSlot, g_caveExecuted);
+        
+        if (*pSlot != 0 || g_caveExecuted != 0) { Log("AUTH: skip (slot busy or cave ran)"); goto done; }
+        
+        // Allocate fake request object
+        BYTE* fr = (BYTE*)VirtualAlloc(NULL, 0x200, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+        BYTE* fv = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        if (!fr || !fv) { Log("AUTH: alloc failed"); goto done; }
+        memset(fr, 0, 0x200);
+        
+        // Fake vtable: all entries point to a RET stub
+        fv[32] = 0xC3; // RET instruction
+        uint64_t ra = (uint64_t)(fv + 32);
+        for (int k=0; k<4; k++) memcpy(fv+k*8, &ra, 8);
+        *(uint64_t*)fr = (uint64_t)fv;           // +0x00: vtable
+        strcpy((char*)(fr+0x18), "FIFA17_PC");    // +0x18: client ID
+        
+        // Inject into slot
+        *pSlot = (uint64_t)fr;
+        Log("AUTH: Injected fake request %p into slot", fr);
+        
+        // Wait for game tick to process it
+        Sleep(5000);
+        Log("AUTH: cave=%d slot=0x%llX", g_caveExecuted, *pSlot);
+        
+        if (g_caveExecuted) {
+            Log("AUTH: >>> CAVE EXECUTED! Auth code provided! <<<");
+            Log("AUTH: req[+0xd8]=0x%llX req[+0xe8]=%d", *(uint64_t*)(fr+0xd8), *(uint8_t*)(fr+0xe8));
             
-            uint64_t* pAuthSlot2 = (uint64_t*)(onlineMgr + 0x4ea8);
-            uint64_t authSlot2Val = *pAuthSlot2;
-            Log("AUTH-RETRIGGER: [+0x4ea8] = 0x%llX (auth request slot 2)", authSlot2Val);
-            
-            // The auth request object was at +0x4ea0 before being cleared.
-            // But the Blaze connection object at +0xb10 might have the auth state.
-            // Let's dump key offsets around the online manager to find auth state.
-            uint64_t blazeConn = *(uint64_t*)(onlineMgr + 0xb10);
-            Log("AUTH-RETRIGGER: [+0xb10] = 0x%llX (Blaze connection?)", blazeConn);
-            
-            // Check the connection state at various offsets
-            uint32_t state7c = *(uint32_t*)(onlineMgr + 0x7c);
-            uint32_t state98 = *(uint32_t*)(onlineMgr + 0x98);
-            uint32_t state13ac = *(uint32_t*)(onlineMgr + 0x13ac);
-            uint32_t state13b4 = *(uint32_t*)(onlineMgr + 0x13b4);
-            uint32_t state13b8 = *(uint32_t*)(onlineMgr + 0x13b8);
-            Log("AUTH-RETRIGGER: [+0x7c]=%d [+0x98]=%d [+0x13ac]=%d [+0x13b4]=%d [+0x13b8]=%d",
-                state7c, state98, state13ac, state13b4, state13b8);
-            
-            // Scan for the auth code string in the online manager's memory
-            // Our fake auth code is "FAKEAUTHCODE1234567890"
-            char* scanBase = (char*)onlineMgr;
-            for (int off = 0; off < 0x5000; off += 8) {
-                uint64_t val = *(uint64_t*)(scanBase + off);
-                if (val != 0 && val < 0x200000000000ULL && val > 0x100000000ULL) {
-                    // Looks like a pointer, check if it points to our auth code
-                    __try {
-                        char* str = (char*)val;
-                        if (str[0] == 'F' && str[1] == 'A' && str[2] == 'K' && str[3] == 'E') {
-                            Log("AUTH-RETRIGGER: Found FAKE auth code ref at +0x%X -> 0x%llX", off, val);
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
-                }
-            }
-            
-            uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
-            Log("AUTH-RETRIGGER: DAT_1448a3ac3 = %d (online mode flag)", *pOnlineFlag);
-            Log("AUTH-RETRIGGER: g_caveExecuted = %d (was auth code cave called?)", g_caveExecuted);
+            // Clear disconnect state to trigger reconnect
+            uint32_t* pSt = (uint32_t*)(om + 0x13b8);
+            Log("AUTH: state=%d, clearing...", *pSt);
+            *(uint8_t*)(om + 0x13a8) = 0;
+            *(uint16_t*)(om + 0x13b4) = 0;
+            *pSt = 0;
+            Log("AUTH: State cleared. Reconnect should happen now.");
         } else {
-            Log("AUTH-RETRIGGER: OnlineManager is NULL!");
+            Log("AUTH: Cave NOT executed after 5s");
+            Log("AUTH: state=%d", *(uint32_t*)(om + 0x13b8));
         }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("AUTH-RETRIGGER: Exception reading game memory");
-    }
+    } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception"); }
     
-    // Second dump + force reconnect attempt
-    Sleep(30000);
-    __try {
-        uint64_t* pOnlineMgr = (uint64_t*)0x1448a3b20;
-        uint64_t onlineMgr = *pOnlineMgr;
-        Log("AUTH-DUMP2: DAT_1448a3b20 = 0x%llX (after 45s)", onlineMgr);
-        uint8_t* pOnlineFlag = (uint8_t*)0x1448a3ac3;
-        Log("AUTH-DUMP2: DAT_1448a3ac3 = %d", *pOnlineFlag);
-        if (onlineMgr != 0) {
-            uint32_t* pState = (uint32_t*)(onlineMgr + 0x13b8);
-            uint16_t* pFlag = (uint16_t*)(onlineMgr + 0x13b4);
-            uint8_t* pDisc = (uint8_t*)(onlineMgr + 0x13a8);
-            Log("AUTH-DUMP2: [+0x13b8]=%d [+0x13b4]=0x%X [+0x13a8]=%d", *pState, *pFlag, *pDisc);
-            
-            // Try to force a reconnect by resetting the disconnect state
-            // Set +0x13a8 = 0 (not disconnecting)
-            // Set +0x13b4 = 0 (no disconnect flag)  
-            // Set +0x13b8 = 0 (clear disconnect reason)
-            Log("AUTH-DUMP2: Forcing reconnect - clearing disconnect state");
-            *pDisc = 0;
-            *pFlag = 0;
-            *pState = 0;
-            Log("AUTH-DUMP2: State cleared. Game should attempt reconnect on next tick.");
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("AUTH-DUMP2: Exception");
-    }
+done:
     return 0;
 }
 
@@ -457,8 +256,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
         InitializeCriticalSection(&g_logCS);
         LoadRealDinput8();
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
-    }
-    else if (reason == DLL_PROCESS_DETACH) {
+    } else if (reason == DLL_PROCESS_DETACH) {
         if (g_realDinput8) FreeLibrary(g_realDinput8);
         if (g_logFile) fclose(g_logFile);
         DeleteCriticalSection(&g_logCS);

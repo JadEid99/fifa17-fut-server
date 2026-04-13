@@ -75,8 +75,10 @@ Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe
 for($i=0;$i -lt 30;$i++){if(Get-Process -Name FIFA17 -EA SilentlyContinue){break};Start-Sleep 1}
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
-# Wait for connection attempt #1 to complete and fail dialog to appear
-Start-Sleep 20; FEnter; Start-Sleep 2
+# Wait for connection attempt #1 to complete (includes 18s STP timeout + 5s auth re-injection)
+# The DLL waits 18s for the original auth request to timeout, then re-injects
+# a fake auth request. We need to wait for this to complete before pressing Enter.
+Start-Sleep 30; FEnter; Start-Sleep 2
 
 # Blaze server already running from before game launch
 # Just trigger connection attempt
