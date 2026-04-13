@@ -1228,6 +1228,11 @@ function setupMainBlazeHandler(socket, session) {
     console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')} len=${pkt.header.length} msgId=${pkt.header.msgId}`);
     let resp = null;
     try {
+      // Skip null/error packets — don't respond
+      if (comp === 0x0000 && cmd === 0x0000) {
+        console.log(`[Main] S${sid}: -> Ignoring null/error packet (seq=${pkt.header.seqByte} flags=0x${(pkt.header.flagByte||0).toString(16)})`);
+        return;
+      }
       if (comp === 0x0009) {
         if (cmd === 0x0007) { console.log(`[Main] S${sid}: -> PreAuth`); resp = handlePreAuth(pkt); }
         else if (cmd === 0x0008) { console.log(`[Main] S${sid}: -> PostAuth`); resp = handlePostAuth(session, pkt); }
