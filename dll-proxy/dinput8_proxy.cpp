@@ -174,93 +174,77 @@ static void PatchAuthFlag() {
 }
 
 // ============================================================
-// Patch 5: Force IsLoggedIntoEA to return true
-// FUN_1472d43c0 checks Origin SDK login state via vtable call.
-// We patch it to: MOV AL, 1 / MOVZX ECX, AL / ADD RSP, 0x28 / JMP FUN_1477c1c70
-// This skips the Origin SDK vtable call entirely.
-// Pattern: 48 83 EC 28 31 C9 E8 (SUB RSP,28 / XOR ECX,ECX / CALL ...)
+// Patch 5: Force IsLoggedIntoEA AND IsLoggedIntoNetwork to return true
+// Both functions have identical structure:
+//   SUB RSP,0x28 / XOR ECX,ECX / CALL ... / MOV RCX,[DAT_144b8fee8] / ...
+//   They differ only in the vtable offset (0xd8 vs 0xe0)
+// Pattern: 48 83 EC 28 31 C9 E8 XX XX XX XX 48 8B 0D
+// We patch ALL matches to return true.
 // ============================================================
-static int g_loginPatchDone = 0;
+static int g_loginPatchCount = 0;
 
-static void PatchIsLoggedIn() {
-    if (g_loginPatchDone) return;
-    // Pattern: SUB RSP,0x28 / XOR ECX,ECX / CALL rel32 / MOV RCX,[rip+XX] (DAT_144b8fee8)
-    // Bytes:   48 83 EC 28   31 C9   E8 XX XX XX XX   48 8B 0D XX XX XX XX
-    // We match the first 7 bytes which are unique enough
+static void PatchIsLoggedInFunctions() {
+    // Pattern: SUB RSP,0x28 / XOR ECX,ECX / CALL rel32 / MOV RCX,[rip+XX]
     BYTE pat[] = { 0x48, 0x83, 0xEC, 0x28, 0x31, 0xC9, 0xE8 };
-    // After the CALL at +6, at offset +11 there's MOV RCX,[rip+XX] = 48 8B 0D
-    BYTE check[] = { 0x48, 0x8B, 0x0D };
+    BYTE check[] = { 0x48, 0x8B, 0x0D }; // MOV RCX,[rip+XX] at offset +11
+    BYTE check2[] = { 0x48, 0x8B, 0x49, 0x70 }; // MOV RCX,[RCX+0x70] at offset +18
     
     MEMORY_BASIC_INFORMATION mbi; BYTE* addr = NULL;
     while (VirtualQuery(addr, &mbi, sizeof(mbi))) {
         if (mbi.State == MEM_COMMIT && mbi.RegionSize > 0x100 &&
             (mbi.Protect == PAGE_EXECUTE_READ || mbi.Protect == PAGE_EXECUTE_READWRITE || mbi.Protect == PAGE_EXECUTE_WRITECOPY)) {
             BYTE* base = (BYTE*)mbi.BaseAddress; SIZE_T size = mbi.RegionSize;
-            __try { for (SIZE_T j = 0; j + 30 < size; j++) {
+            __try { for (SIZE_T j = 0; j + 48 < size; j++) {
                 if (memcmp(base+j, pat, 7) != 0) continue;
-                // Verify: at offset +11 (after CALL rel32) there should be MOV RCX,[rip+XX]
                 if (memcmp(base+j+11, check, 3) != 0) continue;
-                // Extra verify: at offset +18 there should be MOV RCX,[RCX+0x70] = 48 8B 49 70
-                if (base[j+18] != 0x48 || base[j+19] != 0x8B || base[j+20] != 0x49 || base[j+21] != 0x70) continue;
+                if (memcmp(base+j+18, check2, 4) != 0) continue;
                 
                 BYTE* func = base + j;
-                Log("Found IsLoggedIntoEA at %p", func);
-                Log("  Before: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                    func[0],func[1],func[2],func[3],func[4],func[5],func[6],func[7],func[8],func[9],func[10],func[11]);
                 
-                // We need to keep the function's epilogue intact (ADD RSP,0x28 / JMP FUN_1477c1c70)
-                // which is at offset +0x25 (37 bytes in). The JMP target is relative.
-                // 
-                // New code at func start:
-                //   48 83 EC 28       SUB RSP, 0x28       (keep stack frame)
-                //   B0 01             MOV AL, 1            (logged in = true)
-                //   0F B6 C8          MOVZX ECX, AL        
-                //   48 83 C4 28       ADD RSP, 0x28        
-                //   E9 XX XX XX XX    JMP FUN_1477c1c70   (same as original)
-                //   90 90 ...         NOP padding
-                //
-                // Original JMP is at offset 0x29 (func+0x29): E9 XX XX XX XX
-                // We need to read the original JMP displacement and recalculate for our new position
-                
-                // The JMP to FUN_1477c1c70 is at func+0x29 in the original
-                // Let's find it: scan for E9 after the MOVZX ECX,AL (0F B6 C8) at offset +0x22
-                int jmpOffset = -1;
-                for (int k = 0x20; k < 0x30; k++) {
-                    if (func[k] == 0xE9) { jmpOffset = k; break; }
+                // Find the vtable call offset to identify which function this is
+                // At offset +27 (0x1b): 41 FF 90 XX XX XX XX = CALL [R8+XX]
+                int vtableOffset = -1;
+                if (func[0x1b] == 0x41 && func[0x1c] == 0xFF && func[0x1d] == 0x90) {
+                    vtableOffset = *(int*)(func + 0x1e);
                 }
                 
-                if (jmpOffset < 0) {
-                    Log("  Could not find JMP instruction, skipping");
+                const char* name = "unknown";
+                if (vtableOffset == 0xd8) name = "IsLoggedIntoNetwork";
+                else if (vtableOffset == 0xe0) name = "IsLoggedIntoEA";
+                else {
+                    // Skip unknown functions with same pattern
                     continue;
                 }
                 
-                int32_t origJmpDisp = *(int32_t*)(func + jmpOffset + 1);
-                BYTE* origJmpTarget = func + jmpOffset + 5 + origJmpDisp;
-                Log("  JMP at offset +0x%X, target: %p", jmpOffset, origJmpTarget);
+                Log("Found %s at %p (vtable+0x%X)", name, func, vtableOffset);
+                
+                // Find the JMP at the end
+                int jmpOff = -1;
+                for (int k = 0x20; k < 0x30; k++) {
+                    if (func[k] == 0xE9) { jmpOff = k; break; }
+                }
+                if (jmpOff < 0) { Log("  Could not find JMP, skipping"); continue; }
+                
+                int32_t origDisp = *(int32_t*)(func + jmpOff + 1);
+                BYTE* jmpTarget = func + jmpOff + 5 + origDisp;
                 
                 DWORD op;
                 if (VirtualProtect(func, 32, PAGE_EXECUTE_READWRITE, &op)) {
-                    // Write new code
                     int o = 0;
-                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xEC; func[o++] = 0x28; // SUB RSP, 0x28
+                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xEC; func[o++] = 0x28; // SUB RSP,0x28
                     func[o++] = 0xB0; func[o++] = 0x01;                                       // MOV AL, 1
                     func[o++] = 0x0F; func[o++] = 0xB6; func[o++] = 0xC8;                     // MOVZX ECX, AL
-                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xC4; func[o++] = 0x28;   // ADD RSP, 0x28
-                    // JMP to original target
-                    func[o++] = 0xE9;
-                    int32_t newDisp = (int32_t)(origJmpTarget - (func + o + 4));
+                    func[o++] = 0x48; func[o++] = 0x83; func[o++] = 0xC4; func[o++] = 0x28;   // ADD RSP,0x28
+                    func[o++] = 0xE9;                                                          // JMP
+                    int32_t newDisp = (int32_t)(jmpTarget - (func + o + 4));
                     *(int32_t*)(func + o) = newDisp; o += 4;
-                    // NOP the rest
                     while (o < 32) func[o++] = 0x90;
-                    
                     VirtualProtect(func, 32, op, &op);
-                    Log("  After:  %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                        func[0],func[1],func[2],func[3],func[4],func[5],func[6],func[7],func[8],
-                        func[9],func[10],func[11],func[12],func[13],func[14],func[15],func[16]);
-                    Log("PATCHED: IsLoggedIntoEA -> always returns true");
-                    g_loginPatchDone = 1; g_patched++;
+                    
+                    Log("PATCHED: %s -> always returns true", name);
+                    g_loginPatchCount++;
+                    g_patched++;
                 }
-                return;
             }} __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
         addr = (BYTE*)mbi.BaseAddress + mbi.RegionSize;
@@ -278,7 +262,7 @@ static void LogConnections() {
 // ============================================================
 
 static DWORD WINAPI PatchThread(LPVOID) {
-    Log("=== FIFA 17 SSL Bypass v62 (cert + Origin + auth + flag + IsLoggedIn) ===");
+    Log("=== FIFA 17 SSL Bypass v63 (cert + Origin + auth + flag + IsLoggedIn x2) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
     DWORD startTick = GetTickCount();
@@ -289,21 +273,21 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if (!g_originPatchDone) PatchOriginCheck();
             if (!g_authBypassDone) PatchAuthBypass();
             if (!g_authFlagDone) PatchAuthFlag();
-            if (!g_loginPatchDone) PatchIsLoggedIn();
+            if (g_loginPatchCount < 2) PatchIsLoggedInFunctions();
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if (g_codePatchDone && g_originPatchDone && g_authBypassDone && g_authFlagDone && g_loginPatchDone) {
+        if (g_codePatchDone && g_originPatchDone && g_authBypassDone && g_authFlagDone && g_loginPatchCount >= 2) {
             Log("All patches applied after %lu ms", GetTickCount() - startTick);
             break;
         }
         if (i % 100 == 0 && i > 0)
             Log("Scanning... %lu ms (cert=%d origin=%d auth=%d flag=%d login=%d)", 
-                GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchDone);
+                GetTickCount()-startTick, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     }
     if (!g_codePatchDone) Log("WARNING: cert pattern not found");
     if (!g_originPatchDone) Log("WARNING: Origin SDK pattern not found");
     if (!g_authBypassDone) Log("WARNING: auth pattern not found");
     if (!g_authFlagDone) Log("WARNING: auth flag pattern not found");
-    if (!g_loginPatchDone) Log("WARNING: IsLoggedIn pattern not found");
+    if (g_loginPatchCount < 2) Log("WARNING: only %d/2 login patches found", g_loginPatchCount);
     Log("=== Done. patches: %d ===", g_patched);
     return 0;
 }
