@@ -388,9 +388,9 @@ static void PatchCreateAccountHandler() {
         // MOV EDX, 1
         cave[o++] = 0xBA;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // MOV R8D, 3
+        // MOV R8D, 0              (state 0 = skip OSDK account creation UI)
         cave[o++] = 0x41; cave[o++] = 0xB8;
-        cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         // CALL [RAX + 0x08]
         cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;
         
