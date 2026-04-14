@@ -207,3 +207,21 @@ Connection: keep-alive
 [Main] S1: Sent CreateAccount response, now sending UserSession notification
 [Main] S1: Sent UserSessionExtendedDataUpdate notification
 [Main] S1 disconnected
+=== S2 disconnect (2026-04-14 09:43:22) ===
+
+[Main] Session 2 connected: 127.0.0.1:60164
+[Main] S2: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 45 80 00 00  ............E...
+[Main] S2: Raw Blaze binary detected
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=17792
+[Main] S2: -> Ignoring null/error packet (seq=69 flags=0x80)
+[Main] S2 disconnected
+=== S3 disconnect (2026-04-14 09:43:25) ===
+
+[Main] Session 3 connected: 127.0.0.1:60165
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 46 80 00 00  ............F...
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=18048
+[Main] S3: -> Ignoring null/error packet (seq=70 flags=0x80)
+[Main] S3 disconnected
