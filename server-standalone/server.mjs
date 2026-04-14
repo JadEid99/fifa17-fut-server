@@ -291,18 +291,14 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
+    // byte13=0x20 gets past PreAuth and reaches CreateAccount (peak progress)
+    // byte13=0x00 should enable TDF parsing but causes RPC timeout
+    // TODO: figure out why 0x00 times out despite correct XOR math
     buf[12] = h.seqByte;
-    // Util component (0x0009): use 0x20 (notification) — DLL bypass handles PreAuth
-    // Auth component (0x0001): use 0x00 (exact match) — RPC framework parses TDF body
-    // All others: use 0x00 (exact match)
-    if (h.component === 0x0009) {
-      buf[13] = 0x20;
-    } else {
-      buf[13] = 0x00;
-    }
+    buf[13] = 0x20;
   } else {
     buf[12] = 0x00;
-    buf[13] = 0x00;
+    buf[13] = 0x20;
   }
   buf.writeUInt16BE(h.extId || 0, 14);
   return buf;
