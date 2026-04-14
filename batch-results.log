@@ -225,3 +225,21 @@ Connection: keep-alive
 [Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=18048
 [Main] S3: -> Ignoring null/error packet (seq=70 flags=0x80)
 [Main] S3 disconnected
+=== S4 disconnect (2026-04-14 09:43:29) ===
+
+[Main] Session 4 connected: 127.0.0.1:60166
+[Main] S4: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 47 80 00 00  ............G...
+[Main] S4: Raw Blaze binary detected
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=18304
+[Main] S4: -> Ignoring null/error packet (seq=71 flags=0x80)
+[Main] S4 disconnected
+=== S5 disconnect (2026-04-14 09:43:32) ===
+
+[Main] Session 5 connected: 127.0.0.1:60170
+[Main] S5: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 48 80 00 00  ............H...
+[Main] S5: Raw Blaze binary detected
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=18560
+[Main] S5: -> Ignoring null/error packet (seq=72 flags=0x80)
+[Main] S5 disconnected
