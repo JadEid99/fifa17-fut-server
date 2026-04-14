@@ -1,21 +1,21 @@
-=== S2 sweep#1: echo+0x10 (BlazePK response type) (2026-04-14 07:42:09) ===
+=== S3 sweep#2: echo+0x20 (BlazePK notify type) (2026-04-14 07:42:16) ===
 
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): b8 97 ce 00 31 ef 43 84 c1 94 8a fd c7 4a a3 7f de 08 01 78 81 2c
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 13 ec 9f a9 dd 2d c8 77 0e d5 75 39 05 57 bc 96 b2 99 30 f2 7f e3
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:53824
+[Redirector-Raw] Disconnected: 127.0.0.1:53829
 [SSL-CONN] Socket closed
-[Redirector-Raw] Client connected: 127.0.0.1:53829
+[Redirector-Raw] Client connected: 127.0.0.1:53839
 [Redirector-Raw] Received 148 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd ef d1 b9  ...........i....
-  0010: 9b 89 bf dd ee bc bc 3c 3c f1 96 12 6e 38 fc 3e  .......<<...n8.>
-  0020: ab 2a d2 b5 bc 02 2e ae 4b 61 eb 20 62 3f 68 13  .*......Ka. b?h.
-  0030: 21 f4 05 77 50 29 19 ec 28 da f7 51 e1 48 81 1c  !..wP)..(..Q.H..
-  0040: bf 4c f2 73 20 fb b7 28 96 45 51 f6 00 10 00 9d  .L.s ..(.EQ.....
+  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd ef d7 57  ...........i...W
+  0010: 0e cf 4f b7 1c b8 f2 a0 74 99 3c 04 4b 20 ab de  ..O.....t.<.K ..
+  0020: 76 7d a2 3d 76 b8 b9 10 b4 ae 94 20 57 50 bc be  v}.=v...... WP..
+  0030: 9f 53 fe 5c 01 24 92 5f 39 51 c1 af 95 c0 f3 4e  .S.\.$._9Q.....N
+  0040: 97 1a c6 4b e2 e6 e6 b5 e6 a2 48 7b 00 10 00 9d  ...K......H{....
   0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,45 +23,45 @@
   0090: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69ddefd1b99b89bf...
+[SSL] ClientHello: version=0x303 random=69ddefd7570ecf4f...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 a0 39 bf 7e b6
-  0010: 5c b7 1b 6e 3e 4a 2f 54 a5 6c 6b 7f cb 32 ff 8c
-  0020: 13 1f a8 22 f3 21 c2 ab f0 ae 99 e7 fc 4e 68 c7
-  0030: d7 64 33 f8 dd 8f 31 3f a5 ac d0 6d cb b4 ee fe
-  0040: 4a e7 1c da 34 b7 8d 5a f6 35 f2 74 fe fd 9b a0
-  0050: 84 bb 7c ca f9 5c 65 87 ea 06 2f 3c ac 12 be 6f
-  0060: 11 af 25 5d 11 e9 25 f0 c5 33 d6 71 2a a2 1e ce
-  0070: 1b 71 3f a0 31 61 c9 9a ca cf 5f b5 16 68 be dd
-  0080: 1f fb 03 51 5e e7 84 47 62 3d e1
+  0000: 16 03 03 00 86 10 00 00 82 00 80 53 98 33 f1 13
+  0010: e2 cf 76 7b 75 79 52 53 42 24 d8 ab f0 61 ea 0f
+  0020: 48 d2 d3 2c 0f 81 a0 3b e3 31 be 4d a1 8d 02 1d
+  0030: 8f 7f 13 d6 a4 7b 6c c4 68 28 7b 08 4d 68 9e 10
+  0040: 22 c8 05 0b fc dd 12 25 32 d9 6f 39 17 37 58 7d
+  0050: f1 52 0e b6 7d 37 af 4c 5d e5 35 7e 58 5a 0f a3
+  0060: 9d c6 b6 d0 59 35 6d 31 cd 41 7e 79 2d 4f 34 6b
+  0070: 07 37 54 cc ea 3f 60 22 d3 4c 61 61 36 5e 37 b7
+  0080: b7 fc 7c 84 b1 a7 ad 05 30 95 8a
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 011e18a25ef6021c5582de19afe6a272...
+[SSL] Master secret derived: 6aa18f2f197779ddc06d7410c05c6fa1...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 aa ab ae cf d3
-  0010: 78 ae 35 dc b7 9e de a6 16 b3 ba af ee db 64 c1
-  0020: 4d bd b5 f5 2a ef 93 2c ef 5d b8 12 2a e9 be
+  0000: 14 03 03 00 01 01 16 03 03 00 24 5f 7b 81 ed 83
+  0010: 3b d1 91 c6 44 1f f3 1f 63 c8 3c e8 5e 62 97 9d
+  0020: dc 39 73 f2 83 4a e2 5e a7 14 5d ea 6a a7 75
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 1257eb21dad3b8c033d256e0c35f0b3b
+[SSL] RC4 decryption initialized with clientWriteKey: 2c5e14ae1543b1f95683b12c3fd9f496
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c5a8d93519a3fcccef2cb28d5674a3e3cba14743c33d0f0b1c7389029a758b1ad
-[SSL] Client Finished plaintext (16 bytes): 1400000c5a8d93519a3fcccef2cb28d5
-[SSL] Client Finished MAC: 674a3e3cba14743c33d0f0b1c7389029a758b1ad
-[SSL] Client verify_data:   5a8d93519a3fcccef2cb28d5
-[SSL] Expected verify_data:  5a8d93519a3fcccef2cb28d5
+[SSL] Decrypted hex: 1400000c199174a80837e6f694e53c889551db4418fdfb7ab741f4db765b53eb9d5e458b
+[SSL] Client Finished plaintext (16 bytes): 1400000c199174a80837e6f694e53c88
+[SSL] Client Finished MAC: 9551db4418fdfb7ab741f4db765b53eb9d5e458b
+[SSL] Client verify_data:   199174a80837e6f694e53c88
+[SSL] Expected verify_data:  199174a80837e6f694e53c88
 [SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 674a3e3cba14743c33d0f0b1c7389029a758b1ad
-[SSL] Actual client MAC:   674a3e3cba14743c33d0f0b1c7389029a758b1ad
+[SSL] Expected client MAC: 9551db4418fdfb7ab741f4db765b53eb9d5e458b
+[SSL] Actual client MAC:   9551db4418fdfb7ab741f4db765b53eb9d5e458b
 [SSL] ✓ Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1070 bytes
@@ -71,7 +71,7 @@
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: ef67552daeb5441f6ba3e590
+[SSL] Server verify_data: e622105874a8d7f58b00fe15
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 883 bytes on socket (total pending: 883)
@@ -112,15 +112,15 @@ Connection: keep-alive
     </valu>
   </address
 [HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 2 connected: 127.0.0.1:53830
-[Main] S2: received 219 bytes (total: 219)
-[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 08 00 00 00  ................
+[Main] Session 3 connected: 127.0.0.1:53840
+[Main] S3: received 219 bytes (total: 219)
+[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 0b 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
 [Main]   0020: d6 0c cf 68 ee 01 0d 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
 [Main]   0030: 2d 70 63 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39  -pc...%........9
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0009 cmd=0x0007 len=203 msgId=2048
-[Main] S2: -> PreAuth
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0009 cmd=0x0007 len=203 msgId=2816
+[Main] S3: -> PreAuth
 [PreAuth] Variant: full
 [PreAuth] Request TDF:
 [PreAuth]   CDAT (struct) {
@@ -146,13 +146,33 @@ Connection: keep-alive
 [PreAuth]   }
 [PreAuth]   LADD (int) = 380807360
 [PreAuth] Sending FIFA17 PreAuth response (367 bytes)
-[Main] S2: Sending response (383 bytes)
-[Main] S2: [SWEEP#1 echo+0x10 (BlazePK response type)] header: 00 00 01 6f 00 00 00 09 00 07 00 00 08 10 00 00
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=2432
-[Main] S2: -> Ignoring null/error packet (seq=9 flags=0x80)
-[Main] S2: comp=0x0009 cmd=0x0002 len=0 msgId=2560
-[Main] S2: Sending response (26 bytes)
-[Main] S2: [SWEEP#1 echo+0x10 (BlazePK response type)] header: 00 00 00 0a 00 00 00 09 00 02 00 00 0a 10 00 00
-[Main] S2 disconnected
-[SWEEP] Test #1 was: echo+0x10 (BlazePK response type)
-[SWEEP] Next test #2: echo+0x20 (BlazePK notify type)
+[Main] S3: Sending response (383 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 01 6f 00 00 00 09 00 07 00 00 0b 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0002 len=0 msgId=3072
+[Main] S3: Sending response (26 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 0a 00 00 00 09 00 02 00 00 0c 20 00 00
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=3456
+[Main] S3: -> Ignoring null/error packet (seq=13 flags=0x80)
+[Redirector-Raw] Disconnected: 127.0.0.1:53839
+[SSL-CONN] Socket closed
+[Main] S3: comp=0x0009 cmd=0x0001 len=15 msgId=3584
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 0e 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0001 len=17 msgId=3840
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 0f 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0001 len=18 msgId=4096
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0001 len=19 msgId=4352
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 11 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0001 len=26 msgId=4608
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 12 20 00 00
+[Main] S3: comp=0x0009 cmd=0x0001 len=30 msgId=4864
+[Main] S3: Sending response (16 bytes)
+[Main] S3: [SWEEP#2 echo+0x20 (BlazePK notify type)] header: 00 00 00 00 00 00 00 09 00 01 00 00 13 20 00 00
+[Main] S3 disconnected
+[SWEEP] Test #2 was: echo+0x20 (BlazePK notify type)
+[SWEEP] Next test #3: echo+0x30 (BlazePK error type)
