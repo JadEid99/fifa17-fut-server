@@ -1,4 +1,4 @@
-=== S1 disconnect (2026-04-14 07:14:41) ===
+=== S1 disconnect (2026-04-14 07:16:24) ===
 
 === FIFA 17 FUT Private Server ===
 
@@ -14,14 +14,14 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Catch] Listening on port 17502
 [Catch] Listening on port 80
 [Catch] Listening on port 9946
-[Redirector-Raw] Client connected: 127.0.0.1:53571
+[Redirector-Raw] Client connected: 127.0.0.1:53586
 [Redirector-Raw] Received 148 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd e9 61 2d  ...........i..a-
-  0010: 1b 8a 83 2a 6b af 51 4d 84 ec cb ca 92 13 22 81  ...*k.QM......".
-  0020: 97 23 c5 a7 06 d7 fc 22 c9 36 da 20 57 37 5e 42  .#.....".6. W7^B
-  0030: f5 fc fa e1 59 43 d7 f3 4c a1 b8 af f6 23 34 68  ....YC..L....#4h
-  0040: 46 08 72 7b 69 9f c8 d8 2e ac 1a 0c 00 10 00 9d  F.r{i...........
+  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd e9 c7 bd  ...........i....
+  0010: 92 d2 fd d6 78 56 84 27 49 80 03 1a 90 23 0d 9a  ....xV.'I....#..
+  0020: 2d de 7e 59 92 62 69 7e 28 66 47 20 70 a5 92 61  -.~Y.bi~(fG p..a
+  0030: 82 22 1e ba c9 70 d9 27 13 f8 32 9e f3 c2 02 55  ."...p.'..2....U
+  0040: 6a ec ef c5 13 4d 37 db 50 05 11 e6 00 10 00 9d  j....M7.P.......
   0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -29,45 +29,45 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0090: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69dde9612d1b8a83...
+[SSL] ClientHello: version=0x303 random=69dde9c7bd92d2fd...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 76 ea d1 a3 9b
-  0010: 8c ad c0 a4 a5 6a 5d a4 09 b4 4e ac 79 78 89 f8
-  0020: 68 33 da 0c a2 38 6b a8 97 21 ad 46 43 33 d1 8a
-  0030: f7 70 94 98 66 6a e9 3e 9e 6c f5 e8 71 13 29 29
-  0040: 1d df 13 5f f2 7b a9 8e 16 17 6e ac 9d b1 4a 40
-  0050: 8e 5e 4e b0 46 11 3a 06 cf 27 93 01 aa 33 48 e9
-  0060: 60 6c 2b 81 96 ed ab c5 a6 8f 59 c3 f3 b9 17 5e
-  0070: 0c 3a 42 b7 88 27 66 84 91 91 22 be bc a0 59 e6
-  0080: 6b e8 5f 3f 1c e6 43 ff c4 0b dd
+  0000: 16 03 03 00 86 10 00 00 82 00 80 15 d6 98 1f 95
+  0010: c5 d2 f1 37 b0 a2 1d 64 03 80 59 ef 9f 03 c3 65
+  0020: 47 45 ff 1a 4d 5c b9 ea 0e ce 3e d0 ad 5d 1a 78
+  0030: ec d7 e7 fa ce 8a 8e e3 1b 81 f9 32 ba c3 35 0f
+  0040: 2f 6c 87 49 45 42 bd a4 57 0d 78 ea 49 00 20 4d
+  0050: bd 68 aa 3d 66 41 30 70 d2 e5 d9 e0 bf 09 43 ec
+  0060: 90 d8 d7 f8 e2 ee 15 05 02 91 b1 6b 6a 5a 2b 7b
+  0070: 90 bc 2a 75 56 4f 82 1f 90 5d d3 45 d6 7a de 19
+  0080: 8e 85 20 2a ab f9 74 87 8c 0f 89
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: e102bcc7652eb5199760d8784831b4cd...
+[SSL] Master secret derived: ce5a517f3d537879c0f6b4195ac36031...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 80 91 a2 1f bd
-  0010: 9c 36 2d 57 ff e6 c0 47 3f 17 73 dc 62 6c c4 d4
-  0020: 03 64 5b 0d 96 ce 04 4f 7a 62 13 9b 40 b6 a6
+  0000: 14 03 03 00 01 01 16 03 03 00 24 dd 74 93 09 65
+  0010: a1 c1 4d 3e 0a 82 63 e5 16 b1 39 d5 f9 bb 8b 2b
+  0020: d7 6f c1 57 2e fd 7a 66 46 e8 f4 5c 79 79 dc
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 8d4ed6026efe68c77f311ad85f5f620f
+[SSL] RC4 decryption initialized with clientWriteKey: e34e46f8217541ec45c88ebd735c42b2
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000ceef7478d5cae57ee086b09ced3b006c508577f5d29c593ddf9e8793bab5acfc0
-[SSL] Client Finished plaintext (16 bytes): 1400000ceef7478d5cae57ee086b09ce
-[SSL] Client Finished MAC: d3b006c508577f5d29c593ddf9e8793bab5acfc0
-[SSL] Client verify_data:   eef7478d5cae57ee086b09ce
-[SSL] Expected verify_data:  eef7478d5cae57ee086b09ce
+[SSL] Decrypted hex: 1400000c8f245f5221f2112e3889ded9390386b0f3b3a26ac9397f2be6d0e7526e2dfa9f
+[SSL] Client Finished plaintext (16 bytes): 1400000c8f245f5221f2112e3889ded9
+[SSL] Client Finished MAC: 390386b0f3b3a26ac9397f2be6d0e7526e2dfa9f
+[SSL] Client verify_data:   8f245f5221f2112e3889ded9
+[SSL] Expected verify_data:  8f245f5221f2112e3889ded9
 [SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: d3b006c508577f5d29c593ddf9e8793bab5acfc0
-[SSL] Actual client MAC:   d3b006c508577f5d29c593ddf9e8793bab5acfc0
+[SSL] Expected client MAC: 390386b0f3b3a26ac9397f2be6d0e7526e2dfa9f
+[SSL] Actual client MAC:   390386b0f3b3a26ac9397f2be6d0e7526e2dfa9f
 [SSL] ✓ Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1070 bytes
@@ -77,7 +77,7 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 0326ca96e778727d2394b0d9
+[SSL] Server verify_data: 32e448a55aa50d73dc0301fb
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 883 bytes on socket (total pending: 883)
@@ -118,16 +118,16 @@ Connection: keep-alive
     </valu>
   </address
 [HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 1 connected: 127.0.0.1:53572
+[Main] Session 1 connected: 127.0.0.1:53587
 [Main] S1: received 219 bytes (total: 219)
-[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 11 00 00 00  ................
+[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 14 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
 [Main]   0020: d6 0c cf 68 ee 01 0d 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
 [Main]   0030: 2d 70 63 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39  -pc...%........9
 [Main] S1: Raw Blaze binary detected
-[Main] S1: comp=0x0009 cmd=0x0007 len=203 msgId=4352
+[Main] S1: comp=0x0009 cmd=0x0007 len=203 msgId=5120
 [Main] S1: -> PreAuth
-[PreAuth] Variant: empty_test
+[PreAuth] Variant: full
 [PreAuth] Request TDF:
 [PreAuth]   CDAT (struct) {
 [PreAuth]     IITO (int) = 0
@@ -151,16 +151,12 @@ Connection: keep-alive
 [PreAuth]     CFID (str) = "BlazeSDK"
 [PreAuth]   }
 [PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending EMPTY response (header-only test)
-[Main] S1: Sending response (16 bytes)
-[Main] S1: Response header: 00 00 00 00 00 00 00 09 00 07 00 00 11 80 00 00
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=4512
-[Main] S1: -> Ignoring null/error packet (seq=17 flags=0xa0)
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=4736
-[Main] S1: -> Ignoring null/error packet (seq=18 flags=0x80)
-[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=4864
+[PreAuth] Sending FIFA17 PreAuth response (367 bytes)
+[Main] S1: Sending response (383 bytes)
+[Main] S1: Response header: 00 00 01 6f 00 00 00 09 00 07 00 00 14 40 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=5504
+[Main] S1: -> Ignoring null/error packet (seq=21 flags=0x80)
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=5632
 [Main] S1: Sending response (26 bytes)
-[Main] S1: Response header: 00 00 00 0a 00 00 00 09 00 02 00 00 13 80 00 00
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=5024
-[Main] S1: -> Ignoring null/error packet (seq=19 flags=0xa0)
+[Main] S1: Response header: 00 00 00 0a 00 00 00 09 00 02 00 00 16 40 00 00
 [Main] S1 disconnected
