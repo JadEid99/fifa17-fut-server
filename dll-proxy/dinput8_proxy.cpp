@@ -805,18 +805,30 @@ done:
                 // Detect CreateAccount completion and trigger Login
                 if (g_createAcctCalled == 1 && g_preAuthParam1 != 0) {
                     g_createAcctCalled = 2; // only do this once
-                    Log("CA-DETECT: CreateAccount done! Calling FUN_146e19720(param1+0x3b6)...");
-                    Log("CA-DETECT: preAuthParam1=0x%llX", g_preAuthParam1);
+                    uint64_t loginSM = g_preAuthParam1 + 0x3b6;
+                    Log("CA-DETECT: CreateAccount done!");
+                    Log("CA-DETECT: preAuthParam1=0x%llX loginSM=0x%llX", g_preAuthParam1, loginSM);
                     
-                    // Call FUN_146e19720(preAuthParam1 + 0x3b6) on the game's thread
-                    // This starts the login flow
-                    typedef void (*LoginStartFn)(uint64_t);
-                    LoginStartFn loginStart = (LoginStartFn)0x146e19720;
+                    // Check if the memory is still valid
                     __try {
-                        loginStart(g_preAuthParam1 + 0x3b6);
-                        Log("CA-DETECT: FUN_146e19720 returned successfully!");
+                        uint64_t val18 = *(uint64_t*)(loginSM + 0x18);
+                        uint64_t val08 = *(uint64_t*)(loginSM + 0x08);
+                        uint64_t val00 = *(uint64_t*)(loginSM);
+                        Log("CA-DETECT: loginSM+0x00=0x%llX +0x08=0x%llX +0x18=0x%llX", val00, val08, val18);
+                        
+                        // Check if +0x08 points to BlazeHub (should have +0x53f flag)
+                        if (val08 > 0x10000 && val08 < 0x800000000ULL) {
+                            uint8_t flag53f = *(uint8_t*)(val08 + 0x53f);
+                            Log("CA-DETECT: blazeHub+0x53f=%d", flag53f);
+                        }
+                        
+                        // Try calling FUN_146e19720
+                        typedef void (*LoginStartFn)(uint64_t);
+                        LoginStartFn fn = (LoginStartFn)0x146e19720;
+                        fn(loginSM);
+                        Log("CA-DETECT: FUN_146e19720 returned OK!");
                     } __except(EXCEPTION_EXECUTE_HANDLER) {
-                        Log("CA-DETECT: FUN_146e19720 CRASHED (exception)");
+                        Log("CA-DETECT: CRASHED (exception) - loginSM memory may be freed");
                     }
                 }
             }
