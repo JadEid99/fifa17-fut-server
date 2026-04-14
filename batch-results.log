@@ -1,9 +1,9 @@
-=== S17 disconnect (2026-04-14 08:19:23) ===
+=== S18 disconnect (2026-04-14 08:19:26) ===
 
-[Main] Session 17 connected: 127.0.0.1:54393
-[Main] S17: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 20 80 00 00  ............ ...
-[Main] S17: Raw Blaze binary detected
-[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=8320
-[Main] S17: -> Ignoring null/error packet (seq=32 flags=0x80)
-[Main] S17 disconnected
+[Main] Session 18 connected: 127.0.0.1:54397
+[Main] S18: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 21 80 00 00  ............!...
+[Main] S18: Raw Blaze binary detected
+[Main] S18: comp=0x0000 cmd=0x0000 len=0 msgId=8576
+[Main] S18: -> Ignoring null/error packet (seq=33 flags=0x80)
+[Main] S18 disconnected
