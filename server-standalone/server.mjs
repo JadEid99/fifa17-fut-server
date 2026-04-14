@@ -291,11 +291,10 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Response to a request: echo the sequence byte, no error flag
-    // We've tried: same seq, seq+1, type|seq. None confirmed working yet.
-    // Current best guess: echo same seq byte (RPC matching by seq number)
+    // Response to a request: same seq byte, set response flag in byte 13
+    // The game's error packets use byte13=0x80. Normal responses might too.
     buf[12] = h.seqByte;
-    buf[13] = h.error ? 0x80 : 0x00;
+    buf[13] = 0x80; // response flag (same as game's error/response packets)
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
