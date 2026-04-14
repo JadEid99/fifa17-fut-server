@@ -10,6 +10,10 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v26: State Machine Trace ===
-[INIT] Login vtable+0x08 -> 0x1465734f0
-[Local::PID::92564 ]-> 
+=== Frida v27: Cave Runtime Trace ===
+[INIT] FUN_146e151d0 byte0=0x48
+[INIT] Cave at 0x570000
+Failed to load script: the connection is closed
+Process terminated
+
+Thank you for using Frida!
