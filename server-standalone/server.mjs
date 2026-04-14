@@ -255,31 +255,11 @@ function decodeVarInt(buf, offset) {
 
 const HEADER_SIZE = 16;
 
-// SWEEP MODE: test different byte12/byte13 combinations automatically
-// Each connection attempt uses the next combination from the list
+// CONFIRMED WORKING: byte12=echo seq, byte13=0x20 (notify type)
+// Sweep test: press #3 = echo+0x20 produced "log in to Origin" message
+// This means the game processes PreAuth response as a notification
 const SWEEP_VALUES = [
-  // [byte12_mode, byte13_value, description]
-  // byte12_mode: 'echo' = same as request, 'zero' = 0, 'plus1' = seq+1
-  // First: sweep byte13 with byte12=echo (most promising based on 0x80 result)
-  ['echo', 0x80, 'echo+0x80 (baseline - game reads but rejects 0xA0)'],
-  ['echo', 0x10, 'echo+0x10 (BlazePK response type)'],
-  ['echo', 0x20, 'echo+0x20 (BlazePK notify type)'],
-  ['echo', 0x30, 'echo+0x30 (BlazePK error type)'],
-  ['echo', 0x90, 'echo+0x90'],
-  ['echo', 0xA0, 'echo+0xA0'],
-  ['echo', 0x01, 'echo+0x01'],
-  ['echo', 0x02, 'echo+0x02'],
-  ['echo', 0x04, 'echo+0x04'],
-  ['echo', 0x08, 'echo+0x08'],
-  // Try with byte12 modifications
-  ['plus1', 0x00, 'seq+1+0x00'],
-  ['plus1', 0x80, 'seq+1+0x80'],
-  ['plus1', 0x10, 'seq+1+0x10'],
-  ['zero', 0x80, '0+0x80'],
-  ['zero', 0x10, '0+0x10'],
-  // Try byte12 as type values (BlazePK style) with byte13 as seq
-  ['type10', 'seq', 'b12=0x10(resp) b13=seq'],
-  ['type20', 'seq', 'b12=0x20(notify) b13=seq'],
+  ['echo', 0x20, 'CONFIRMED: echo+0x20 (notify type)'],
 ];
 let sweepIndex = 0;
 
