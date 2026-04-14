@@ -12,17 +12,28 @@
 Attaching...
 === Frida v19 - RPC Response Matching Trace ===
 === Ready. Press Q to trigger connection. ===
-[Local::PID::101848 ]-> [RECV_DATA] first 16 bytes: 18 de 8a 43 01 00 00 00 30 de 8a 43 01 00 00 00
-[RECV_DATA] returned: 0x9774e01
+[Local::PID::100732 ]-> [RECV_DATA] first 16 bytes: 18 de 8a 43 01 00 00 00 30 de 8a 43 01 00 00 00
+[RECV_DATA] returned: 0x9764e01
 [RECV_DATA] first 16 bytes: 18 de 8a 43 01 00 00 00 30 de 8a 43 01 00 00 00
-[RECV_DATA] returned: 0x97c8d01
-[FRAME_IN] header: f0 7f a6 3e 00 00 00 00 38 7b a6 3e 00 00 00 00
+[RECV_DATA] returned: 0x97b8d01
+[FRAME_IN] header: f0 7f ac 3e 00 00 00 00 38 7b ac 3e 00 00 00 00
 [FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 [FRAME_OUT] comp=0x0 cmd=0xa050
 [FRAME_IN] header: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 [FRAME_IN] header: 00 00 00 00 00 00 00 00 fe ff ff ff ff ff ff ff
 [FRAME_OUT] comp=0x0 cmd=0xa131
-[FRAME_IN] header: 03 00 00 00 00 00 00 00 00 80 a6 3e 00 00 00 00
+[FRAME_IN] header: 03 00 00 00 00 00 00 00 00 80 ac 3e 00 00 00 00
 [FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 51 00 00 00 00 00
 [FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 [RPC_COMPLETE] msgId=134217734 error=0x80050000
+[FRAME_IN] header: f0 7f ac 3e 00 00 00 00 38 7b ac 3e 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[FRAME_OUT] comp=0x0 cmd=0xa050
+[FRAME_IN] header: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 fe ff ff ff ff ff ff ff
+[FRAME_IN] header: 03 00 00 00 00 00 00 00 00 80 ac 3e 00 00 00 00
+[FRAME_OUT] comp=0x0 cmd=0xa131
+[FRAME_OUT] comp=0x0 cmd=0xa141
+[FRAME_IN] header: 28 fb c6 3f 01 00 00 00 7f 09 dc 46 01 00 00 00
+[FRAME_IN] header: 00 00 00 00 60 e0 ac 3e 00 00 00 00 c0 fa c6 3f
+[RPC_COMPLETE] msgId=134217744 error=0x80050000
