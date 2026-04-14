@@ -1,16 +1,11 @@
-=== S7 sweep#6: echo+0x01 (2026-04-14 07:28:45) ===
+=== S8 sweep#7: echo+0x02 (2026-04-14 07:28:48) ===
 
-[Main] Session 7 connected: 127.0.0.1:53671
-[Main] S7: received 32 bytes (total: 32)
-[Main]   0000: 00 00 00 00 00 00 00 01 00 46 00 00 34 00 00 00  .........F..4...
-[Main]   0010: 00 00 00 00 00 00 00 00 00 00 00 00 35 80 00 00  ............5...
-[Main] S7: Raw Blaze binary detected
-[Main] S7: comp=0x0001 cmd=0x0046 len=0 msgId=13312
-[Main] S7: -> Auth unknown cmd=0x46
-[Main] S7: Sending response (16 bytes)
-[Main] S7: [SWEEP#6 echo+0x01] header: 00 00 00 00 00 00 00 01 00 46 00 00 34 01 00 00
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=13696
-[Main] S7: -> Ignoring null/error packet (seq=53 flags=0x80)
-[Main] S7 disconnected
-[SWEEP] Test #6 was: echo+0x01
-[SWEEP] Next test #7: echo+0x02
+[Main] Session 8 connected: 127.0.0.1:53675
+[Main] S8: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 36 80 00 00  ............6...
+[Main] S8: Raw Blaze binary detected
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=13952
+[Main] S8: -> Ignoring null/error packet (seq=54 flags=0x80)
+[Main] S8 disconnected
+[SWEEP] Test #7 was: echo+0x02
+[SWEEP] Next test #8: echo+0x04
