@@ -322,12 +322,10 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: Replace FUN_146e151d0 (CreateAccount response handler)
-// The TDF body isn't being decoded by the RPC framework (decoder creates empty object).
-// We bypass the handler: hardcode UID in state object, call state transition.
-//
-// SIMPLIFIED: Skip FUN_146e00f40 (crashed on deep pointer chain).
-// Just set the state bytes and call the state machine advance.
+// Just RET — don't try to call state transition from the cave.
+// The background thread will detect CreateAccount completion and trigger Login.
 static int g_createAcctPatchDone = 0;
+static volatile int g_createAcctCalled = 0;
 static void PatchCreateAccountHandler() {
     if (g_createAcctPatchDone) return;
     
@@ -336,33 +334,24 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        // Allocate a tiny cave that just sets a flag and returns
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
+        // Set g_createAcctCalled = 1
+        // MOV RAX, &g_createAcctCalled
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
+        memcpy(cave + o, &flagAddr, 8); o += 8;
+        // MOV DWORD [RAX], 1
+        cave[o++] = 0xC7; cave[o++] = 0x00;
+        cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // RET
+        cave[o++] = 0xC3;
         
-        // Restore the state transition but try state 4 instead of 3.
-        // State 3 = OSDK account creation UI (dead end).
-        // State 4 might = Login flow.
-        // Windows x64: param_1=RCX, param_2=RDX, param_3=R8
-        cave[o++] = 0x53;                                     // PUSH RBX
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x20; // SUB RSP, 0x20
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
+        Log("CA_HANDLER: Cave at %p, %d bytes (flag at %p)", cave, o, &g_createAcctCalled);
         
-        // Call state transition: (*(*(param_1[1]) + 8))(param_1[1], 1, 4)
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08; // MOV RCX, [RBX+8]
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;                   // MOV RAX, [RCX]
-        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV EDX, 1
-        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 3 (OSDK account creation)
-        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;                   // CALL [RAX+8]
-        
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x20; // ADD RSP, 0x20
-        cave[o++] = 0x5B;                                     // POP RBX
-        cave[o++] = 0xC3;                                     // RET
-        
-        Log("CA_HANDLER: Cave at %p, %d bytes", cave, o);
-        
-        // Patch FUN_146e151d0 to jump to our cave
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
             int p = 0;
@@ -372,7 +361,7 @@ static void PatchCreateAccountHandler() {
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 16) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> CreateAccount bypass (cave at %p)", cave);
+            Log("PATCHED: FUN_146e151d0 -> CreateAccount flag + RET (cave at %p)", cave);
             g_createAcctPatchDone = 1;
             g_patched++;
         }
@@ -773,6 +762,22 @@ done:
                         uint8_t* pF = (uint8_t*)(bh + 0x53f);
                         if (*pF == 0) { *pF = 1; }
                     }
+                }
+                
+                // Detect CreateAccount completion and trigger Login
+                if (g_createAcctCalled == 1) {
+                    g_createAcctCalled = 2; // only do this once
+                    Log("CA-DETECT: CreateAccount handler was called! Triggering Login flow...");
+                    
+                    // Call FUN_146e1c3f0 (Login type processor) directly
+                    // This function needs the login state machine object.
+                    // We can find it through the BlazeHub connection chain.
+                    // For now, just log that we detected it.
+                    // The game should eventually retry the connection on its own.
+                    
+                    // Force the game to reconnect by resetting connState
+                    *pState = 0;
+                    Log("CA-DETECT: Reset connState to 0 (will trigger reconnect)");
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
