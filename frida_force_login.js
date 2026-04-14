@@ -1,55 +1,88 @@
 /*
- * Frida v18: Hook TDF parser to see if CreateAccount response body is parsed
- * Also read the string at 0x14388cda0 (Entry 1 field name)
+ * Frida v19: Hook the raw Blaze frame receive to see what the game reads
+ * 
+ * Strategy: Hook the recv/read function that feeds data to the Blaze parser.
+ * Then hook the RPC response matcher to see how it processes each frame.
+ * 
+ * Key functions from Ghidra:
+ * - FUN_146db2fe0: processes pending RPC responses (takes connection + msgId + error)
+ * - FUN_146dbae10: processes incoming frame (dispatches to handler)
+ * - FUN_146dbba60: sends outgoing RPC
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v18 ===');
+console.log('=== Frida v19 - RPC Response Matching Trace ===');
 
-// Read the unknown string at 0x14388cda0
-try {
-    var s = ptr(0x14388cda0).readUtf8String(32);
-    console.log('[FIELD1_NAME] 0x14388cda0 = "' + s + '"');
-} catch(e) { console.log('[FIELD1_NAME] error: ' + e); }
-
-// Read the known string at 0x14388cf0c
-try {
-    var s2 = ptr(0x14388cf0c).readUtf8String(32);
-    console.log('[FIELD2_NAME] 0x14388cf0c = "' + s2 + '"');
-} catch(e) { console.log('[FIELD2_NAME] error: ' + e); }
-
-// Hook FUN_146e151d0 - CreateAccount response handler
-Interceptor.attach(addr(0x6e151d0), {
+// Hook FUN_146db2fe0 - this is called to complete a pending RPC with a response
+// Signature: void FUN_146db2fe0(longlong param_1, undefined4 *param_2, undefined4 param_3)
+// param_2 = pointer to msgId/response info, param_3 = error code
+Interceptor.attach(addr(0x6db2fe0), {
     onEnter: function(args) {
-        var p1 = args[0];
         var p2 = args[1];
         var p3 = args[2].toInt32();
-        console.log('[CA_RESP] p1=' + p1 + ' p2=' + p2 + ' p3=0x' + (p3>>>0).toString(16));
-        if (p3 === 0 && !p2.isNull()) {
-            // Dump 64 bytes of the response structure
-            var bytes = p2.readByteArray(64);
-            var arr = new Uint8Array(bytes);
-            var lines = [];
-            for (var i = 0; i < arr.length; i += 16) {
-                var hex = '';
-                for (var j = i; j < Math.min(i+16, arr.length); j++) {
-                    hex += ('0' + arr[j].toString(16)).slice(-2) + ' ';
-                }
-                lines.push('+' + ('00' + i.toString(16)).slice(-3) + ': ' + hex);
-            }
-            console.log('[CA_RESP] param2 dump:\n' + lines.join('\n'));
-            
-            // Check specific offsets
-            console.log('[CA_RESP] +0x10 (userId): 0x' + p2.add(0x10).readU32().toString(16));
-            console.log('[CA_RESP] +0x18 (pnam ptr): ' + p2.add(0x18).readPointer());
-            try {
-                var pnamPtr = p2.add(0x18).readPointer();
-                if (!pnamPtr.isNull()) {
-                    console.log('[CA_RESP] pnam string: "' + pnamPtr.readUtf8String(32) + '"');
-                }
-            } catch(e) {}
+        try {
+            var msgId = p2.readU32();
+            console.log('[RPC_COMPLETE] msgId=' + msgId + ' error=0x' + (p3>>>0).toString(16));
+        } catch(e) {
+            console.log('[RPC_COMPLETE] error=0x' + (p3>>>0).toString(16) + ' (p2 read failed)');
         }
     }
 });
 
-console.log('=== Ready ===');
+// Hook FUN_146dbae10 - processes incoming Blaze frame
+// This is where the frame header is parsed and dispatched
+Interceptor.attach(addr(0x6dbae10), {
+    onEnter: function(args) {
+        this.p1 = args[0];
+        this.p2 = args[1]; // frame data pointer?
+        this.p3 = args[2];
+        this.p4 = args[3];
+        try {
+            // Try to read the frame header from p2 or p3
+            var hdr = args[1].readByteArray(16);
+            var arr = new Uint8Array(hdr);
+            var hex = Array.from(arr).map(function(b) { return ('0' + b.toString(16)).slice(-2); }).join(' ');
+            console.log('[FRAME_IN] header: ' + hex);
+        } catch(e) {}
+    }
+});
+
+// Hook FUN_146dbba60 - sends outgoing RPC (to see what the game sends)
+Interceptor.attach(addr(0x6dbba60), {
+    onEnter: function(args) {
+        try {
+            // args[1] might be the frame buffer
+            var comp = args[1].add(6).readU16();
+            var cmd = args[1].add(8).readU16();
+            console.log('[FRAME_OUT] comp=0x' + comp.toString(16) + ' cmd=0x' + cmd.toString(16));
+        } catch(e) {
+            console.log('[FRAME_OUT] (could not read header)');
+        }
+    }
+});
+
+// Hook FUN_146db1880 - processes received data (bool return = success)
+Interceptor.attach(addr(0x6db1880), {
+    onEnter: function(args) {
+        this.p3 = args[2]; // data pointer
+        try {
+            var data = args[2].readByteArray(16);
+            var arr = new Uint8Array(data);
+            var hex = Array.from(arr).map(function(b) { return ('0' + b.toString(16)).slice(-2); }).join(' ');
+            console.log('[RECV_DATA] first 16 bytes: ' + hex);
+        } catch(e) {}
+    },
+    onLeave: function(ret) {
+        console.log('[RECV_DATA] returned: ' + ret);
+    }
+});
+
+// Hook FUN_146e151d0 - CreateAccount response handler (to confirm it's called)
+Interceptor.attach(addr(0x6e151d0), {
+    onEnter: function(args) {
+        var p3 = args[2].toInt32();
+        console.log('[CA_RESP] param3=0x' + (p3>>>0).toString(16));
+    }
+});
+
+console.log('=== Ready. Press Q to trigger connection. ===');

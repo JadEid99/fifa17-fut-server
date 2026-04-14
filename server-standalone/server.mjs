@@ -292,16 +292,12 @@ function encodeHeader(h) {
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
     buf[12] = h.seqByte;
-    // Auth component (0x0001) needs type=0x10 for TDF body parsing
-    // Util component (0x0009) uses type=0x20 (notification style, DLL handles the rest)
-    if (h.component === 0x0001) {
-      buf[13] = 0x10; // proper response type for Auth
-    } else {
-      buf[13] = 0x20; // notification type for Util (works with DLL bypass)
-    }
+    // Use 0x10 (response type) to trigger TDF body parsing
+    // Frida will show us why the RPC framework fails to match
+    buf[13] = 0x10;
   } else {
     buf[12] = 0x00;
-    buf[13] = 0x20;
+    buf[13] = 0x10;
   }
   buf.writeUInt16BE(h.extId || 0, 14);
   return buf;
