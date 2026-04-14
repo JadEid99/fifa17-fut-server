@@ -34,16 +34,11 @@ function flushAndPush(label) {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const last200 = sessionLog.slice(-200).join('\n');
     const content = `=== ${label} (${timestamp}) ===\n\n${last200}\n`;
-    // APPEND instead of overwrite so we keep all sessions
     fs.appendFileSync(logPath, content, 'utf8');
-    // Only push every 3rd disconnect to avoid git conflicts
-    if (label.includes('S1 ') || label.includes('S3 ') || label.includes('S5 ')) {
-      execSync('git add batch-results.log && git commit -m "auto-log: ' + label + '" && git push', { cwd: repoRoot, stdio: 'ignore', timeout: 15000 });
-      origLog('[AUTO-LOG] Pushed results for: ' + label);
-    }
     sessionLog = [];
+    origLog('[LOG] Saved: ' + label);
   } catch (e) {
-    origLog('[AUTO-LOG] Error: ' + e.message);
+    origLog('[LOG] Error: ' + e.message);
     sessionLog = [];
   }
 }
@@ -1536,15 +1531,9 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // Ghidra: CreateAccountResponse has only 2 TDF fields
-  // Minimal response: just auth token + user ID
-  const enc = new TdfEncoder();
-  enc.writeString('PCTK', authToken);
-  enc.writeInteger('UID ', session.nucleusId);
-  
-  const body = enc.build();
-  console.log('[CreateAccount] Minimal response: ' + body.length + ' bytes');
-  return buildReply(pkt, body);
+  // Try empty response — maybe CreateAccount just needs an acknowledgment
+  console.log('[CreateAccount] Sending empty response (acknowledgment only)');
+  return buildReply(pkt, Buffer.alloc(0));
 }
 
 function handleFetchClientConfig(pkt) {
