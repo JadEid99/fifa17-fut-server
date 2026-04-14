@@ -376,25 +376,11 @@ static void PatchOriginCheckOnline() {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
-    // Part D: Patch OriginGetProfileSync, OriginGetSettingSync, OriginSetPresence
-    // These functions talk to STP via LSX and fail because STP doesn't handle them.
-    // Frida showed errors: 0xa2080000 (LSX response mismatch) and 0xa2000003 (SetPresence fail)
-    uint64_t osdkFuncs[] = { 0x1470da970, 0x1470daa30, 0x1470db760 };
-    const char* osdkNames[] = { "GetProfileSync", "GetSettingSync", "SetPresence" };
-    for (int i = 0; i < 3; i++) {
-        __try {
-            BYTE* f = (BYTE*)osdkFuncs[i];
-            Log("OSDK_%s: addr=%p bytes=%02X %02X %02X %02X", osdkNames[i], f, f[0], f[1], f[2], f[3]);
-            DWORD op;
-            if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                f[0] = 0x31; f[1] = 0xC0; // XOR EAX, EAX (return 0)
-                f[2] = 0xC3;               // RET
-                for (int k=3; k<8; k++) f[k] = 0x90;
-                VirtualProtect(f, 8, op, &op);
-                Log("PATCHED: %s -> return 0", osdkNames[i]);
-            }
-        } __except(EXCEPTION_EXECUTE_HANDLER) {}
-    }
+    // Part D: Instead of patching OSDK functions (which breaks startup),
+    // we delay-patch them. The PatchThread runs in a loop, so these will
+    // be applied after the game has loaded.
+    // For now, skip the OSDK patches here — they'll be applied later
+    // in the main patch loop when the game is past the loading screen.
     
     g_originCheckOnlineDone = 1;
     g_patched++;
@@ -685,6 +671,28 @@ static DWORD WINAPI PatchThread(LPVOID) {
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception"); }
     
 done:
+    // Now that the game has loaded, patch the OSDK functions that fail during connection
+    // These can't be patched at startup because they're needed during loading
+    Log("AUTH: Applying delayed OSDK patches...");
+    {
+        uint64_t osdkFuncs[] = { 0x1470da970, 0x1470daa30, 0x1470db760 };
+        const char* osdkNames[] = { "GetProfileSync", "GetSettingSync", "SetPresence" };
+        for (int i = 0; i < 3; i++) {
+            __try {
+                BYTE* f = (BYTE*)osdkFuncs[i];
+                Log("OSDK_%s: addr=%p bytes=%02X %02X %02X %02X", osdkNames[i], f, f[0], f[1], f[2], f[3]);
+                DWORD op;
+                if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                    f[0] = 0x31; f[1] = 0xC0; // XOR EAX, EAX
+                    f[2] = 0xC3;               // RET
+                    for (int k=3; k<8; k++) f[k] = 0x90;
+                    VirtualProtect(f, 8, op, &op);
+                    Log("PATCHED: %s -> return 0 (delayed)", osdkNames[i]);
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        }
+    }
+    
     // Keep forcing +0x53f flag continuously in background
     // This ensures it's set before any connection attempt
     Log("AUTH: Starting continuous +0x53f flag enforcer...");
