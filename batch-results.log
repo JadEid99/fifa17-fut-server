@@ -1,11 +1,200 @@
-=== S20 sweep#19: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:47:17) ===
+=== S1 disconnect (2026-04-14 07:51:16) ===
 
-[Main] Session 20 connected: 127.0.0.1:54051
-[Main] S20: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 54 80 00 00  ............T...
-[Main] S20: Raw Blaze binary detected
-[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=21632
-[Main] S20: -> Ignoring null/error packet (seq=84 flags=0x80)
-[Main] S20 disconnected
-[SWEEP] Test #19 was: CONFIRMED: echo+0x20 (notify type)
-[SWEEP] Next test #20: CONFIRMED: echo+0x20 (notify type)
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
+[Redirector-Raw] Client connected: 127.0.0.1:54109
+[Redirector-Raw] Received 148 bytes
+[Redirector-Raw] Full hex dump:
+  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd f1 f3 9c  ...........i....
+  0010: 2e 44 08 60 7e e6 21 d5 17 67 23 3c 35 9d e0 b3  .D.`~.!..g#<5...
+  0020: ac 8f ea b0 ed 6d 53 cc cc 41 97 20 61 ea f7 42  .....mS..A. a..B
+  0030: 19 5a 42 f0 38 23 af 69 7d 37 e8 77 38 c0 2f e2  .ZB.8#.i}7.w8./.
+  0040: be 4b fd 8c b5 43 af 8f 34 2a 49 25 00 10 00 9d  .K...C..4*I%....
+  0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
+  0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
+  0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
+  0080: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
+  0090: 02 01 01 01                                      ....
+[Redirector-Raw] Detected SSLv3 ClientHello!
+[Redirector-Raw] Attempting SSLv3 handshake...
+[SSL] ClientHello: version=0x303 random=69ddf1f39c2e4408...
+[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
+[SSL] Selected cipher: 0x0005
+[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
+[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
+[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
+  0000: 16 03 03 00 86 10 00 00 82 00 80 6d 29 89 04 d9
+  0010: dc a0 a4 f3 aa fe 7e 29 ec 4f 0c fe 2b c1 f1 3e
+  0020: 31 3c 2f 54 7e 9e 99 ac 27 5e 2e 44 6c 72 41 48
+  0030: c7 11 2b 11 b4 eb fb 6c fd 85 5f 71 9f 06 36 6a
+  0040: 0a 98 da 07 dd f9 8e b0 c9 a8 3a 1b b6 c7 f4 6f
+  0050: 69 7a fe 50 82 d0 66 7d 6f 25 c2 16 a2 03 b4 07
+  0060: f1 16 52 68 09 36 dd 1c f9 cb 67 32 08 af 3a 81
+  0070: 7a b1 e8 b3 0f de 73 50 d4 f0 9f 5a ec 2f 39 b1
+  0080: 8c b2 55 6a 23 c3 10 fb 27 a8 48
+[SSL] Record: type=0x16 ver=0x303 len=134
+[SSL] Handshake type: 0x10 (ClientKeyExchange)
+[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
+[SSL] Decrypted PMS: 48 bytes, version=0x303
+[SSL] Master secret derived: f2bdbbab86e3ca5b8446ce77dfd730c7...
+[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
+[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
+  0000: 14 03 03 00 01 01 16 03 03 00 24 01 11 0e 9f e4
+  0010: b7 1c 3a 17 c6 46 0b aa b2 21 d0 1b a9 58 d2 c6
+  0020: 2d 75 c9 7e 6b ee 34 b8 ed 7b dd d0 ee 06 57
+[SSL] Record: type=0x14 ver=0x303 len=1
+[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
+[SSL] RC4 decryption initialized with clientWriteKey: 9370ef98318ec4516ab071bc925083e5
+[SSL] Record: type=0x16 ver=0x303 len=36
+[SSL] Encrypted handshake record (client Finished): 36 bytes
+[SSL] Decrypted client Finished record: 36 bytes
+[SSL] Decrypted hex: 1400000c22b6727c256f97550f47c2e3e46087bb45f3449a2b083f76b7b7d16d7d177047
+[SSL] Client Finished plaintext (16 bytes): 1400000c22b6727c256f97550f47c2e3
+[SSL] Client Finished MAC: e46087bb45f3449a2b083f76b7b7d16d7d177047
+[SSL] Client verify_data:   22b6727c256f97550f47c2e3
+[SSL] Expected verify_data:  22b6727c256f97550f47c2e3
+[SSL] ✓ Client Finished verify_data MATCHES!
+[SSL] Expected client MAC: e46087bb45f3449a2b083f76b7b7d16d7d177047
+[SSL] Actual client MAC:   e46087bb45f3449a2b083f76b7b7d16d7d177047
+[SSL] ✓ Client Finished MAC MATCHES!
+[SSL] Sent server ChangeCipherSpec
+[SSL] Server Finished hash input: 6 messages, total 1070 bytes
+[SSL]   msg[0]: 143 bytes, starts=0x1
+[SSL]   msg[1]: 74 bytes, starts=0x2
+[SSL]   msg[2]: 699 bytes, starts=0xb
+[SSL]   msg[3]: 4 bytes, starts=0xe
+[SSL]   msg[4]: 134 bytes, starts=0x10
+[SSL]   msg[5]: 16 bytes, starts=0x14
+[SSL] Server verify_data: 53785aad9e34525b47f99198
+[SSL] Sent encrypted server Finished
+[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
+[SSL-DATA] Received 883 bytes on socket (total pending: 883)
+[SSL] TLS record: type=0x17 ver=0x303 len=878 (pending: 883)
+[SSL] Decrypted 858 bytes of application data
+[SSL] Raw app data (858b): 50 4f 53 54 20 2f 72 65 64 69 72 65 63 74 6f 72 2f 67 65 74 53 65 72 76 65 72 49 6e 73 74 61 6e
+[HTTP-Blaze] Request:
+POST /redirector/getServerInstance HTTP/1.1
+Host: winter15.gosredirector.ea.com:42230
+Content-Length: 665
+User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstancerequest>
+  <blazesdkversion>15.1.1.3.0</blazesdkversion>
+  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
+  <clientname>FIFA17</clientname>
+  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
+  <clientplatform>pc</clientplatform>
+  <client
+[HTTP-Blaze] POST /redirector/getServerInstance (body: 665 bytes)
+[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
+[HTTP-Blaze] secure=0
+[HTTP-Blaze] Response (417 bytes):
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 322
+Connection: keep-alive
+
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstanceinfo>
+  <address member="0">
+    <valu>
+      <hostname>127.0.0.1</hostname>
+      <ip>2130706433</ip>
+      <port>10041</port>
+    </valu>
+  </address
+[HTTP-Blaze] Sent encrypted HTTP response
+[Main] Session 1 connected: 127.0.0.1:54110
+[Main] S1: received 219 bytes (total: 219)
+[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 56 00 00 00  ............V...
+[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
+[Main]   0020: d6 0c cf 68 ee 01 0d 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
+[Main]   0030: 2d 70 63 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39  -pc...%........9
+[Main] S1: Raw Blaze binary detected
+[Main] S1: comp=0x0009 cmd=0x0007 len=203 msgId=22016
+[Main] S1: -> PreAuth
+[PreAuth] Variant: full
+[PreAuth] Request TDF:
+[PreAuth]   CDAT (struct) {
+[PreAuth]     IITO (int) = 0
+[PreAuth]     LANG (int) = 1701729619
+[PreAuth]     SVCN (str) = "fifa-2017-pc"
+[PreAuth]     TYPE (int) = 0
+[PreAuth]   }
+[PreAuth]   CINF (struct) {
+[PreAuth]     BSDK (str) = "15.1.1.3.0"
+[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
+[PreAuth]     CLNT (str) = "FIFA17"
+[PreAuth]     CPFT (int) = 4
+[PreAuth]     CSKU (str) = "FIFAPC"
+[PreAuth]     CVER (str) = "3175939"
+[PreAuth]     DSDK (str) = "15.1.2.1.0"
+[PreAuth]     ENV  (str) = "prod"
+[PreAuth]     LOC  (int) = 1701729619
+[PreAuth]     PTVR (str) = "1.1"
+[PreAuth]   }
+[PreAuth]   FCCR (struct) {
+[PreAuth]     CFID (str) = "BlazeSDK"
+[PreAuth]   }
+[PreAuth]   LADD (int) = 380807360
+[PreAuth] Sending FIFA17 PreAuth response (367 bytes)
+[Main] S1: Sending response (383 bytes)
+[Main] S1: header: 00 00 01 6f 00 00 00 09 00 07 00 00 56 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=22272
+[Main] S1: Sending response (26 bytes)
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 57 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=22656
+[Main] S1: -> Ignoring null/error packet (seq=88 flags=0x80)
+[Redirector-Raw] Disconnected: 127.0.0.1:54109
+[SSL-CONN] Socket closed
+[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=22784
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
+[FetchClientConfig] CFID="OSDK_CORE"
+[FetchClientConfig] Responding with 2 config entries
+[Main] S1: Sending response (86 bytes)
+[Main] S1: header: 00 00 00 46 00 00 00 09 00 01 00 00 59 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=23040
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
+[FetchClientConfig] CFID="OSDK_CLIENT"
+[FetchClientConfig] Responding with 0 config entries
+[Main] S1: Sending response (23 bytes)
+[Main] S1: header: 00 00 00 07 00 00 00 09 00 01 00 00 5a 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=23296
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
+[FetchClientConfig] CFID="OSDK_NUCLEUS"
+[FetchClientConfig] Responding with 0 config entries
+[Main] S1: Sending response (23 bytes)
+[Main] S1: header: 00 00 00 07 00 00 00 09 00 01 00 00 5b 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=23552
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
+[FetchClientConfig] CFID="OSDK_WEBOFFER"
+[FetchClientConfig] Responding with 0 config entries
+[Main] S1: Sending response (23 bytes)
+[Main] S1: header: 00 00 00 07 00 00 00 09 00 01 00 00 5c 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=23808
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 0 config entries
+[Main] S1: Sending response (23 bytes)
+[Main] S1: header: 00 00 00 07 00 00 00 09 00 01 00 00 5d 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=24064
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 0 config entries
+[Main] S1: Sending response (23 bytes)
+[Main] S1: header: 00 00 00 07 00 00 00 09 00 01 00 00 5e 20 00 00
+[Main] S1 disconnected
