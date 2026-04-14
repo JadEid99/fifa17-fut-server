@@ -1,65 +1,8 @@
-﻿=== Batch Test (2026-04-14 19:13:49) ===
+﻿=== Batch Test (2026-04-14 19:17:20) ===
 RESULT: CREATE_ACCOUNT
 
 --- BLAZE SERVER LOG (last 5000 chars) ---
-tes, starts=0x14
-[SSL] Server verify_data: fcbb2c2fead86b9c9caa4240
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 908 bytes on socket (total pending: 908)
-[SSL] TLS record: type=0x17 ver=0x303 len=903 (pending: 908)
-[SSL] Decrypted 883 bytes of application data
-[SSL] Raw app data (883b): 50 4f 53 54 20 2f 72 65 64 69 72 65 63 74 6f 72 2f 67 65 74 53 65 72 76 65 72 49 6e 73 74 61 6e
-[HTTP-Blaze] Request:
-POST /redirector/getServerInstance HTTP/1.1
-Host: winter15.gosredirector.ea.com:42230
-Content-Length: 671
-Connection: Close
-User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
-Content-Type: application/xml
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstancerequest>
-  <blazesdkversion>15.1.1.3.0</blazesdkversion>
-  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
-  <clientname>FIFA17</clientname>
-  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
-  <clientplatform>pc</client
-[HTTP-Blaze] POST /redirector/getServerInstance (body: 671 bytes)
-[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
-[HTTP-Blaze] secure=0
-[HTTP-Blaze] Response (417 bytes):
-HTTP/1.1 200 OK
-Content-Type: application/xml
-Content-Length: 322
-Connection: keep-alive
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstanceinfo>
-  <address member="0">
-    <valu>
-      <hostname>127.0.0.1</hostname>
-      <ip>2130706433</ip>
-      <port>10041</port>
-    </valu>
-  </address
-[HTTP-Blaze] Sent encrypted HTTP response
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 72 22 10 70 b8 fa e7 4f 7a 92 50 76 9e 46 ed a4 46 82 ce a6 d5 b7
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:63852
-[SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:63853
-[Main] S1: received 225 bytes (total: 225)
-[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
-[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
-[Main]   0020: d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
-[Main]   0030: 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00  -pc-trial...%...
-[Main] S1: Raw Blaze binary detected
-[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=0
+ S1: comp=0x0009 cmd=0x0007 len=209 msgId=0
 [Main] S1: -> PreAuth
 [PreAuth] Variant: full
 [PreAuth] Request TDF:
@@ -133,7 +76,7 @@ Connection: keep-alive
 [Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 08 20 00 00
 [Main] S1 disconnected
 [LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:63854
+[Main] Session 2 connected: 127.0.0.1:64055
 [Main] S2: received 54 bytes (total: 54)
 [Main]   0000: 00 00 00 26 00 00 00 01 00 0a 00 00 09 00 00 00  ...&............
 [Main]   0010: 87 5d 28 01 17 46 41 4b 45 41 55 54 48 43 4f 44  .](..FAKEAUTHCOD
@@ -149,252 +92,301 @@ Connection: keep-alive
 [CreateAccount] PNAM+UID response: 22 bytes (UID=2000000002)
 [Main] S2: Sending response (38 bytes)
 [Main] S2: header: 00 00 00 16 00 00 00 01 00 0a 00 00 09 20 00 00
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=10
-[Main] S2: -> Ping (msgId=10), sending pong
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=10
-[Main] S2: -> Ignoring null/error packet (msgId=10 type=5)
+[Main] S2: comp=0x0001 cmd=0x00f2 len=11 msgId=10
+[Main] S2: -> Auth cmd=0xf2 (unknown)
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   PTFM (int) = 4
+[Main] S2: -> GetTermsOfServiceContent
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 f2 00 00 0a 20 00 00
+[Main] S2: comp=0x0001 cmd=0x00f6 len=27 msgId=11
+[Main] S2: -> Auth cmd=0xf6 (unknown)
+[Main] S2:   CPFT (int) = 4
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   FTCH (int) = 1
+[Main] S2:   LANG (str) = ""
+[Main] S2:   TEXT (int) = 0
+[Main] S2: -> GetLegalDocContent
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 f6 00 00 0b 20 00 00
+[Main] S2: comp=0x0001 cmd=0x002f len=27 msgId=12
+[Main] S2: -> Auth cmd=0x2f (unknown)
+[Main] S2:   CPFT (int) = 4
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   FTCH (int) = 1
+[Main] S2:   LANG (str) = ""
+[Main] S2:   TEXT (int) = 0
+[Main] S2: -> GetTermsOfServiceInfo
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 2f 00 00 0c 20 00 00
+[Main] S2: comp=0x0001 cmd=0x00f2 len=11 msgId=13
+[Main] S2: -> Auth cmd=0xf2 (unknown)
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   PTFM (int) = 4
+[Main] S2: -> GetTermsOfServiceContent
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 f2 00 00 0d 20 00 00
+[Main] S2: comp=0x0001 cmd=0x00f6 len=27 msgId=14
+[Main] S2: -> Auth cmd=0xf6 (unknown)
+[Main] S2:   CPFT (int) = 4
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   FTCH (int) = 1
+[Main] S2:   LANG (str) = ""
+[Main] S2:   TEXT (int) = 0
+[Main] S2: -> GetLegalDocContent
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 f6 00 00 0e 20 00 00
+[Main] S2: comp=0x0001 cmd=0x002f len=27 msgId=15
+[Main] S2: -> Auth cmd=0x2f (unknown)
+[Main] S2:   CPFT (int) = 4
+[Main] S2:   CTRY (str) = ""
+[Main] S2:   FTCH (int) = 1
+[Main] S2:   LANG (str) = ""
+[Main] S2:   TEXT (int) = 0
+[Main] S2: -> GetTermsOfServiceInfo
+[Main] S2: Sending response (28 bytes)
+[Main] S2: header: 00 00 00 0c 00 00 00 01 00 2f 00 00 0f 20 00 00
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S2: -> Ping (msgId=16), sending pong
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S2: -> Ignoring null/error packet (msgId=16 type=5)
 [Main] S2 disconnected
 [LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:63856
+[Main] Session 3 connected: 127.0.0.1:64056
 [Main] S3: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
 [Main] S3: Raw Blaze binary detected
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=11
-[Main] S3: -> Ping (msgId=11), sending pong
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=11
-[Main] S3: -> Ignoring null/error packet (msgId=11 type=5)
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S3: -> Ping (msgId=17), sending pong
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S3: -> Ignoring null/error packet (msgId=17 type=5)
 [Main] S3 disconnected
 [LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:63857
+[Main] Session 4 connected: 127.0.0.1:64057
 [Main] S4: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
 [Main] S4: Raw Blaze binary detected
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S4: -> Ping (msgId=12), sending pong
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S4: -> Ping (msgId=18), sending pong
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S4: -> Ignoring null/error packet (msgId=18 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:63858
+[Main] Session 5 connected: 127.0.0.1:64058
 [Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 13 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ping (msgId=13), sending pong
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=19
+[Main] S5: -> Ping (msgId=19), sending pong
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=19
+[Main] S5: -> Ignoring null/error packet (msgId=19 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:63859
+[Main] Session 6 connected: 127.0.0.1:64059
 [Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 14 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S6: -> Ping (msgId=14), sending pong
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=20
+[Main] S6: -> Ping (msgId=20), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=20
+[Main] S6: -> Ignoring null/error packet (msgId=20 type=5)
 [Main] S6 disconnected
 [LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:63860
+[Main] Session 7 connected: 127.0.0.1:64060
 [Main] S7: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 15 80 00 00  ................
 [Main] S7: Raw Blaze binary detected
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S7: -> Ping (msgId=15), sending pong
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=21
+[Main] S7: -> Ping (msgId=21), sending pong
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=21
+[Main] S7: -> Ignoring null/error packet (msgId=21 type=5)
 [Main] S7 disconnected
 [LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:63861
+[Main] Session 8 connected: 127.0.0.1:64061
 [Main] S8: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 16 80 00 00  ................
 [Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S8: -> Ping (msgId=16), sending pong
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=22
+[Main] S8: -> Ping (msgId=22), sending pong
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=22
+[Main] S8: -> Ignoring null/error packet (msgId=22 type=5)
 [Main] S8 disconnected
 [LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:63862
+[Main] Session 9 connected: 127.0.0.1:64062
 [Main] S9: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 17 80 00 00  ................
 [Main] S9: Raw Blaze binary detected
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S9: -> Ping (msgId=17), sending pong
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=23
+[Main] S9: -> Ping (msgId=23), sending pong
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=23
+[Main] S9: -> Ignoring null/error packet (msgId=23 type=5)
 [Main] S9 disconnected
 [LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:63864
+[Main] Session 10 connected: 127.0.0.1:64064
 [Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 18 80 00 00  ................
 [Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S10: -> Ping (msgId=18), sending pong
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
-[Main] S10: comp=0x0001 cmd=0x0046 len=0 msgId=19
-[Main] S10: -> Auth cmd=0x46 (Logout)
-[Main] S10: Sending response (167 bytes)
-[Main] S10: header: 00 00 00 97 00 00 00 01 00 46 00 00 13 20 00 00
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=24
+[Main] S10: -> Ping (msgId=24), sending pong
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=24
+[Main] S10: -> Ignoring null/error packet (msgId=24 type=5)
 [Main] S10 disconnected
 [LOG] Saved: S10 disconnect
-[Main] Session 11 connected: 127.0.0.1:63865
+[Main] Session 11 connected: 127.0.0.1:64066
 [Main] S11: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 14 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 19 80 00 00  ................
 [Main] S11: Raw Blaze binary detected
-[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=20
-[Main] S11: -> Ping (msgId=20), sending pong
-[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=20
-[Main] S11: -> Ignoring null/error packet (msgId=20 type=5)
+[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=25
+[Main] S11: -> Ping (msgId=25), sending pong
+[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=25
+[Main] S11: -> Ignoring null/error packet (msgId=25 type=5)
 [Main] S11 disconnected
 [LOG] Saved: S11 disconnect
-[Main] Session 12 connected: 127.0.0.1:63866
+[Main] Session 12 connected: 127.0.0.1:64067
 [Main] S12: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 15 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1a 80 00 00  ................
 [Main] S12: Raw Blaze binary detected
-[Main] S12: comp=0x0000 cmd=0x0000 len=0 msgId=21
-[Main] S12: -> Ping (msgId=21), sending pong
-[Main] S12: comp=0x0000 cmd=0x0000 len=0 msgId=21
-[Main] S12: -> Ignoring null/error packet (msgId=21 type=5)
+[Main] S12: comp=0x0000 cmd=0x0000 len=0 msgId=26
+[Main] S12: -> Ping (msgId=26), sending pong
+[Main] S12: comp=0x0000 cmd=0x0000 len=0 msgId=26
+[Main] S12: -> Ignoring null/error packet (msgId=26 type=5)
 [Main] S12 disconnected
 [LOG] Saved: S12 disconnect
-[Main] Session 13 connected: 127.0.0.1:63867
+[Main] Session 13 connected: 127.0.0.1:64068
 [Main] S13: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 16 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1b 80 00 00  ................
 [Main] S13: Raw Blaze binary detected
-[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=22
-[Main] S13: -> Ping (msgId=22), sending pong
-[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=22
-[Main] S13: -> Ignoring null/error packet (msgId=22 type=5)
+[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=27
+[Main] S13: -> Ping (msgId=27), sending pong
+[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=27
+[Main] S13: -> Ignoring null/error packet (msgId=27 type=5)
 [Main] S13 disconnected
 [LOG] Saved: S13 disconnect
-[Main] Session 14 connected: 127.0.0.1:63868
+[Main] Session 14 connected: 127.0.0.1:64069
 [Main] S14: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 17 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1c 80 00 00  ................
 [Main] S14: Raw Blaze binary detected
-[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=23
-[Main] S14: -> Ping (msgId=23), sending pong
-[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=23
-[Main] S14: -> Ignoring null/error packet (msgId=23 type=5)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=28
+[Main] S14: -> Ping (msgId=28), sending pong
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=28
+[Main] S14: -> Ignoring null/error packet (msgId=28 type=5)
 [Main] S14 disconnected
 [LOG] Saved: S14 disconnect
-[Main] Session 15 connected: 127.0.0.1:63869
+[Main] Session 15 connected: 127.0.0.1:64070
 [Main] S15: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 18 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1d 80 00 00  ................
 [Main] S15: Raw Blaze binary detected
-[Main] S15: comp=0x0000 cmd=0x0000 len=0 msgId=24
-[Main] S15: -> Ping (msgId=24), sending pong
-[Main] S15: comp=0x0000 cmd=0x0000 len=0 msgId=24
-[Main] S15: -> Ignoring null/error packet (msgId=24 type=5)
+[Main] S15: comp=0x0000 cmd=0x0000 len=0 msgId=29
+[Main] S15: -> Ping (msgId=29), sending pong
+[Main] S15: comp=0x0000 cmd=0x0000 len=0 msgId=29
+[Main] S15: -> Ignoring null/error packet (msgId=29 type=5)
 [Main] S15 disconnected
 [LOG] Saved: S15 disconnect
-[Main] Session 16 connected: 127.0.0.1:63870
+[Main] Session 16 connected: 127.0.0.1:64071
 [Main] S16: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 19 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1e 80 00 00  ................
 [Main] S16: Raw Blaze binary detected
-[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=25
-[Main] S16: -> Ping (msgId=25), sending pong
-[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=25
-[Main] S16: -> Ignoring null/error packet (msgId=25 type=5)
+[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=30
+[Main] S16: -> Ping (msgId=30), sending pong
+[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=30
+[Main] S16: -> Ignoring null/error packet (msgId=30 type=5)
 [Main] S16 disconnected
 [LOG] Saved: S16 disconnect
-[Main] Session 17 connected: 127.0.0.1:63871
+[Main] Session 17 connected: 127.0.0.1:64072
 [Main] S17: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1a 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1f 80 00 00  ................
 [Main] S17: Raw Blaze binary detected
-[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=26
-[Main] S17: -> Ping (msgId=26), sending pong
-[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=26
-[Main] S17: -> Ignoring null/error packet (msgId=26 type=5)
+[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=31
+[Main] S17: -> Ping (msgId=31), sending pong
+[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=31
+[Main] S17: -> Ignoring null/error packet (msgId=31 type=5)
 [Main] S17 disconnected
 [LOG] Saved: S17 disconnect
-[Main] Session 18 connected: 127.0.0.1:63872
+[Main] Session 18 connected: 127.0.0.1:64073
 [Main] S18: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1b 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 20 80 00 00  ............ ...
 [Main] S18: Raw Blaze binary detected
-[Main] S18: comp=0x0000 cmd=0x0000 len=0 msgId=27
-[Main] S18: -> Ping (msgId=27), sending pong
-[Main] S18: comp=0x0000 cmd=0x0000 len=0 msgId=27
-[Main] S18: -> Ignoring null/error packet (msgId=27 type=5)
+[Main] S18: comp=0x0000 cmd=0x0000 len=0 msgId=32
+[Main] S18: -> Ping (msgId=32), sending pong
+[Main] S18: comp=0x0000 cmd=0x0000 len=0 msgId=32
+[Main] S18: -> Ignoring null/error packet (msgId=32 type=5)
 [Main] S18 disconnected
 [LOG] Saved: S18 disconnect
-[Main] Session 19 connected: 127.0.0.1:63873
+[Main] Session 19 connected: 127.0.0.1:64074
 [Main] S19: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1c 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 21 80 00 00  ............!...
 [Main] S19: Raw Blaze binary detected
-[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=28
-[Main] S19: -> Ping (msgId=28), sending pong
-[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=28
-[Main] S19: -> Ignoring null/error packet (msgId=28 type=5)
+[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=33
+[Main] S19: -> Ping (msgId=33), sending pong
+[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=33
+[Main] S19: -> Ignoring null/error packet (msgId=33 type=5)
+[Main] S19 disconnected
+[LOG] Saved: S19 disconnect
+[Main] Session 20 connected: 127.0.0.1:64075
+[Main] S20: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 22 80 00 00  ............"...
+[Main] S20: Raw Blaze binary detected
+[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=34
+[Main] S20: -> Ping (msgId=34), sending pong
+[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=34
+[Main] S20: -> Ignoring null/error packet (msgId=34 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-19:12:21.756] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[19:12:21.756] PATCHED: Login vtable check -> return 1
-[19:12:21.756] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[19:12:21.756] LOGIN SilentLogin: already patched
-[19:12:21.756] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[19:12:21.756] LOGIN ExpressLogin: already patched
-[19:12:21.756] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[19:12:21.756] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[19:12:21.756] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[19:12:21.756] PREAUTH_HANDLER: Cave at 00000000004F0000, 61 bytes
-[19:12:21.756] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000004F0000)
-[19:12:21.756] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
-[19:12:21.756] CA_HANDLER: Cave at 0000000000500000, 1 bytes
-[19:12:21.756] PATCHED: FUN_146e151d0 -> CreateAccount bypass (cave at 0000000000500000)
-[19:12:21.756] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[19:12:21.756] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[19:12:21.756] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[19:12:21.756] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[19:12:21.756] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[19:12:21.756] PATCHED: FUN_145e280b0 (version compare) -> always match
-[19:12:21.916] PATCHED: Origin SDK check at 00000001470A8430
-[19:12:21.916] All patches in 703 ms
-[19:12:21.916] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
-[19:12:21.916] AUTH: Checking login gate globals...
-[19:12:21.916] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[19:12:21.916] AUTH: DAT_144b86bdf = 0 (error flag)
-[19:12:21.916] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[19:12:27.745] AUTH: Slot cleared at 5800 ms
-[19:12:27.745] AUTH: OnlineMgr=0x3EC33E70
-[19:12:27.745] AUTH: slot=0x0 cave=0
-[19:12:27.745] AUTH: Using fake vtable (real not captured)
-[19:12:27.745] AUTH: Injected fake request 000000005D3A0000 into slot
-[19:12:32.745] AUTH: cave=1 slot=0x0
-[19:12:32.745] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[19:12:32.745] AUTH: req[+0xd8]=0x99DA0B0 req[+0xe8]=1
-[19:12:32.745] AUTH: state=2. Auth ready.
-[19:12:32.745] AUTH: OnlineMgr+0xb10 = 0x3EC3A6E0
-[19:12:32.745] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC3A960
-[19:12:32.745] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[19:12:32.745] AUTH: Found 0 objects with vtables in BlazeHub
-[19:12:32.745] AUTH: BlazeHub(000000003EC3A960)+0x53f = 1
-[19:12:32.745] AUTH: Applying OSDK patches (post-load)...
-[19:12:32.745] PATCHED: GetProfileSync -> return 0 (post-load)
-[19:12:32.745] PATCHED: GetSettingSync -> return 0 (post-load)
-[19:12:32.745] PATCHED: SetPresence -> return 0 (post-load)
-[19:12:32.745] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+9:15:52.769] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[19:15:52.769] PATCHED: Login vtable check -> return 1
+[19:15:52.769] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[19:15:52.769] LOGIN SilentLogin: already patched
+[19:15:52.769] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[19:15:52.769] LOGIN ExpressLogin: already patched
+[19:15:52.769] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[19:15:52.769] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[19:15:52.769] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[19:15:52.769] PREAUTH_HANDLER: Cave at 0000000000AD0000, 61 bytes
+[19:15:52.769] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000000AD0000)
+[19:15:52.769] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
+[19:15:52.769] CA_HANDLER: Cave at 0000000000AE0000, 35 bytes
+[19:15:52.769] PATCHED: FUN_146e151d0 -> CreateAccount bypass (cave at 0000000000AE0000)
+[19:15:52.769] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[19:15:52.769] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[19:15:52.769] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[19:15:52.769] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[19:15:52.769] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[19:15:52.769] PATCHED: FUN_145e280b0 (version compare) -> always match
+[19:15:52.914] PATCHED: Origin SDK check at 00000001470A8430
+[19:15:52.914] All patches in 719 ms
+[19:15:52.914] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
+[19:15:52.914] AUTH: Checking login gate globals...
+[19:15:52.914] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[19:15:52.914] AUTH: DAT_144b86bdf = 0 (error flag)
+[19:15:52.914] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[19:15:58.647] AUTH: Slot cleared at 5700 ms
+[19:15:58.647] AUTH: OnlineMgr=0x3EC83E70
+[19:15:58.647] AUTH: slot=0x0 cave=0
+[19:15:58.647] AUTH: Using fake vtable (real not captured)
+[19:15:58.647] AUTH: Injected fake request 000000005D3B0000 into slot
+[19:16:03.648] AUTH: cave=1 slot=0x0
+[19:16:03.648] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[19:16:03.648] AUTH: req[+0xd8]=0x99DA0B0 req[+0xe8]=1
+[19:16:03.648] AUTH: state=2. Auth ready.
+[19:16:03.648] AUTH: OnlineMgr+0xb10 = 0x3EC8A6E0
+[19:16:03.648] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC8A960
+[19:16:03.648] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[19:16:03.648] AUTH: Found 0 objects with vtables in BlazeHub
+[19:16:03.648] AUTH: BlazeHub(000000003EC8A960)+0x53f = 1
+[19:16:03.648] AUTH: Applying OSDK patches (post-load)...
+[19:16:03.648] PATCHED: GetProfileSync -> return 0 (post-load)
+[19:16:03.648] PATCHED: GetSettingSync -> return 0 (post-load)
+[19:16:03.648] PATCHED: SetPresence -> return 0 (post-load)
+[19:16:03.648] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
-=== S19 disconnect (2026-04-14 17:13:49) ===
+=== S20 disconnect (2026-04-14 17:17:21) ===
 
-[Main] Session 19 connected: 127.0.0.1:63873
-[Main] S19: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1c 80 00 00  ................
-[Main] S19: Raw Blaze binary detected
-[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=28
-[Main] S19: -> Ping (msgId=28), sending pong
-[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=28
-[Main] S19: -> Ignoring null/error packet (msgId=28 type=5)
-[Main] S19 disconnected
-=== S20 disconnect (2026-04-14 17:13:52) ===
-
-[Main] Session 20 connected: 127.0.0.1:63874
+[Main] Session 20 connected: 127.0.0.1:64075
 [Main] S20: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1d 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 22 80 00 00  ............"...
 [Main] S20: Raw Blaze binary detected
-[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=29
-[Main] S20: -> Ping (msgId=29), sending pong
-[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=29
-[Main] S20: -> Ignoring null/error packet (msgId=29 type=5)
+[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=34
+[Main] S20: -> Ping (msgId=34), sending pong
+[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=34
+[Main] S20: -> Ignoring null/error packet (msgId=34 type=5)
 [Main] S20 disconnected
