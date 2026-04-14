@@ -10,5 +10,7 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v20 - Raw Socket Trace ===
-[Local::PID::86512 ]-> 
+=== Frida v21 ===
+=== Ready ===
+[Local::PID::85668 ]-> [CA] param3=0x40050000 ERROR
+[CA] param3=0x40050000 ERROR
