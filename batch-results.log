@@ -1,11 +1,11 @@
-=== S21 sweep#20: echo+0x30 (BlazePK error type) (2026-04-14 07:43:12) ===
+=== S22 sweep#21: echo+0x90 (2026-04-14 07:43:15) ===
 
-[Main] Session 21 connected: 127.0.0.1:53918
-[Main] S21: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 26 80 00 00  ............&...
-[Main] S21: Raw Blaze binary detected
-[Main] S21: comp=0x0000 cmd=0x0000 len=0 msgId=9856
-[Main] S21: -> Ignoring null/error packet (seq=38 flags=0x80)
-[Main] S21 disconnected
-[SWEEP] Test #20 was: echo+0x30 (BlazePK error type)
-[SWEEP] Next test #21: echo+0x90
+[Main] Session 22 connected: 127.0.0.1:53923
+[Main] S22: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 27 80 00 00  ............'...
+[Main] S22: Raw Blaze binary detected
+[Main] S22: comp=0x0000 cmd=0x0000 len=0 msgId=10112
+[Main] S22: -> Ignoring null/error packet (seq=39 flags=0x80)
+[Main] S22 disconnected
+[SWEEP] Test #21 was: echo+0x90
+[SWEEP] Next test #22: echo+0xA0
