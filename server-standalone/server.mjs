@@ -1535,12 +1535,46 @@ function handlePreAuth(pkt) {
     return buildReply(pkt, body);
   }
   
-  // Use BF4 emulator's captured real EA server PreAuth response
-  // Modified: INST changed to fifa-2017-pc, RSRC to fifa-2017-pc
-  // This is a known-good response format from a real EA Blaze server
-  const bf4Response = Buffer.from('873ca30107333032313233008e993304001688e0030189e003198ae0031b041c0607090a82e007230f80e00382e00383e00384e00386e003901f87e0038efba6038efba6050101111e6173736f63696174696f6e4c697374536b6970496e697469616c5365740002310014626c617a65536572766572436c69656e7449640017474f532d426c617a655365727665722d4246342d50430012627974657661756c74486f73746e616d65001e627974657661756c742e67616d6573657276696365732e65612e636f6d000e627974657661756c74506f7274000634323231300010627974657661756c74536563757265000574727565001863617073537472696e6756616c69646174696f6e557269001c636c69656e742d737472696e67732e78626f786c6976652e636f6d0010636f6e6e49646c6554696d656f75740004393073001664656661756c745265717565737454696d656f7574000436307300136964656e74697479446973706c61795572690011636f6e736f6c65322f77656c636f6d6500146964656e7469747952656469726563745572690019687474703a2f2f3132372e302e302e312f73756363657373000f6e75636c657573436f6e6e656374001868747470733a2f2f6163636f756e74732e65612e636f6d000d6e75636c65757350726f7879001768747470733a2f2f676174657761792e65612e636f6d000b70696e67506572696f640004333073001a757365724d616e616765724d617843616368656455736572730002300016766f69704865616473657455706461746552617465000531303030000c78626c546f6b656e55726e00106163636f756e74732e65612e636f6d001a786c7370436f6e6e656374696f6e49646c6554696d656f757400043330300000973ca3010733303231323300a6ecf40111626174746c656669656c642d342d706300b69bb20000ba1cf0010a63656d5f65615f696400c29b24010100c2c8740103706300c6fcf3038b7c3303c33840010a3132372e302e302e3100c33c00009e9102cee840010100000ab2ec00000ab34c33030000cf6a640085a088d40800cb3ca3010733303231323300cf69720120426c617a652031332e332e312e382e302028434c232031313438323639290a00', 'hex');
-  console.log(`[PreAuth] Sending BF4-based response (${bf4Response.length} bytes)`);
-  return buildReply(pkt, bf4Response);
+  // Build a proper FIFA 17 PreAuth response based on PocketRelay's format
+  // Adapted from PocketRelay's PreAuthResponse for Mass Effect 3
+  const enc = new TdfEncoder();
+  enc.writeInteger('ANON', 0);
+  enc.writeString('ASRC', '303107');  // Auth source
+  enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7800, 0x7801, 0x7802, 0x7803, 0x7805, 0x7806, 0x07D0]);
+  enc.writeString('CNGN', '');
+  // Config map with pingPeriod, timeouts etc
+  enc.writeStructStart('CONF');
+  enc.writeMap('CONF', {
+    'connIdleTimeout': '90s',
+    'defaultRequestTimeout': '60s',
+    'pingPeriod': '15s',
+    'voipHeadsetUpdateRate': '1000',
+    'xlspConnectionIdleTimeout': '300'
+  });
+  enc.writeStructEnd();
+  enc.writeString('INST', 'fifa-2017-pc');  // Must match game's SVCN
+  enc.writeInteger('MINR', 0);
+  enc.writeString('NASP', 'cem_ea_id');
+  enc.writeString('PILD', '');
+  enc.writeString('PLAT', 'pc');
+  enc.writeString('PTAG', '');
+  // QoS server config
+  enc.writeStructStart('QOSS');
+  enc.writeStructStart('BWPS');
+  enc.writeString('PSA ', '127.0.0.1');
+  enc.writeInteger('PSP ', 17502);
+  enc.writeString('SNA ', 'prod-sjc');
+  enc.writeStructEnd(); // BWPS
+  enc.writeInteger('LNP ', 10);
+  enc.writeStructStart('LTPS');
+  enc.writeStructEnd(); // LTPS (empty)
+  enc.writeInteger('SVID', 0x45410805);
+  enc.writeStructEnd(); // QOSS
+  enc.writeString('RSRC', '303107');
+  enc.writeString('SVER', 'Blaze 15.1.1.3.0 (CL# 1060080)\n');
+  const body = enc.build();
+  console.log(`[PreAuth] Sending FIFA17 PreAuth response (${body.length} bytes)`);
+  return buildReply(pkt, body);
 }
 function handlePostAuth(session, pkt) {
   const enc = new TdfEncoder();
