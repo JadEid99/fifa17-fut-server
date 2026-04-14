@@ -291,12 +291,15 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // CONFIRMED from Ghidra: bytes 12-15 are a 32-bit message ID
-    // The RPC matcher uses (XOR & 0xf7ffffff) == 0 to match
-    // We must echo the EXACT same bytes 12-15 from the request
-    // byte12=seq (message counter), byte13=0x00, bytes14-15=0x0000
     buf[12] = h.seqByte;
-    buf[13] = 0x00;
+    // Util component (0x0009): use 0x20 (notification) — DLL bypass handles PreAuth
+    // Auth component (0x0001): use 0x00 (exact match) — RPC framework parses TDF body
+    // All others: use 0x00 (exact match)
+    if (h.component === 0x0009) {
+      buf[13] = 0x20;
+    } else {
+      buf[13] = 0x00;
+    }
   } else {
     buf[12] = 0x00;
     buf[13] = 0x00;
