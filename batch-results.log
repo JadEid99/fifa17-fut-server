@@ -1,11 +1,11 @@
-=== S13 sweep#12: seq+1+0x10 (2026-04-14 07:42:48) ===
+=== S14 sweep#13: 0+0x80 (2026-04-14 07:42:51) ===
 
-[Main] Session 13 connected: 127.0.0.1:53883
-[Main] S13: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1e 80 00 00  ................
-[Main] S13: Raw Blaze binary detected
-[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=7808
-[Main] S13: -> Ignoring null/error packet (seq=30 flags=0x80)
-[Main] S13 disconnected
-[SWEEP] Test #12 was: seq+1+0x10
-[SWEEP] Next test #13: 0+0x80
+[Main] Session 14 connected: 127.0.0.1:53888
+[Main] S14: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1f 80 00 00  ................
+[Main] S14: Raw Blaze binary detected
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=8064
+[Main] S14: -> Ignoring null/error packet (seq=31 flags=0x80)
+[Main] S14 disconnected
+[SWEEP] Test #13 was: 0+0x80
+[SWEEP] Next test #14: 0+0x10
