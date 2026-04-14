@@ -1256,13 +1256,7 @@ function startMainServer() {
     socket.on('data', initialHandler);
     socket.on('close', () => {
       console.log(`[Main] S${sid} disconnected`);
-      // Advance sweep for next connection
-      const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
-      console.log(`[SWEEP] Test #${sweepIndex} was: ${sv[2]}`);
-      sweepIndex++;
-      const next = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
-      console.log(`[SWEEP] Next test #${sweepIndex}: ${next[2]}`);
-      flushAndPush(`S${sid} sweep#${sweepIndex-1}: ${sv[2]}`);
+      flushAndPush(`S${sid} disconnect`);
     });
     socket.on('error', (e) => console.log(`[Main] S${sid} error: ${e.message}`));
   });
@@ -1286,11 +1280,27 @@ function setupMainBlazeHandler(socket, session) {
         else if (cmd === 0x0008) { console.log(`[Main] S${sid}: -> PostAuth`); resp = handlePostAuth(session, pkt); }
         else if (cmd === 0x0002) resp = handlePing(pkt);
         else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
-        else if (cmd === 0x0001) resp = buildReply(pkt, new TdfEncoder().build());
+        else if (cmd === 0x0001) {
+          // FetchClientConfig — decode the CFID to see what config is requested
+          try {
+            const decoded = decodeTdf(pkt.body);
+            const cfidLine = decoded.lines.find(l => l.includes('CFID'));
+            console.log(`[Main] S${sid}: -> FetchClientConfig: ${cfidLine || 'unknown'}`);
+          } catch(e) { console.log(`[Main] S${sid}: -> FetchClientConfig (decode err)`); }
+          resp = handleFetchClientConfig(pkt);
+        }
         else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
         else { console.log(`[Main] S${sid}: -> Util unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
       } else if (comp === 0x0001) {
-        if ([0x0028, 0x00C8, 0x0032, 0x003C].includes(cmd)) { console.log(`[Main] S${sid}: -> Login`); resp = handleLogin(session, pkt); }
+        if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046].includes(cmd)) { 
+          console.log(`[Main] S${sid}: -> Login/Auth cmd=0x${cmd.toString(16)}`); 
+          // Decode request body for debugging
+          try {
+            const decoded = decodeTdf(pkt.body);
+            for (const line of decoded.lines) console.log(`[Main] S${sid}:   ${line}`);
+          } catch(e) {}
+          resp = handleLogin(session, pkt); 
+        }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
@@ -1301,8 +1311,7 @@ function setupMainBlazeHandler(socket, session) {
       if (resp) {
         console.log(`[Main] S${sid}: Sending response (${resp.length} bytes)`);
         const hdrHex = Array.from(resp.subarray(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-        const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
-        console.log(`[Main] S${sid}: [SWEEP#${sweepIndex} ${sv[2]}] header: ${hdrHex}`);
+        console.log(`[Main] S${sid}: header: ${hdrHex}`);
         socket.write(resp);
       }
     } catch (e) {
@@ -1505,6 +1514,61 @@ function handleMainHttpRoute(path, bodyXml, session) {
   // Default: empty response
   console.log(`[Main-HTTP] Unhandled: ${path}`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<response></response>`;
+}
+
+function handleFetchClientConfig(pkt) {
+  // Decode the CFID from the request
+  let cfid = 'unknown';
+  try {
+    const decoded = decodeTdf(pkt.body);
+    const cfidLine = decoded.lines.find(l => l.includes('CFID'));
+    if (cfidLine) {
+      const match = cfidLine.match(/"([^"]+)"/);
+      if (match) cfid = match[1];
+    }
+  } catch(e) {}
+  
+  console.log(`[FetchClientConfig] CFID="${cfid}"`);
+  
+  // Build config map based on the requested config ID
+  const enc = new TdfEncoder();
+  const configs = {};
+  
+  if (cfid === 'OSDK_CORE') {
+    // Origin SDK core config
+    configs['OSDK_CORE_connIdleTimeout'] = '90s';
+    configs['OSDK_CORE_requestTimeout'] = '60s';
+  } else if (cfid === 'FIFA17_DATA' || cfid === 'ME3_DATA' || cfid.includes('DATA')) {
+    // Game data config — URLs for services
+    configs['GAW_SERVER_BASE_URL'] = 'http://127.0.0.1:8080/';
+    configs['IMG_MNGR_BASE_URL'] = 'http://127.0.0.1:8080/content/';
+    configs['IMG_MNGR_MAX_BYTES'] = '1048576';
+    configs['IMG_MNGR_MAX_IMAGES'] = '5';
+    configs['MULTIPLAYER_PROTOCOL_VERSION'] = '3';
+    configs['TEL_DISABLE'] = '';
+    configs['TEL_DOMAIN'] = 'pc/fifa-2017-pc-anon';
+    configs['TEL_FILTER'] = '-UION/****';
+    configs['TEL_PORT'] = '9988';
+    configs['TEL_SEND_DELAY'] = '15000';
+    configs['TEL_SEND_PCT'] = '75';
+    configs['TEL_SERVER'] = '127.0.0.1';
+  } else if (cfid.includes('MSG') || cfid.includes('msg')) {
+    // Messages config — empty
+  } else if (cfid.includes('DIME') || cfid.includes('dime')) {
+    // DIME (shop) config
+    configs['Config'] = '<?xml version="1.0" encoding="UTF-8"?><dime></dime>';
+  } else if (cfid.includes('BINI_VERSION') || cfid.includes('bini')) {
+    configs['SECTION'] = 'BINI_PC_COMPRESSED';
+    configs['VERSION'] = '40128';
+  } else if (cfid.includes('ENT') || cfid.includes('ent')) {
+    // Entitlements — empty for now
+  }
+  
+  // Always return a CONF map (even if empty)
+  enc.writeMap('CONF', configs);
+  
+  console.log(`[FetchClientConfig] Responding with ${Object.keys(configs).length} config entries`);
+  return buildReply(pkt, enc.build());
 }
 
 function handlePreAuth(pkt) {
