@@ -1,17 +1,11 @@
 /*
- * Frida v28: Don't hook the cave directly (crashes).
- * Instead, use a Memory.scan to find what param_1[1] is by reading
- * the RPC object after CreateAccount response arrives.
- * 
- * Hook FUN_146db5d60 (RPC decode) and when we see the CreateAccount
- * response (22 bytes, vtable 0x14389f2b8), read param_1 to find
- * the handler object and its param_1[1].
+ * Frida v29: Read the ACTUAL vtable of the state machine object at rpc+0x20
+ * to find the correct advance function address.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v28: Find state machine object ===');
+console.log('=== Frida v29: State Machine Vtable ===');
 
-// Hook FUN_146db5d60 to catch the CreateAccount RPC decode
 Interceptor.attach(addr(0x6db5d60), {
     onEnter: function(args) {
         var rpc = args[0];
@@ -24,78 +18,56 @@ Interceptor.attach(addr(0x6db5d60), {
         var bufEnd = bodyBuf.add(0x18).readPointer();
         var bodyLen = bufEnd.sub(bufStart).toInt32();
         
-        // CreateAccount response is 22 bytes
         if (bodyLen === 22) {
-            console.log('[CA-RPC] Found CreateAccount RPC decode!');
-            console.log('[CA-RPC] rpc object=' + rpc);
+            console.log('[CA] CreateAccount RPC found');
             
-            var vtable = rpc.readPointer();
-            console.log('[CA-RPC] rpc vtable=' + vtable);
+            // The state machine is at rpc+0x20
+            var smPtr = rpc.add(0x20).readPointer();
+            console.log('[CA] State machine at ' + smPtr);
             
-            // Dump the RPC object to find the handler reference
-            // The handler is stored somewhere in the RPC object
-            // Let's dump offsets 0x00-0x80
-            for (var off = 0; off <= 0x80; off += 8) {
-                try {
-                    var val = rpc.add(off).readPointer();
-                    // Check if it looks like a heap pointer (handler object)
-                    if (val.compare(ptr('0x1000000')) > 0 && val.compare(ptr('0x800000000')) < 0) {
-                        // Check if it has a vtable in the game's code range
-                        try {
-                            var possibleVtable = val.readPointer();
-                            if (possibleVtable.compare(ptr('0x140000000')) > 0 && possibleVtable.compare(ptr('0x150000000')) < 0) {
-                                console.log('[CA-RPC] +0x' + off.toString(16) + ' = ' + val + ' -> vtable=' + possibleVtable);
-                            }
-                        } catch(e) {}
+            if (!smPtr.isNull()) {
+                var vtable = smPtr.readPointer();
+                console.log('[CA] SM vtable = ' + vtable);
+                
+                // Read all vtable entries (first 16)
+                for (var i = 0; i < 16; i++) {
+                    try {
+                        var entry = vtable.add(i * 8).readPointer();
+                        console.log('[CA] vtable[' + i + '] (+0x' + (i*8).toString(16) + ') = ' + entry);
+                    } catch(e) { break; }
+                }
+                
+                // Also dump the state machine object itself (first 0x40 bytes)
+                var dump = new Uint8Array(smPtr.readByteArray(0x40));
+                var hex = Array.from(dump).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
+                console.log('[CA] SM object dump: ' + hex);
+                
+                // Now read the HANDLER object — it's what our cave receives as param_1
+                // The handler is referenced from the RPC object. Let's find it.
+                // In the original code, the RPC framework calls:
+                //   (**(code **)*puVar2)(puVar2, 0);
+                // where puVar2 is the RPC object. So vtable[0] of the RPC is the handler dispatch.
+                // But the handler object itself is different.
+                // Let's look at rpc+0x78 which had vtable 0x143891fe8
+                var handlerPtr = rpc.add(0x78).readPointer();
+                console.log('[CA] Handler candidate at rpc+0x78 = ' + handlerPtr);
+                if (!handlerPtr.isNull()) {
+                    var hVtable = handlerPtr.readPointer();
+                    console.log('[CA] Handler vtable = ' + hVtable);
+                    // Dump handler object
+                    var hDump = new Uint8Array(handlerPtr.readByteArray(0x40));
+                    var hHex = Array.from(hDump).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
+                    console.log('[CA] Handler dump: ' + hHex);
+                    
+                    // Check handler+0x08 — is it the state machine?
+                    var h08 = handlerPtr.add(0x08).readPointer();
+                    console.log('[CA] handler+0x08 = ' + h08);
+                    if (h08.equals(smPtr)) {
+                        console.log('[CA] >>> handler+0x08 IS the state machine! <<<');
                     }
-                } catch(e) {}
+                }
             }
         }
-    }
-});
-
-// Hook the CreateAccount handler response callback
-// FUN_146e151d0 is patched to our cave, but the RPC framework calls it
-// through a function pointer. Let's hook the function that CALLS the handler
-// which is the vtable[0] call in FUN_146db5d60:
-// (**(code **)*puVar2)(puVar2, 0);
-// This is called after the decode, with the RPC object as param.
-
-// Actually, let's just trace what happens after CreateAccount by hooking
-// functions that should be called in the login flow:
-
-// FUN_146e1c3f0 — Login type processor
-Interceptor.attach(addr(0x6e1c3f0), {
-    onEnter: function(args) {
-        console.log('[LOGIN-PROC] CALLED! This means we got past CreateAccount!');
-    }
-});
-
-// FUN_146e1e460 — post_PreAuth
-Interceptor.attach(addr(0x6e1e460), {
-    onEnter: function(args) {
-        console.log('[POST-PREAUTH] called');
-    }
-});
-
-// FUN_146e19720 — Login state machine start
-Interceptor.attach(addr(0x6e19720), {
-    onEnter: function(args) {
-        console.log('[LOGIN-SM-START] FUN_146e19720 called! param1=' + args[0]);
-    }
-});
-
-// FUN_146e19b30 — Another login state function
-Interceptor.attach(addr(0x6e19b30), {
-    onEnter: function(args) {
-        console.log('[LOGIN-SM-B] FUN_146e19b30 called!');
-    }
-});
-
-// FUN_146e1dae0 — Login check function
-Interceptor.attach(addr(0x6e1dae0), {
-    onEnter: function(args) {
-        console.log('[LOGIN-CHECK] FUN_146e1dae0 called!');
     }
 });
 
