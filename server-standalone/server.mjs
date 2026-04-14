@@ -1531,9 +1531,38 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // Try empty response — maybe CreateAccount just needs an acknowledgment
-  console.log('[CreateAccount] Sending empty response (acknowledgment only)');
-  return buildReply(pkt, Buffer.alloc(0));
+  // Game sends AUTH + EXTB + EXTI — this is Origin-style auth, not traditional CreateAccount
+  // Use PocketRelay's silent=true AuthResponse format (with SESS struct)
+  const enc = new TdfEncoder();
+  enc.writeInteger('AGUP', 0);
+  enc.writeString('LDHT', '');
+  enc.writeInteger('NTOS', 0);
+  enc.writeString('PCTK', authToken);
+  enc.writeString('PRIV', '');
+  enc.writeStructStart('SESS');
+  enc.writeInteger('BUID', session.nucleusId);
+  enc.writeInteger('FRST', 0);
+  enc.writeString('KEY ', session.personaId.toString(16).toUpperCase());
+  enc.writeInteger('LLOG', 0);
+  enc.writeString('MAIL', 'player@fut.local');
+  enc.writeStructStart('PDTL');
+  enc.writeString('DSNM', session.displayName);
+  enc.writeInteger('LAST', 0);
+  enc.writeInteger('PID ', session.personaId);
+  enc.writeInteger('STAS', 0);
+  enc.writeInteger('XREF', 0);
+  enc.writeInteger('XTYP', 0);
+  enc.writeStructEnd();
+  enc.writeInteger('UID ', session.nucleusId);
+  enc.writeStructEnd();
+  enc.writeInteger('SPAM', 0);
+  enc.writeString('THST', '');
+  enc.writeString('TSUI', '');
+  enc.writeString('TURI', '');
+  
+  const body = enc.build();
+  console.log('[CreateAccount] Silent auth response: ' + body.length + ' bytes');
+  return buildReply(pkt, body);
 }
 
 function handleFetchClientConfig(pkt) {

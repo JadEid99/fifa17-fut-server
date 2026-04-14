@@ -92,7 +92,7 @@ Write-Host "=== RESULT: $r1 ===" -ForegroundColor $(if($r1 -match "LOGIN|POSTAUT
 
 # Save results
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$bs1 = if($blazeOut.Length -gt 5000){$blazeOut.Substring($blazeOut.Length-5000)}else{$blazeOut}
+$bs1 = if($blazeOut.Length -gt 15000){$blazeOut.Substring($blazeOut.Length-15000)}else{$blazeOut}
 $dl1 = if($dllLog.Length -gt 3000){$dllLog.Substring($dllLog.Length-3000)}else{$dllLog}
 
 $results = @"
