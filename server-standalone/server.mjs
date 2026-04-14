@@ -268,44 +268,35 @@ function decodeHeader(buf) {
   const length = buf.readUInt32BE(0);
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
-  const error = buf.readUInt16BE(10);
-  const seqByte = buf[12];
-  const flagByte = buf[13];
-  const extId = buf.readUInt16BE(14);
-  let msgType = 0x0000;
-  if (flagByte & 0x80) msgType = 0x3000;
-  const msgId = (seqByte << 8) | flagByte;
-  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
+  // Fire2 header: [10-12] = u24 message ID, [13] = type/flags, [14-15] = error code
+  const msgId = (buf[10] << 16) | (buf[11] << 8) | buf[12];
+  const typeByte = buf[13];
+  const msgType = (typeByte >> 5) & 0x07;  // top 3 bits = message type
+  const flags = typeByte & 0x1F;            // bottom 5 bits = flags
+  const error = buf.readUInt16BE(14);
+  return { length, component, command, error, msgType, msgId, typeByte, flags };
 }
 
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
   buf.writeUInt32BE(h.length || 0, 0);
-  buf.writeUInt16BE(0, 4);
+  buf.writeUInt16BE(0, 4);                          // extended length
   buf.writeUInt16BE(h.component, 6);
   buf.writeUInt16BE(h.command, 8);
-  buf.writeUInt16BE(h.error || 0, 10);
-  
+  // Fire2 header: [10-12] = u24 message ID, [13] = type/flags, [14-15] = error code
+  const msgId = h.msgId || 0;
+  buf[10] = (msgId >> 16) & 0xFF;
+  buf[11] = (msgId >> 8) & 0xFF;
+  buf[12] = msgId & 0xFF;
   if (h.notify) {
-    buf[12] = 0x00;
-    buf[13] = 0x00;
-    buf.writeUInt16BE(0, 14);
-  } else if (h.seqByte !== undefined) {
-    buf[12] = h.seqByte;
-    if (h.component === 0x0001) {
-      // Auth component: use type=2 (Response, byte13=0x40-0x5F)
-      // Top 3 bits = 010 = type 2 (Response)
-      // Bottom 5 bits = flags (try 0 first)
-      buf[13] = 0x40;
-    } else {
-      // Util component: keep 0x20 (Notification) — works with DLL bypass
-      buf[13] = 0x20;
-    }
+    // Notification: type=2 (010), flags=0 → byte13=0x40, msgId=0
+    buf[10] = 0x00; buf[11] = 0x00; buf[12] = 0x00;
+    buf[13] = 0x40;
   } else {
-    buf[12] = 0x00;
+    // Response: type=1 (001), flags=0 → byte13=0x20
     buf[13] = 0x20;
   }
-  buf.writeUInt16BE(h.extId || 0, 14);
+  buf.writeUInt16BE(h.error || 0, 14);
   return buf;
 }
 function readPacket(buf) {
@@ -322,9 +313,7 @@ function buildReply(req, body, error = 0) {
     component: req.header.component, 
     command: req.header.command, 
     error, 
-    seqByte: req.header.seqByte,  // echo the request's sequence number
-    extId: req.header.extId || 0,
-    msgId: req.header.msgId 
+    msgId: req.header.msgId   // echo the request's 3-byte message ID for RPC matching
   });
   return Buffer.concat([h, body]);
 }
@@ -1138,7 +1127,7 @@ function handleBlazePacket(pkt) {
   
   // Skip null/error packets — don't respond to acks or error notifications from the game
   if (comp === 0x0000 && cmd === 0x0000) {
-    console.log(`[Blaze] Ignoring null packet (seq=${pkt.header.seqByte} flags=0x${(pkt.header.flagByte||0).toString(16)})`);
+    console.log(`[Blaze] Ignoring null packet (msgId=${pkt.header.msgId} type=${pkt.header.msgType})`);
     return null; // no response
   }
   
@@ -1267,7 +1256,7 @@ function setupMainBlazeHandler(socket, session) {
     try {
       // Skip null/error packets — don't respond
       if (comp === 0x0000 && cmd === 0x0000) {
-        console.log(`[Main] S${sid}: -> Ignoring null/error packet (seq=${pkt.header.seqByte} flags=0x${(pkt.header.flagByte||0).toString(16)})`);
+        console.log(`[Main] S${sid}: -> Ignoring null/error packet (msgId=${pkt.header.msgId} type=${pkt.header.msgType})`);
         return;
       }
       if (comp === 0x0009) {
