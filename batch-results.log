@@ -1,15 +1,11 @@
-=== S2 sweep#1: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:22) ===
+=== S3 sweep#2: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:25) ===
 
-[Main] Session 2 connected: 127.0.0.1:53976
-[Main] S2: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 01 00 46 00 00 41 00 00 00  .........F..A...
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0001 cmd=0x0046 len=0 msgId=16640
-[Main] S2: -> Auth unknown cmd=0x46
-[Main] S2: Sending response (16 bytes)
-[Main] S2: [SWEEP#1 CONFIRMED: echo+0x20 (notify type)] header: 00 00 00 00 00 00 00 01 00 46 00 00 41 20 00 00
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=17024
-[Main] S2: -> Ignoring null/error packet (seq=66 flags=0x80)
-[Main] S2 disconnected
-[SWEEP] Test #1 was: CONFIRMED: echo+0x20 (notify type)
-[SWEEP] Next test #2: CONFIRMED: echo+0x20 (notify type)
+[Main] Session 3 connected: 127.0.0.1:53980
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 43 80 00 00  ............C...
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=17280
+[Main] S3: -> Ignoring null/error packet (seq=67 flags=0x80)
+[Main] S3 disconnected
+[SWEEP] Test #2 was: CONFIRMED: echo+0x20 (notify type)
+[SWEEP] Next test #3: CONFIRMED: echo+0x20 (notify type)
