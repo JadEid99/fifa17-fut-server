@@ -1,11 +1,33 @@
-=== S8 sweep#7: echo+0x02 (2026-04-14 07:28:48) ===
+=== S9 sweep#8: echo+0x04 (2026-04-14 07:28:53) ===
 
-[Main] Session 8 connected: 127.0.0.1:53675
-[Main] S8: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 36 80 00 00  ............6...
-[Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=13952
-[Main] S8: -> Ignoring null/error packet (seq=54 flags=0x80)
-[Main] S8 disconnected
-[SWEEP] Test #7 was: echo+0x02
-[SWEEP] Next test #8: echo+0x04
+[Main] Session 9 connected: 127.0.0.1:53679
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 37 80 00 00  ............7...
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=14208
+[Main] S9: -> Ignoring null/error packet (seq=55 flags=0x80)
+[Main] S9: comp=0x0009 cmd=0x0001 len=15 msgId=14336
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 38 04 00 00
+[Main] S9: comp=0x0009 cmd=0x0001 len=17 msgId=14592
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 39 04 00 00
+[Main] S9: comp=0x0009 cmd=0x0001 len=18 msgId=14848
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 3a 04 00 00
+[Main] S9: comp=0x0009 cmd=0x0001 len=19 msgId=15104
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 3b 04 00 00
+[Main] S9: comp=0x0009 cmd=0x0001 len=26 msgId=15360
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 3c 04 00 00
+[Main] S9: comp=0x0009 cmd=0x0001 len=30 msgId=15616
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 09 00 01 00 00 3d 04 00 00
+[Main] S9: comp=0x0001 cmd=0x0046 len=0 msgId=15872
+[Main] S9: -> Auth unknown cmd=0x46
+[Main] S9: Sending response (16 bytes)
+[Main] S9: [SWEEP#8 echo+0x04] header: 00 00 00 00 00 00 00 01 00 46 00 00 3e 04 00 00
+[Main] S9 disconnected
+[SWEEP] Test #8 was: echo+0x04
+[SWEEP] Next test #9: echo+0x08
