@@ -207,3 +207,21 @@ Connection: keep-alive
 [Main] S1: Sending response (232 bytes)
 [Main] S1: header: 00 00 00 d8 00 00 00 01 00 0a 00 00 2f 20 00 00
 [Main] S1 disconnected
+=== S2 disconnect (2026-04-14 09:38:48) ===
+
+[Main] Session 2 connected: 127.0.0.1:60117
+[Main] S2: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 30 80 00 00  ............0...
+[Main] S2: Raw Blaze binary detected
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=12416
+[Main] S2: -> Ignoring null/error packet (seq=48 flags=0x80)
+[Main] S2 disconnected
+=== S3 disconnect (2026-04-14 09:38:51) ===
+
+[Main] Session 3 connected: 127.0.0.1:60118
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 31 80 00 00  ............1...
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12672
+[Main] S3: -> Ignoring null/error packet (seq=49 flags=0x80)
+[Main] S3 disconnected
