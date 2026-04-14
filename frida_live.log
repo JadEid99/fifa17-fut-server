@@ -10,24 +10,27 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v30 ===
+=== Frida v31 ===
 === Ready ===
-[Local::PID::1468 ]-> [CA] CreateAccount RPC
-[CA] handler+0x08 (advance target) = 0x9965f00
-[CA] advance target vtable = 0x9960001
-[CA] advVtable[0] (+0x0) = 0x1
-[CA] advVtable[1] (+0x8) = 0x0
-[CA] advVtable[2] (+0x10) = 0x0
-[CA] advVtable[3] (+0x18) = 0x0
-[CA] advVtable[4] (+0x20) = 0x0
-[CA] advVtable[5] (+0x28) = 0x0
-[CA] advVtable[6] (+0x30) = 0x0
-[CA] advVtable[7] (+0x38) = 0x0
-[CA] advance target dump: 01 00 96 09 00 00 00 00 70 71 9d 09 00 00 00 00 04 00 00 00 00 00 00 00 d0 66 b6 3e 00 00 00 00 09 00 00 00 00 00 00 00 10 71 9d 09 00 00 00 00
-[CA] rpc vtable[0] = 0x146e4b4a0
-[CA] rpc+0x08 (what cave reads as param_1[1]) = 0x9752be8
-[CA] rpc+0x08 vtable = 0x9756c68
-[CA] rpc08.vtable[0] = 0x3ea87f60
-[CA] rpc08.vtable[1] = 0x9752be8
-[CA] rpc08.vtable[2] = 0x8000006
-[CA] rpc08.vtable[3] = 0x3ea87ff0
+[Local::PID::103576 ]-> [CA] CreateAccount RPC
+[CA] State machine = 0x3eafd328
+[CA] Handler = 0x3eae6080
+[CA] handler.vtable+0xb8 = 0x485455415f525245
+[CA] Handler full dump:
+  +0x0 = 0x143891fe8 (code)
+  +0x8 = 0x9965f00
+  +0x10 = 0x9965f90
+  +0x18 = 0x9966000
+  +0x20 = 0x3ead5368
+  +0x28 = 0x1
+  +0x30 = 0x143891ff0 (code)
+  +0x38 = 0x0
+  +0x40 = 0x977a7a0
+  +0x48 = 0x977a7a0
+  +0x50 = 0x977a7b0
+  +0x58 = 0x3ead5368
+  +0x60 = 0x1
+  +0x68 = 0x143892010 (code)
+  +0x70 = 0x0
+  +0x78 = 0x3ead7330
+[CA] SM scan for handler ref:
