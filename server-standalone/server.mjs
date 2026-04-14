@@ -1125,10 +1125,21 @@ function handleBlazePacket(pkt) {
   const { component: comp, command: cmd } = pkt.header;
   const session = { id: 1, personaId: 1000000001, nucleusId: 2000000001, displayName: 'Player1', auth: true };
   
-  // Skip null/error packets — don't respond to acks or error notifications from the game
+  // Handle Ping packets (type=4) — echo back
+  if (comp === 0x0000 && cmd === 0x0000 && pkt.header.msgType === 4) {
+    console.log(`[Blaze] Ping (msgId=${pkt.header.msgId}), sending pong`);
+    const pong = Buffer.alloc(HEADER_SIZE);
+    const mid = pkt.header.msgId;
+    pong[10] = (mid >> 16) & 0xFF;
+    pong[11] = (mid >> 8) & 0xFF;
+    pong[12] = mid & 0xFF;
+    pong[13] = 0x80;
+    return pong;
+  }
+  // Skip other null packets
   if (comp === 0x0000 && cmd === 0x0000) {
     console.log(`[Blaze] Ignoring null packet (msgId=${pkt.header.msgId} type=${pkt.header.msgType})`);
-    return null; // no response
+    return null;
   }
   
   if (comp === 0x0005 && cmd === 0x0001) {
@@ -1254,7 +1265,25 @@ function setupMainBlazeHandler(socket, session) {
     console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')} len=${pkt.header.length} msgId=${pkt.header.msgId}`);
     let resp = null;
     try {
-      // Skip null/error packets — don't respond
+      // Handle Ping packets (type=4) — echo them back
+      if (comp === 0x0000 && cmd === 0x0000 && pkt.header.msgType === 4) {
+        console.log(`[Main] S${sid}: -> Ping (msgId=${pkt.header.msgId}), sending pong`);
+        // Echo the exact header back as a pong (type=4 response)
+        const pong = Buffer.alloc(HEADER_SIZE);
+        pong.writeUInt32BE(0, 0);           // length=0
+        pong.writeUInt16BE(0, 4);           // ext=0
+        pong.writeUInt16BE(0, 6);           // comp=0
+        pong.writeUInt16BE(0, 8);           // cmd=0
+        const mid = pkt.header.msgId;
+        pong[10] = (mid >> 16) & 0xFF;
+        pong[11] = (mid >> 8) & 0xFF;
+        pong[12] = mid & 0xFF;
+        pong[13] = 0x80;                   // type=4 (100), flags=0
+        pong.writeUInt16BE(0, 14);          // error=0
+        socket.write(pong);
+        return;
+      }
+      // Skip other null packets
       if (comp === 0x0000 && cmd === 0x0000) {
         console.log(`[Main] S${sid}: -> Ignoring null/error packet (msgId=${pkt.header.msgId} type=${pkt.header.msgType})`);
         return;
