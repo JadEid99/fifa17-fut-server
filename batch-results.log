@@ -1,52 +1,9 @@
-=== S8 disconnect (2026-04-14 08:18:56) ===
+=== S9 disconnect (2026-04-14 08:18:59) ===
 
-[Main] Session 8 connected: 127.0.0.1:54353
-[Main] S8: received 237 bytes (total: 237)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
-[Main]   0010: 00 00 00 0f 00 00 00 09 00 01 00 00 11 00 00 00  ................
-[Main]   0020: 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 00  .jd..OSDK_CORE..
-[Main]   0030: 00 00 11 00 00 00 09 00 01 00 00 12 00 00 00 8e  ................
-[Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=4224
-[Main] S8: -> Ignoring null/error packet (seq=16 flags=0x80)
-[Main] S8: comp=0x0009 cmd=0x0001 len=15 msgId=4352
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
-[FetchClientConfig] CFID="OSDK_CORE"
-[FetchClientConfig] Responding with 2 config entries
-[Main] S8: Sending response (86 bytes)
-[Main] S8: header: 00 00 00 46 00 00 00 09 00 01 00 00 11 20 00 00
-[Main] S8: comp=0x0009 cmd=0x0001 len=17 msgId=4608
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
-[FetchClientConfig] CFID="OSDK_CLIENT"
-[FetchClientConfig] Responding with 0 config entries
-[Main] S8: Sending response (23 bytes)
-[Main] S8: header: 00 00 00 07 00 00 00 09 00 01 00 00 12 20 00 00
-[Main] S8: comp=0x0009 cmd=0x0001 len=18 msgId=4864
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
-[FetchClientConfig] CFID="OSDK_NUCLEUS"
-[FetchClientConfig] Responding with 0 config entries
-[Main] S8: Sending response (23 bytes)
-[Main] S8: header: 00 00 00 07 00 00 00 09 00 01 00 00 13 20 00 00
-[Main] S8: comp=0x0009 cmd=0x0001 len=19 msgId=5120
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
-[FetchClientConfig] CFID="OSDK_WEBOFFER"
-[FetchClientConfig] Responding with 0 config entries
-[Main] S8: Sending response (23 bytes)
-[Main] S8: header: 00 00 00 07 00 00 00 09 00 01 00 00 14 20 00 00
-[Main] S8: comp=0x0009 cmd=0x0001 len=26 msgId=5376
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
-[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
-[FetchClientConfig] Responding with 0 config entries
-[Main] S8: Sending response (23 bytes)
-[Main] S8: header: 00 00 00 07 00 00 00 09 00 01 00 00 15 20 00 00
-[Main] S8: comp=0x0009 cmd=0x0001 len=30 msgId=5632
-[Main] S8: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
-[FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
-[FetchClientConfig] Responding with 0 config entries
-[Main] S8: Sending response (23 bytes)
-[Main] S8: header: 00 00 00 07 00 00 00 09 00 01 00 00 16 20 00 00
-[Main] S8: comp=0x0001 cmd=0x0046 len=0 msgId=5888
-[Main] S8: -> Login/Auth cmd=0x46
-[Main] S8: Sending response (164 bytes)
-[Main] S8: header: 00 00 00 94 00 00 00 01 00 46 00 00 17 20 00 00
-[Main] S8 disconnected
+[Main] Session 9 connected: 127.0.0.1:54357
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 18 80 00 00  ................
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=6272
+[Main] S9: -> Ignoring null/error packet (seq=24 flags=0x80)
+[Main] S9 disconnected
