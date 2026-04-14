@@ -1,15 +1,11 @@
-=== S4 sweep#3: echo+0x30 (BlazePK error type) (2026-04-14 07:28:35) ===
+=== S5 sweep#4: echo+0x90 (2026-04-14 07:28:38) ===
 
-[Main] Session 4 connected: 127.0.0.1:53659
-[Main] S4: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 01 00 46 00 00 29 00 00 00  .........F..)...
-[Main] S4: Raw Blaze binary detected
-[Main] S4: comp=0x0001 cmd=0x0046 len=0 msgId=10496
-[Main] S4: -> Auth unknown cmd=0x46
-[Main] S4: Sending response (16 bytes)
-[Main] S4: [SWEEP#3 echo+0x30 (BlazePK error type)] header: 00 00 00 00 00 00 00 01 00 46 00 00 29 30 00 00
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=10880
-[Main] S4: -> Ignoring null/error packet (seq=42 flags=0x80)
-[Main] S4 disconnected
-[SWEEP] Test #3 was: echo+0x30 (BlazePK error type)
-[SWEEP] Next test #4: echo+0x90
+[Main] Session 5 connected: 127.0.0.1:53663
+[Main] S5: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 2b 80 00 00  ............+...
+[Main] S5: Raw Blaze binary detected
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=11136
+[Main] S5: -> Ignoring null/error packet (seq=43 flags=0x80)
+[Main] S5 disconnected
+[SWEEP] Test #4 was: echo+0x90
+[SWEEP] Next test #5: echo+0xA0
