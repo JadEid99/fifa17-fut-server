@@ -1,31 +1,16 @@
-=== S6 sweep#5: echo+0xA0 (2026-04-14 07:28:40) ===
+=== S7 sweep#6: echo+0x01 (2026-04-14 07:28:45) ===
 
-[Main] Session 6 connected: 127.0.0.1:53667
-[Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 2c 80 00 00  ............,...
-[Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=11392
-[Main] S6: -> Ignoring null/error packet (seq=44 flags=0x80)
-[Main] S6: comp=0x0009 cmd=0x0001 len=15 msgId=11520
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2d a0 00 00
-[Main] S6: comp=0x0009 cmd=0x0001 len=17 msgId=11776
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2e a0 00 00
-[Main] S6: comp=0x0009 cmd=0x0001 len=18 msgId=12032
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2f a0 00 00
-[Main] S6: comp=0x0009 cmd=0x0001 len=19 msgId=12288
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 30 a0 00 00
-[Main] S6: comp=0x0009 cmd=0x0001 len=26 msgId=12544
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 31 a0 00 00
-[Main] S6: comp=0x0009 cmd=0x0001 len=30 msgId=12800
-[Main] S6: Sending response (16 bytes)
-[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 32 a0 00 00
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=13184
-[Main] S6: -> Ignoring null/error packet (seq=51 flags=0x80)
-[Main] S6 disconnected
-[SWEEP] Test #5 was: echo+0xA0
-[SWEEP] Next test #6: echo+0x01
+[Main] Session 7 connected: 127.0.0.1:53671
+[Main] S7: received 32 bytes (total: 32)
+[Main]   0000: 00 00 00 00 00 00 00 01 00 46 00 00 34 00 00 00  .........F..4...
+[Main]   0010: 00 00 00 00 00 00 00 00 00 00 00 00 35 80 00 00  ............5...
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0001 cmd=0x0046 len=0 msgId=13312
+[Main] S7: -> Auth unknown cmd=0x46
+[Main] S7: Sending response (16 bytes)
+[Main] S7: [SWEEP#6 echo+0x01] header: 00 00 00 00 00 00 00 01 00 46 00 00 34 01 00 00
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=13696
+[Main] S7: -> Ignoring null/error packet (seq=53 flags=0x80)
+[Main] S7 disconnected
+[SWEEP] Test #6 was: echo+0x01
+[SWEEP] Next test #7: echo+0x02
