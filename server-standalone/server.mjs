@@ -1304,7 +1304,39 @@ function setupMainBlazeHandler(socket, session) {
           for (const line of decoded.lines) console.log(`[Main] S${sid}:   ${line}`);
         } catch(e) { if (pkt.body.length > 0) console.log(`[Main] S${sid}:   (${pkt.body.length} bytes, decode err)`); }
         
-        if (cmd === 0x000A) { resp = handleCreateAccount(session, pkt); }
+        if (cmd === 0x000A) { 
+          resp = handleCreateAccount(session, pkt);
+          // After sending CreateAccount response, send UserSession notification
+          // PocketRelay does this after every successful auth
+          if (resp) {
+            socket.write(resp);
+            console.log(`[Main] S${sid}: Sent CreateAccount response, now sending UserSession notification`);
+            resp = null; // already sent
+            
+            // Send UserSessionExtendedDataUpdate notification (comp=0x7802, cmd=0x0001)
+            const userEnc = new TdfEncoder();
+            userEnc.writeStructStart('DATA');
+            userEnc.writeUnion('ADDR', 0x7F, () => {});
+            userEnc.writeString('BPS ', '');
+            userEnc.writeString('CTY ', '');
+            userEnc.writeIntList('CVAR', []);
+            userEnc.writeInteger('DPTS', 0);
+            userEnc.writeInteger('HWFG', 0);
+            userEnc.writeInteger('PSLM', 0);
+            userEnc.writeStructStart('QDAT');
+            userEnc.writeInteger('DBPS', 0);
+            userEnc.writeInteger('NATT', 4);
+            userEnc.writeInteger('UBPS', 0);
+            userEnc.writeStructEnd();
+            userEnc.writeInteger('UATT', 0);
+            userEnc.writeStructEnd();
+            userEnc.writeInteger('USID', session.personaId);
+            const userBody = userEnc.build();
+            const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0001, error: 0, notify: true });
+            socket.write(Buffer.concat([userHdr, userBody]));
+            console.log(`[Main] S${sid}: Sent UserSessionExtendedDataUpdate notification`);
+          }
+        }
         else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
