@@ -215,117 +215,112 @@ static void PatchSdkGateCheck() {
     g_sdkGateDone = 1; g_patched++;
 }
 
-// Patch 8: Replace FUN_146e1cf10 (PreAuth response handler) to always call post_PreAuth
-// When param_3 != 0 (ERR_TIMEOUT), the game skips PreAuth processing and never calls
-// FUN_146e1e460 (post_PreAuth). We patch the function to:
-// 1. Set default config values (pingPeriod=15000ms, requestTimeout=60s, idleTimeout=90s)
-// 2. Call FUN_146e1e460(param_1) to trigger the PostAuth/Login flow
-// 3. Return (skip the else branch that schedules the error callback)
+// Patch 8: Patch FUN_146e1cf10 (PreAuth response handler) to always take success path
+// Instead of replacing the entire function with a cave, we just NOP the conditional
+// jump so param_3 != 0 (ERR_TIMEOUT) still takes the success path.
+// The original code will run naturally and call FUN_146e1c3f0 (Login processor).
 static int g_preAuthPatchDone = 0;
 static void PatchPreAuthHandler() {
     if (g_preAuthPatchDone) return;
     
-    // FUN_146e1cf10 is at a fixed address (no ASLR)
     BYTE* func = (BYTE*)0x146e1cf10;
-    
     __try {
-        Log("PREAUTH_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
-            func, func[0], func[1], func[2], func[3], func[4], func[5]);
+        Log("PREAUTH_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
+            func, func[0], func[1], func[2], func[3], func[4], func[5], func[6], func[7]);
         
-        // We need to write a code cave that:
-        // 1. Sets *(uint32_t*)(param_1 + 0xd1c) = 15000  (pingPeriod default)
-        // 2. Sets *(int*)(param_1 + 0x278) = 60           (defaultRequestTimeout)
-        // 3. Sets *(int*)(param_1 + 0xd28) = 90           (connIdleTimeout)
-        // 4. Calls FUN_146e1e460(param_1)
-        // 5. Returns
-        //
-        // param_1 is in RCX (first arg, Windows x64 calling convention)
-        
-        // Allocate a code cave
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-        if (!cave) { Log("PREAUTH_HANDLER: cave alloc failed"); return; }
-        
-        int o = 0;
-        
-        // Save RCX (param_1) in a non-volatile register
-        // PUSH RBX
-        cave[o++] = 0x53;
-        // PUSH RBP  (align stack to 16 bytes)
-        cave[o++] = 0x55;
-        // SUB RSP, 0x28 (shadow space for calls)
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28;
-        // MOV RBX, RCX (save param_1)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB;
-        
-        // Set pingPeriod: MOV DWORD PTR [RBX + 0xd1c], 15000 (0x3A98)
-        // C7 83 1C0D0000 983A0000
-        cave[o++] = 0xC7; cave[o++] = 0x83;
-        cave[o++] = 0x1C; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x98; cave[o++] = 0x3A; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Set defaultRequestTimeout: MOV DWORD PTR [RBX + 0x278], 60 (0x3C)
-        // C7 83 78020000 3C000000
-        cave[o++] = 0xC7; cave[o++] = 0x83;
-        cave[o++] = 0x78; cave[o++] = 0x02; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x3C; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Set connIdleTimeout: MOV DWORD PTR [RBX + 0xD28], 90 (0x5A)
-        // C7 83 280D0000 5A000000
-        cave[o++] = 0xC7; cave[o++] = 0x83;
-        cave[o++] = 0x28; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x5A; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Call FUN_146e1e460(param_1) — post_PreAuth (sends Ping)
-        // MOV RCX, RBX (param_1)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
-        // MOV RAX, 0x146e1e460
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t postPreAuth = 0x146e1e460;
-        memcpy(cave + o, &postPreAuth, 8); o += 8;
-        // CALL RAX
-        cave[o++] = 0xFF; cave[o++] = 0xD0;
-        
-        // DON'T call FUN_146e19720 here — the state machine isn't initialized yet.
-        // Save param_1 so the background thread can call it later.
-        // MOV RAX, &g_preAuthParam1
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t p1Addr = (uint64_t)&g_preAuthParam1;
-        memcpy(cave + o, &p1Addr, 8); o += 8;
-        // MOV [RAX], RBX
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x18;
-        
-        // Cleanup and return
-        // ADD RSP, 0x28
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
-        // POP RBP
-        cave[o++] = 0x5D;
-        // POP RBX
-        cave[o++] = 0x5B;
-        // RET
-        cave[o++] = 0xC3;
-        
-        Log("PREAUTH_HANDLER: Cave at %p, %d bytes", cave, o);
-        
-        // Now patch FUN_146e1cf10 to jump to our cave
-        // We need to replace the first few bytes with: JMP cave
-        // MOV RAX, cave_addr / JMP RAX = 12 bytes
-        DWORD op;
-        if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
-            int p = 0;
-            // MOV RAX, cave_addr (10 bytes)
-            func[p++] = 0x48; func[p++] = 0xB8;
-            uint64_t caveAddr = (uint64_t)cave;
-            memcpy(func + p, &caveAddr, 8); p += 8;
-            // JMP RAX (2 bytes)
-            func[p++] = 0xFF; func[p++] = 0xE0;
-            // NOP remaining bytes
-            while (p < 16) func[p++] = 0x90;
-            
-            VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at %p)", cave);
-            g_preAuthPatchDone = 1;
-            g_patched++;
+        // Find the TEST R8D,R8D / JNZ pattern near the start of the function
+        // The function prologue is typically: push rbx, sub rsp, ..., then test r8d,r8d / jnz
+        // Let's scan the first 64 bytes for the pattern
+        int found = 0;
+        for (int i = 0; i < 64; i++) {
+            // TEST R8D, R8D = 45 85 C0
+            // JNZ rel32 = 0F 85 xx xx xx xx
+            if (func[i] == 0x45 && func[i+1] == 0x85 && func[i+2] == 0xC0 &&
+                func[i+3] == 0x0F && func[i+4] == 0x85) {
+                Log("PREAUTH_HANDLER: Found TEST R8D,R8D / JNZ at offset +%d", i);
+                DWORD op;
+                if (VirtualProtect(func + i + 3, 6, PAGE_EXECUTE_READWRITE, &op)) {
+                    // NOP the JNZ (6 bytes: 0F 85 xx xx xx xx)
+                    for (int k = 0; k < 6; k++) func[i + 3 + k] = 0x90;
+                    VirtualProtect(func + i + 3, 6, op, &op);
+                    Log("PATCHED: FUN_146e1cf10 JNZ -> NOP (always take success path)");
+                    found = 1;
+                }
+                break;
+            }
+            // Also check for TEST EDX,EDX or CMP param_3,0 patterns
+            if (func[i] == 0x41 && func[i+1] == 0x85 && func[i+2] == 0xC0 &&
+                func[i+3] == 0x0F && func[i+4] == 0x85) {
+                Log("PREAUTH_HANDLER: Found alt TEST/JNZ at offset +%d", i);
+                DWORD op;
+                if (VirtualProtect(func + i + 3, 6, PAGE_EXECUTE_READWRITE, &op)) {
+                    for (int k = 0; k < 6; k++) func[i + 3 + k] = 0x90;
+                    VirtualProtect(func + i + 3, 6, op, &op);
+                    Log("PATCHED: FUN_146e1cf10 JNZ -> NOP (alt pattern)");
+                    found = 1;
+                }
+                break;
+            }
         }
+        if (!found) {
+            // Fallback: scan for any JNZ with large displacement in first 80 bytes
+            for (int i = 0; i < 80; i++) {
+                if (func[i] == 0x0F && func[i+1] == 0x85) {
+                    int32_t disp = *(int32_t*)(func + i + 2);
+                    if (disp > 0x100) { // large forward jump = likely the main if/else
+                        Log("PREAUTH_HANDLER: Found JNZ at +%d (disp=%d)", i, disp);
+                        DWORD op;
+                        if (VirtualProtect(func + i, 6, PAGE_EXECUTE_READWRITE, &op)) {
+                            for (int k = 0; k < 6; k++) func[i + k] = 0x90;
+                            VirtualProtect(func + i, 6, op, &op);
+                            Log("PATCHED: FUN_146e1cf10 JNZ -> NOP (fallback)");
+                            found = 1;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (!found) {
+            Log("PREAUTH_HANDLER: Could not find JNZ pattern! Falling back to cave.");
+            // Fallback: use the old cave approach
+            BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            if (cave) {
+                int o = 0;
+                cave[o++] = 0x53; cave[o++] = 0x55;
+                cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28;
+                cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB;
+                // Set config defaults
+                cave[o++] = 0xC7; cave[o++] = 0x83; cave[o++] = 0x1C; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
+                cave[o++] = 0x98; cave[o++] = 0x3A; cave[o++] = 0x00; cave[o++] = 0x00;
+                cave[o++] = 0xC7; cave[o++] = 0x83; cave[o++] = 0x78; cave[o++] = 0x02; cave[o++] = 0x00; cave[o++] = 0x00;
+                cave[o++] = 0x3C; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+                cave[o++] = 0xC7; cave[o++] = 0x83; cave[o++] = 0x28; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
+                cave[o++] = 0x5A; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+                // Call FUN_146e1e460
+                cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
+                cave[o++] = 0x48; cave[o++] = 0xB8;
+                uint64_t pp = 0x146e1e460; memcpy(cave+o, &pp, 8); o += 8;
+                cave[o++] = 0xFF; cave[o++] = 0xD0;
+                // Save param_1
+                cave[o++] = 0x48; cave[o++] = 0xB8;
+                uint64_t p1a = (uint64_t)&g_preAuthParam1; memcpy(cave+o, &p1a, 8); o += 8;
+                cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x18;
+                cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
+                cave[o++] = 0x5D; cave[o++] = 0x5B; cave[o++] = 0xC3;
+                DWORD op;
+                if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
+                    func[0] = 0x48; func[1] = 0xB8;
+                    uint64_t ca = (uint64_t)cave; memcpy(func+2, &ca, 8);
+                    func[10] = 0xFF; func[11] = 0xE0;
+                    for (int k=12;k<16;k++) func[k]=0x90;
+                    VirtualProtect(func, 16, op, &op);
+                    Log("PATCHED: FUN_146e1cf10 -> cave fallback");
+                }
+            }
+        }
+        g_preAuthPatchDone = 1;
+        g_patched++;
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         Log("PREAUTH_HANDLER: Exception");
     }
