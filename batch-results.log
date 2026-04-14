@@ -243,3 +243,52 @@ Connection: keep-alive
 [Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13184
 [Main] S5: -> Ignoring null/error packet (seq=51 flags=0x80)
 [Main] S5 disconnected
+=== S6 disconnect (2026-04-14 09:39:00) ===
+
+[Main] Session 6 connected: 127.0.0.1:60124
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 34 80 00 00  ............4...
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=13440
+[Main] S6: -> Ignoring null/error packet (seq=52 flags=0x80)
+[Main] S6 disconnected
+=== S7 disconnect (2026-04-14 09:39:03) ===
+
+[Main] Session 7 connected: 127.0.0.1:60128
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 35 80 00 00  ............5...
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=13696
+[Main] S7: -> Ignoring null/error packet (seq=53 flags=0x80)
+[Main] S7 disconnected
+=== S8 disconnect (2026-04-14 09:39:06) ===
+
+[Main] Session 8 connected: 127.0.0.1:60129
+[Main] S8: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 36 80 00 00  ............6...
+[Main] S8: Raw Blaze binary detected
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=13952
+[Main] S8: -> Ignoring null/error packet (seq=54 flags=0x80)
+[Main] S8 disconnected
+=== S9 disconnect (2026-04-14 09:39:09) ===
+
+[Main] Session 9 connected: 127.0.0.1:60130
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 37 80 00 00  ............7...
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=14208
+[Main] S9: -> Ignoring null/error packet (seq=55 flags=0x80)
+[Main] S9 disconnected
+=== S10 disconnect (2026-04-14 09:39:15) ===
+
+[Main] Session 10 connected: 127.0.0.1:60131
+[Main] S10: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 38 80 00 00  ............8...
+[Main] S10: Raw Blaze binary detected
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=14464
+[Main] S10: -> Ignoring null/error packet (seq=56 flags=0x80)
+[Main] S10: comp=0x0001 cmd=0x0046 len=0 msgId=14592
+[Main] S10: -> Auth cmd=0x46 (Logout)
+[Main] S10: Sending response (167 bytes)
+[Main] S10: header: 00 00 00 97 00 00 00 01 00 46 00 00 39 20 00 00
+[Main] S10 disconnected
