@@ -321,6 +321,43 @@ static void PatchPreAuthHandler() {
     }
 }
 
+// Patch 9: FUN_1470e0390 (Origin::OriginSDK::CheckOnline) -> always return success
+// This function checks if Origin is online by talking to the STP emulator.
+// It waits 15 seconds for a response. We bypass it entirely.
+// param_1 = Origin SDK object, param_2 = output bool pointer
+// We set *param_2 = 1 (online) and return 0 (success)
+static int g_originCheckOnlineDone = 0;
+static void PatchOriginCheckOnline() {
+    if (g_originCheckOnlineDone) return;
+    
+    BYTE* func = (BYTE*)0x1470e0390;
+    __try {
+        Log("ORIGIN_CHECK_ONLINE: addr=%p bytes=%02X %02X %02X %02X", func, func[0], func[1], func[2], func[3]);
+        DWORD op;
+        if (VirtualProtect(func, 32, PAGE_EXECUTE_READWRITE, &op)) {
+            int o = 0;
+            // TEST RDX, RDX (check if param_2 is NULL)
+            func[o++] = 0x48; func[o++] = 0x85; func[o++] = 0xD2;
+            // JZ +4 (skip the write if NULL)
+            func[o++] = 0x74; func[o++] = 0x03;
+            // MOV BYTE PTR [RDX], 1 (set *param_2 = 1 = online)
+            func[o++] = 0xC6; func[o++] = 0x02; func[o++] = 0x01;
+            // XOR EAX, EAX (return 0 = success)
+            func[o++] = 0x31; func[o++] = 0xC0;
+            // RET
+            func[o++] = 0xC3;
+            // NOP remaining
+            while (o < 32) func[o++] = 0x90;
+            VirtualProtect(func, 32, op, &op);
+            Log("PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online");
+            g_originCheckOnlineDone = 1;
+            g_patched++;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("ORIGIN_CHECK_ONLINE: Exception");
+    }
+}
+
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
 static void PatchIsLoggedInFunctions() {
     BYTE pat[]={0x48,0x83,0xEC,0x28,0x31,0xC9,0xE8};
@@ -366,6 +403,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
+            if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
                 uint64_t* pOM = (uint64_t*)0x1448a3b20;
@@ -378,7 +416,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
