@@ -66,13 +66,13 @@ Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Slee
 Write-Host "[WAIT] Waiting 30s for DLL patches + auth injection..." -ForegroundColor Yellow
 Start-Sleep 30; FEnter; Start-Sleep 2
 
-# Trigger connection with Q
-Write-Host "[TEST] Pressing Q to trigger connection..." -ForegroundColor Yellow
-FQ
+# Trigger connection with Q (disabled — connection happens automatically at launch)
+# Write-Host "[TEST] Pressing Q to trigger connection..." -ForegroundColor Yellow
+# FQ
 
-# Wait for the full connection flow
-Write-Host "[WAIT] Waiting 45s for full connection flow..." -ForegroundColor Yellow
-Start-Sleep 45
+# Wait for the connection flow
+Write-Host "[WAIT] Waiting 30s for connection flow..." -ForegroundColor Yellow
+Start-Sleep 30
 
 # Collect results
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow

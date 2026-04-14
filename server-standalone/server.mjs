@@ -1320,6 +1320,30 @@ function setupMainBlazeHandler(socket, session) {
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
         else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
+        else if (cmd === 0x00F2) {
+          // GetTermsOfServiceContent — return empty/accepted TOS
+          console.log(`[Main] S${sid}: -> GetTermsOfServiceContent`);
+          const enc = new TdfEncoder();
+          enc.writeString('LDVC', '');  // legal doc version code
+          enc.writeString('TCOL', '');  // TOS content (empty = no TOS to show)
+          resp = buildReply(pkt, enc.build());
+        }
+        else if (cmd === 0x00F6) {
+          // GetLegalDocContent — return empty legal content
+          console.log(`[Main] S${sid}: -> GetLegalDocContent`);
+          const enc = new TdfEncoder();
+          enc.writeString('LDVC', '');
+          enc.writeString('TCOL', '');
+          resp = buildReply(pkt, enc.build());
+        }
+        else if (cmd === 0x002F) {
+          // GetTermsOfServiceInfo — return "already accepted"
+          console.log(`[Main] S${sid}: -> GetTermsOfServiceInfo`);
+          const enc = new TdfEncoder();
+          enc.writeString('LDVC', '');
+          enc.writeString('TCOL', '');
+          resp = buildReply(pkt, enc.build());
+        }
         else { console.log(`[Main] S${sid}: -> Auth unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
       } else if (comp === 0x7802) { resp = buildReply(pkt, Buffer.alloc(0)); }
       else { console.log(`[Main] S${sid}: -> Unhandled comp=0x${comp.toString(16)} cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
