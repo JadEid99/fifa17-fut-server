@@ -339,15 +339,43 @@ static void PatchCreateAccountHandler() {
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
-        // Set g_createAcctCalled = 1
-        // MOV RAX, &g_createAcctCalled
+        // Set flag, set state bytes (UID non-zero) but NOT 0x8c6 (persona creation flag)
+        // Then RET — no state transition
+        
+        // Save registers
+        cave[o++] = 0x53;                                     // PUSH RBX
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x20; // SUB RSP, 0x20
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
+        
+        // Get state object via vtable+0xb8(param_1)
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX] (vtable)
+        cave[o++] = 0xFF; cave[o++] = 0x90;                    // CALL [RAX + 0xb8]
+        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // RAX = state object. Save in RBX (reuse, param_1 no longer needed)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC3; // MOV RBX, RAX
+        
+        // *(state + 0x8bc) = 0 (success)
+        cave[o++] = 0xC7; cave[o++] = 0x83;
+        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // *(byte*)(state + 0x8c0) = 0x01 (UID byte — non-zero)
+        cave[o++] = 0xC6; cave[o++] = 0x83;
+        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
+        
+        // Do NOT set 0x8c6 — leave it at 0 (no persona creation)
+        
+        // Set flag
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
-        // MOV DWORD [RAX], 1
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // RET
+        
+        // Cleanup and return
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x20;
+        cave[o++] = 0x5B;
         cave[o++] = 0xC3;
         
         Log("CA_HANDLER: Cave at %p, %d bytes (flag at %p)", cave, o, &g_createAcctCalled);
