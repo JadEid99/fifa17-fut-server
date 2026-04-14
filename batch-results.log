@@ -243,3 +243,70 @@ Connection: keep-alive
 [Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=23936
 [Main] S5: -> Ignoring null/error packet (seq=93 flags=0x80)
 [Main] S5 disconnected
+=== S6 disconnect (2026-04-14 09:50:23) ===
+
+[Main] Session 6 connected: 127.0.0.1:60228
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 5e 80 00 00  ............^...
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=24192
+[Main] S6: -> Ignoring null/error packet (seq=94 flags=0x80)
+[Main] S6 disconnected
+=== S7 disconnect (2026-04-14 09:50:26) ===
+
+[Main] Session 7 connected: 127.0.0.1:60232
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 5f 80 00 00  ............_...
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=24448
+[Main] S7: -> Ignoring null/error packet (seq=95 flags=0x80)
+[Main] S7 disconnected
+=== S8 disconnect (2026-04-14 09:50:29) ===
+
+[Main] Session 8 connected: 127.0.0.1:60233
+[Main] S8: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 60 80 00 00  ............`...
+[Main] S8: Raw Blaze binary detected
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=24704
+[Main] S8: -> Ignoring null/error packet (seq=96 flags=0x80)
+[Main] S8 disconnected
+=== S9 disconnect (2026-04-14 09:50:32) ===
+
+[Main] Session 9 connected: 127.0.0.1:60234
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 61 80 00 00  ............a...
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=24960
+[Main] S9: -> Ignoring null/error packet (seq=97 flags=0x80)
+[Main] S9 disconnected
+=== S10 disconnect (2026-04-14 09:50:38) ===
+
+[Main] Session 10 connected: 127.0.0.1:60235
+[Main] S10: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 62 80 00 00  ............b...
+[Main] S10: Raw Blaze binary detected
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=25216
+[Main] S10: -> Ignoring null/error packet (seq=98 flags=0x80)
+[Main] S10: comp=0x0001 cmd=0x0046 len=0 msgId=25344
+[Main] S10: -> Auth cmd=0x46 (Logout)
+[Main] S10: Sending response (167 bytes)
+[Main] S10: header: 00 00 00 97 00 00 00 01 00 46 00 00 63 20 00 00
+[Main] S10 disconnected
+=== S11 disconnect (2026-04-14 09:50:41) ===
+
+[Main] Session 11 connected: 127.0.0.1:60236
+[Main] S11: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 64 80 00 00  ............d...
+[Main] S11: Raw Blaze binary detected
+[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=25728
+[Main] S11: -> Ignoring null/error packet (seq=100 flags=0x80)
+[Main] S11 disconnected
+=== S12 disconnect (2026-04-14 09:50:44) ===
+
+[Main] Session 12 connected: 127.0.0.1:60237
+[Main] S12: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 65 80 00 00  ............e...
+[Main] S12: Raw Blaze binary detected
+[Main] S12: comp=0x0000 cmd=0x0000 len=0 msgId=25984
+[Main] S12: -> Ignoring null/error packet (seq=101 flags=0x80)
+[Main] S12 disconnected
