@@ -10,11 +10,13 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v27: Cave Runtime Trace ===
-[INIT] FUN_146e151d0 byte0=0x48
-[INIT] Cave at 0x570000
-Failed to load script: the connection is closed
-Process terminated
-
-Thank you for using Frida!
+=== Frida v28: Find state machine object ===
+=== Ready ===
+[Local::PID::83560 ]-> [POST-PREAUTH] called
+[CA-RPC] Found CreateAccount RPC decode!
+[CA-RPC] rpc object=0x9746ea0
+[CA-RPC] rpc vtable=0x14389f2b8
+[CA-RPC] +0x0 = 0x14389f2b8 -> vtable=0x146e4b4a0
+[CA-RPC] +0x20 = 0x3eb4d328 -> vtable=0x14389f938
+[CA-RPC] +0x78 = 0x3eb36080 -> vtable=0x143891fe8
 
