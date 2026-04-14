@@ -1,21 +1,27 @@
-=== S2 sweep#1: CONFIRMED: b12=0x10(resp) b13=seq (2026-04-14 07:35:39) ===
+=== S1 sweep#0: CONFIRMED: b12=0x10(resp) b13=seq (2026-04-14 07:37:50) ===
 
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 39 c9 35 d1 2e 33 f1 ab 46 dc d5 41 30 13 19 9f 01 f6 81 41 97 a2
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:53763
-[SSL-CONN] Socket closed
-[Redirector-Raw] Client connected: 127.0.0.1:53768
+=== FIFA 17 FUT Private Server ===
+
+
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
+
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
+[Redirector-Raw] Client connected: 127.0.0.1:53779
 [Redirector-Raw] Received 148 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd ee 4a 24  ...........i..J$
-  0010: 79 ef 36 59 43 33 05 47 a6 6b a5 df e6 d5 db 1c  y.6YC3.G.k......
-  0020: 20 54 dc bf 19 c8 df b6 91 2c d8 20 20 4b b0 ff   T.......,.  K..
-  0030: 17 9e 82 df 44 1b 6b 15 f2 21 42 40 f9 e2 aa e8  ....D.k..!B@....
-  0040: c6 ef 7e 25 a0 0c d1 58 1d ad 1f 21 00 10 00 9d  ..~%...X...!....
+  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 dd ee cd ab  ...........i....
+  0010: ae ac 60 ab ba e8 72 b5 fa 22 f9 4b c2 4d a7 47  ..`...r..".K.M.G
+  0020: a5 b9 8d c2 b3 d5 41 0a a0 36 32 20 7e 33 b6 57  ......A..62 ~3.W
+  0030: 66 3a e7 4e b3 88 d6 b7 ce a5 c2 44 3f 47 4c 27  f:.N.......D?GL'
+  0040: 97 83 e6 04 7c c8 a2 15 e1 84 ac 69 00 10 00 9d  ....|......i....
   0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -23,45 +29,45 @@
   0090: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69ddee4a2479ef36...
+[SSL] ClientHello: version=0x303 random=69ddeecdabaeac60...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 a3 c2 01 ab d9
-  0010: d3 d1 82 78 8e 99 1a 07 44 ba ac b6 38 ce 54 5a
-  0020: 63 e4 c5 e3 60 7c a5 4c d1 c4 ef c0 6c 29 e9 17
-  0030: c9 33 eb 8f 14 bd dc 89 69 67 89 2a d0 f7 6c 8f
-  0040: 1e da 78 63 2a e2 f3 db 6c 77 21 a9 36 35 f9 e9
-  0050: b6 43 54 a9 e6 2e c5 3e 50 fd b0 13 0d 46 db ff
-  0060: 31 e9 1c 3c b8 06 ee bc 9c 1b 56 21 1c d5 10 fa
-  0070: 63 2b 69 fa 3d d5 38 75 13 9c 2c 94 e8 0b 9a df
-  0080: 75 76 bc bb 52 7c 92 98 28 7b 8e
+  0000: 16 03 03 00 86 10 00 00 82 00 80 5b 70 db a1 5c
+  0010: 07 88 d0 64 b3 48 7a fa a9 9e 20 eb 0f fa 9a 94
+  0020: 2a 90 80 f5 8e 0f 90 42 ef 73 fc c5 24 90 28 d5
+  0030: 4c 12 69 e4 4e 62 06 70 24 5c 64 62 e2 2b 85 a0
+  0040: f1 d8 d7 99 20 86 18 5f c6 3d db 13 eb 9c 8f dd
+  0050: 9f f0 93 17 45 1f 20 b9 1c dc 88 a3 3d 1c b3 9c
+  0060: 85 78 26 c0 1c f5 3f 65 e1 23 c0 4a 7a 98 93 ac
+  0070: 8e c0 c6 9d 1f ce 36 34 2c 43 e8 0f e3 e6 e0 f2
+  0080: 3c 8d 0a 2f 04 e3 f4 57 7e d6 8a
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 8a236e6b46332c622943fa0f0f1203c5...
+[SSL] Master secret derived: 21a6332b6d80be75b7b2c8112636b4b5...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 63 19 28 0e 12
-  0010: 49 52 1c 5a ea 90 ff 27 ec 50 34 2f f7 60 f4 15
-  0020: 62 90 11 31 bb 43 2b 04 fd e9 e3 08 c7 d2 05
+  0000: 14 03 03 00 01 01 16 03 03 00 24 4f 2e 22 08 32
+  0010: c5 7c 29 80 f6 56 0b 22 43 21 9d ec 7b 61 f6 43
+  0020: 7f 0d 60 b6 a9 30 6d c9 06 59 40 a8 7f b9 86
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: fe3302f402b3f5fe7bfaa61edbfaa230
+[SSL] RC4 decryption initialized with clientWriteKey: 5184ec562782bb48ff5776ebf32d068b
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000ce6d89e2751025e42a8caef4be00a69d0a15ba5891ec8e1d79b0ac1310de9f596
-[SSL] Client Finished plaintext (16 bytes): 1400000ce6d89e2751025e42a8caef4b
-[SSL] Client Finished MAC: e00a69d0a15ba5891ec8e1d79b0ac1310de9f596
-[SSL] Client verify_data:   e6d89e2751025e42a8caef4b
-[SSL] Expected verify_data:  e6d89e2751025e42a8caef4b
+[SSL] Decrypted hex: 1400000c91ed394ee30f6ae9bec1b3292029ea1fef2d622712f7a927b72282c58f06c13d
+[SSL] Client Finished plaintext (16 bytes): 1400000c91ed394ee30f6ae9bec1b329
+[SSL] Client Finished MAC: 2029ea1fef2d622712f7a927b72282c58f06c13d
+[SSL] Client verify_data:   91ed394ee30f6ae9bec1b329
+[SSL] Expected verify_data:  91ed394ee30f6ae9bec1b329
 [SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: e00a69d0a15ba5891ec8e1d79b0ac1310de9f596
-[SSL] Actual client MAC:   e00a69d0a15ba5891ec8e1d79b0ac1310de9f596
+[SSL] Expected client MAC: 2029ea1fef2d622712f7a927b72282c58f06c13d
+[SSL] Actual client MAC:   2029ea1fef2d622712f7a927b72282c58f06c13d
 [SSL] ✓ Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1070 bytes
@@ -71,7 +77,7 @@
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: d57ea5e3e83d092345be34ad
+[SSL] Server verify_data: 0ddb424cb0fac224627cdcb4
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 883 bytes on socket (total pending: 883)
@@ -112,15 +118,15 @@ Connection: keep-alive
     </valu>
   </address
 [HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 2 connected: 127.0.0.1:53769
-[Main] S2: received 219 bytes (total: 219)
-[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 08 00 00 00  ................
+[Main] Session 1 connected: 127.0.0.1:53780
+[Main] S1: received 219 bytes (total: 219)
+[Main]   0000: 00 00 00 cb 00 00 00 09 00 07 00 00 0b 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
 [Main]   0020: d6 0c cf 68 ee 01 0d 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
 [Main]   0030: 2d 70 63 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39  -pc...%........9
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0009 cmd=0x0007 len=203 msgId=2048
-[Main] S2: -> PreAuth
+[Main] S1: Raw Blaze binary detected
+[Main] S1: comp=0x0009 cmd=0x0007 len=203 msgId=2816
+[Main] S1: -> PreAuth
 [PreAuth] Variant: full
 [PreAuth] Request TDF:
 [PreAuth]   CDAT (struct) {
@@ -146,13 +152,13 @@ Connection: keep-alive
 [PreAuth]   }
 [PreAuth]   LADD (int) = 380807360
 [PreAuth] Sending FIFA17 PreAuth response (367 bytes)
-[Main] S2: Sending response (383 bytes)
-[Main] S2: [SWEEP#1 CONFIRMED: b12=0x10(resp) b13=seq] header: 00 00 01 6f 00 00 00 09 00 07 00 00 10 08 00 00
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=2432
-[Main] S2: -> Ignoring null/error packet (seq=9 flags=0x80)
-[Main] S2: comp=0x0009 cmd=0x0002 len=0 msgId=2560
-[Main] S2: Sending response (26 bytes)
-[Main] S2: [SWEEP#1 CONFIRMED: b12=0x10(resp) b13=seq] header: 00 00 00 0a 00 00 00 09 00 02 00 00 10 0a 00 00
-[Main] S2 disconnected
-[SWEEP] Test #1 was: CONFIRMED: b12=0x10(resp) b13=seq
-[SWEEP] Next test #2: CONFIRMED: b12=0x10(resp) b13=seq
+[Main] S1: Sending response (383 bytes)
+[Main] S1: [SWEEP#0 CONFIRMED: b12=0x10(resp) b13=seq] header: 00 00 01 6f 00 00 00 09 00 07 00 00 10 0b 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=3200
+[Main] S1: -> Ignoring null/error packet (seq=12 flags=0x80)
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=3328
+[Main] S1: Sending response (26 bytes)
+[Main] S1: [SWEEP#0 CONFIRMED: b12=0x10(resp) b13=seq] header: 00 00 00 0a 00 00 00 09 00 02 00 00 10 0d 00 00
+[Main] S1 disconnected
+[SWEEP] Test #0 was: CONFIRMED: b12=0x10(resp) b13=seq
+[SWEEP] Next test #1: CONFIRMED: b12=0x10(resp) b13=seq
