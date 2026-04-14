@@ -1,119 +1,65 @@
 /*
- * Frida v25: Trace the ACTUAL TDF decode call in FUN_146db5d60
- * The decode happens at: (*(param_3->vtable + 0x18))(param_3, param_4, lVar4, 0)
- * where param_4 = body buffer, lVar4 = response object
- *
- * Also hook the vtable+0x30 call to see what it returns.
+ * Frida v26: Trace the state machine advance function (vtable+0x08)
+ * to see what it does with state=3 and find the OSDK UI function to bypass.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v25: TDF Decode Deep Trace ===');
+console.log('=== Frida v26: State Machine Trace ===');
 
-// Hook FUN_146db5d60 to trace the decode flow
-Interceptor.attach(addr(0x6db5d60), {
+// The CreateAccount cave calls: (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
+// param_1[1] is the Login state machine object with vtable 0x14389f938
+// vtable+0x08 is the advance function
+// Let's hook it to see what it does
+
+// Hook the vtable+0x08 function for the Login state machine
+// vtable at 0x14389f938, entry at +0x08 = 0x14389f940
+// Read the function pointer from the vtable
+var loginVtable = ptr('0x14389f938');
+var advanceFnPtr = loginVtable.add(0x08).readPointer();
+console.log('[INIT] Login vtable+0x08 -> ' + advanceFnPtr);
+
+Interceptor.attach(advanceFnPtr, {
     onEnter: function(args) {
-        var rpc = args[0];
-        var errCode = args[1].toInt32();
-        var stream = args[2];
-        var bodyBuf = args[3];
+        var self = args[0];
+        var success = args[1].toInt32();
+        var nextState = args[2].toInt32();
+        console.log('[STATE-ADVANCE] self=' + self + ' success=' + success + ' nextState=' + nextState);
         
-        this.rpc = rpc;
-        this.stream = stream;
-        this.bodyBuf = bodyBuf;
-        this.errCode = errCode;
-        
-        if (errCode === 0) {
-            // Read body buffer
-            var bufStart = bodyBuf.add(0x08).readPointer();
-            var bufEnd = bodyBuf.add(0x18).readPointer();
-            var bodyLen = bufEnd.sub(bufStart).toInt32();
-            console.log('[DECODE] err=0 bodyLen=' + bodyLen);
-            
-            if (bodyLen > 0 && bodyLen < 200) {
-                var hex = Array.from(new Uint8Array(bufStart.readByteArray(bodyLen)))
-                    .map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
-                console.log('[DECODE] body: ' + hex);
-            }
-            
-            // Read rpc[0xe] (offset 0x70) — pre-existing decoder
-            var preDecoder = rpc.add(0x70).readPointer();
-            console.log('[DECODE] rpc[0xe]=' + preDecoder);
-            
-            // Read the vtable to see what vtable+0x30 points to
-            var vtable = rpc.readPointer();
-            var decodeFn = vtable.add(0x30).readPointer();
-            console.log('[DECODE] vtable+0x30 -> ' + decodeFn);
-            
-            // Read stream vtable to see what vtable+0x18 points to
-            var streamVtable = stream.readPointer();
-            var streamDecodeFn = streamVtable.add(0x18).readPointer();
-            console.log('[DECODE] stream.vtable+0x18 -> ' + streamDecodeFn);
-        }
-    },
-    onLeave: function(retval) {
-        if (this.errCode === 0) {
-            // Check rpc[0xc] (offset 0x60) — the response object after decode
-            var respObj = this.rpc.add(0x60).readPointer();
-            console.log('[DECODE] after: respObj=' + respObj);
-            if (!respObj.isNull()) {
-                try {
-                    var d = new Uint8Array(respObj.readByteArray(0x20));
-                    var hex = Array.from(d).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
-                    console.log('[DECODE] respObj dump: ' + hex);
-                } catch(e) {}
-            }
-            
-            // Check if body buffer was consumed (read position advanced)
-            var bufStart = this.bodyBuf.add(0x08).readPointer();
-            var bufCur = this.bodyBuf.add(0x10).readPointer();
-            var consumed = bufCur.sub(bufStart).toInt32();
-            console.log('[DECODE] body consumed: ' + consumed + ' bytes');
-        }
+        // Dump the state machine object
+        try {
+            var vtable = self.readPointer();
+            console.log('[STATE-ADVANCE] vtable=' + vtable);
+            // Read current state info
+            console.log('[STATE-ADVANCE] +0x10=' + self.add(0x10).readU32());
+            console.log('[STATE-ADVANCE] +0x14=' + self.add(0x14).readS64());
+        } catch(e) {}
     }
 });
 
-// Hook the stream decode function — this is where TDF parsing actually happens
-// We need to find the address dynamically from the vtable
-var streamDecodeHooked = false;
-Interceptor.attach(addr(0x6db5d60), {
+// Also hook FUN_146e1c3f0 (Login type processor) to see if it ever gets called
+Interceptor.attach(addr(0x6e1c3f0), {
     onEnter: function(args) {
-        if (streamDecodeHooked) return;
-        if (args[1].toInt32() !== 0) return;
-        
-        var stream = args[2];
-        var streamVtable = stream.readPointer();
-        var decodeFnAddr = streamVtable.add(0x18).readPointer();
-        
-        if (decodeFnAddr.toInt32() > 0x140000000) {
-            console.log('[HOOK] Hooking stream decode at ' + decodeFnAddr);
-            Interceptor.attach(decodeFnAddr, {
-                onEnter: function(a) {
-                    console.log('[STREAM-DECODE] called with: stream=' + a[0] + ' buf=' + a[1] + ' resp=' + a[2] + ' arg4=' + a[3]);
-                    this.resp = a[2];
-                    this.buf = a[1];
-                },
-                onLeave: function(ret) {
-                    console.log('[STREAM-DECODE] returned');
-                    if (this.resp && !this.resp.isNull()) {
-                        try {
-                            var d = new Uint8Array(this.resp.readByteArray(0x20));
-                            var hex = Array.from(d).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
-                            console.log('[STREAM-DECODE] resp after: ' + hex);
-                        } catch(e) {}
-                    }
-                    // Check buffer consumption
-                    if (this.buf) {
-                        try {
-                            var bufStart = this.buf.add(0x08).readPointer();
-                            var bufCur = this.buf.add(0x10).readPointer();
-                            console.log('[STREAM-DECODE] buf consumed: ' + bufCur.sub(bufStart).toInt32());
-                        } catch(e) {}
-                    }
-                }
-            });
-            streamDecodeHooked = true;
-        }
+        console.log('[LOGIN-PROC] FUN_146e1c3f0 CALLED! param1=' + args[0] + ' param2=' + args[1]);
     }
+});
+
+// Hook FUN_146e1e460 (post_PreAuth) to see when it fires
+Interceptor.attach(addr(0x6e1e460), {
+    onEnter: function(args) {
+        console.log('[POST-PREAUTH] FUN_146e1e460 called');
+    }
+});
+
+// Hook any function that might be the OSDK UI display
+// The OSDK UI is likely triggered by a callback registered for state 3
+// Let's trace calls in the 146e15xxx-146e16xxx range after the state advance
+var callCount = 0;
+[0x6e15320, 0x6e15bd0, 0x6e15eb0, 0x6e15fe0].forEach(function(off) {
+    Interceptor.attach(addr(off), {
+        onEnter: function(args) {
+            console.log('[FN-' + off.toString(16) + '] called, arg0=' + args[0]);
+        }
+    });
 });
 
 console.log('=== Ready ===');
