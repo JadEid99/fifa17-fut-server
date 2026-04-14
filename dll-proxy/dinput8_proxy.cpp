@@ -274,13 +274,28 @@ static void PatchPreAuthHandler() {
         cave[o++] = 0x28; cave[o++] = 0x0D; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x5A; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         
-        // Call FUN_146e1e460(param_1)
+        // Call FUN_146e1e460(param_1) — post_PreAuth (sends Ping)
         // MOV RCX, RBX (param_1)
         cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
         // MOV RAX, 0x146e1e460
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t postPreAuth = 0x146e1e460;
         memcpy(cave + o, &postPreAuth, 8); o += 8;
+        // CALL RAX
+        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        
+        // NEW: Also call FUN_146e19720(param_1 + 0x3b6) — start login flow
+        // This is what the original PreAuth success path does after FUN_146e1e460
+        // LEA RCX, [RBX + 0x3b6]  (param_1 + 0x3b6 = login state machine)
+        // Actually 0x3b6 is too large for a single LEA displacement with RBX
+        // Use: MOV RCX, RBX / ADD RCX, 0x3b6
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9; // MOV RCX, RBX
+        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1; // ADD RCX, 0x3b6
+        cave[o++] = 0xB6; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00;
+        // MOV RAX, FUN_146e19720
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t loginStart = 0x146e19720;
+        memcpy(cave + o, &loginStart, 8); o += 8;
         // CALL RAX
         cave[o++] = 0xFF; cave[o++] = 0xD0;
         
