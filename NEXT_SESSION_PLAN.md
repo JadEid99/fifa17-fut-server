@@ -10,23 +10,52 @@ Revive FIFA 17 Ultimate Team by building a private Blaze server + DLL patches.
 - **Ghidra export**: `/Users/jadeid/Downloads/ghidra/FIFA17_dumped.bin.c` (199MB, game base 0x140000000, NO ASLR)
 
 ## KEY FILES
-- `dll-proxy/dinput8_proxy.cpp` — DLL with all patches (v106+Patch16)
+- `dll-proxy/dinput8_proxy.cpp` — DLL with all patches
 - `server-standalone/server.mjs` — Node.js Blaze server
 - `frida_force_login.js` — Frida script for runtime tracing
 - `batch_test_lsx.ps1` — Automated batch test (builds DLL, starts server, launches game)
+- `frida_test.ps1` — Automated Frida test (same + attaches Frida)
 - `batch-results.log` — Auto-logged server output
 
 ## BUILD & TEST
 ```
 # Automated (recommended):
-.\batch_test_lsx.ps1
-
-# Manual build DLL (on Windows):
-# batch_test_lsx.ps1 finds vcvars64.bat automatically
+.\batch_test_lsx.ps1       # No Frida, faster
+.\frida_test.ps1           # With Frida tracing
 
 # Server-only changes: just restart server, no DLL rebuild needed
 # DLL changes: need full game restart (use batch_test_lsx.ps1)
 ```
+
+## IMMEDIATE PRIORITY — FIX TDF ENCODING
+
+The #1 path forward is fixing the TDF encoding so the game's RPC framework decodes our
+response bodies. This would unblock EVERYTHING — CreateAccount, Login, PostAuth, etc.
+
+### What works:
+- PreAuth TDF decode: 325 of 376 bytes consumed ✅
+- TOS responses (0xf2, 0xf6, 0x2f): 54-94 bytes consumed ✅ (with actual text content)
+- Ping response: consumed ✅
+
+### What fails (0 bytes consumed):
+- FetchClientConfig responses (all 6) — uses writeMap('CONF', {...})
+- CreateAccount response (PNAM string + UID integer)
+
+### Key observation:
+The PreAuth response uses structs, strings, integers, intlists, AND a map — and it works.
+The CreateAccount response uses just a string + integer — and it fails.
+The difference might be in the vtable+0x30 decoder function:
+- PreAuth decoder: 0x146e19840 — WORKS
+- CreateAccount decoder: 0x146e12a60 — FAILS (0 bytes consumed)
+- FetchClientConfig decoder: 0x146e12a00 — FAILS (0 bytes consumed)
+
+The decoder function is different per response type. The CreateAccount decoder might expect
+a different TDF structure or have a bug in how it reads our encoding.
+
+### Investigation needed:
+1. Hook the CreateAccount decoder (0x146e12a60) with Frida to see what it does
+2. Compare the TDF binary format between PreAuth (works) and CreateAccount (fails)
+3. Check if the decoder expects fields in a specific order or with specific tags
 
 ## CONNECTION PIPELINE — CURRENT STATUS
 
@@ -95,6 +124,48 @@ points to heap data, not the state machine.
    - CreateAccount TDF decode fails (0 bytes consumed) — need to investigate why
 2. OR: Find a way to access the state machine from the handler object
 3. OR: Go back to the OSDK account creation screen and make it functional
+
+## FALLBACK PLAN — OSDK ACCOUNT CREATION SCREEN
+
+If fixing TDF doesn't work, we can return to the OSDK account creation screen.
+
+### How to trigger it:
+In the CreateAccount cave (Patch 16), restore the old approach that set state bytes
+via vtable+0xb8 and called the state transition (1, 3). Specifically:
+1. Call vtable+0xb8 on param_1 (handler) to get state object
+2. Set *(state + 0x8bc) = 0 (success)
+3. Set *(state + 0x8c0) = 0x01 (UID non-zero)
+4. Set *(state + 0x8c6) = 1 (persona creation flag — THIS triggers the screen)
+5. Call (*(*(param_1[1]) + 8))(param_1[1], 1, 3) — state transition
+   NOTE: This actually calls an EASTL assert (NOP), but the screen appears anyway
+   because setting 0x8c6=1 is what triggers it.
+
+### What the screen looks like:
+- Title: *TXT_OSDK_ACCOUNT_CREATION (broken localization)
+- Fields: Email, Password, *TXT_OSDK_REENTER_PASSWORD, *TXT_OSDK_CREATE_PERSONA
+- Dropdowns: Country (Afghanistan default), DOB (Jan 01 2009 default)
+- Radio buttons: data sharing, contact prefs, *TXT_OSDK_REMEMBER_PASSWORD
+- Loading spinner ("17" icon) — fields NOT interactable
+
+### What the game sends during the screen:
+- cmd=0x00F2 (GetLegalDocsInfo): CTRY="", PTFM=4
+- cmd=0x00F6 (GetTermsOfServiceContent): CPFT=4, CTRY="", FTCH=1, LANG="", TEXT=0
+- cmd=0x002F (GetPrivacyPolicyContent): same fields
+- Then Ping packets every ~3 seconds
+
+### Why it's stuck:
+The TOS responses ARE decoded (54-94 bytes consumed with actual text content).
+But the screen stays in loading state. Possible causes:
+- The TOS response TDF field names (LDVC, TCOL) might be wrong
+- The game might need additional fields beyond LDVC and TCOL
+- The OSDK UI might be waiting for a Nucleus HTTPS call that's failing silently
+- The form fields might need the OSDK localization strings to be loaded
+
+### To make it functional:
+1. Use Frida to hook the TOS response handlers and see what fields they read
+2. Find the correct TDF field names from Ghidra's response structure at PTR_DAT_1448787e0
+3. Try returning the TOS content in different TDF structures (struct wrapper, etc.)
+4. Check if the game makes HTTPS requests to port 443 during the screen
 
 ## DLL PATCHES (v106 + Patch 16)
 
