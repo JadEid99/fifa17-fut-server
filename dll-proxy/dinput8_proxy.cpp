@@ -376,6 +376,26 @@ static void PatchOriginCheckOnline() {
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
+    // Part D: Patch OriginGetProfileSync, OriginGetSettingSync, OriginSetPresence
+    // These functions talk to STP via LSX and fail because STP doesn't handle them.
+    // Frida showed errors: 0xa2080000 (LSX response mismatch) and 0xa2000003 (SetPresence fail)
+    uint64_t osdkFuncs[] = { 0x1470da970, 0x1470daa30, 0x1470db760 };
+    const char* osdkNames[] = { "GetProfileSync", "GetSettingSync", "SetPresence" };
+    for (int i = 0; i < 3; i++) {
+        __try {
+            BYTE* f = (BYTE*)osdkFuncs[i];
+            Log("OSDK_%s: addr=%p bytes=%02X %02X %02X %02X", osdkNames[i], f, f[0], f[1], f[2], f[3]);
+            DWORD op;
+            if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                f[0] = 0x31; f[1] = 0xC0; // XOR EAX, EAX (return 0)
+                f[2] = 0xC3;               // RET
+                for (int k=3; k<8; k++) f[k] = 0x90;
+                VirtualProtect(f, 8, op, &op);
+                Log("PATCHED: %s -> return 0", osdkNames[i]);
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    }
+    
     g_originCheckOnlineDone = 1;
     g_patched++;
 }
