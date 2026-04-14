@@ -10,22 +10,32 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v16 - CreateAccount Response Trace ===
+=== Frida v17 - Read CreateAccountResponse fields ===
+[FIELDS] CreateAccountResponse field table at: 0x144878060
+[FIELDS] Raw bytes (128):
+[FIELDS]   0000: 28 76 86 44 01 00 00 00 a0 cd 88 43 01 00 00 00 
+[FIELDS]   0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[FIELDS]   0020: 00 6d e8 c2 01 01 00 00 18 00 00 00 00 00 00 00 
+[FIELDS]   0030: f0 97 86 44 01 00 00 00 0c cf 88 43 01 00 00 00 
+[FIELDS]   0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[FIELDS]   0050: 00 00 99 d6 00 00 00 00 10 00 00 00 00 00 00 00 
+[FIELDS]   0060: 70 c4 87 44 01 00 00 00 1c ad 61 43 01 00 00 00 
+[FIELDS]   0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[FIELDS] +0: ptr 0x144867628
+[FIELDS] +8: ptr 0x14388cda0
+[FIELDS] +10: 0x0
+[FIELDS] +18: 0x0
+[FIELDS] +20: 0x101c2e86d00
+[FIELDS] +28: 0x18
+[FIELDS] +30: ptr 0x1448697f0
+[FIELDS] +38: ptr 0x14388cf0c
+[PARAMS] CreateAccountParameters name: CreateAccountParameters
 === Ready ===
-[Local::PID::99920 ]-> [OSDK_ERR] 0xa2080000 Origin::LSXRequest<struct lsx::GetSettingT,struct lsx::GetSettingResponseT,class Origin::Request::Dummy,int (__cdecl*)(void *,void *,unsigned __int64,int)>::HandleMessage
-[OSDK_ERR] 0xa2080000 Origin::OriginSDK::DispatchIncomingMessages
-[OSDK_ERR] 0xa2080000 Origin::OriginSDK::GetSettingSync
-[OSDK_ERR] 0xa2000003 Origin::OriginSDK::SetPresence
-[OSDK_ERR] 0xa2000003 Origin::OriginSDK::SetPresence
-[STATE] -1 -> 2
-[OSDK_ERR] 0xa1000000 Origin::OriginSDK::DestroyHandle
-[CREATE_ACCOUNT_RESP] param3=0x0 (SUCCESS)
-[CREATE_ACCOUNT_RESP] param2+0x10=0
-[CREATE_ACCOUNT_RESP] param2+0x11=0
-[CREATE_ACCOUNT_RESP] param2+0x12=0
-[CREATE_ACCOUNT_RESP] param2+0x13=0
-[CREATE_ACCOUNT_RESP] param3=0x0 (SUCCESS)
-[CREATE_ACCOUNT_RESP] param2+0x10=0
-[CREATE_ACCOUNT_RESP] param2+0x11=0
-[CREATE_ACCOUNT_RESP] param2+0x12=0
-[CREATE_ACCOUNT_RESP] param2+0x13=0
+[Local::PID::86828 ]-> [RESP] param3=0x0
+[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
+[RESP] +010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
+[RESP] +020: 00 00 00 80 cd cc cc 3d 00 a5 76 09 00 00 00 00 
+[RESP] param3=0x0
+[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
+[RESP] +010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
+[RESP] +020: 00 00 00 80 30 00 00 00 a0 ed 76 09 00 00 00 00 
