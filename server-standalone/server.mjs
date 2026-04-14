@@ -1653,7 +1653,7 @@ function handlePreAuth(pkt) {
   enc.writeInteger('SVID', 0x45410805);
   enc.writeStructEnd(); // QOSS
   enc.writeString('RSRC', '303107');
-  enc.writeString('SVER', 'Blaze 15.1.1.3.0 (CL# 1060080)\n');
+  enc.writeString('SVER', 'Blaze 15.1.2.1.0 (CL# 3175939)\n');
   const body = enc.build();
   console.log(`[PreAuth] Sending FIFA17 PreAuth response (${body.length} bytes)`);
   return buildReply(pkt, body);
