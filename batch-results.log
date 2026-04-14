@@ -1,36 +1,47 @@
-=== S13 sweep#12: seq+1+0x10 (2026-04-14 07:29:09) ===
+=== S14 sweep#13: 0+0x80 (2026-04-14 07:29:15) ===
 
-[Main] Session 13 connected: 127.0.0.1:53695
-[Main] S13: received 237 bytes (total: 237)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 49 80 00 00  ............I...
-[Main]   0010: 00 00 00 0f 00 00 00 09 00 01 00 00 4a 00 00 00  ............J...
-[Main]   0020: 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 00  .jd..OSDK_CORE..
-[Main]   0030: 00 00 11 00 00 00 09 00 01 00 00 4b 00 00 00 8e  ...........K....
-[Main] S13: Raw Blaze binary detected
-[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=18816
-[Main] S13: -> Ignoring null/error packet (seq=73 flags=0x80)
-[Main] S13: comp=0x0009 cmd=0x0001 len=15 msgId=18944
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 4b 10 00 00
-[Main] S13: comp=0x0009 cmd=0x0001 len=17 msgId=19200
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 4c 10 00 00
-[Main] S13: comp=0x0009 cmd=0x0001 len=18 msgId=19456
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 4d 10 00 00
-[Main] S13: comp=0x0009 cmd=0x0001 len=19 msgId=19712
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 4e 10 00 00
-[Main] S13: comp=0x0009 cmd=0x0001 len=26 msgId=19968
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 4f 10 00 00
-[Main] S13: comp=0x0009 cmd=0x0001 len=30 msgId=20224
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 09 00 01 00 00 50 10 00 00
-[Main] S13: comp=0x0001 cmd=0x0046 len=0 msgId=20480
-[Main] S13: -> Auth unknown cmd=0x46
-[Main] S13: Sending response (16 bytes)
-[Main] S13: [SWEEP#12 seq+1+0x10] header: 00 00 00 00 00 00 00 01 00 46 00 00 51 10 00 00
-[Main] S13 disconnected
-[SWEEP] Test #12 was: seq+1+0x10
-[SWEEP] Next test #13: 0+0x80
+[Main] Session 14 connected: 127.0.0.1:53699
+[Main] S14: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 51 80 00 00  ............Q...
+[Main] S14: Raw Blaze binary detected
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=20864
+[Main] S14: -> Ignoring null/error packet (seq=81 flags=0x80)
+[Main] S14: comp=0x0009 cmd=0x0001 len=15 msgId=20992
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0009 cmd=0x0001 len=17 msgId=21248
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0009 cmd=0x0001 len=18 msgId=21504
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0009 cmd=0x0001 len=19 msgId=21760
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0009 cmd=0x0001 len=26 msgId=22016
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0009 cmd=0x0001 len=30 msgId=22272
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 09 00 01 00 00 00 80 00 00
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14: comp=0x0001 cmd=0x0046 len=0 msgId=22528
+[Main] S14: -> Auth unknown cmd=0x46
+[Main] S14: Sending response (16 bytes)
+[Main] S14: [SWEEP#13 0+0x80] header: 00 00 00 00 00 00 00 01 00 46 00 00 00 80 00 00
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=160
+[Main] S14: -> Ignoring null/error packet (seq=0 flags=0xa0)
+[Main] S14 disconnected
+[SWEEP] Test #13 was: 0+0x80
+[SWEEP] Next test #14: 0+0x10
