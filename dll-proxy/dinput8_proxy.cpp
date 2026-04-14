@@ -448,6 +448,28 @@ static DWORD WINAPI PatchThread(LPVOID) {
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
+    // Apply OSDK patches immediately after all other patches
+    // These patch functions that talk to STP via LSX and fail during connection
+    Log("Applying OSDK patches...");
+    {
+        uint64_t osdkFuncs[] = { 0x1470da970, 0x1470daa30, 0x1470db760 };
+        const char* osdkNames[] = { "GetProfileSync", "GetSettingSync", "SetPresence" };
+        for (int i = 0; i < 3; i++) {
+            __try {
+                BYTE* f = (BYTE*)osdkFuncs[i];
+                Log("OSDK_%s: addr=%p bytes=%02X %02X %02X %02X", osdkNames[i], f, f[0], f[1], f[2], f[3]);
+                DWORD op;
+                if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                    f[0] = 0x31; f[1] = 0xC0;
+                    f[2] = 0xC3;
+                    for (int k=3; k<8; k++) f[k] = 0x90;
+                    VirtualProtect(f, 8, op, &op);
+                    Log("PATCHED: %s -> return 0", osdkNames[i]);
+                }
+            } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        }
+    }
+    
     // The original auth request fired at ~100ms, called FUN_1470db3c0 (unpatched),
     // which blocked for 15s in STP timeout, returned error, slot was cleared.
     // Our patch to FUN_1470db3c0 body landed at ~640ms but the function was already
@@ -671,28 +693,6 @@ static DWORD WINAPI PatchThread(LPVOID) {
     } __except(EXCEPTION_EXECUTE_HANDLER) { Log("AUTH: Exception"); }
     
 done:
-    // Now that the game has loaded, patch the OSDK functions that fail during connection
-    // These can't be patched at startup because they're needed during loading
-    Log("AUTH: Applying delayed OSDK patches...");
-    {
-        uint64_t osdkFuncs[] = { 0x1470da970, 0x1470daa30, 0x1470db760 };
-        const char* osdkNames[] = { "GetProfileSync", "GetSettingSync", "SetPresence" };
-        for (int i = 0; i < 3; i++) {
-            __try {
-                BYTE* f = (BYTE*)osdkFuncs[i];
-                Log("OSDK_%s: addr=%p bytes=%02X %02X %02X %02X", osdkNames[i], f, f[0], f[1], f[2], f[3]);
-                DWORD op;
-                if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                    f[0] = 0x31; f[1] = 0xC0; // XOR EAX, EAX
-                    f[2] = 0xC3;               // RET
-                    for (int k=3; k<8; k++) f[k] = 0x90;
-                    VirtualProtect(f, 8, op, &op);
-                    Log("PATCHED: %s -> return 0 (delayed)", osdkNames[i]);
-                }
-            } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        }
-    }
-    
     // Keep forcing +0x53f flag continuously in background
     // This ensures it's set before any connection attempt
     Log("AUTH: Starting continuous +0x53f flag enforcer...");
