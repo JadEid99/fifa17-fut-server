@@ -323,20 +323,10 @@ static void PatchPreAuthHandler() {
 
 // Patch 16: Replace FUN_146e151d0 (CreateAccount response handler)
 // The TDF body isn't being decoded by the RPC framework (decoder creates empty object).
-// We bypass the handler entirely: hardcode a non-zero UID and call the state transition.
+// We bypass the handler: hardcode UID in state object, call state transition.
 //
-// Original function:
-//   lVar3 = vtable+0xb8(param_1)           // get state object
-//   *(state + 0x8bc) = param_3             // store error code
-//   if (param_3 == 0) {
-//     copy bytes from param_2+0x10..0x13 to state
-//     if (cVar2==0 && *(param_2+0x13)!=0)  // THE CHECK THAT FAILS
-//       *(state + 0x8c6) = 1
-//       FUN_146e00f40(...)
-//       vtable_call(param_1[1], 1, 3)      // advance state machine
-//   }
-//
-// Our cave: skip the TDF check, hardcode UID, call state transition.
+// SIMPLIFIED: Skip FUN_146e00f40 (crashed on deep pointer chain).
+// Just set the state bytes and call the state machine advance.
 static int g_createAcctPatchDone = 0;
 static void PatchCreateAccountHandler() {
     if (g_createAcctPatchDone) return;
@@ -346,96 +336,66 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 512, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
         
         // Windows x64: param_1=RCX, param_2=RDX, param_3=R8
-        // Save non-volatile registers
         cave[o++] = 0x53;                                     // PUSH RBX
         cave[o++] = 0x55;                                     // PUSH RBP
-        cave[o++] = 0x41; cave[o++] = 0x56;                   // PUSH R14
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
         
-        // Save param_1 in RBX
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
-        
-        // Step 1: Get state object via vtable+0xb8
-        // lVar3 = (*(code**)(*param_1 + 0xb8))(param_1)
-        // MOV RAX, [RCX]          (vtable ptr)
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
-        // CALL [RAX + 0xb8]       (vtable+0xb8)
-        cave[o++] = 0xFF; cave[o++] = 0x90;
+        // Step 1: Get state object via vtable+0xb8(param_1)
+        // RCX already = param_1
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX] (vtable)
+        cave[o++] = 0xFF; cave[o++] = 0x90;                    // CALL [RAX + 0xb8]
         cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // RAX = state object (lVar3). Save in R14.
-        cave[o++] = 0x49; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV R14, RAX
+        // RAX = state object. Save in RBP.
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC5; // MOV RBP, RAX
         
-        // Step 2: *(state + 0x8bc) = 0  (success error code)
-        // MOV DWORD PTR [R14 + 0x8bc], 0
-        cave[o++] = 0x41; cave[o++] = 0xC7; cave[o++] = 0x86;
+        // Step 2: *(state + 0x8bc) = 0  (error code = success)
+        cave[o++] = 0xC7; cave[o++] = 0x85;                    // MOV DWORD [RBP + 0x8bc], 0
         cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         
-        // Step 3: Hardcode UID bytes into state object
-        // *(byte*)(state + 0x8c0) = 0x01  (param_2+0x10 equivalent — UID byte 0)
-        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        // Step 3: Hardcode UID bytes (non-zero at +0x13 is the critical check)
+        // *(byte*)(state + 0x8c0) = 0x01  (UID byte, maps to param_2+0x10)
+        cave[o++] = 0xC6; cave[o++] = 0x85;
         cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x01;
-        // *(byte*)(state + 0x8c1) = 0x00  (param_2+0x11)
-        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        // *(byte*)(state + 0x8c1) = 0x00
+        cave[o++] = 0xC6; cave[o++] = 0x85;
         cave[o++] = 0xC1; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
-        // *(byte*)(state + 0x8c5) = 0x00  (param_2+0x12)
-        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        // *(byte*)(state + 0x8c5) = 0x00
+        cave[o++] = 0xC6; cave[o++] = 0x85;
         cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
         // Step 4: *(byte*)(state + 0x8c6) = 1  (success flag)
-        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC6; cave[o++] = 0x85;
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x01;
         
-        // Step 5: Call FUN_146e00f40(*(*(param_1[5] + 0x28) + 0x788), *(param_1[5] + 0x30), 0)
-        // param_1[5] = *(RBX + 0x28)
-        // MOV RAX, [RBX + 0x28]   (param_1[5])
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x43; cave[o++] = 0x28;
-        // MOV RBP, RAX            (save param_1[5] in RBP)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC5;
-        // First arg: *(*(param_1[5] + 0x28) + 0x788)
-        // MOV RCX, [RBP + 0x28]
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4D; cave[o++] = 0x28;
-        // MOV RCX, [RCX + 0x788]
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x89;
-        cave[o++] = 0x88; cave[o++] = 0x07; cave[o++] = 0x00; cave[o++] = 0x00;
-        // Second arg: *(param_1[5] + 0x30)
-        // MOV EDX, [RBP + 0x30]
-        cave[o++] = 0x8B; cave[o++] = 0x55; cave[o++] = 0x30;
-        // Third arg: 0
-        // XOR R8D, R8D
-        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
-        // MOV RAX, FUN_146e00f40
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t fn146e00f40 = 0x146e00f40;
-        memcpy(cave + o, &fn146e00f40, 8); o += 8;
-        // CALL RAX
-        cave[o++] = 0xFF; cave[o++] = 0xD0;
-        
-        // Step 6: Call state transition: (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
+        // Step 5: Call state transition ONLY — skip FUN_146e00f40
+        // (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
         // MOV RCX, [RBX + 0x08]   (param_1[1])
         cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08;
         // MOV RAX, [RCX]          (vtable)
         cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
         // MOV EDX, 1
-        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0xBA;
+        cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         // MOV R8D, 3
-        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x41; cave[o++] = 0xB8;
+        cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         // CALL [RAX + 0x08]
         cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;
         
         // Cleanup and return
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
-        cave[o++] = 0x41; cave[o++] = 0x5E;                   // POP R14
         cave[o++] = 0x5D;                                     // POP RBP
         cave[o++] = 0x5B;                                     // POP RBX
         cave[o++] = 0xC3;                                     // RET
