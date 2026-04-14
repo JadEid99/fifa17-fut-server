@@ -1678,6 +1678,7 @@ function handlePreAuth(pkt) {
   enc.writeStructEnd(); // QOSS
   enc.writeString('RSRC', '303107');
   enc.writeString('SVER', 'Blaze 15.1.2.1.0 (CL# 3175939)\n');
+  enc.writeString('PTVR', '1.1');  // Protocol version - must match game's PTVR
   const body = enc.build();
   console.log(`[PreAuth] Sending FIFA17 PreAuth response (${body.length} bytes)`);
   return buildReply(pkt, body);
