@@ -1,110 +1,225 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-14 14:47:29) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-14 14:54:08) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
+ntered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
+[OSDK_LOG] level=67108864 OriginUpdate entered
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-SL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 75 72 5b 6f 1e
-  0010: 41 b0 2a 77 ed 5f 43 e7 c6 83 e4 34 09 a3 83 92
-  0020: 89 38 6d c5 9a 87 ec b2 be e4 95 e5 ed 92 07 c0
-  0030: 4b ac 55 37 f7 a1 5e 4c ec c9 f5 00 d9 6d fb 61
-  0040: 5a 9a 4a fe 5d 70 0c cc 7e e3 15 20 d4 b3 e1 88
-  0050: a7 86 17 8d c4 e9 ac da cf 4d 35 30 4a 44 45 ba
-  0060: 21 69 9d cf 82 9d 31 6b 0a 02 e8 13 3a 0e b8 41
-  0070: af 9b 86 c5 c8 2f 51 54 74 38 6a 20 70 e4 e6 2b
-  0080: 74 78 b4 92 a6 26 1e 0d c0 1d 2e
-[SSL] Record: type=0x16 ver=0x303 len=134
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
-[SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 01ffe6596094dbe9d44d114cdd8bbc66...
-[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 79 8e 2c 16 24
-  0010: 2f fc 90 aa d8 09 78 9e de 5c 37 d1 cc 52 0a 0a
-  0020: f8 81 ad 66 b4 94 ac a1 27 f8 58 ca c3 fa ee
-[SSL] Record: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 57b89b8c41780816ed4be5b4bf0f5861
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000cf242717e63aa7e0284326489ec49c1161209fc58ad71e5fdaf4f465639045d1d
-[SSL] Client Finished plaintext (16 bytes): 1400000cf242717e63aa7e0284326489
-[SSL] Client Finished MAC: ec49c1161209fc58ad71e5fdaf4f465639045d1d
-[SSL] Client verify_data:   f242717e63aa7e0284326489
-[SSL] Expected verify_data:  f242717e63aa7e0284326489
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: ec49c1161209fc58ad71e5fdaf4f465639045d1d
-[SSL] Actual client MAC:   ec49c1161209fc58ad71e5fdaf4f465639045d1d
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1050 bytes
-[SSL]   msg[0]: 123 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 7af1dbb9c8e92626be1121e9
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 41 bytes on socket (total pending: 41)
-[SSL] TLS record: type=0x17 ver=0x303 len=36 (pending: 41)
-[SSL] Decrypted 16 bytes of application data
-[SSL] Raw app data (16b): 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00
-[Blaze-Enc] comp=0x0000 cmd=0x0000 len=0 msgType=0x3000 msgId=16256 err=0
-[Blaze] Ignoring null packet (seq=63 flags=0x80)
+onnect
+[Main] Session 43 connected: 127.0.0.1:61066
+[Main] S43: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3c 80 00 00  ............<...
+[Main] S43: Raw Blaze binary detected
+[Main] S43: comp=0x0000 cmd=0x0000 len=0 msgId=15488
+[Main] S43: -> Ignoring null/error packet (seq=60 flags=0x80)
+[Main] S43 disconnected
+[LOG] Saved: S43 disconnect
+[Main] Session 44 connected: 127.0.0.1:61067
+[Main] S44: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3d 80 00 00  ............=...
+[Main] S44: Raw Blaze binary detected
+[Main] S44: comp=0x0000 cmd=0x0000 len=0 msgId=15744
+[Main] S44: -> Ignoring null/error packet (seq=61 flags=0x80)
+[Main] S44 disconnected
+[LOG] Saved: S44 disconnect
+[Main] Session 45 connected: 127.0.0.1:61068
+[Main] S45: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3e 80 00 00  ............>...
+[Main] S45: Raw Blaze binary detected
+[Main] S45: comp=0x0000 cmd=0x0000 len=0 msgId=16000
+[Main] S45: -> Ignoring null/error packet (seq=62 flags=0x80)
+[Main] S45 disconnected
+[LOG] Saved: S45 disconnect
+[Main] Session 46 connected: 127.0.0.1:61069
+[Main] S46: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00  ............?...
+[Main] S46: Raw Blaze binary detected
+[Main] S46: comp=0x0000 cmd=0x0000 len=0 msgId=16256
+[Main] S46: -> Ignoring null/error packet (seq=63 flags=0x80)
+[Main] S46 disconnected
+[LOG] Saved: S46 disconnect
+[Main] Session 47 connected: 127.0.0.1:61070
+[Main] S47: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 40 80 00 00  ............@...
+[Main] S47: Raw Blaze binary detected
+[Main] S47: comp=0x0000 cmd=0x0000 len=0 msgId=16512
+[Main] S47: -> Ignoring null/error packet (seq=64 flags=0x80)
+[Main] S47 disconnected
+[LOG] Saved: S47 disconnect
+[Main] Session 48 connected: 127.0.0.1:61071
+[Main] S48: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 41 80 00 00  ............A...
+[Main] S48: Raw Blaze binary detected
+[Main] S48: comp=0x0000 cmd=0x0000 len=0 msgId=16768
+[Main] S48: -> Ignoring null/error packet (seq=65 flags=0x80)
+[Main] S48 disconnected
+[LOG] Saved: S48 disconnect
+[Main] Session 49 connected: 127.0.0.1:61072
+[Main] S49: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 42 80 00 00  ............B...
+[Main] S49: Raw Blaze binary detected
+[Main] S49: comp=0x0000 cmd=0x0000 len=0 msgId=17024
+[Main] S49: -> Ignoring null/error packet (seq=66 flags=0x80)
+[Main] S49 disconnected
+[LOG] Saved: S49 disconnect
+[Main] Session 50 connected: 127.0.0.1:61073
+[Main] S50: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 43 80 00 00  ............C...
+[Main] S50: Raw Blaze binary detected
+[Main] S50: comp=0x0000 cmd=0x0000 len=0 msgId=17280
+[Main] S50: -> Ignoring null/error packet (seq=67 flags=0x80)
 
 --- DLL LOG (last 3000 chars) ---
-00040
-[14:44:24.931] PATCHED: cert bypass at 000000014613244B
-[14:44:25.107] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[14:44:25.107] PATCHED: FUN_1470db3c0 body -> fake auth code
-[14:44:25.148] PATCHED: auth flag at 00000001473CE785
-[14:44:25.194] PATCHED: IsLoggedIntoEA -> true
-[14:44:25.194] PATCHED: IsLoggedIntoNetwork -> true
-[14:44:25.272] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[14:44:25.272] PATCHED: SDK gate -> always 1
-[14:44:25.283] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[14:44:25.283] PATCHED: Login vtable check -> return 1
-[14:44:25.283] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[14:44:25.283] LOGIN SilentLogin: already patched
-[14:44:25.283] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[14:44:25.283] LOGIN ExpressLogin: already patched
-[14:44:25.283] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[14:44:25.283] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[14:44:25.283] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[14:44:25.283] PREAUTH_HANDLER: Cave at 0000000003890000, 61 bytes
-[14:44:25.283] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000003890000)
-[14:44:25.283] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[14:44:25.283] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[14:44:25.283] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[14:44:25.283] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[14:44:25.283] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[14:44:25.283] PATCHED: FUN_145e280b0 (version compare) -> always match
-[14:44:25.427] PATCHED: Origin SDK check at 00000001470A8430
-[14:44:25.427] All patches in 656 ms
-[14:44:25.427] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[14:44:25.427] AUTH: Checking login gate globals...
-[14:44:25.427] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[14:44:25.427] AUTH: DAT_144b86bdf = 0 (error flag)
-[14:44:25.427] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[14:44:31.161] AUTH: Slot cleared at 5700 ms
-[14:44:31.161] AUTH: OnlineMgr=0x3EBF3E70
-[14:44:31.161] AUTH: slot=0x0 cave=0
-[14:44:31.161] AUTH: Using fake vtable (real not captured)
-[14:44:31.161] AUTH: Injected fake request 000000005D430000 into slot
-[14:44:36.161] AUTH: cave=1 slot=0x0
-[14:44:36.161] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[14:44:36.161] AUTH: req[+0xd8]=0x99C9D38 req[+0xe8]=1
-[14:44:36.161] AUTH: state=2. Auth ready.
-[14:44:36.161] AUTH: OnlineMgr+0xb10 = 0x3EBFA6E0
-[14:44:36.161] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBFA960
-[14:44:36.161] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[14:44:36.161] AUTH: Found 0 objects with vtables in BlazeHub
-[14:44:36.161] AUTH: BlazeHub(000000003EBFA960)+0x53f = 1
-[14:44:36.161] AUTH: Starting continuous +0x53f flag enforcer...
+51972
+[14:51:06.788] PATCHED: cert bypass at 000000014613244B
+[14:51:06.965] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[14:51:06.965] PATCHED: FUN_1470db3c0 body -> fake auth code
+[14:51:07.008] PATCHED: auth flag at 00000001473CE785
+[14:51:07.055] PATCHED: IsLoggedIntoEA -> true
+[14:51:07.055] PATCHED: IsLoggedIntoNetwork -> true
+[14:51:07.129] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[14:51:07.129] PATCHED: SDK gate -> always 1
+[14:51:07.141] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[14:51:07.141] PATCHED: Login vtable check -> return 1
+[14:51:07.141] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[14:51:07.141] LOGIN SilentLogin: already patched
+[14:51:07.141] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[14:51:07.141] LOGIN ExpressLogin: already patched
+[14:51:07.141] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[14:51:07.141] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[14:51:07.141] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[14:51:07.141] PREAUTH_HANDLER: Cave at 0000000003220000, 61 bytes
+[14:51:07.141] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000003220000)
+[14:51:07.141] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[14:51:07.141] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[14:51:07.141] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[14:51:07.141] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[14:51:07.141] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[14:51:07.141] PATCHED: FUN_145e280b0 (version compare) -> always match
+[14:51:07.298] PATCHED: Origin SDK check at 00000001470A8430
+[14:51:07.298] All patches in 672 ms
+[14:51:07.298] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[14:51:07.298] AUTH: Checking login gate globals...
+[14:51:07.298] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[14:51:07.298] AUTH: DAT_144b86bdf = 0 (error flag)
+[14:51:07.298] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[14:51:13.032] AUTH: Slot cleared at 5700 ms
+[14:51:13.032] AUTH: OnlineMgr=0x3EC83E70
+[14:51:13.032] AUTH: slot=0x0 cave=0
+[14:51:13.032] AUTH: Using fake vtable (real not captured)
+[14:51:13.032] AUTH: Injected fake request 000000005D440000 into slot
+[14:51:18.033] AUTH: cave=1 slot=0x0
+[14:51:18.033] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[14:51:18.033] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
+[14:51:18.033] AUTH: state=2. Auth ready.
+[14:51:18.033] AUTH: OnlineMgr+0xb10 = 0x3EC8A6E0
+[14:51:18.033] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC8A960
+[14:51:18.033] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[14:51:18.033] AUTH: Found 0 objects with vtables in BlazeHub
+[14:51:18.033] AUTH: BlazeHub(000000003EC8A960)+0x53f = 1
+[14:51:18.033] AUTH: Starting continuous +0x53f flag enforcer...
 

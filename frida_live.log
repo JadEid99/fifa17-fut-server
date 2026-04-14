@@ -1,4 +1,4 @@
-﻿     ____
+     ____
     / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
    | (_| |
     > _  |   Commands:
@@ -10170,4 +10170,3 @@ Attaching...
 [OSDK_LOG] level=67108864 OriginUpdate entered
 [OSDK_LOG] level=67108864 OriginUpdate entered
 [OSDK_LOG] level=67108864 OriginUpdate entered
-
