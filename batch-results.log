@@ -1,11 +1,11 @@
-=== S6 sweep#5: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:34) ===
+=== S7 sweep#6: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:37) ===
 
-[Main] Session 6 connected: 127.0.0.1:53992
-[Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 46 80 00 00  ............F...
-[Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=18048
-[Main] S6: -> Ignoring null/error packet (seq=70 flags=0x80)
-[Main] S6 disconnected
-[SWEEP] Test #5 was: CONFIRMED: echo+0x20 (notify type)
-[SWEEP] Next test #6: CONFIRMED: echo+0x20 (notify type)
+[Main] Session 7 connected: 127.0.0.1:53996
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 47 80 00 00  ............G...
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=18304
+[Main] S7: -> Ignoring null/error packet (seq=71 flags=0x80)
+[Main] S7 disconnected
+[SWEEP] Test #6 was: CONFIRMED: echo+0x20 (notify type)
+[SWEEP] Next test #7: CONFIRMED: echo+0x20 (notify type)
