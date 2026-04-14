@@ -268,19 +268,18 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  // CONFIRMED: byte12=type (0x00=req, 0x10=resp, 0x20=notify, 0x30=error)
-  //            byte13=sequence number
-  const typeByte = buf[12];   // message type
-  const seqByte = buf[13];    // sequence number
-  const flagByte = typeByte;  // for backward compat
+  // Format is asymmetric:
+  // Requests FROM game:  byte12=seq, byte13=0x00 (type=request implied)
+  // Responses TO game:   byte12=0x10(resp), byte13=seq
+  // Errors FROM game:    byte12=seq, byte13=0x80
+  // So for DECODING incoming packets: byte12=seq, byte13=flags
+  const seqByte = buf[12];    // sequence number (for incoming requests)
+  const flagByte = buf[13];   // 0x00=request, 0x80=error
   const extId = buf.readUInt16BE(14);
   let msgType = 0x0000;
-  if (typeByte === 0x10) msgType = 0x1000;
-  else if (typeByte === 0x20) msgType = 0x2000;
-  else if (typeByte === 0x30) msgType = 0x3000;
-  else if (typeByte & 0x80) msgType = 0x3000; // game's error responses use 0x80+
-  const msgId = (typeByte << 8) | seqByte;
-  return { length, component, command, error, msgType, msgId, seqByte, flagByte, typeByte, extId };
+  if (flagByte & 0x80) msgType = 0x3000;
+  const msgId = (seqByte << 8) | flagByte;
+  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
 }
 
 function encodeHeader(h) {
@@ -296,21 +295,10 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Use current sweep values
-    const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
-    const [b12mode, b13val, desc] = sv;
-    
-    // Byte 12
-    if (b12mode === 'echo') buf[12] = h.seqByte;
-    else if (b12mode === 'plus1') buf[12] = (h.seqByte + 1) & 0xFF;
-    else if (b12mode === 'zero') buf[12] = 0x00;
-    else if (b12mode === 'type10') buf[12] = 0x10;
-    else if (b12mode === 'type20') buf[12] = 0x20;
-    else buf[12] = h.seqByte;
-    
-    // Byte 13
-    if (b13val === 'seq') buf[13] = h.seqByte;
-    else buf[13] = b13val;
+    // CONFIRMED WORKING (sweep #15):
+    // Response: byte12=0x10 (response type), byte13=seqByte from request's byte12
+    buf[12] = 0x10;
+    buf[13] = h.seqByte;
   } else {
     buf[12] = 0x10;
     buf[13] = 0x00;
