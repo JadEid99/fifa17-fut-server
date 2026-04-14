@@ -63,16 +63,16 @@ Write-Host "[MENU] Navigating menus..." -ForegroundColor Yellow
 Start-Sleep 10; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 
 # Wait for first auto-connection + DLL auth injection to complete
-Write-Host "[WAIT] Waiting 60s for DLL patches + auth injection..." -ForegroundColor Yellow
-Start-Sleep 60; FEnter; Start-Sleep 2
+Write-Host "[WAIT] Waiting 30s for DLL patches + auth injection..." -ForegroundColor Yellow
+Start-Sleep 30; FEnter; Start-Sleep 2
 
 # Trigger connection with Q
 Write-Host "[TEST] Pressing Q to trigger connection..." -ForegroundColor Yellow
 FQ
 
-# Wait for the full connection flow (game retries take ~30s + error display)
-Write-Host "[WAIT] Waiting 90s for full connection flow..." -ForegroundColor Yellow
-Start-Sleep 90
+# Wait for the full connection flow
+Write-Host "[WAIT] Waiting 45s for full connection flow..." -ForegroundColor Yellow
+Start-Sleep 45
 
 # Collect results
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow

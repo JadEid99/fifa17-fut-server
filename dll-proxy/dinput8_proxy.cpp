@@ -374,9 +374,10 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
-        // Step 4: Do NOT set *(byte*)(state + 0x8c6) = 1
-        // That flag means "needs persona creation" which triggers the OSDK account UI.
-        // Leave it at 0 so the game skips the OSDK UI and goes to Login.
+        // Step 4: *(byte*)(state + 0x8c6) = 1  (success flag — needed for state transition)
+        cave[o++] = 0xC6; cave[o++] = 0x85;
+        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
         
         // Step 5: Call state transition ONLY — skip FUN_146e00f40
         // (*(*(param_1[1]) + 8))(param_1[1], 1, 3)

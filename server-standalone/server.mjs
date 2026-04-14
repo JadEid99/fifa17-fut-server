@@ -1588,10 +1588,10 @@ function handleFetchClientConfig(pkt) {
     configs['updateUrl'] = '';
     configs['forceUpdate'] = '0';
   } else if (cfid === 'OSDK_NUCLEUS') {
-    // Nucleus (EA account) config
-    configs['nucleusConnect'] = 'https://accounts.ea.com';
-    configs['nucleusProxy'] = 'https://gateway.ea.com';
-    configs['nucleusPortal'] = 'https://signin.ea.com';
+    // Nucleus (EA account) config — redirect to our local HTTP server
+    configs['nucleusConnect'] = 'http://127.0.0.1:8080';
+    configs['nucleusProxy'] = 'http://127.0.0.1:8080';
+    configs['nucleusPortal'] = 'http://127.0.0.1:8080';
   } else if (cfid === 'OSDK_WEBOFFER') {
     // Web offer config
     configs['offerUrl'] = 'http://127.0.0.1:8080/offer';
@@ -1754,9 +1754,42 @@ function handleGetTelemetry(pkt) {
 // ============================================================
 function startHttpServer() {
   http.createServer((req, res) => {
-    console.log(`[HTTP] ${req.method} ${req.url}`);
-    res.setHeader('Content-Type', 'application/json');
-    res.end('{"status":"ok"}');
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      console.log(`[HTTP] ${req.method} ${req.url}`);
+      if (body) console.log(`[HTTP] Body: ${body.substring(0, 500)}`);
+      
+      // Nucleus API handlers for OSDK account creation flow
+      const url = req.url || '';
+      
+      if (url.includes('/connect/auth') || url.includes('/connect/token')) {
+        // OAuth token request
+        console.log('[HTTP-NUCLEUS] Auth/token request');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ access_token: 'fake_token_12345', token_type: 'Bearer', expires_in: 3600 }));
+      } else if (url.includes('/identity/pids/me/personas')) {
+        // List personas — return one existing persona to skip creation
+        console.log('[HTTP-NUCLEUS] List personas');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ personas: { persona: [{ personaId: 1000000001, pidId: 2000000001, displayName: 'Player1', namespaceName: 'cem_ea_id', isVisible: true, status: 'ACTIVE' }] } }));
+      } else if (url.includes('/identity/pids')) {
+        // PID lookup
+        console.log('[HTTP-NUCLEUS] PID lookup');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ pid: { pidId: 2000000001, email: 'player@fut.local', dob: '1990-01-01', status: 'ACTIVE', country: 'US' } }));
+      } else if (url.includes('/proxy/identity')) {
+        // Proxy identity request
+        console.log('[HTTP-NUCLEUS] Proxy identity');
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ pid: { pidId: 2000000001, displayName: 'Player1' } }));
+      } else {
+        // Catch-all — log and return OK
+        console.log(`[HTTP] Unhandled: ${req.method} ${url}`);
+        res.setHeader('Content-Type', 'application/json');
+        res.end('{"status":"ok"}');
+      }
+    });
   }).listen(HTTP_PORT, '0.0.0.0', () => console.log(`[HTTP] on port ${HTTP_PORT}`));
 }
 
