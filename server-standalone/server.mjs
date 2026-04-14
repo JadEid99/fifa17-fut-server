@@ -268,15 +268,17 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  const seqByte = buf[12];    // sequence/message number
-  const flagByte = buf[13];   // flags (0x80 = error?)
+  const typeByte = buf[12];    // message type: 0x00=req, 0x10=resp, 0x20=notify, 0x30=error
+  const seqByte = buf[13];    // sequence/message number
   const extId = buf.readUInt16BE(14);
-  // Derive msgType from flags for compatibility
-  let msgType = 0x0000; // request
-  if (flagByte & 0x80) msgType = 0x3000; // error
-  // Use seqByte as msgId for response matching
-  const msgId = (seqByte << 8) | flagByte; // preserve both bytes for echo
-  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
+  // Map to our internal msgType values
+  let msgType = 0x0000;
+  if (typeByte === 0x10) msgType = 0x1000;
+  else if (typeByte === 0x20) msgType = 0x2000;
+  else if (typeByte === 0x30) msgType = 0x3000;
+  const msgId = (typeByte << 8) | seqByte;
+  const flagByte = typeByte; // for logging
+  return { length, component, command, error, msgType, msgId, seqByte, flagByte, typeByte, extId };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
@@ -286,17 +288,16 @@ function encodeHeader(h) {
   buf.writeUInt16BE(h.command, 8);           // command
   buf.writeUInt16BE(h.error || 0, 10);       // error code
   if (h.notify) {
-    // Notifications: type=0x20, ext=0, id=0
+    // Notifications: type=0x20 (notify), seq=0
     buf[12] = 0x20;
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Response: same seq byte
-    // Test: byte13=0x80 made game process it (but reject with 0xA0)
-    // Test: byte13=0x00 made game ignore it (RPC timeout)
-    // Try: byte13=0x80 with proper body to see if 0xA0 was body-related
-    buf[12] = h.seqByte;
-    buf[13] = 0x80;
+    // Response: byte12=TYPE (0x10=response), byte13=SEQUENCE from request
+    // Game sends: byte12=0x00(req type), byte13=seq_number
+    // We respond: byte12=0x10(resp type), byte13=same seq_number
+    buf[12] = 0x10; // response type (BlazePK-rs style)
+    buf[13] = h.seqByte; // sequence number from request's byte12
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
