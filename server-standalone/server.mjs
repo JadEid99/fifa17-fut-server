@@ -1522,7 +1522,6 @@ function handleMainHttpRoute(path, bodyXml, session) {
 }
 
 function handleCreateAccount(session, pkt) {
-  // Decode the request to get the auth token
   let authToken = 'unknown';
   try {
     const decoded = decodeTdf(pkt.body);
@@ -1534,37 +1533,65 @@ function handleCreateAccount(session, pkt) {
   } catch(e) {}
   
   console.log('[CreateAccount] Auth token: ' + authToken);
-  console.log('[CreateAccount] Creating session for persona ' + session.personaId);
   
-  // Response format based on PocketRelay's authentication response
+  // The game sends AUTH + EXTB + EXTI. This looks like an OriginLogin-style request
+  // (not a traditional CreateAccount with email/password).
+  // Try responding as OriginLogin — same format PocketRelay uses for all auth responses.
   const enc = new TdfEncoder();
-  enc.writeInteger('AGUP', 0);       // Age up required (0 = no)
-  enc.writeString('LDHT', '');        // Legal docs hash
-  enc.writeInteger('NTOS', 0);       // Need TOS (0 = no)
-  enc.writeString('PCTK', authToken); // Echo back the auth token
-  enc.writeString('PRIV', '');        // Privacy policy
-  enc.writeStructStart('SESS');       // Session data
+  enc.writeInteger('AGUP', 0);
+  enc.writeString('LDHT', '');
+  enc.writeInteger('NTOS', 0);
+  enc.writeString('PCTK', authToken);
+  enc.writeString('PRIV', '');
+  enc.writeStructStart('SESS');
   enc.writeInteger('BUID', session.nucleusId);
-  enc.writeInteger('FRST', 0);       // First login (0 = no)
-  enc.writeString('KEY ', 'SessionKey_' + session.id + '_' + Date.now());
-  enc.writeInteger('LLOG', Math.floor(Date.now() / 1000)); // Last login timestamp
-  enc.writeString('MAIL', 'player' + session.id + '@fut.local');
-  enc.writeStructStart('PDTL');       // Persona details
-  enc.writeString('DSNM', session.displayName);
+  enc.writeInteger('FRST', 0);
+  enc.writeString('KEY ', 'sk_' + session.id + '_' + Date.now());
+  enc.writeInteger('LLOG', Math.floor(Date.now() / 1000));
+  enc.writeString('MAIL', 'player@fut.local');
+  enc.writeStructStart('PDTL');
+  enc.writeString('DSNM', 'Player');
   enc.writeInteger('LAST', Math.floor(Date.now() / 1000));
   enc.writeInteger('PID ', session.personaId);
-  enc.writeInteger('STAS', 0);       // Status (0 = active)
+  enc.writeInteger('STAS', 0);
   enc.writeInteger('XREF', 0);
-  enc.writeInteger('XTYP', 0);       // External type (0 = none)
-  enc.writeStructEnd(); // PDTL
+  enc.writeInteger('XTYP', 0);
+  enc.writeStructEnd();
   enc.writeInteger('UID ', session.nucleusId);
-  enc.writeStructEnd(); // SESS
-  enc.writeInteger('SPAM', 0);       // Spam flag
-  enc.writeString('THST', '');        // TOS host
-  enc.writeString('TSUI', '');        // TOS UI
-  enc.writeString('TURI', '');        // TOS URI
+  enc.writeStructEnd();
+  enc.writeInteger('SPAM', 0);
+  enc.writeString('THST', '');
+  enc.writeString('TSUI', '');
+  enc.writeString('TURI', '');
   
-  return buildReply(pkt, enc.build());
+  const body = enc.build();
+  console.log('[CreateAccount] Response: ' + body.length + ' bytes');
+  
+  // Also send a UserSession notification after the response
+  // PocketRelay sends this after successful auth
+  const userEnc = new TdfEncoder();
+  userEnc.writeStructStart('DATA');
+  userEnc.writeUnion('ADDR', 0x7F, () => {}); // empty union (unset)
+  userEnc.writeString('BPS ', '');
+  userEnc.writeString('CTY ', '');
+  userEnc.writeIntList('CVAR', []);
+  userEnc.writeInteger('DPTS', 0);
+  userEnc.writeInteger('HWFG', 0);
+  userEnc.writeInteger('PSLM', 0);
+  userEnc.writeStructStart('QDAT');
+  userEnc.writeInteger('DBPS', 0);
+  userEnc.writeInteger('NATT', 4);
+  userEnc.writeInteger('UBPS', 0);
+  userEnc.writeStructEnd();
+  userEnc.writeInteger('UATT', 0);
+  userEnc.writeStructEnd();
+  userEnc.writeInteger('USID', session.personaId);
+  const userBody = userEnc.build();
+  const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, notify: true });
+  
+  // Return both: the CreateAccount response + schedule the notification
+  // Return the CreateAccount response
+  return buildReply(pkt, body);
 }
 
 function handleFetchClientConfig(pkt) {
