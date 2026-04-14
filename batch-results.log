@@ -1,11 +1,36 @@
-=== S10 sweep#9: echo+0x08 (2026-04-14 07:28:57) ===
+=== S11 sweep#10: seq+1+0x00 (2026-04-14 07:29:01) ===
 
-[Main] Session 10 connected: 127.0.0.1:53683
-[Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00  ............?...
-[Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=16256
-[Main] S10: -> Ignoring null/error packet (seq=63 flags=0x80)
-[Main] S10 disconnected
-[SWEEP] Test #9 was: echo+0x08
-[SWEEP] Next test #10: seq+1+0x00
+[Main] Session 11 connected: 127.0.0.1:53687
+[Main] S11: received 253 bytes (total: 253)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 40 80 00 00  ............@...
+[Main]   0010: 00 00 00 0f 00 00 00 09 00 01 00 00 41 00 00 00  ............A...
+[Main]   0020: 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 00  .jd..OSDK_CORE..
+[Main]   0030: 00 00 11 00 00 00 09 00 01 00 00 42 00 00 00 8e  ...........B....
+[Main] S11: Raw Blaze binary detected
+[Main] S11: comp=0x0000 cmd=0x0000 len=0 msgId=16512
+[Main] S11: -> Ignoring null/error packet (seq=64 flags=0x80)
+[Main] S11: comp=0x0009 cmd=0x0001 len=15 msgId=16640
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 42 00 00 00
+[Main] S11: comp=0x0009 cmd=0x0001 len=17 msgId=16896
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 43 00 00 00
+[Main] S11: comp=0x0009 cmd=0x0001 len=18 msgId=17152
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 44 00 00 00
+[Main] S11: comp=0x0009 cmd=0x0001 len=19 msgId=17408
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 45 00 00 00
+[Main] S11: comp=0x0009 cmd=0x0001 len=26 msgId=17664
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 46 00 00 00
+[Main] S11: comp=0x0009 cmd=0x0001 len=30 msgId=17920
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 09 00 01 00 00 47 00 00 00
+[Main] S11: comp=0x0001 cmd=0x0046 len=0 msgId=18176
+[Main] S11: -> Auth unknown cmd=0x46
+[Main] S11: Sending response (16 bytes)
+[Main] S11: [SWEEP#10 seq+1+0x00] header: 00 00 00 00 00 00 00 01 00 46 00 00 48 00 00 00
+[Main] S11 disconnected
+[SWEEP] Test #10 was: seq+1+0x00
+[SWEEP] Next test #11: seq+1+0x80
