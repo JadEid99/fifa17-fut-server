@@ -56,7 +56,7 @@ Write-Host "[BLAZE] Starting Blaze server..." -ForegroundColor Yellow
 $blazeJob = Start-Job -ScriptBlock { 
     param($r)
     $env:PREAUTH_VARIANT="full"
-    $env:REDIRECT_SECURE="1"
+    $env:REDIRECT_SECURE="0"
     node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 
 } -ArgumentList $repoRoot
 Start-Sleep 3
