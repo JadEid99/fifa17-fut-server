@@ -193,37 +193,22 @@ static void PatchSdkGateCheck() {
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
     }
     
-    // Part C: NOP both disconnect AND cleanup in FUN_146e19a00 so connection stays alive
+    // Part C: Replace FUN_146e19a00 entirely with a RET
+    // This function disconnects, cleans up, and schedules error callbacks.
+    // Since our DLL cave (Patch 8) handles post-PreAuth directly,
+    // we don't need FUN_146e19a00 to do anything — just return.
     __try {
         BYTE* pah = (BYTE*)0x146e19a00;
-        int nopsApplied = 0;
-        for (int i = 0; i < 80 && nopsApplied < 2; i++) {
-            if (pah[i] == 0xE8) {
-                int32_t disp = *(int32_t*)(pah + i + 1);
-                BYTE* target = pah + i + 5 + disp;
-                if (target == (BYTE*)0x146db3e40) {
-                    // NOP the disconnect call
-                    DWORD op;
-                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
-                        for (int k=0; k<5; k++) pah[i+k]=0x90;
-                        VirtualProtect(pah + i, 5, op, &op);
-                        Log("PATCHED: PreAuth disconnect NOPed at +%d", i);
-                        nopsApplied++;
-                    }
-                }
-                if (target == (BYTE*)0x146db8e40) {
-                    // NOP the cleanup call
-                    DWORD op;
-                    if (VirtualProtect(pah + i, 5, PAGE_EXECUTE_READWRITE, &op)) {
-                        for (int k=0; k<5; k++) pah[i+k]=0x90;
-                        VirtualProtect(pah + i, 5, op, &op);
-                        Log("PATCHED: PreAuth cleanup NOPed at +%d", i);
-                        nopsApplied++;
-                    }
-                }
-            }
+        Log("PREAUTH_COMPLETION: addr=%p bytes=%02X %02X %02X %02X", pah, pah[0], pah[1], pah[2], pah[3]);
+        DWORD op;
+        if (VirtualProtect(pah, 4, PAGE_EXECUTE_READWRITE, &op)) {
+            pah[0] = 0xC3; // RET
+            pah[1] = 0x90; // NOP
+            pah[2] = 0x90; // NOP
+            pah[3] = 0x90; // NOP
+            VirtualProtect(pah, 4, op, &op);
+            Log("PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)");
         }
-        Log("PATCHED: %d calls NOPed in FUN_146e19a00", nopsApplied);
     } __except(EXCEPTION_EXECUTE_HANDLER) {}
     
     g_sdkGateDone = 1; g_patched++;
