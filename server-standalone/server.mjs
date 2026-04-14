@@ -255,31 +255,10 @@ function decodeVarInt(buf, offset) {
 
 const HEADER_SIZE = 16;
 
-// SWEEP MODE: test different byte12/byte13 combinations automatically
-// Each connection attempt uses the next combination from the list
+// CONFIRMED WORKING: byte12=0x10 (response type), byte13=sequence from request
+// This is the BlazePK-rs format shifted by 4 bytes (Fire2 frame prefix)
 const SWEEP_VALUES = [
-  // [byte12_mode, byte13_value, description]
-  // byte12_mode: 'echo' = same as request, 'zero' = 0, 'plus1' = seq+1
-  // First: sweep byte13 with byte12=echo (most promising based on 0x80 result)
-  ['echo', 0x80, 'echo+0x80 (baseline - game reads but rejects 0xA0)'],
-  ['echo', 0x10, 'echo+0x10 (BlazePK response type)'],
-  ['echo', 0x20, 'echo+0x20 (BlazePK notify type)'],
-  ['echo', 0x30, 'echo+0x30 (BlazePK error type)'],
-  ['echo', 0x90, 'echo+0x90'],
-  ['echo', 0xA0, 'echo+0xA0'],
-  ['echo', 0x01, 'echo+0x01'],
-  ['echo', 0x02, 'echo+0x02'],
-  ['echo', 0x04, 'echo+0x04'],
-  ['echo', 0x08, 'echo+0x08'],
-  // Try with byte12 modifications
-  ['plus1', 0x00, 'seq+1+0x00'],
-  ['plus1', 0x80, 'seq+1+0x80'],
-  ['plus1', 0x10, 'seq+1+0x10'],
-  ['zero', 0x80, '0+0x80'],
-  ['zero', 0x10, '0+0x10'],
-  // Try byte12 as type values (BlazePK style) with byte13 as seq
-  ['type10', 'seq', 'b12=0x10(resp) b13=seq'],
-  ['type20', 'seq', 'b12=0x20(notify) b13=seq'],
+  ['type10', 'seq', 'CONFIRMED: b12=0x10(resp) b13=seq'],
 ];
 let sweepIndex = 0;
 
@@ -289,13 +268,19 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  const seqByte = buf[12];
-  const flagByte = buf[13];
+  // CONFIRMED: byte12=type (0x00=req, 0x10=resp, 0x20=notify, 0x30=error)
+  //            byte13=sequence number
+  const typeByte = buf[12];   // message type
+  const seqByte = buf[13];    // sequence number
+  const flagByte = typeByte;  // for backward compat
   const extId = buf.readUInt16BE(14);
   let msgType = 0x0000;
-  if (flagByte & 0x80) msgType = 0x3000;
-  const msgId = (seqByte << 8) | flagByte;
-  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
+  if (typeByte === 0x10) msgType = 0x1000;
+  else if (typeByte === 0x20) msgType = 0x2000;
+  else if (typeByte === 0x30) msgType = 0x3000;
+  else if (typeByte & 0x80) msgType = 0x3000; // game's error responses use 0x80+
+  const msgId = (typeByte << 8) | seqByte;
+  return { length, component, command, error, msgType, msgId, seqByte, flagByte, typeByte, extId };
 }
 
 function encodeHeader(h) {
