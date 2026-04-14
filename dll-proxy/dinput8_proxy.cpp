@@ -694,12 +694,17 @@ done:
     
     // Keep forcing +0x53f flag continuously in background
     // This ensures it's set before any connection attempt
-    Log("AUTH: Starting continuous +0x53f flag enforcer...");
+    Log("AUTH: Starting continuous flag enforcer (+0x53f + connState)...");
     for (int i = 0; i < 6000; i++) { // 10 minutes
         __try {
             uint64_t* pOM = (uint64_t*)0x1448a3b20;
             if (*pOM != 0) {
                 uint64_t om = *pOM;
+                
+                // Force connState to 0 (idle/ready) — prevent OSDK errors from setting it to 2
+                uint32_t* pState = (uint32_t*)(om + 0x13b8);
+                if (*pState == 2) { *pState = 0; }
+                
                 uint64_t cm = *(uint64_t*)(om + 0xb10);
                 if (cm != 0) {
                     uint64_t bh = *(uint64_t*)(cm + 0xf8);
