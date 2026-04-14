@@ -10,29 +10,24 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v29: State Machine Vtable ===
+=== Frida v30 ===
 === Ready ===
-[Local::PID::20672 ]-> [CA] CreateAccount RPC found
-[CA] State machine at 0x3eadd328
-[CA] SM vtable = 0x14389f938
-[CA] vtable[0] (+0x0) = 0x146e11da0
-[CA] vtable[1] (+0x8) = 0x1465734f0
-[CA] vtable[2] (+0x10) = 0x146e156a0
-[CA] vtable[3] (+0x18) = 0x146e16e10
-[CA] vtable[4] (+0x20) = 0x146e155c0
-[CA] vtable[5] (+0x28) = 0x146e16060
-[CA] vtable[6] (+0x30) = 0x146e161f0
-[CA] vtable[7] (+0x38) = 0x146e163b0
-[CA] vtable[8] (+0x40) = 0x146e166d0
-[CA] vtable[9] (+0x48) = 0x146e15eb0
-[CA] vtable[10] (+0x50) = 0x146e15590
-[CA] vtable[11] (+0x58) = 0x146e169c0
-[CA] vtable[12] (+0x60) = 0x146e155c0
-[CA] vtable[13] (+0x68) = 0x146e155c0
-[CA] vtable[14] (+0x70) = 0x1465734f0
-[CA] vtable[15] (+0x78) = 0x146e169c0
-[CA] SM object dump: 38 f9 89 43 01 00 00 00 f0 d2 ad 3e 00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff 00 00 00 00 60 fa 89 43 01 00 00 00 80 c7 ad 3e 00 00 00 00 a8 c7 ad 3e 00 00 00 00 00 00 00 00 00 00 00 00
-[CA] Handler candidate at rpc+0x78 = 0x3eac6080
-[CA] Handler vtable = 0x143891fe8
-[CA] Handler dump: e8 1f 89 43 01 00 00 00 00 5f 9b 09 00 00 00 00 90 5f 9b 09 00 00 00 00 00 60 9b 09 00 00 00 00 68 53 ab 3e 00 00 00 00 01 00 00 00 00 00 00 00 f0 1f 89 43 01 00 00 00 00 00 00 00 00 00 00 00
-[CA] handler+0x08 = 0x99b5f00
+[Local::PID::1468 ]-> [CA] CreateAccount RPC
+[CA] handler+0x08 (advance target) = 0x9965f00
+[CA] advance target vtable = 0x9960001
+[CA] advVtable[0] (+0x0) = 0x1
+[CA] advVtable[1] (+0x8) = 0x0
+[CA] advVtable[2] (+0x10) = 0x0
+[CA] advVtable[3] (+0x18) = 0x0
+[CA] advVtable[4] (+0x20) = 0x0
+[CA] advVtable[5] (+0x28) = 0x0
+[CA] advVtable[6] (+0x30) = 0x0
+[CA] advVtable[7] (+0x38) = 0x0
+[CA] advance target dump: 01 00 96 09 00 00 00 00 70 71 9d 09 00 00 00 00 04 00 00 00 00 00 00 00 d0 66 b6 3e 00 00 00 00 09 00 00 00 00 00 00 00 10 71 9d 09 00 00 00 00
+[CA] rpc vtable[0] = 0x146e4b4a0
+[CA] rpc+0x08 (what cave reads as param_1[1]) = 0x9752be8
+[CA] rpc+0x08 vtable = 0x9756c68
+[CA] rpc08.vtable[0] = 0x3ea87f60
+[CA] rpc08.vtable[1] = 0x9752be8
+[CA] rpc08.vtable[2] = 0x8000006
+[CA] rpc08.vtable[3] = 0x3ea87ff0
