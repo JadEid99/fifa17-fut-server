@@ -1,4 +1,4 @@
-=== S1 disconnect (2026-04-14 09:38:42) ===
+=== S1 disconnect (2026-04-14 09:43:17) ===
 
 === FIFA 17 FUT Private Server ===
 
@@ -14,14 +14,14 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Catch] Listening on port 17502
 [Catch] Listening on port 80
 [Catch] Listening on port 9946
-[Redirector-Raw] Client connected: 127.0.0.1:60112
+[Redirector-Raw] Client connected: 127.0.0.1:60159
 [Redirector-Raw] Received 148 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 de 0b 21 f0  ...........i..!.
-  0010: f9 3d 12 2b 04 93 63 1a 29 a7 08 bd 03 ca 7f a2  .=.+..c.).......
-  0020: 53 10 db f7 d9 d2 26 dc 02 53 7d 20 67 b6 f7 c6  S.....&..S} g...
-  0030: ba f1 a8 cb 59 0c 15 8f 2a 56 41 2e e2 c4 48 18  ....Y...*VA...H.
-  0040: 1f e1 90 60 72 a8 1f 43 b6 d8 76 09 00 10 00 9d  ...`r..C..v.....
+  0000: 16 03 00 00 8f 01 00 00 8b 03 03 69 de 0c 34 ec  ...........i..4.
+  0010: 88 6a 06 e1 a5 79 ea 8a 3c de 2b a2 16 fe 3c 53  .j...y..<.+...<S
+  0020: 8f 93 9a f3 34 c3 dd 5f 98 a2 b6 20 18 59 66 ca  ....4.._... .Yf.
+  0030: 88 c4 f3 2d 27 77 26 f0 b9 44 44 56 4e 75 3f bf  ...-'w&..DDVNu?.
+  0040: 48 9b 4c b5 12 f0 4f a5 11 b3 28 0f 00 10 00 9d  H.L...O...(.....
   0050: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0060: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0070: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -29,45 +29,45 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0090: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69de0b21f0f93d12...
+[SSL] ClientHello: version=0x303 random=69de0c34ec886a06...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 0d f0 72 0f d2
-  0010: f4 ad 7d 2b 44 8a 18 fe c1 b8 4d 0b 07 b0 1b bc
-  0020: b7 23 fd 25 70 ce 79 a1 c0 d6 56 0a f2 09 9f 97
-  0030: c2 a1 85 40 85 66 ba 70 78 3d 6f 82 28 16 c4 c4
-  0040: 85 30 97 68 d2 f9 15 a0 69 1e 7c 49 54 0b be 9a
-  0050: 3f 19 d4 79 a5 ab b9 83 40 62 f7 a1 7e b9 f3 10
-  0060: dd 09 30 49 1b d2 0f 73 42 a9 ea 49 54 82 86 f7
-  0070: 54 86 75 2e 65 2e f7 d4 1a e7 a4 5d 67 f7 ed 24
-  0080: 7d 3f b3 1a 24 92 ec c1 ca 2b f6
+  0000: 16 03 03 00 86 10 00 00 82 00 80 94 af c0 48 b3
+  0010: 40 aa 01 ff 61 43 b6 d0 70 1a 5b f4 86 bd 03 f9
+  0020: f2 ae 60 d4 25 07 ee 29 92 da 36 33 10 6c 97 22
+  0030: 72 94 b0 e7 d7 21 c1 ed 73 d8 14 16 07 3a 8f 18
+  0040: 1d 38 85 ea 14 0c 1c 36 df 0a f5 f5 4e b4 83 bb
+  0050: 4a 58 7f 6f a8 77 45 6f 51 6d 0f 8a 18 ed d7 98
+  0060: eb 1a 5e e0 73 a4 62 70 ea f9 2a 7b 0a 17 74 ff
+  0070: ed e9 a9 4f bf ba aa 4a 83 3b 54 23 6d 68 dc 22
+  0080: a1 26 cf 39 f8 39 56 da cc 55 0b
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 0de8c86b2e5a63e0d455a75548c3855f...
+[SSL] Master secret derived: c7334e5b2f30c58409c32ae8ca1adc3b...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 4e 3c 43 63 17
-  0010: 69 f4 38 9e 95 39 1a ad 85 2e 2c 41 39 69 82 ed
-  0020: c1 66 4d db e9 9a 94 55 ae c7 8e be 51 92 91
+  0000: 14 03 03 00 01 01 16 03 03 00 24 01 17 d7 a8 b1
+  0010: 12 d3 0b 8c 45 04 7b 0b 1c 64 3e b2 b1 e4 a1 b1
+  0020: 91 49 c4 a1 8b 31 e3 df e0 a6 7a c5 f8 0e a8
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: a7ca80e7e4599f171f0c4ebde399f006
+[SSL] RC4 decryption initialized with clientWriteKey: 0da341aa85020cd41c7b3fdfb0ca8c8b
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c4ddf8656581914e2a9913a64e0a509db72fdd68ee60e4ca16de96217dc8c6fb3
-[SSL] Client Finished plaintext (16 bytes): 1400000c4ddf8656581914e2a9913a64
-[SSL] Client Finished MAC: e0a509db72fdd68ee60e4ca16de96217dc8c6fb3
-[SSL] Client verify_data:   4ddf8656581914e2a9913a64
-[SSL] Expected verify_data:  4ddf8656581914e2a9913a64
+[SSL] Decrypted hex: 1400000cf8d669972f1975253e2593e4ca24acf8e79487c5c760f1f22452889f1543866a
+[SSL] Client Finished plaintext (16 bytes): 1400000cf8d669972f1975253e2593e4
+[SSL] Client Finished MAC: ca24acf8e79487c5c760f1f22452889f1543866a
+[SSL] Client verify_data:   f8d669972f1975253e2593e4
+[SSL] Expected verify_data:  f8d669972f1975253e2593e4
 [SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: e0a509db72fdd68ee60e4ca16de96217dc8c6fb3
-[SSL] Actual client MAC:   e0a509db72fdd68ee60e4ca16de96217dc8c6fb3
+[SSL] Expected client MAC: ca24acf8e79487c5c760f1f22452889f1543866a
+[SSL] Actual client MAC:   ca24acf8e79487c5c760f1f22452889f1543866a
 [SSL] ✓ Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1070 bytes
@@ -77,7 +77,7 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 55cba91978cc01ad4f2d9e4b
+[SSL] Server verify_data: aca336eed9f82f729cbcece7
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 889 bytes on socket (total pending: 889)
@@ -118,14 +118,14 @@ Connection: keep-alive
     </valu>
   </address
 [HTTP-Blaze] Sent encrypted HTTP response
-[Main] Session 1 connected: 127.0.0.1:60113
+[Main] Session 1 connected: 127.0.0.1:60160
 [Main] S1: received 225 bytes (total: 225)
-[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 26 00 00 00  ............&...
+[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 3b 00 00 00  ............;...
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
 [Main]   0020: d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
 [Main]   0030: 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00  -pc-trial...%...
 [Main] S1: Raw Blaze binary detected
-[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=9728
+[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=15104
 [Main] S1: -> PreAuth
 [PreAuth] Variant: full
 [PreAuth] Request TDF:
@@ -153,142 +153,57 @@ Connection: keep-alive
 [PreAuth]   LADD (int) = 380807360
 [PreAuth] Sending FIFA17 PreAuth response (376 bytes)
 [Main] S1: Sending response (392 bytes)
-[Main] S1: header: 00 00 01 78 00 00 00 09 00 07 00 00 26 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=9984
+[Main] S1: header: 00 00 01 78 00 00 00 09 00 07 00 00 3b 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=15360
 [Main] S1: Sending response (26 bytes)
-[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 27 20 00 00
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=10368
-[Main] S1: -> Ignoring null/error packet (seq=40 flags=0x80)
-[Redirector-Raw] Disconnected: 127.0.0.1:60112
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 3c 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=15744
+[Main] S1: -> Ignoring null/error packet (seq=61 flags=0x80)
+[Redirector-Raw] Disconnected: 127.0.0.1:60159
 [SSL-CONN] Socket closed
-[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=10496
+[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=15872
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
 [FetchClientConfig] CFID="OSDK_CORE"
 [FetchClientConfig] Responding with 5 config entries
 [Main] S1: Sending response (151 bytes)
-[Main] S1: header: 00 00 00 87 00 00 00 09 00 01 00 00 29 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=10752
+[Main] S1: header: 00 00 00 87 00 00 00 09 00 01 00 00 3e 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=16128
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
 [FetchClientConfig] CFID="OSDK_CLIENT"
 [FetchClientConfig] Responding with 4 config entries
 [Main] S1: Sending response (101 bytes)
-[Main] S1: header: 00 00 00 55 00 00 00 09 00 01 00 00 2a 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=11008
+[Main] S1: header: 00 00 00 55 00 00 00 09 00 01 00 00 3f 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=16384
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
 [FetchClientConfig] CFID="OSDK_NUCLEUS"
 [FetchClientConfig] Responding with 3 config entries
 [Main] S1: Sending response (140 bytes)
-[Main] S1: header: 00 00 00 7c 00 00 00 09 00 01 00 00 2b 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=11264
+[Main] S1: header: 00 00 00 7c 00 00 00 09 00 01 00 00 40 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=16640
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
 [FetchClientConfig] CFID="OSDK_WEBOFFER"
 [FetchClientConfig] Responding with 1 config entries
 [Main] S1: Sending response (62 bytes)
-[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 2c 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=11520
+[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 41 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=16896
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
 [FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
 [FetchClientConfig] Responding with 1 config entries
 [Main] S1: Sending response (35 bytes)
-[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 2d 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=11776
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 42 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=17152
 [Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
 [FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
 [FetchClientConfig] Responding with 1 config entries
 [Main] S1: Sending response (35 bytes)
-[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 2e 20 00 00
-[Main] S1: comp=0x0001 cmd=0x000a len=38 msgId=12032
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 43 20 00 00
+[Main] S1: comp=0x0001 cmd=0x000a len=38 msgId=17408
 [Main] S1: -> Auth cmd=0xa (CreateAccount)
 [Main] S1:   AUTH (str) = "FAKEAUTHCODE1234567890"
 [Main] S1:   EXTB (blob) [0 bytes]
 [Main] S1:   EXTI (int) = 0
 [CreateAccount] Auth token: FAKEAUTHCODE1234567890
-[CreateAccount] Creating session for persona 1000000001
-[Main] S1: Sending response (232 bytes)
-[Main] S1: header: 00 00 00 d8 00 00 00 01 00 0a 00 00 2f 20 00 00
+[CreateAccount] Response: 206 bytes
+[Main] S1: Sent CreateAccount response, now sending UserSession notification
+[Main] S1: Sent UserSessionExtendedDataUpdate notification
 [Main] S1 disconnected
-=== S2 disconnect (2026-04-14 09:38:48) ===
-
-[Main] Session 2 connected: 127.0.0.1:60117
-[Main] S2: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 30 80 00 00  ............0...
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=12416
-[Main] S2: -> Ignoring null/error packet (seq=48 flags=0x80)
-[Main] S2 disconnected
-=== S3 disconnect (2026-04-14 09:38:51) ===
-
-[Main] Session 3 connected: 127.0.0.1:60118
-[Main] S3: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 31 80 00 00  ............1...
-[Main] S3: Raw Blaze binary detected
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12672
-[Main] S3: -> Ignoring null/error packet (seq=49 flags=0x80)
-[Main] S3 disconnected
-=== S4 disconnect (2026-04-14 09:38:54) ===
-
-[Main] Session 4 connected: 127.0.0.1:60119
-[Main] S4: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 32 80 00 00  ............2...
-[Main] S4: Raw Blaze binary detected
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12928
-[Main] S4: -> Ignoring null/error packet (seq=50 flags=0x80)
-[Main] S4 disconnected
-=== S5 disconnect (2026-04-14 09:38:57) ===
-
-[Main] Session 5 connected: 127.0.0.1:60123
-[Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 33 80 00 00  ............3...
-[Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13184
-[Main] S5: -> Ignoring null/error packet (seq=51 flags=0x80)
-[Main] S5 disconnected
-=== S6 disconnect (2026-04-14 09:39:00) ===
-
-[Main] Session 6 connected: 127.0.0.1:60124
-[Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 34 80 00 00  ............4...
-[Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=13440
-[Main] S6: -> Ignoring null/error packet (seq=52 flags=0x80)
-[Main] S6 disconnected
-=== S7 disconnect (2026-04-14 09:39:03) ===
-
-[Main] Session 7 connected: 127.0.0.1:60128
-[Main] S7: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 35 80 00 00  ............5...
-[Main] S7: Raw Blaze binary detected
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=13696
-[Main] S7: -> Ignoring null/error packet (seq=53 flags=0x80)
-[Main] S7 disconnected
-=== S8 disconnect (2026-04-14 09:39:06) ===
-
-[Main] Session 8 connected: 127.0.0.1:60129
-[Main] S8: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 36 80 00 00  ............6...
-[Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=13952
-[Main] S8: -> Ignoring null/error packet (seq=54 flags=0x80)
-[Main] S8 disconnected
-=== S9 disconnect (2026-04-14 09:39:09) ===
-
-[Main] Session 9 connected: 127.0.0.1:60130
-[Main] S9: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 37 80 00 00  ............7...
-[Main] S9: Raw Blaze binary detected
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=14208
-[Main] S9: -> Ignoring null/error packet (seq=55 flags=0x80)
-[Main] S9 disconnected
-=== S10 disconnect (2026-04-14 09:39:15) ===
-
-[Main] Session 10 connected: 127.0.0.1:60131
-[Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 38 80 00 00  ............8...
-[Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=14464
-[Main] S10: -> Ignoring null/error packet (seq=56 flags=0x80)
-[Main] S10: comp=0x0001 cmd=0x0046 len=0 msgId=14592
-[Main] S10: -> Auth cmd=0x46 (Logout)
-[Main] S10: Sending response (167 bytes)
-[Main] S10: header: 00 00 00 97 00 00 00 01 00 46 00 00 39 20 00 00
-[Main] S10 disconnected
