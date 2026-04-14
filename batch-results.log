@@ -1,11 +1,31 @@
-=== S5 sweep#4: echo+0x90 (2026-04-14 07:28:38) ===
+=== S6 sweep#5: echo+0xA0 (2026-04-14 07:28:40) ===
 
-[Main] Session 5 connected: 127.0.0.1:53663
-[Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 2b 80 00 00  ............+...
-[Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=11136
-[Main] S5: -> Ignoring null/error packet (seq=43 flags=0x80)
-[Main] S5 disconnected
-[SWEEP] Test #4 was: echo+0x90
-[SWEEP] Next test #5: echo+0xA0
+[Main] Session 6 connected: 127.0.0.1:53667
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 2c 80 00 00  ............,...
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=11392
+[Main] S6: -> Ignoring null/error packet (seq=44 flags=0x80)
+[Main] S6: comp=0x0009 cmd=0x0001 len=15 msgId=11520
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2d a0 00 00
+[Main] S6: comp=0x0009 cmd=0x0001 len=17 msgId=11776
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2e a0 00 00
+[Main] S6: comp=0x0009 cmd=0x0001 len=18 msgId=12032
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 2f a0 00 00
+[Main] S6: comp=0x0009 cmd=0x0001 len=19 msgId=12288
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 30 a0 00 00
+[Main] S6: comp=0x0009 cmd=0x0001 len=26 msgId=12544
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 31 a0 00 00
+[Main] S6: comp=0x0009 cmd=0x0001 len=30 msgId=12800
+[Main] S6: Sending response (16 bytes)
+[Main] S6: [SWEEP#5 echo+0xA0] header: 00 00 00 00 00 00 00 09 00 01 00 00 32 a0 00 00
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=13184
+[Main] S6: -> Ignoring null/error packet (seq=51 flags=0x80)
+[Main] S6 disconnected
+[SWEEP] Test #5 was: echo+0xA0
+[SWEEP] Next test #6: echo+0x01
