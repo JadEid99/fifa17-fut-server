@@ -56,6 +56,7 @@ static void Log(const char* fmt, ...) {
 static int g_codePatchDone=0, g_originPatchDone=0, g_authBypassDone=0, g_authFlagDone=0, g_patched=0, g_loginPatchCount=0, g_sdkGateDone=0;
 static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
 static volatile int g_caveExecuted = 0;
+static volatile uint64_t g_preAuthParam1 = 0;  // saved from PreAuth cave for login flow
 
 // Patch 1: Cert bypass
 static void PatchCertCheck() {
@@ -284,20 +285,14 @@ static void PatchPreAuthHandler() {
         // CALL RAX
         cave[o++] = 0xFF; cave[o++] = 0xD0;
         
-        // NEW: Also call FUN_146e19720(param_1 + 0x3b6) — start login flow
-        // This is what the original PreAuth success path does after FUN_146e1e460
-        // LEA RCX, [RBX + 0x3b6]  (param_1 + 0x3b6 = login state machine)
-        // Actually 0x3b6 is too large for a single LEA displacement with RBX
-        // Use: MOV RCX, RBX / ADD RCX, 0x3b6
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9; // MOV RCX, RBX
-        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1; // ADD RCX, 0x3b6
-        cave[o++] = 0xB6; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00;
-        // MOV RAX, FUN_146e19720
+        // DON'T call FUN_146e19720 here — the state machine isn't initialized yet.
+        // Save param_1 so the background thread can call it later.
+        // MOV RAX, &g_preAuthParam1
         cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t loginStart = 0x146e19720;
-        memcpy(cave + o, &loginStart, 8); o += 8;
-        // CALL RAX
-        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        uint64_t p1Addr = (uint64_t)&g_preAuthParam1;
+        memcpy(cave + o, &p1Addr, 8); o += 8;
+        // MOV [RAX], RBX
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x18;
         
         // Cleanup and return
         // ADD RSP, 0x28
@@ -808,19 +803,21 @@ done:
                 }
                 
                 // Detect CreateAccount completion and trigger Login
-                if (g_createAcctCalled == 1) {
+                if (g_createAcctCalled == 1 && g_preAuthParam1 != 0) {
                     g_createAcctCalled = 2; // only do this once
-                    Log("CA-DETECT: CreateAccount handler was called! Triggering Login flow...");
+                    Log("CA-DETECT: CreateAccount done! Calling FUN_146e19720(param1+0x3b6)...");
+                    Log("CA-DETECT: preAuthParam1=0x%llX", g_preAuthParam1);
                     
-                    // Call FUN_146e1c3f0 (Login type processor) directly
-                    // This function needs the login state machine object.
-                    // We can find it through the BlazeHub connection chain.
-                    // For now, just log that we detected it.
-                    // The game should eventually retry the connection on its own.
-                    
-                    // Force the game to reconnect by resetting connState
-                    *pState = 0;
-                    Log("CA-DETECT: Reset connState to 0 (will trigger reconnect)");
+                    // Call FUN_146e19720(preAuthParam1 + 0x3b6) on the game's thread
+                    // This starts the login flow
+                    typedef void (*LoginStartFn)(uint64_t);
+                    LoginStartFn loginStart = (LoginStartFn)0x146e19720;
+                    __try {
+                        loginStart(g_preAuthParam1 + 0x3b6);
+                        Log("CA-DETECT: FUN_146e19720 returned successfully!");
+                    } __except(EXCEPTION_EXECUTE_HANDLER) {
+                        Log("CA-DETECT: FUN_146e19720 CRASHED (exception)");
+                    }
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
