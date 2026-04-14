@@ -1,11 +1,14 @@
-=== S13 sweep#12: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:55) ===
+=== S14 sweep#13: CONFIRMED: echo+0x20 (notify type) (2026-04-14 07:46:58) ===
 
-[Main] Session 13 connected: 127.0.0.1:54021
-[Main] S13: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 4d 80 00 00  ............M...
-[Main] S13: Raw Blaze binary detected
-[Main] S13: comp=0x0000 cmd=0x0000 len=0 msgId=19840
-[Main] S13: -> Ignoring null/error packet (seq=77 flags=0x80)
-[Main] S13 disconnected
-[SWEEP] Test #12 was: CONFIRMED: echo+0x20 (notify type)
-[SWEEP] Next test #13: CONFIRMED: echo+0x20 (notify type)
+[Main] Session 14 connected: 127.0.0.1:54025
+[Main] S14: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 4e 80 00 00  ............N...
+[Main] S14: Raw Blaze binary detected
+[Main] S14: comp=0x0000 cmd=0x0000 len=0 msgId=20096
+[Main] S14: -> Ignoring null/error packet (seq=78 flags=0x80)
+[PORT-443] Connection from 127.0.0.1:54029
+[PORT-443] 293 bytes: 16 03 03 01 20 01 00 01 1c 03 03 02 fb 62 07 29 95 27 a1 08 64 03 4b ff 00 f4 a3 7e fe 01 62 eb 43 d5 ee 04 2b 77 0d 8d 2f 8c 19 20 6e 1c 50 12 79 55 a8 19 3c 0c bb 0e b8 e3 ee 9b df 4d 36 be
+[PORT-443] ASCII: .... .......{b.).'!.d.K..t#~~.bkCUn.+w../.. n.P.yU(.<.;.8cn._M6>
+[Main] S14 disconnected
+[SWEEP] Test #13 was: CONFIRMED: echo+0x20 (notify type)
+[SWEEP] Next test #14: CONFIRMED: echo+0x20 (notify type)
