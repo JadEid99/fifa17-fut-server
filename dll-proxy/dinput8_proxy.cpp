@@ -321,6 +321,146 @@ static void PatchPreAuthHandler() {
     }
 }
 
+// Patch 16: Replace FUN_146e151d0 (CreateAccount response handler)
+// The TDF body isn't being decoded by the RPC framework (decoder creates empty object).
+// We bypass the handler entirely: hardcode a non-zero UID and call the state transition.
+//
+// Original function:
+//   lVar3 = vtable+0xb8(param_1)           // get state object
+//   *(state + 0x8bc) = param_3             // store error code
+//   if (param_3 == 0) {
+//     copy bytes from param_2+0x10..0x13 to state
+//     if (cVar2==0 && *(param_2+0x13)!=0)  // THE CHECK THAT FAILS
+//       *(state + 0x8c6) = 1
+//       FUN_146e00f40(...)
+//       vtable_call(param_1[1], 1, 3)      // advance state machine
+//   }
+//
+// Our cave: skip the TDF check, hardcode UID, call state transition.
+static int g_createAcctPatchDone = 0;
+static void PatchCreateAccountHandler() {
+    if (g_createAcctPatchDone) return;
+    
+    BYTE* func = (BYTE*)0x146e151d0;
+    __try {
+        Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
+            func, func[0], func[1], func[2], func[3], func[4], func[5]);
+        
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 512, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
+        
+        int o = 0;
+        
+        // Windows x64: param_1=RCX, param_2=RDX, param_3=R8
+        // Save non-volatile registers
+        cave[o++] = 0x53;                                     // PUSH RBX
+        cave[o++] = 0x55;                                     // PUSH RBP
+        cave[o++] = 0x41; cave[o++] = 0x56;                   // PUSH R14
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
+        
+        // Save param_1 in RBX
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
+        
+        // Step 1: Get state object via vtable+0xb8
+        // lVar3 = (*(code**)(*param_1 + 0xb8))(param_1)
+        // MOV RAX, [RCX]          (vtable ptr)
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
+        // CALL [RAX + 0xb8]       (vtable+0xb8)
+        cave[o++] = 0xFF; cave[o++] = 0x90;
+        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // RAX = state object (lVar3). Save in R14.
+        cave[o++] = 0x49; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV R14, RAX
+        
+        // Step 2: *(state + 0x8bc) = 0  (success error code)
+        // MOV DWORD PTR [R14 + 0x8bc], 0
+        cave[o++] = 0x41; cave[o++] = 0xC7; cave[o++] = 0x86;
+        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // Step 3: Hardcode UID bytes into state object
+        // *(byte*)(state + 0x8c0) = 0x01  (param_2+0x10 equivalent — UID byte 0)
+        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
+        // *(byte*)(state + 0x8c1) = 0x00  (param_2+0x11)
+        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC1; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00;
+        // *(byte*)(state + 0x8c5) = 0x00  (param_2+0x12)
+        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00;
+        
+        // Step 4: *(byte*)(state + 0x8c6) = 1  (success flag)
+        cave[o++] = 0x41; cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
+        
+        // Step 5: Call FUN_146e00f40(*(*(param_1[5] + 0x28) + 0x788), *(param_1[5] + 0x30), 0)
+        // param_1[5] = *(RBX + 0x28)
+        // MOV RAX, [RBX + 0x28]   (param_1[5])
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x43; cave[o++] = 0x28;
+        // MOV RBP, RAX            (save param_1[5] in RBP)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC5;
+        // First arg: *(*(param_1[5] + 0x28) + 0x788)
+        // MOV RCX, [RBP + 0x28]
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4D; cave[o++] = 0x28;
+        // MOV RCX, [RCX + 0x788]
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x89;
+        cave[o++] = 0x88; cave[o++] = 0x07; cave[o++] = 0x00; cave[o++] = 0x00;
+        // Second arg: *(param_1[5] + 0x30)
+        // MOV EDX, [RBP + 0x30]
+        cave[o++] = 0x8B; cave[o++] = 0x55; cave[o++] = 0x30;
+        // Third arg: 0
+        // XOR R8D, R8D
+        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
+        // MOV RAX, FUN_146e00f40
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t fn146e00f40 = 0x146e00f40;
+        memcpy(cave + o, &fn146e00f40, 8); o += 8;
+        // CALL RAX
+        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        
+        // Step 6: Call state transition: (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
+        // MOV RCX, [RBX + 0x08]   (param_1[1])
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08;
+        // MOV RAX, [RCX]          (vtable)
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
+        // MOV EDX, 1
+        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // MOV R8D, 3
+        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // CALL [RAX + 0x08]
+        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;
+        
+        // Cleanup and return
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
+        cave[o++] = 0x41; cave[o++] = 0x5E;                   // POP R14
+        cave[o++] = 0x5D;                                     // POP RBP
+        cave[o++] = 0x5B;                                     // POP RBX
+        cave[o++] = 0xC3;                                     // RET
+        
+        Log("CA_HANDLER: Cave at %p, %d bytes", cave, o);
+        
+        // Patch FUN_146e151d0 to jump to our cave
+        DWORD op;
+        if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
+            int p = 0;
+            func[p++] = 0x48; func[p++] = 0xB8;
+            uint64_t caveAddr = (uint64_t)cave;
+            memcpy(func + p, &caveAddr, 8); p += 8;
+            func[p++] = 0xFF; func[p++] = 0xE0;
+            while (p < 16) func[p++] = 0x90;
+            VirtualProtect(func, 16, op, &op);
+            Log("PATCHED: FUN_146e151d0 -> CreateAccount bypass (cave at %p)", cave);
+            g_createAcctPatchDone = 1;
+            g_patched++;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("CA_HANDLER: Exception");
+    }
+}
+
 // Patch 9: FUN_1470e0390 (Origin::OriginSDK::CheckOnline) -> always return success
 // Also patch FUN_1470da720 (GetGameVersion) -> return 0 + write expected bytes
 // Also patch FUN_145e280b0 (memcmp for version) -> always return 0 (match)
@@ -431,6 +571,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
+            if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
@@ -444,7 +585,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_createAcctPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
