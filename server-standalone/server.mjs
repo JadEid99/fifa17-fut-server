@@ -34,12 +34,17 @@ function flushAndPush(label) {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const last200 = sessionLog.slice(-200).join('\n');
     const content = `=== ${label} (${timestamp}) ===\n\n${last200}\n`;
-    fs.writeFileSync(logPath, content, 'utf8');
+    // APPEND instead of overwrite so we keep all sessions
+    fs.appendFileSync(logPath, content, 'utf8');
+    // Only push every 3rd disconnect to avoid git conflicts
+    if (label.includes('S1 ') || label.includes('S3 ') || label.includes('S5 ')) {
+      execSync('git add batch-results.log && git commit -m "auto-log: ' + label + '" && git push', { cwd: repoRoot, stdio: 'ignore', timeout: 15000 });
+      origLog('[AUTO-LOG] Pushed results for: ' + label);
+    }
     sessionLog = [];
-    execSync('git add batch-results.log && git commit -m "auto-log: ' + label + '" && git push', { cwd: repoRoot, stdio: 'ignore', timeout: 15000 });
-    origLog('[AUTO-LOG] Pushed results for: ' + label);
   } catch (e) {
-    origLog('[AUTO-LOG] Push failed: ' + e.message);
+    origLog('[AUTO-LOG] Error: ' + e.message);
+    sessionLog = [];
   }
 }
 
@@ -1703,6 +1708,8 @@ function startHttpServer() {
 // Start
 // ============================================================
 console.log('=== FIFA 17 FUT Private Server ===\n');
+// Clear log file at startup
+try { fs.writeFileSync(path.join(repoRoot, 'batch-results.log'), '', 'utf8'); } catch(e) {}
 startRedirector();
 startMainServer();
 startHttpServer();
