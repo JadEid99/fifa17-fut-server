@@ -322,40 +322,62 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 9: FUN_1470e0390 (Origin::OriginSDK::CheckOnline) -> always return success
-// This function checks if Origin is online by talking to the STP emulator.
-// It waits 15 seconds for a response. We bypass it entirely.
-// param_1 = Origin SDK object, param_2 = output bool pointer
-// We set *param_2 = 1 (online) and return 0 (success)
+// Also patch FUN_1470da720 (GetGameVersion) -> return 0 + write expected bytes
+// Also patch FUN_145e280b0 (memcmp for version) -> always return 0 (match)
 static int g_originCheckOnlineDone = 0;
 static void PatchOriginCheckOnline() {
     if (g_originCheckOnlineDone) return;
     
+    // Part A: FUN_1470e0390 -> always online
     BYTE* func = (BYTE*)0x1470e0390;
     __try {
         Log("ORIGIN_CHECK_ONLINE: addr=%p bytes=%02X %02X %02X %02X", func, func[0], func[1], func[2], func[3]);
         DWORD op;
         if (VirtualProtect(func, 32, PAGE_EXECUTE_READWRITE, &op)) {
             int o = 0;
-            // TEST RDX, RDX (check if param_2 is NULL)
-            func[o++] = 0x48; func[o++] = 0x85; func[o++] = 0xD2;
-            // JZ +4 (skip the write if NULL)
-            func[o++] = 0x74; func[o++] = 0x03;
-            // MOV BYTE PTR [RDX], 1 (set *param_2 = 1 = online)
-            func[o++] = 0xC6; func[o++] = 0x02; func[o++] = 0x01;
-            // XOR EAX, EAX (return 0 = success)
-            func[o++] = 0x31; func[o++] = 0xC0;
-            // RET
-            func[o++] = 0xC3;
-            // NOP remaining
+            func[o++] = 0x48; func[o++] = 0x85; func[o++] = 0xD2; // TEST RDX, RDX
+            func[o++] = 0x74; func[o++] = 0x03;                     // JZ +3
+            func[o++] = 0xC6; func[o++] = 0x02; func[o++] = 0x01;  // MOV BYTE [RDX], 1
+            func[o++] = 0x31; func[o++] = 0xC0;                     // XOR EAX, EAX
+            func[o++] = 0xC3;                                        // RET
             while (o < 32) func[o++] = 0x90;
             VirtualProtect(func, 32, op, &op);
             Log("PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online");
-            g_originCheckOnlineDone = 1;
-            g_patched++;
         }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("ORIGIN_CHECK_ONLINE: Exception");
-    }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    
+    // Part B: FUN_1470da720 (GetGameVersion) -> return 0 (success)
+    // This function gets the game version from Origin/STP. We make it return 0.
+    __try {
+        BYTE* gv = (BYTE*)0x1470da720;
+        Log("GET_GAME_VERSION: addr=%p bytes=%02X %02X %02X %02X", gv, gv[0], gv[1], gv[2], gv[3]);
+        DWORD op;
+        if (VirtualProtect(gv, 8, PAGE_EXECUTE_READWRITE, &op)) {
+            gv[0] = 0x31; gv[1] = 0xC0; // XOR EAX, EAX (return 0)
+            gv[2] = 0xC3;                // RET
+            for (int k=3; k<8; k++) gv[k] = 0x90;
+            VirtualProtect(gv, 8, op, &op);
+            Log("PATCHED: FUN_1470da720 (GetGameVersion) -> return 0");
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    
+    // Part C: FUN_145e280b0 (memcmp for version check) -> always return 0 (match)
+    // This compares the version bytes. We make it always say "match".
+    __try {
+        BYTE* mc = (BYTE*)0x145e280b0;
+        Log("VERSION_CMP: addr=%p bytes=%02X %02X %02X %02X", mc, mc[0], mc[1], mc[2], mc[3]);
+        DWORD op;
+        if (VirtualProtect(mc, 8, PAGE_EXECUTE_READWRITE, &op)) {
+            mc[0] = 0x31; mc[1] = 0xC0; // XOR EAX, EAX (return 0 = match)
+            mc[2] = 0xC3;                // RET
+            for (int k=3; k<8; k++) mc[k] = 0x90;
+            VirtualProtect(mc, 8, op, &op);
+            Log("PATCHED: FUN_145e280b0 (version compare) -> always match");
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+    
+    g_originCheckOnlineDone = 1;
+    g_patched++;
 }
 
 // Patch 5+6: IsLoggedIntoEA + IsLoggedIntoNetwork -> always true
