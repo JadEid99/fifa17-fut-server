@@ -255,10 +255,31 @@ function decodeVarInt(buf, offset) {
 
 const HEADER_SIZE = 16;
 
-// CONFIRMED WORKING: byte12=0x10 (response type), byte13=sequence from request
-// This is the BlazePK-rs format shifted by 4 bytes (Fire2 frame prefix)
+// SWEEP MODE: test different byte12/byte13 combinations automatically
+// Each connection attempt uses the next combination from the list
 const SWEEP_VALUES = [
-  ['type10', 'seq', 'CONFIRMED: b12=0x10(resp) b13=seq'],
+  // [byte12_mode, byte13_value, description]
+  // byte12_mode: 'echo' = same as request, 'zero' = 0, 'plus1' = seq+1
+  // First: sweep byte13 with byte12=echo (most promising based on 0x80 result)
+  ['echo', 0x80, 'echo+0x80 (baseline - game reads but rejects 0xA0)'],
+  ['echo', 0x10, 'echo+0x10 (BlazePK response type)'],
+  ['echo', 0x20, 'echo+0x20 (BlazePK notify type)'],
+  ['echo', 0x30, 'echo+0x30 (BlazePK error type)'],
+  ['echo', 0x90, 'echo+0x90'],
+  ['echo', 0xA0, 'echo+0xA0'],
+  ['echo', 0x01, 'echo+0x01'],
+  ['echo', 0x02, 'echo+0x02'],
+  ['echo', 0x04, 'echo+0x04'],
+  ['echo', 0x08, 'echo+0x08'],
+  // Try with byte12 modifications
+  ['plus1', 0x00, 'seq+1+0x00'],
+  ['plus1', 0x80, 'seq+1+0x80'],
+  ['plus1', 0x10, 'seq+1+0x10'],
+  ['zero', 0x80, '0+0x80'],
+  ['zero', 0x10, '0+0x10'],
+  // Try byte12 as type values (BlazePK style) with byte13 as seq
+  ['type10', 'seq', 'b12=0x10(resp) b13=seq'],
+  ['type20', 'seq', 'b12=0x20(notify) b13=seq'],
 ];
 let sweepIndex = 0;
 
@@ -268,13 +289,8 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  // Format is asymmetric:
-  // Requests FROM game:  byte12=seq, byte13=0x00 (type=request implied)
-  // Responses TO game:   byte12=0x10(resp), byte13=seq
-  // Errors FROM game:    byte12=seq, byte13=0x80
-  // So for DECODING incoming packets: byte12=seq, byte13=flags
-  const seqByte = buf[12];    // sequence number (for incoming requests)
-  const flagByte = buf[13];   // 0x00=request, 0x80=error
+  const seqByte = buf[12];
+  const flagByte = buf[13];
   const extId = buf.readUInt16BE(14);
   let msgType = 0x0000;
   if (flagByte & 0x80) msgType = 0x3000;
@@ -295,10 +311,21 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // CONFIRMED WORKING (sweep #15):
-    // Response: byte12=0x10 (response type), byte13=seqByte from request's byte12
-    buf[12] = 0x10;
-    buf[13] = h.seqByte;
+    // Use current sweep values
+    const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+    const [b12mode, b13val, desc] = sv;
+    
+    // Byte 12
+    if (b12mode === 'echo') buf[12] = h.seqByte;
+    else if (b12mode === 'plus1') buf[12] = (h.seqByte + 1) & 0xFF;
+    else if (b12mode === 'zero') buf[12] = 0x00;
+    else if (b12mode === 'type10') buf[12] = 0x10;
+    else if (b12mode === 'type20') buf[12] = 0x20;
+    else buf[12] = h.seqByte;
+    
+    // Byte 13
+    if (b13val === 'seq') buf[13] = h.seqByte;
+    else buf[13] = b13val;
   } else {
     buf[12] = 0x10;
     buf[13] = 0x00;
