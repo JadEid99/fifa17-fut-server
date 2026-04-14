@@ -1,11 +1,37 @@
-=== S15 sweep#14: 0+0x10 (2026-04-14 07:29:18) ===
+=== S16 sweep#15: b12=0x10(resp) b13=seq (2026-04-14 07:29:20) ===
 
-[Main] Session 15 connected: 127.0.0.1:53703
-[Main] S15: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 59 80 00 00  ............Y...
-[Main] S15: Raw Blaze binary detected
-[Main] S15: comp=0x0000 cmd=0x0000 len=0 msgId=22912
-[Main] S15: -> Ignoring null/error packet (seq=89 flags=0x80)
-[Main] S15 disconnected
-[SWEEP] Test #14 was: 0+0x10
-[SWEEP] Next test #15: b12=0x10(resp) b13=seq
+[Main] Session 16 connected: 127.0.0.1:53707
+[Main] S16: received 253 bytes (total: 253)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 5a 80 00 00  ............Z...
+[Main]   0010: 00 00 00 0f 00 00 00 09 00 01 00 00 5b 00 00 00  ............[...
+[Main]   0020: 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 00  .jd..OSDK_CORE..
+[Main]   0030: 00 00 11 00 00 00 09 00 01 00 00 5c 00 00 00 8e  ...........\....
+[Main] S16: Raw Blaze binary detected
+[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=23168
+[Main] S16: -> Ignoring null/error packet (seq=90 flags=0x80)
+[Main] S16: comp=0x0009 cmd=0x0001 len=15 msgId=23296
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 5b 00 00
+[Main] S16: comp=0x0009 cmd=0x0001 len=17 msgId=23552
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 5c 00 00
+[Main] S16: comp=0x0009 cmd=0x0001 len=18 msgId=23808
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 5d 00 00
+[Main] S16: comp=0x0009 cmd=0x0001 len=19 msgId=24064
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 5e 00 00
+[Main] S16: comp=0x0009 cmd=0x0001 len=26 msgId=24320
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 5f 00 00
+[Main] S16: comp=0x0009 cmd=0x0001 len=30 msgId=24576
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 09 00 01 00 00 10 60 00 00
+[Main] S16: comp=0x0001 cmd=0x0046 len=0 msgId=24832
+[Main] S16: -> Auth unknown cmd=0x46
+[Main] S16: Sending response (16 bytes)
+[Main] S16: [SWEEP#15 b12=0x10(resp) b13=seq] header: 00 00 00 00 00 00 00 01 00 46 00 00 10 61 00 00
+[Main] S16 error: read ECONNRESET
+[Main] S16 disconnected
+[SWEEP] Test #15 was: b12=0x10(resp) b13=seq
+[SWEEP] Next test #16: b12=0x20(notify) b13=seq
