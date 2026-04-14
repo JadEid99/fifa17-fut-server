@@ -341,12 +341,24 @@ static void PatchCreateAccountHandler() {
         
         int o = 0;
         
-        // SIMPLEST APPROACH: Just return immediately.
-        // Don't set any state, don't call any transition.
-        // The original function's failure path just returns, which causes
-        // the state machine to try the next login type (SilentLogin).
-        // This should skip the OSDK account creation UI entirely.
-        cave[o++] = 0xC3;  // RET
+        // Restore the state transition but try state 4 instead of 3.
+        // State 3 = OSDK account creation UI (dead end).
+        // State 4 might = Login flow.
+        // Windows x64: param_1=RCX, param_2=RDX, param_3=R8
+        cave[o++] = 0x53;                                     // PUSH RBX
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x20; // SUB RSP, 0x20
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
+        
+        // Call state transition: (*(*(param_1[1]) + 8))(param_1[1], 1, 4)
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08; // MOV RCX, [RBX+8]
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;                   // MOV RAX, [RCX]
+        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV EDX, 1
+        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x04; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 4
+        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;                   // CALL [RAX+8]
+        
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x20; // ADD RSP, 0x20
+        cave[o++] = 0x5B;                                     // POP RBX
+        cave[o++] = 0xC3;                                     // RET
         
         Log("CA_HANDLER: Cave at %p, %d bytes", cave, o);
         
