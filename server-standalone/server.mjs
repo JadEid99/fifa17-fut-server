@@ -1531,37 +1531,27 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // Game sends AUTH + EXTB + EXTI — this is Origin-style auth, not traditional CreateAccount
-  // Use PocketRelay's silent=true AuthResponse format (with SESS struct)
+  // Ghidra + Frida analysis:
+  // CreateAccountResponse has 2 fields:
+  //   1. "userId" (integer) at struct offset 0x10 — MUST be non-zero (byte +0x13 checked)
+  //   2. unknown (string) at struct offset 0x18
+  // The handler checks *(param2+0x13) != 0 for success path
+  // On little-endian x86, userId must be >= 0x01000000 for byte +0x13 to be non-zero
+  // OR the userId is stored differently
+  
+  // Try multiple possible tag names for the userId field
   const enc = new TdfEncoder();
-  enc.writeInteger('AGUP', 0);
-  enc.writeString('LDHT', '');
-  enc.writeInteger('NTOS', 0);
-  enc.writeString('PCTK', authToken);
-  enc.writeString('PRIV', '');
-  enc.writeStructStart('SESS');
-  enc.writeInteger('BUID', session.nucleusId);
-  enc.writeInteger('FRST', 0);
-  enc.writeString('KEY ', session.personaId.toString(16).toUpperCase());
-  enc.writeInteger('LLOG', 0);
-  enc.writeString('MAIL', 'player@fut.local');
-  enc.writeStructStart('PDTL');
-  enc.writeString('DSNM', session.displayName);
-  enc.writeInteger('LAST', 0);
-  enc.writeInteger('PID ', session.personaId);
-  enc.writeInteger('STAS', 0);
-  enc.writeInteger('XREF', 0);
-  enc.writeInteger('XTYP', 0);
-  enc.writeStructEnd();
-  enc.writeInteger('UID ', session.nucleusId);
-  enc.writeStructEnd();
-  enc.writeInteger('SPAM', 0);
-  enc.writeString('THST', '');
-  enc.writeString('TSUI', '');
-  enc.writeString('TURI', '');
+  // Field 1: userId as integer — try common EA tags
+  enc.writeInteger('UID ', session.nucleusId);  // PocketRelay style
+  enc.writeInteger('USID', session.nucleusId);  // User Session ID
+  enc.writeInteger('BUID', session.nucleusId);  // Blaze User ID
+  enc.writeInteger('PID ', session.personaId);  // Persona ID
+  // Field 2: unknown string — try common auth response strings
+  enc.writeString('PCTK', authToken);           // Auth token
+  enc.writeString('SKEY', session.personaId.toString(16).toUpperCase()); // Session key
   
   const body = enc.build();
-  console.log('[CreateAccount] Silent auth response: ' + body.length + ' bytes');
+  console.log('[CreateAccount] Multi-tag response: ' + body.length + ' bytes');
   return buildReply(pkt, body);
 }
 
