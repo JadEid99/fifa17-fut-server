@@ -291,11 +291,16 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // byte13=0x20 gets past PreAuth and reaches CreateAccount (peak progress)
-    // byte13=0x00 should enable TDF parsing but causes RPC timeout
-    // TODO: figure out why 0x00 times out despite correct XOR math
     buf[12] = h.seqByte;
-    buf[13] = 0x20;
+    if (h.component === 0x0001) {
+      // Auth component: use type=2 (Response, byte13=0x40-0x5F)
+      // Top 3 bits = 010 = type 2 (Response)
+      // Bottom 5 bits = flags (try 0 first)
+      buf[13] = 0x40;
+    } else {
+      // Util component: keep 0x20 (Notification) — works with DLL bypass
+      buf[13] = 0x20;
+    }
   } else {
     buf[12] = 0x00;
     buf[13] = 0x20;
