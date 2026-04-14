@@ -291,24 +291,17 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Use current sweep values
-    const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
-    const [b12mode, b13val, desc] = sv;
-    
-    // Byte 12
-    if (b12mode === 'echo') buf[12] = h.seqByte;
-    else if (b12mode === 'plus1') buf[12] = (h.seqByte + 1) & 0xFF;
-    else if (b12mode === 'zero') buf[12] = 0x00;
-    else if (b12mode === 'type10') buf[12] = 0x10;
-    else if (b12mode === 'type20') buf[12] = 0x20;
-    else buf[12] = h.seqByte;
-    
-    // Byte 13
-    if (b13val === 'seq') buf[13] = h.seqByte;
-    else buf[13] = b13val;
+    buf[12] = h.seqByte;
+    // Auth component (0x0001) needs type=0x10 for TDF body parsing
+    // Util component (0x0009) uses type=0x20 (notification style, DLL handles the rest)
+    if (h.component === 0x0001) {
+      buf[13] = 0x10; // proper response type for Auth
+    } else {
+      buf[13] = 0x20; // notification type for Util (works with DLL bypass)
+    }
   } else {
-    buf[12] = 0x10;
-    buf[13] = 0x00;
+    buf[12] = 0x00;
+    buf[13] = 0x20;
   }
   buf.writeUInt16BE(h.extId || 0, 14);
   return buf;
