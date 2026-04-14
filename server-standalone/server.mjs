@@ -242,56 +242,97 @@ function decodeVarInt(buf, offset) {
 // ============================================================
 
 // ============================================================
-// Blaze Packet Header — FIFA 17 Fire2 Format (16 bytes)
+// Blaze Packet Header — FIFA 17 Fire2 Format (16 bytes)  
 // ============================================================
-// Confirmed from raw packet captures:
-//   PreAuth req:  00 00 00 cb  00 00  00 09  00 07  00 00  02 00  00 00
-//   Error/ack:    00 00 00 00  00 00  00 00  00 00  00 00  03 80  00 00
-//   Ping req:     00 00 00 00  00 00  00 09  00 02  00 00  04 00  00 00
-//
 // [0-3]   u32  payload length
-// [4-5]   u16  secondary/blaze length (usually 0)
+// [4-5]   u16  secondary length (usually 0)
 // [6-7]   u16  component
 // [8-9]   u16  command
 // [10-11] u16  error code
-// [12]    u8   message sequence/id number (increments: 2, 3, 4...)
-// [13]    u8   message flags (0x00=normal, 0x80=error/special)
+// [12]    u8   sequence number
+// [13]    u8   flags/type
 // [14-15] u16  extended id (usually 0)
-//
-// For RESPONSES: byte 12 must match the request's byte 12 (sequence number)
-//                byte 13 bit 0x80 may indicate error
-// For NOTIFICATIONS: byte 12 = 0, byte 13 = 0
+
 const HEADER_SIZE = 16;
+
+// SWEEP MODE: test different byte12/byte13 combinations automatically
+// Each connection attempt uses the next combination from the list
+const SWEEP_VALUES = [
+  // [byte12_mode, byte13_value, description]
+  // byte12_mode: 'echo' = same as request, 'zero' = 0, 'plus1' = seq+1
+  // First: sweep byte13 with byte12=echo (most promising based on 0x80 result)
+  ['echo', 0x80, 'echo+0x80 (baseline - game reads but rejects 0xA0)'],
+  ['echo', 0x10, 'echo+0x10 (BlazePK response type)'],
+  ['echo', 0x20, 'echo+0x20 (BlazePK notify type)'],
+  ['echo', 0x30, 'echo+0x30 (BlazePK error type)'],
+  ['echo', 0x90, 'echo+0x90'],
+  ['echo', 0xA0, 'echo+0xA0'],
+  ['echo', 0x01, 'echo+0x01'],
+  ['echo', 0x02, 'echo+0x02'],
+  ['echo', 0x04, 'echo+0x04'],
+  ['echo', 0x08, 'echo+0x08'],
+  // Try with byte12 modifications
+  ['plus1', 0x00, 'seq+1+0x00'],
+  ['plus1', 0x80, 'seq+1+0x80'],
+  ['plus1', 0x10, 'seq+1+0x10'],
+  ['zero', 0x80, '0+0x80'],
+  ['zero', 0x10, '0+0x10'],
+  // Try byte12 as type values (BlazePK style) with byte13 as seq
+  ['type10', 'seq', 'b12=0x10(resp) b13=seq'],
+  ['type20', 'seq', 'b12=0x20(notify) b13=seq'],
+];
+let sweepIndex = 0;
+
 function decodeHeader(buf) {
   if (buf.length < HEADER_SIZE) return null;
   const length = buf.readUInt32BE(0);
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  const seqByte = buf[12];    // sequence/message number  
-  const flagByte = buf[13];   // flags/type byte
+  const seqByte = buf[12];
+  const flagByte = buf[13];
   const extId = buf.readUInt16BE(14);
   let msgType = 0x0000;
-  if (flagByte & 0x80) msgType = 0x3000; // error/response
+  if (flagByte & 0x80) msgType = 0x3000;
   const msgId = (seqByte << 8) | flagByte;
   return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
 }
+
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
-  buf.writeUInt32BE(h.length || 0, 0);      // payload length
-  buf.writeUInt16BE(0, 4);                   // secondary length
-  buf.writeUInt16BE(h.component, 6);         // component
-  buf.writeUInt16BE(h.command, 8);           // command
-  buf.writeUInt16BE(h.error || 0, 10);       // error code
+  buf.writeUInt32BE(h.length || 0, 0);
+  buf.writeUInt16BE(0, 4);
+  buf.writeUInt16BE(h.component, 6);
+  buf.writeUInt16BE(h.command, 8);
+  buf.writeUInt16BE(h.error || 0, 10);
+  
   if (h.notify) {
     buf[12] = 0x00;
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // byte12 = sequence number (echo from request)
-    // byte13 = 0x80 for response (confirmed: game processes it)
-    buf[12] = h.seqByte;
-    buf[13] = 0xC0; // try 0xC0 (0x80=response + 0x40=success?)
+    // Use current sweep values
+    const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+    const [b12mode, b13val, desc] = sv;
+    
+    // Byte 12
+    if (b12mode === 'echo') buf[12] = h.seqByte;
+    else if (b12mode === 'plus1') buf[12] = (h.seqByte + 1) & 0xFF;
+    else if (b12mode === 'zero') buf[12] = 0x00;
+    else if (b12mode === 'type10') buf[12] = 0x10;
+    else if (b12mode === 'type20') buf[12] = 0x20;
+    else buf[12] = h.seqByte;
+    
+    // Byte 13
+    if (b13val === 'seq') buf[13] = h.seqByte;
+    else buf[13] = b13val;
+  } else {
+    buf[12] = 0x10;
+    buf[13] = 0x00;
+  }
+  buf.writeUInt16BE(h.extId || 0, 14);
+  return buf;
+}
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
@@ -906,8 +947,9 @@ function setupEncryptedBlazeHandler(socket, keys, cipher, initialPendingBuf) {
               console.log(`[Blaze-Enc] comp=0x${pkt.header.component.toString(16).padStart(4,'0')} cmd=0x${pkt.header.command.toString(16).padStart(4,'0')} len=${pkt.header.length} msgType=0x${pkt.header.msgType.toString(16)} msgId=${pkt.header.msgId} err=${pkt.header.error}`);
               const resp = handleBlazePacket(pkt);
               if (resp) {
-                // Log response header bytes before encryption
-                console.log(`[Blaze-Enc] Response header hex (${Math.min(resp.length, 14)}b): ${Array.from(resp.subarray(0, Math.min(resp.length, 14))).map(b => b.toString(16).padStart(2, '0')).join(' ')}`);
+                // Log response header bytes and sweep info
+                const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+                console.log(`[SWEEP#${sweepIndex}] ${sv[2]} | resp: ${Array.from(resp.subarray(0, Math.min(resp.length, 16))).map(b => b.toString(16).padStart(2, '0')).join(' ')}`);
                 const encReply = encryptRecord(0x17, [0x03, 0x03], resp, keys.serverWriteKey, keys.serverWriteMAC, keys, cipher);
                 socket.write(encReply);
                 console.log(`[Blaze-Enc] Sent encrypted reply (${resp.length} bytes)`);
@@ -1241,7 +1283,13 @@ function startMainServer() {
     socket.on('data', initialHandler);
     socket.on('close', () => {
       console.log(`[Main] S${sid} disconnected`);
-      flushAndPush(`S${sid} disconnect`);
+      // Advance sweep for next connection
+      const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+      console.log(`[SWEEP] Test #${sweepIndex} was: ${sv[2]}`);
+      sweepIndex++;
+      const next = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+      console.log(`[SWEEP] Next test #${sweepIndex}: ${next[2]}`);
+      flushAndPush(`S${sid} sweep#${sweepIndex-1}: ${sv[2]}`);
     });
     socket.on('error', (e) => console.log(`[Main] S${sid} error: ${e.message}`));
   });
@@ -1280,7 +1328,8 @@ function setupMainBlazeHandler(socket, session) {
       if (resp) {
         console.log(`[Main] S${sid}: Sending response (${resp.length} bytes)`);
         const hdrHex = Array.from(resp.subarray(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-        console.log(`[Main] S${sid}: Response header: ${hdrHex}`);
+        const sv = SWEEP_VALUES[sweepIndex % SWEEP_VALUES.length];
+        console.log(`[Main] S${sid}: [SWEEP#${sweepIndex} ${sv[2]}] header: ${hdrHex}`);
         socket.write(resp);
       }
     } catch (e) {
