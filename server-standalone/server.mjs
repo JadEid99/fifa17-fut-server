@@ -291,10 +291,12 @@ function encodeHeader(h) {
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Response to a request: same seq byte, set response flag in byte 13
-    // The game's error packets use byte13=0x80. Normal responses might too.
+    // Response: same seq byte
+    // Test: byte13=0x80 made game process it (but reject with 0xA0)
+    // Test: byte13=0x00 made game ignore it (RPC timeout)
+    // Try: byte13=0x80 with proper body to see if 0xA0 was body-related
     buf[12] = h.seqByte;
-    buf[13] = 0x80; // response flag (same as game's error/response packets)
+    buf[13] = 0x80;
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
