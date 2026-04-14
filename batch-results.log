@@ -1,9 +1,9 @@
-=== S3 disconnect (2026-04-14 08:18:39) ===
+=== S4 disconnect (2026-04-14 08:18:42) ===
 
-[Main] Session 3 connected: 127.0.0.1:54328
-[Main] S3: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
-[Main] S3: Raw Blaze binary detected
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=2944
-[Main] S3: -> Ignoring null/error packet (seq=11 flags=0x80)
-[Main] S3 disconnected
+[Main] Session 4 connected: 127.0.0.1:54332
+[Main] S4: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
+[Main] S4: Raw Blaze binary detected
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=3200
+[Main] S4: -> Ignoring null/error packet (seq=12 flags=0x80)
+[Main] S4 disconnected
