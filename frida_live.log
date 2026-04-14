@@ -10,7 +10,179 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v21 ===
+=== Frida v22: RPC Trace ===
 === Ready ===
-[Local::PID::102156 ]-> [CA] param3=0x40050000 ERROR
-[CA] param3=0x40050000 ERROR
+[Local::PID::98396 ]-> [LOOKUP] enter: p1=0x3eb07f38 p2=0x3eddd228 p3=0x0
+[LOOKUP] result: NULL (no match!)
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3edeb558 p3=0x0
+[LOOKUP] result: NULL (no match!)
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3edf9888 p3=0x0
+[LOOKUP] result: NULL (no match!)
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3ee07bb8 p3=0x0
+[LOOKUP] result: NULL (no match!)
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eddd228 p3=0x0
+[LOOKUP] result: 0x97317c0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x0
+[LOOKUP] result: 0x97317c0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x1
+[LOOKUP] result: 0x97332a0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x3
+[LOOKUP] result: 0x97332a0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x4
+[LOOKUP] result: 0x97317c0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x5
+[LOOKUP] result: 0x97333e0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x6
+[LOOKUP] result: 0x97335c0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x7
+[LOOKUP] result: 0x9731a40
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x8
+[LOOKUP] result: 0x9732f80
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1d48 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1cc0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1c38 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1bb0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1b28 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1aa0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x9
+[LOOKUP] result: 0x9732f80
+[CA] param3=0x0 SUCCESS
+[CA] +0x10 userId=0
+[CA] +0x13 byte=0
+[CA] +0x18 pnam_ptr=0x14389a0a8
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x14
+[LOOKUP] result: 0x99a3180
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x1f
+[LOOKUP] result: 0x9732a80
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x20
+[LOOKUP] result: 0x9733ca0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x21
+[LOOKUP] result: 0x9732bc0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x22
+[LOOKUP] result: 0x9732b20
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x23
+[LOOKUP] result: 0x9732ee0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x24
+[LOOKUP] result: 0x9732d00
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1aa0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1b28 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1bb0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1c38 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1cc0 p3=0x3
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1d48 p3=0x3
+[MATCHER] result: 0x0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x25
+[LOOKUP] result: 0x9732d00
+[CA] param3=0x0 SUCCESS
+[CA] +0x10 userId=0
+[CA] +0x13 byte=0
+[CA] +0x18 pnam_ptr=0x14389a0a8
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x2f
+[LOOKUP] result: 0x99a4b00
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0
+[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
+[MATCHER] result: 0x0

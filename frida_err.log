@@ -1,0 +1,34 @@
+Error: access violation accessing 0x1
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x3
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x4
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x5
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x6
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x7
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x8
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x9
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x14
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x1f
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x20
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x21
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x22
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x23
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x24
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x25
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
+Error: access violation accessing 0x2f
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:17)
