@@ -228,11 +228,19 @@ static void PatchPreAuthHandler() {
         Log("PREAUTH_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5], func[6], func[7]);
         
-        // Find the TEST R8D,R8D / JNZ pattern near the start of the function
-        // The function prologue is typically: push rbx, sub rsp, ..., then test r8d,r8d / jnz
-        // Let's scan the first 64 bytes for the pattern
+        // Log first 128 bytes for analysis
+        Log("PREAUTH_HANDLER: first 128 bytes:");
+        for (int row = 0; row < 128; row += 16) {
+            Log("  +%02X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                row, func[row], func[row+1], func[row+2], func[row+3],
+                func[row+4], func[row+5], func[row+6], func[row+7],
+                func[row+8], func[row+9], func[row+10], func[row+11],
+                func[row+12], func[row+13], func[row+14], func[row+15]);
+        }
+        
+        // Find the TEST/JNZ pattern — scan first 128 bytes
         int found = 0;
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < 128; i++) {
             // TEST R8D, R8D = 45 85 C0
             // JNZ rel32 = 0F 85 xx xx xx xx
             if (func[i] == 0x45 && func[i+1] == 0x85 && func[i+2] == 0xC0 &&
@@ -263,8 +271,8 @@ static void PatchPreAuthHandler() {
             }
         }
         if (!found) {
-            // Fallback: scan for any JNZ with large displacement in first 80 bytes
-            for (int i = 0; i < 80; i++) {
+            // Fallback: scan for any JNZ with large displacement in first 128 bytes
+            for (int i = 0; i < 128; i++) {
                 if (func[i] == 0x0F && func[i+1] == 0x85) {
                     int32_t disp = *(int32_t*)(func + i + 2);
                     if (disp > 0x100) { // large forward jump = likely the main if/else
