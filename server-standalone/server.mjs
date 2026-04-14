@@ -1531,27 +1531,16 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // Ghidra + Frida analysis:
-  // CreateAccountResponse has 2 fields:
-  //   1. "userId" (integer) at struct offset 0x10 — MUST be non-zero (byte +0x13 checked)
-  //   2. unknown (string) at struct offset 0x18
-  // The handler checks *(param2+0x13) != 0 for success path
-  // On little-endian x86, userId must be >= 0x01000000 for byte +0x13 to be non-zero
-  // OR the userId is stored differently
-  
-  // Try multiple possible tag names for the userId field
+  // CONFIRMED from Ghidra + Frida:
+  // CreateAccountResponse has exactly 2 fields:
+  //   1. PNAM (string) - Persona Name
+  //   2. UID  (integer) - User ID (must be non-zero, byte +0x13 checked)
   const enc = new TdfEncoder();
-  // Field 1: userId as integer — try common EA tags
-  enc.writeInteger('UID ', session.nucleusId);  // PocketRelay style
-  enc.writeInteger('USID', session.nucleusId);  // User Session ID
-  enc.writeInteger('BUID', session.nucleusId);  // Blaze User ID
-  enc.writeInteger('PID ', session.personaId);  // Persona ID
-  // Field 2: unknown string — try common auth response strings
-  enc.writeString('PCTK', authToken);           // Auth token
-  enc.writeString('SKEY', session.personaId.toString(16).toUpperCase()); // Session key
+  enc.writeString('PNAM', session.displayName);
+  enc.writeInteger('UID ', session.nucleusId);
   
   const body = enc.build();
-  console.log('[CreateAccount] Multi-tag response: ' + body.length + ' bytes');
+  console.log('[CreateAccount] PNAM+UID response: ' + body.length + ' bytes (UID=' + session.nucleusId + ')');
   return buildReply(pkt, body);
 }
 
