@@ -202,3 +202,37 @@ Connection: keep-alive
 [Main] S1: Sending response (35 bytes)
 [Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 08 20 00 00
 [Main] S1 disconnected
+=== S2 disconnect (2026-04-14 09:34:42) ===
+
+[Main] Session 2 connected: 127.0.0.1:60057
+[Main] S2: received 70 bytes (total: 70)
+[Main]   0000: 00 00 00 26 00 00 00 01 00 0a 00 00 09 00 00 00  ...&............
+[Main]   0010: 87 5d 28 01 17 46 41 4b 45 41 55 54 48 43 4f 44  .](..FAKEAUTHCOD
+[Main]   0020: 45 31 32 33 34 35 36 37 38 39 30 00 97 8d 22 02  E1234567890...".
+[Main]   0030: 00 97 8d 29 00 00 00 00 00 00 00 00 00 01 00 46  ...)...........F
+[Main] S2: Raw Blaze binary detected
+[Main] S2: comp=0x0001 cmd=0x000a len=38 msgId=2304
+[Main] S2: -> Auth cmd=0xa (CreateAccount)
+[Main] S2:   AUTH (str) = "FAKEAUTHCODE1234567890"
+[Main] S2:   EXTB (blob) [0 bytes]
+[Main] S2:   EXTI (int) = 0
+[CreateAccount] Creating account for session 2
+[CreateAccount] Responding with session (personaId=1000000002, nucleusId=2000000002)
+[Main] S2: Sending response (210 bytes)
+[Main] S2: header: 00 00 00 c2 00 00 00 01 00 0a 00 00 09 20 00 00
+[Main] S2: comp=0x0001 cmd=0x0046 len=0 msgId=2560
+[Main] S2: -> Auth cmd=0x46 (Logout)
+[Main] S2: Sending response (164 bytes)
+[Main] S2: header: 00 00 00 94 00 00 00 01 00 46 00 00 0a 20 00 00
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=2944
+[Main] S2: -> Ignoring null/error packet (seq=11 flags=0x80)
+[Main] S2 disconnected
+=== S3 disconnect (2026-04-14 09:34:45) ===
+
+[Main] Session 3 connected: 127.0.0.1:60061
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=3200
+[Main] S3: -> Ignoring null/error packet (seq=12 flags=0x80)
+[Main] S3 disconnected
