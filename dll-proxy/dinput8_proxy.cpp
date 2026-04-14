@@ -341,64 +341,12 @@ static void PatchCreateAccountHandler() {
         
         int o = 0;
         
-        // Windows x64: param_1=RCX, param_2=RDX, param_3=R8
-        cave[o++] = 0x53;                                     // PUSH RBX
-        cave[o++] = 0x55;                                     // PUSH RBP
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
-        
-        // Step 1: Get state object via vtable+0xb8(param_1)
-        // RCX already = param_1
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX] (vtable)
-        cave[o++] = 0xFF; cave[o++] = 0x90;                    // CALL [RAX + 0xb8]
-        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // RAX = state object. Save in RBP.
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC5; // MOV RBP, RAX
-        
-        // Step 2: *(state + 0x8bc) = 0  (error code = success)
-        cave[o++] = 0xC7; cave[o++] = 0x85;                    // MOV DWORD [RBP + 0x8bc], 0
-        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Step 3: Hardcode UID bytes (non-zero at +0x13 is the critical check)
-        // *(byte*)(state + 0x8c0) = 0x01  (UID byte, maps to param_2+0x10)
-        cave[o++] = 0xC6; cave[o++] = 0x85;
-        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
-        // *(byte*)(state + 0x8c1) = 0x00
-        cave[o++] = 0xC6; cave[o++] = 0x85;
-        cave[o++] = 0xC1; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
-        // *(byte*)(state + 0x8c5) = 0x00
-        cave[o++] = 0xC6; cave[o++] = 0x85;
-        cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
-        
-        // Step 4: *(byte*)(state + 0x8c6) = 1  (success flag — needed for state transition)
-        cave[o++] = 0xC6; cave[o++] = 0x85;
-        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
-        
-        // Step 5: Call state transition ONLY — skip FUN_146e00f40
-        // (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
-        // MOV RCX, [RBX + 0x08]   (param_1[1])
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08;
-        // MOV RAX, [RCX]          (vtable)
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
-        // MOV EDX, 1
-        cave[o++] = 0xBA;
-        cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // MOV R8D, 0              (state 0 = skip OSDK account creation UI)
-        cave[o++] = 0x41; cave[o++] = 0xB8;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // CALL [RAX + 0x08]
-        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;
-        
-        // Cleanup and return
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
-        cave[o++] = 0x5D;                                     // POP RBP
-        cave[o++] = 0x5B;                                     // POP RBX
-        cave[o++] = 0xC3;                                     // RET
+        // SIMPLEST APPROACH: Just return immediately.
+        // Don't set any state, don't call any transition.
+        // The original function's failure path just returns, which causes
+        // the state machine to try the next login type (SilentLogin).
+        // This should skip the OSDK account creation UI entirely.
+        cave[o++] = 0xC3;  // RET
         
         Log("CA_HANDLER: Cave at %p, %d bytes", cave, o);
         
