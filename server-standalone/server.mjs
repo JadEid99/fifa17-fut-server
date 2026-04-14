@@ -1568,10 +1568,6 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // CONFIRMED from Ghidra + Frida:
-  // CreateAccountResponse has exactly 2 fields:
-  //   1. PNAM (string) - Persona Name
-  //   2. UID  (integer) - User ID (must be non-zero, byte +0x13 checked)
   const enc = new TdfEncoder();
   enc.writeString('PNAM', session.displayName);
   enc.writeInteger('UID ', session.nucleusId);

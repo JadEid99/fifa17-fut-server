@@ -1,10 +1,11 @@
 /*
- * Frida v30: Read handler+0x08 object's vtable to find the REAL advance function.
- * Also shorten test — no manual connection needed.
+ * Frida v31: Dump the state object returned by vtable+0xb8 of the handler.
+ * Find a path from the state object to the Login state machine.
+ * Also dump the handler object more thoroughly.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v30 ===');
+console.log('=== Frida v31 ===');
 
 Interceptor.attach(addr(0x6db5d60), {
     onEnter: function(args) {
@@ -19,52 +20,45 @@ Interceptor.attach(addr(0x6db5d60), {
         if (bodyLen === 22) {
             console.log('[CA] CreateAccount RPC');
             
-            // Handler is at rpc+0x78
-            var handler = rpc.add(0x78).readPointer();
-            // handler+0x08 is the object our cave calls advance on
-            var advObj = handler.add(0x08).readPointer();
-            console.log('[CA] handler+0x08 (advance target) = ' + advObj);
+            // State machine at rpc+0x20
+            var sm = rpc.add(0x20).readPointer();
+            console.log('[CA] State machine = ' + sm);
             
-            if (!advObj.isNull()) {
-                var advVtable = advObj.readPointer();
-                console.log('[CA] advance target vtable = ' + advVtable);
-                
-                // Read vtable entries
-                for (var i = 0; i < 8; i++) {
-                    try {
-                        var entry = advVtable.add(i * 8).readPointer();
-                        console.log('[CA] advVtable[' + i + '] (+0x' + (i*8).toString(16) + ') = ' + entry);
-                    } catch(e) { break; }
+            // Handler at rpc+0x78
+            var handler = rpc.add(0x78).readPointer();
+            console.log('[CA] Handler = ' + handler);
+            
+            // Call vtable+0xb8 on handler to get state object
+            // We can't call it from Frida, but we can find it by looking at
+            // what the cave would return. The vtable+0xb8 function likely
+            // returns a fixed object. Let's look at the handler's vtable.
+            var hVtable = handler.readPointer();
+            var vt0xb8 = hVtable.add(0xb8).readPointer();
+            console.log('[CA] handler.vtable+0xb8 = ' + vt0xb8);
+            
+            // Dump handler more thoroughly (0x80 bytes)
+            var hDump = new Uint8Array(handler.readByteArray(0x80));
+            console.log('[CA] Handler full dump:');
+            for (var off = 0; off < 0x80; off += 8) {
+                var val = handler.add(off).readPointer();
+                var label = '';
+                if (val.equals(sm)) label = ' <<< STATE MACHINE';
+                // Check if it's a game code pointer
+                if (val.compare(ptr('0x140000000')) > 0 && val.compare(ptr('0x150000000')) < 0) {
+                    label = ' (code)';
                 }
-                
-                // Dump the advance target object
-                var dump = new Uint8Array(advObj.readByteArray(0x30));
-                var hex = Array.from(dump).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
-                console.log('[CA] advance target dump: ' + hex);
+                console.log('  +0x' + off.toString(16) + ' = ' + val + label);
             }
             
-            // ALSO: check what param_1 our cave actually receives
-            // Our cave replaces FUN_146e151d0. The RPC framework calls it as:
-            //   (**(code **)*puVar2)(puVar2, 0);  -- vtable[0] of RPC object
-            // So param_1 = RPC object, NOT the handler!
-            // Let's verify: rpc vtable[0] should be FUN_146e151d0 (now our cave)
-            var rpcVtable = rpc.readPointer();
-            var rpcVt0 = rpcVtable.readPointer();
-            console.log('[CA] rpc vtable[0] = ' + rpcVt0);
-            
-            // So our cave receives the RPC object as param_1!
-            // param_1[1] = rpc+0x08
-            var rpc08 = rpc.add(0x08).readPointer();
-            console.log('[CA] rpc+0x08 (what cave reads as param_1[1]) = ' + rpc08);
-            if (!rpc08.isNull()) {
+            // Also scan the state machine object for the handler reference
+            console.log('[CA] SM scan for handler ref:');
+            for (var off = 0; off < 0x100; off += 8) {
                 try {
-                    var rpc08Vtable = rpc08.readPointer();
-                    console.log('[CA] rpc+0x08 vtable = ' + rpc08Vtable);
-                    for (var i = 0; i < 4; i++) {
-                        var entry = rpc08Vtable.add(i * 8).readPointer();
-                        console.log('[CA] rpc08.vtable[' + i + '] = ' + entry);
+                    var val = sm.add(off).readPointer();
+                    if (val.equals(handler)) {
+                        console.log('  SM+0x' + off.toString(16) + ' = handler!');
                     }
-                } catch(e) { console.log('[CA] rpc+0x08 read error: ' + e); }
+                } catch(e) { break; }
             }
         }
     }
