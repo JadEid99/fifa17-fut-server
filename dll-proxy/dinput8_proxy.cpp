@@ -353,7 +353,7 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08; // MOV RCX, [RBX+8]
         cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;                   // MOV RAX, [RCX]
         cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV EDX, 1
-        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x04; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 4
+        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 3 (OSDK account creation)
         cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;                   // CALL [RAX+8]
         
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x20; // ADD RSP, 0x20

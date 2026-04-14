@@ -1321,27 +1321,27 @@ function setupMainBlazeHandler(socket, session) {
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
         else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
         else if (cmd === 0x00F2) {
-          // GetTermsOfServiceContent — return empty/accepted TOS
-          console.log(`[Main] S${sid}: -> GetTermsOfServiceContent`);
+          // GetLegalDocsInfo — return legal doc info with version
+          console.log(`[Main] S${sid}: -> GetLegalDocsInfo`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', '');  // legal doc version code
-          enc.writeString('TCOL', '');  // TOS content (empty = no TOS to show)
+          enc.writeString('LDVC', 'v1.0');
+          enc.writeString('TCOL', 'Terms of Service: You agree to play FIFA 17 on this private server.');
           resp = buildReply(pkt, enc.build());
         }
         else if (cmd === 0x00F6) {
-          // GetLegalDocContent — return empty legal content
-          console.log(`[Main] S${sid}: -> GetLegalDocContent`);
+          // GetTermsOfServiceContent — return actual TOS text
+          console.log(`[Main] S${sid}: -> GetTermsOfServiceContent`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', '');
-          enc.writeString('TCOL', '');
+          enc.writeString('LDVC', 'v1.0');
+          enc.writeString('TCOL', 'Terms of Service: You agree to play FIFA 17 on this private server. All data is stored locally.');
           resp = buildReply(pkt, enc.build());
         }
         else if (cmd === 0x002F) {
-          // GetTermsOfServiceInfo — return "already accepted"
-          console.log(`[Main] S${sid}: -> GetTermsOfServiceInfo`);
+          // GetPrivacyPolicyContent — return privacy policy text
+          console.log(`[Main] S${sid}: -> GetPrivacyPolicyContent`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', '');
-          enc.writeString('TCOL', '');
+          enc.writeString('LDVC', 'v1.0');
+          enc.writeString('TCOL', 'Privacy Policy: No personal data is collected or shared.');
           resp = buildReply(pkt, enc.build());
         }
         else { console.log(`[Main] S${sid}: -> Auth unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
