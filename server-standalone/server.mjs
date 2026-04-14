@@ -1573,8 +1573,37 @@ function handleCreateAccount(session, pkt) {
   enc.writeInteger('UID ', session.nucleusId);
   
   const body = enc.build();
-  console.log('[CreateAccount] PNAM+UID response: ' + body.length + ' bytes (UID=' + session.nucleusId + ')');
-  return buildReply(pkt, body);
+  console.log('[CreateAccount] Responding as LOGIN instead: ' + body.length + ' bytes');
+  // Build a Login response header instead of CreateAccount
+  // Change command from 0x000A (CreateAccount) to 0x0028 (Login)
+  // This tricks the RPC framework into routing to the Login handler
+  const loginEnc = new TdfEncoder();
+  loginEnc.writeInteger('NTOS', 0).writeString('PCTK', '').writeString('PRIV', '');
+  loginEnc.writeStructStart('SESS');
+  loginEnc.writeInteger('BUID', session.nucleusId).writeInteger('FRST', 0);
+  loginEnc.writeString('KEY ', `sk_${session.id}`).writeInteger('LLOG', 0);
+  loginEnc.writeString('MAIL', `p${session.id}@fut.local`);
+  loginEnc.writeStructStart('PDTL');
+  loginEnc.writeString('DSNM', session.displayName).writeInteger('LAST', 0);
+  loginEnc.writeInteger('PID ', session.personaId).writeInteger('STAS', 0);
+  loginEnc.writeInteger('XREF', 0).writeInteger('XTYP', 0);
+  loginEnc.writeStructEnd();
+  loginEnc.writeInteger('UID ', session.nucleusId);
+  loginEnc.writeStructEnd();
+  loginEnc.writeInteger('SPAM', 0).writeString('THST', '').writeString('TSUI', '').writeString('TURI', '');
+  const loginBody = loginEnc.build();
+  // Send BOTH: the CreateAccount response (so the RPC matches) AND a Login notification
+  const caResp = buildReply(pkt, body);
+  // Also send a proactive Login notification
+  const loginHdr = Buffer.alloc(16);
+  loginHdr.writeUInt32BE(loginBody.length, 0);
+  loginHdr.writeUInt16BE(0x0001, 6); // Auth component
+  loginHdr.writeUInt16BE(0x0028, 8); // Login command
+  loginHdr[13] = 0x40; // Notification type (unsolicited)
+  const loginPkt = Buffer.concat([loginHdr, loginBody]);
+  console.log('[CreateAccount] Also sending Login notification (' + loginPkt.length + ' bytes)');
+  // Return both packets concatenated
+  return Buffer.concat([caResp, loginPkt]);
 }
 
 function handleFetchClientConfig(pkt) {
