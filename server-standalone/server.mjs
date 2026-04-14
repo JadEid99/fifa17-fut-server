@@ -291,7 +291,7 @@ function encodeHeader(h) {
     // byte12 = sequence number (echo from request)
     // byte13 = 0x80 for response (confirmed: game processes it)
     buf[12] = h.seqByte;
-    buf[13] = 0x40; // try 0x40 as success response flag (0x80 caused 0xA0 rejection)
+    buf[13] = 0xC0; // try 0xC0 (0x80=response + 0x40=success?)
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
