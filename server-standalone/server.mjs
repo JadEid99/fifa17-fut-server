@@ -1297,15 +1297,15 @@ function setupMainBlazeHandler(socket, session) {
         else if (cmd === 0x000B) resp = buildReply(pkt, new TdfEncoder().writeString('SVAL', '').build());
         else { console.log(`[Main] S${sid}: -> Util unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
       } else if (comp === 0x0001) {
-        if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046].includes(cmd)) { 
-          console.log(`[Main] S${sid}: -> Login/Auth cmd=0x${cmd.toString(16)}`); 
-          // Decode request body for debugging
-          try {
-            const decoded = decodeTdf(pkt.body);
-            for (const line of decoded.lines) console.log(`[Main] S${sid}:   ${line}`);
-          } catch(e) {}
-          resp = handleLogin(session, pkt); 
-        }
+        // Authentication component — log ALL requests with TDF body
+        console.log(`[Main] S${sid}: -> Auth cmd=0x${cmd.toString(16)} (${cmd === 0x0A ? 'CreateAccount' : cmd === 0x28 ? 'Login' : cmd === 0x32 ? 'SilentLogin' : cmd === 0x3C ? 'ExpressLogin' : cmd === 0x46 ? 'Logout' : cmd === 0x98 ? 'OriginLogin' : cmd === 0x1D ? 'ListEntitlements2' : cmd === 0x64 ? 'ListPersonas' : 'unknown'})`);
+        try {
+          const decoded = decodeTdf(pkt.body);
+          for (const line of decoded.lines) console.log(`[Main] S${sid}:   ${line}`);
+        } catch(e) { if (pkt.body.length > 0) console.log(`[Main] S${sid}:   (${pkt.body.length} bytes, decode err)`); }
+        
+        if (cmd === 0x000A) { resp = handleCreateAccount(session, pkt); }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
@@ -1519,6 +1519,43 @@ function handleMainHttpRoute(path, bodyXml, session) {
   // Default: empty response
   console.log(`[Main-HTTP] Unhandled: ${path}`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<response></response>`;
+}
+
+function handleCreateAccount(session, pkt) {
+  console.log('[CreateAccount] Creating account for session ' + session.id);
+  
+  // The game sends a CreateAccount request with persona details.
+  // We respond with a full session including player ID, persona, session key.
+  // Based on PocketRelay's Login response format.
+  const enc = new TdfEncoder();
+  enc.writeInteger('AGUP', 0);
+  enc.writeString('LDHT', '');
+  enc.writeInteger('NTOS', 0);
+  enc.writeString('PCTK', 'FakeAuthToken_FIFA17_' + session.id);
+  enc.writeString('PRIV', '');
+  enc.writeStructStart('SESS');
+  enc.writeInteger('BUID', session.nucleusId);
+  enc.writeInteger('FRST', 0);
+  enc.writeString('KEY ', 'SessionKey_' + session.id);
+  enc.writeInteger('LLOG', 0);
+  enc.writeString('MAIL', 'player' + session.id + '@fut.local');
+  enc.writeStructStart('PDTL');
+  enc.writeString('DSNM', session.displayName);
+  enc.writeInteger('LAST', 0);
+  enc.writeInteger('PID ', session.personaId);
+  enc.writeInteger('STAS', 0);
+  enc.writeInteger('XREF', 0);
+  enc.writeInteger('XTYP', 0);
+  enc.writeStructEnd(); // PDTL
+  enc.writeInteger('UID ', session.nucleusId);
+  enc.writeStructEnd(); // SESS
+  enc.writeInteger('SPAM', 0);
+  enc.writeString('THST', '');
+  enc.writeString('TSUI', '');
+  enc.writeString('TURI', '');
+  
+  console.log('[CreateAccount] Responding with session (personaId=' + session.personaId + ', nucleusId=' + session.nucleusId + ')');
+  return buildReply(pkt, enc.build());
 }
 
 function handleFetchClientConfig(pkt) {
