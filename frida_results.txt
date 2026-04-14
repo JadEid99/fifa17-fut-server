@@ -10,33 +10,24 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v17 - Read CreateAccountResponse fields ===
-[FIELDS] CreateAccountResponse field table at: 0x144878060
-[FIELDS] Raw bytes (128):
-[FIELDS]   0000: 28 76 86 44 01 00 00 00 a0 cd 88 43 01 00 00 00 
-[FIELDS]   0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS]   0020: 00 6d e8 c2 01 01 00 00 18 00 00 00 00 00 00 00 
-[FIELDS]   0030: f0 97 86 44 01 00 00 00 0c cf 88 43 01 00 00 00 
-[FIELDS]   0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS]   0050: 00 00 99 d6 00 00 00 00 10 00 00 00 00 00 00 00 
-[FIELDS]   0060: 70 c4 87 44 01 00 00 00 1c ad 61 43 01 00 00 00 
-[FIELDS]   0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS] +0: ptr 0x144867628
-[FIELDS] +8: ptr 0x14388cda0
-[FIELDS] +10: 0x0
-[FIELDS] +18: 0x0
-[FIELDS] +20: 0x101c2e86d00
-[FIELDS] +28: 0x18
-[FIELDS] +30: ptr 0x1448697f0
-[FIELDS] +38: ptr 0x14388cf0c
-[PARAMS] CreateAccountParameters name: CreateAccountParameters
+=== Frida v18 ===
+[FIELD1_NAME] error: Error: can't decode byte 0x00 in position 11
+[FIELD2_NAME] error: Error: can't decode byte 0x00 in position 6
 === Ready ===
-[Local::PID::91240 ]-> [RESP] param3=0x0
-[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
-[RESP] +010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
-[RESP] +020: 00 00 00 80 cd cc cc 3d b0 76 bd 44 01 00 00 00 
-[RESP] param3=0x0
-[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
-[RESP] +010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
-[RESP] +020: 00 00 00 80 30 00 00 00 b0 76 bd 44 01 00 00 00 
+[Local::PID::98416 ]-> [CA_RESP] p1=0x3eb5d328 p2=0x98f2710 p3=0x0
+[CA_RESP] param2 dump:
++000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
++010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
++020: 00 00 00 80 cd cc cc 3d b0 76 bd 44 01 00 00 00 
++030: 68 53 b3 3e 00 00 00 00 00 00 00 00 66 66 a6 3e 
+[CA_RESP] +0x10 (userId): 0x0
+[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
+[CA_RESP] p1=0x3eb5d328 p2=0x98f4860 p3=0x0
+[CA_RESP] param2 dump:
++000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
++010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
++020: 00 00 00 80 30 00 00 00 b0 76 bd 44 01 00 00 00 
++030: 68 53 b3 3e 00 00 00 00 00 00 00 00 33 05 00 00 
+[CA_RESP] +0x10 (userId): 0x0
+[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
 

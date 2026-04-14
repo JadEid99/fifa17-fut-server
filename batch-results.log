@@ -1,4 +1,4 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-14 16:01:27) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-14 16:10:29) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
      ____
@@ -13,40 +13,31 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v17 - Read CreateAccountResponse fields ===
-[FIELDS] CreateAccountResponse field table at: 0x144878060
-[FIELDS] Raw bytes (128):
-[FIELDS]   0000: 28 76 86 44 01 00 00 00 a0 cd 88 43 01 00 00 00 
-[FIELDS]   0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS]   0020: 00 6d e8 c2 01 01 00 00 18 00 00 00 00 00 00 00 
-[FIELDS]   0030: f0 97 86 44 01 00 00 00 0c cf 88 43 01 00 00 00 
-[FIELDS]   0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS]   0050: 00 00 99 d6 00 00 00 00 10 00 00 00 00 00 00 00 
-[FIELDS]   0060: 70 c4 87 44 01 00 00 00 1c ad 61 43 01 00 00 00 
-[FIELDS]   0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-[FIELDS] +0: ptr 0x144867628
-[FIELDS] +8: ptr 0x14388cda0
-[FIELDS] +10: 0x0
-[FIELDS] +18: 0x0
-[FIELDS] +20: 0x101c2e86d00
-[FIELDS] +28: 0x18
-[FIELDS] +30: ptr 0x1448697f0
-[FIELDS] +38: ptr 0x14388cf0c
-[PARAMS] CreateAccountParameters name: CreateAccountParameters
+=== Frida v18 ===
+[FIELD1_NAME] error: Error: can't decode byte 0x00 in position 11
+[FIELD2_NAME] error: Error: can't decode byte 0x00 in position 6
 === Ready ===
-[Local::PID::91240 ]-> [RESP] param3=0x0
-[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
-[RESP] +010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
-[RESP] +020: 00 00 00 80 cd cc cc 3d b0 76 bd 44 01 00 00 00 
-[RESP] param3=0x0
-[RESP] +000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
-[RESP] +010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
-[RESP] +020: 00 00 00 80 30 00 00 00 b0 76 bd 44 01 00 00 00 
+[Local::PID::98416 ]-> [CA_RESP] p1=0x3eb5d328 p2=0x98f2710 p3=0x0
+[CA_RESP] param2 dump:
++000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
++010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
++020: 00 00 00 80 cd cc cc 3d b0 76 bd 44 01 00 00 00 
++030: 68 53 b3 3e 00 00 00 00 00 00 00 00 66 66 a6 3e 
+[CA_RESP] +0x10 (userId): 0x0
+[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
+[CA_RESP] p1=0x3eb5d328 p2=0x98f4860 p3=0x0
+[CA_RESP] param2 dump:
++000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
++010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
++020: 00 00 00 80 30 00 00 00 b0 76 bd 44 01 00 00 00 
++030: 68 53 b3 3e 00 00 00 00 00 00 00 00 33 05 00 00 
+[CA_RESP] +0x10 (userId): 0x0
+[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
 onnect
-[Main] Session 43 connected: 127.0.0.1:61786
+[Main] Session 43 connected: 127.0.0.1:61890
 [Main] S43: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3c 80 00 00  ............<...
 [Main] S43: Raw Blaze binary detected
@@ -54,7 +45,7 @@ onnect
 [Main] S43: -> Ignoring null/error packet (seq=60 flags=0x80)
 [Main] S43 disconnected
 [LOG] Saved: S43 disconnect
-[Main] Session 44 connected: 127.0.0.1:61787
+[Main] Session 44 connected: 127.0.0.1:61891
 [Main] S44: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3d 80 00 00  ............=...
 [Main] S44: Raw Blaze binary detected
@@ -62,7 +53,7 @@ onnect
 [Main] S44: -> Ignoring null/error packet (seq=61 flags=0x80)
 [Main] S44 disconnected
 [LOG] Saved: S44 disconnect
-[Main] Session 45 connected: 127.0.0.1:61788
+[Main] Session 45 connected: 127.0.0.1:61892
 [Main] S45: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3e 80 00 00  ............>...
 [Main] S45: Raw Blaze binary detected
@@ -70,7 +61,7 @@ onnect
 [Main] S45: -> Ignoring null/error packet (seq=62 flags=0x80)
 [Main] S45 disconnected
 [LOG] Saved: S45 disconnect
-[Main] Session 46 connected: 127.0.0.1:61789
+[Main] Session 46 connected: 127.0.0.1:61893
 [Main] S46: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00  ............?...
 [Main] S46: Raw Blaze binary detected
@@ -78,7 +69,7 @@ onnect
 [Main] S46: -> Ignoring null/error packet (seq=63 flags=0x80)
 [Main] S46 disconnected
 [LOG] Saved: S46 disconnect
-[Main] Session 47 connected: 127.0.0.1:61790
+[Main] Session 47 connected: 127.0.0.1:61894
 [Main] S47: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 40 80 00 00  ............@...
 [Main] S47: Raw Blaze binary detected
@@ -86,7 +77,7 @@ onnect
 [Main] S47: -> Ignoring null/error packet (seq=64 flags=0x80)
 [Main] S47 disconnected
 [LOG] Saved: S47 disconnect
-[Main] Session 48 connected: 127.0.0.1:61791
+[Main] Session 48 connected: 127.0.0.1:61895
 [Main] S48: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 41 80 00 00  ............A...
 [Main] S48: Raw Blaze binary detected
@@ -94,7 +85,7 @@ onnect
 [Main] S48: -> Ignoring null/error packet (seq=65 flags=0x80)
 [Main] S48 disconnected
 [LOG] Saved: S48 disconnect
-[Main] Session 49 connected: 127.0.0.1:61792
+[Main] Session 49 connected: 127.0.0.1:61896
 [Main] S49: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 42 80 00 00  ............B...
 [Main] S49: Raw Blaze binary detected
@@ -102,7 +93,7 @@ onnect
 [Main] S49: -> Ignoring null/error packet (seq=66 flags=0x80)
 [Main] S49 disconnected
 [LOG] Saved: S49 disconnect
-[Main] Session 50 connected: 127.0.0.1:61793
+[Main] Session 50 connected: 127.0.0.1:61897
 [Main] S50: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 43 80 00 00  ............C...
 [Main] S50: Raw Blaze binary detected
@@ -111,51 +102,51 @@ onnect
 
 --- DLL LOG (last 3000 chars) ---
 001473CE785
-[15:58:26.034] PATCHED: IsLoggedIntoEA -> true
-[15:58:26.034] PATCHED: IsLoggedIntoNetwork -> true
-[15:58:26.114] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[15:58:26.114] PATCHED: SDK gate -> always 1
-[15:58:26.126] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[15:58:26.126] PATCHED: Login vtable check -> return 1
-[15:58:26.126] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[15:58:26.126] LOGIN SilentLogin: already patched
-[15:58:26.126] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[15:58:26.126] LOGIN ExpressLogin: already patched
-[15:58:26.126] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[15:58:26.126] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[15:58:26.126] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[15:58:26.126] PREAUTH_HANDLER: Cave at 0000000000420000, 61 bytes
-[15:58:26.126] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000000420000)
-[15:58:26.126] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[15:58:26.126] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[15:58:26.126] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[15:58:26.126] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[15:58:26.126] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[15:58:26.126] PATCHED: FUN_145e280b0 (version compare) -> always match
-[15:58:26.282] PATCHED: Origin SDK check at 00000001470A8430
-[15:58:26.282] All patches in 672 ms
-[15:58:26.282] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[15:58:26.282] AUTH: Checking login gate globals...
-[15:58:26.282] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[15:58:26.282] AUTH: DAT_144b86bdf = 0 (error flag)
-[15:58:26.282] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[15:58:32.010] AUTH: Slot cleared at 5700 ms
-[15:58:32.010] AUTH: OnlineMgr=0x3EBE3E70
-[15:58:32.010] AUTH: slot=0x0 cave=0
-[15:58:32.010] AUTH: Using fake vtable (real not captured)
-[15:58:32.010] AUTH: Injected fake request 000000005D3C0000 into slot
-[15:58:37.011] AUTH: cave=1 slot=0x0
-[15:58:37.011] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[15:58:37.011] AUTH: req[+0xd8]=0x99C9D38 req[+0xe8]=1
-[15:58:37.011] AUTH: state=2. Auth ready.
-[15:58:37.011] AUTH: OnlineMgr+0xb10 = 0x3EBEA6E0
-[15:58:37.011] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBEA960
-[15:58:37.011] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[15:58:37.011] AUTH: Found 0 objects with vtables in BlazeHub
-[15:58:37.011] AUTH: BlazeHub(000000003EBEA960)+0x53f = 1
-[15:58:37.011] AUTH: Applying OSDK patches (post-load)...
-[15:58:37.011] PATCHED: GetProfileSync -> return 0 (post-load)
-[15:58:37.011] PATCHED: GetSettingSync -> return 0 (post-load)
-[15:58:37.011] PATCHED: SetPresence -> return 0 (post-load)
-[15:58:37.011] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[16:07:28.006] PATCHED: IsLoggedIntoEA -> true
+[16:07:28.006] PATCHED: IsLoggedIntoNetwork -> true
+[16:07:28.080] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[16:07:28.080] PATCHED: SDK gate -> always 1
+[16:07:28.091] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[16:07:28.091] PATCHED: Login vtable check -> return 1
+[16:07:28.091] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:07:28.091] LOGIN SilentLogin: already patched
+[16:07:28.091] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:07:28.091] LOGIN ExpressLogin: already patched
+[16:07:28.091] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[16:07:28.091] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[16:07:28.091] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[16:07:28.091] PREAUTH_HANDLER: Cave at 00000000009D0000, 61 bytes
+[16:07:28.091] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000009D0000)
+[16:07:28.091] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[16:07:28.091] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[16:07:28.091] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[16:07:28.091] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[16:07:28.091] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[16:07:28.091] PATCHED: FUN_145e280b0 (version compare) -> always match
+[16:07:28.236] PATCHED: Origin SDK check at 00000001470A8430
+[16:07:28.236] All patches in 641 ms
+[16:07:28.236] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:07:28.236] AUTH: Checking login gate globals...
+[16:07:28.236] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[16:07:28.236] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:07:28.236] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:07:33.963] AUTH: Slot cleared at 5700 ms
+[16:07:33.963] AUTH: OnlineMgr=0x3ECB3E70
+[16:07:33.963] AUTH: slot=0x0 cave=0
+[16:07:33.963] AUTH: Using fake vtable (real not captured)
+[16:07:33.963] AUTH: Injected fake request 000000005D400000 into slot
+[16:07:38.964] AUTH: cave=1 slot=0x0
+[16:07:38.964] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:07:38.964] AUTH: req[+0xd8]=0x99CA0B0 req[+0xe8]=1
+[16:07:38.964] AUTH: state=2. Auth ready.
+[16:07:38.964] AUTH: OnlineMgr+0xb10 = 0x3ECBA6E0
+[16:07:38.964] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ECBA960
+[16:07:38.964] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[16:07:38.964] AUTH: Found 0 objects with vtables in BlazeHub
+[16:07:38.964] AUTH: BlazeHub(000000003ECBA960)+0x53f = 1
+[16:07:38.964] AUTH: Applying OSDK patches (post-load)...
+[16:07:38.964] PATCHED: GetProfileSync -> return 0 (post-load)
+[16:07:38.964] PATCHED: GetSettingSync -> return 0 (post-load)
+[16:07:38.964] PATCHED: SetPresence -> return 0 (post-load)
+[16:07:38.964] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
