@@ -70,43 +70,31 @@ Server previously had error code at bytes 10-11 and msgId at wrong position.
 Fixed: msgId at bytes 10-12, error at bytes 14-15. All responses use byte13=0x20.
 This fixed RPC matching — FUN_146db5030 now finds pending RPCs correctly.
 
-## CURRENT BOTTLENECK — OSDK ACCOUNT CREATION SCREEN
+## CURRENT BOTTLENECK — POST-CREATEACCOUNT STATE ADVANCE
 
-After CreateAccount succeeds, the game shows an OSDK account creation UI with:
-- Broken localization strings (*TXT_OSDK_ACCOUNT_CREATION, *TXT_OSDK_CREATE_PERSONA)
-- Email, password, country, DOB fields (NOT interactable — loading spinner active)
-- Three radio buttons for data sharing preferences
+The PreAuth trampoline (Patch 8 v3) works — the original PreAuth handler runs with param_3=0,
+processes the decoded response, calls FUN_146e1e460 (Ping) and FUN_146e1c3f0 (Login processor).
+The game now does everything on one connection: PreAuth → Ping → FetchClientConfig ×6 → CreateAccount → Logout.
 
-### What triggers it:
-The DLL's CreateAccount bypass (Patch 16) calls the state transition:
-`(*(*(param_1[1]) + 8))(param_1[1], 1, 3)` — state 3 = OSDK account creation
+The problem: after CreateAccount, the game sends Logout instead of Login. The CreateAccount
+cave (Patch 16) just sets a flag and returns — it doesn't advance the state machine to Login.
 
-### What we've tried:
-- State 0: same OSDK screen
-- State 4: same OSDK screen  
-- No state transition (just RET): "EA servers not available" error
-- Returning TOS/legal content for cmds 0xf2, 0xf6, 0x2f: screen still stuck loading
-- Redirecting Nucleus URLs to local HTTP: no HTTP requests received (OSDK doesn't use HTTP)
-- Removing 0x8c6 flag: screen still appears
+The CreateAccount handler (FUN_146e151d0) needs to call the state transition to advance to Login.
+But the handler object's vtable is too small for vtable+0xb8 (reads garbage), and param_1[1]
+points to heap data, not the state machine.
 
-### Blaze commands sent during OSDK screen:
-1. `cmd=0x00F2` (GetLegalDocsInfo) — CTRY="", PTFM=4
-2. `cmd=0x00F6` (GetTermsOfServiceContent) — CPFT=4, CTRY="", FTCH=1, LANG="", TEXT=0
-3. `cmd=0x002F` (GetPrivacyPolicyContent) — same fields as 0xf6
-4. Then just Ping packets (type=4) every ~3 seconds
+### Key finding from Frida v31:
+- handler.vtable+0xb8 = 0x485455415f525245 (ASCII "ERE_AUTH" — garbage, not a function)
+- handler+0x08 = heap data, not state machine
+- The state machine is at rpc+0x20 (vtable 0x14389f938) but not accessible from the handler
 
-### The loading spinner:
-The UI shows a loading "17" icon, suggesting it's waiting for something.
-Possible causes:
-- Our TOS/legal responses have wrong TDF field names (we guessed LDVC/TCOL)
-- The game needs specific TDF fields to populate the UI and make it interactable
-- There's an additional request we're not seeing (maybe to Nucleus via HTTPS on port 443)
-
-### Possible solutions (next session):
-1. **Fix TOS/legal responses** — Use Frida to trace what the game does with our 0xf2/0xf6/0x2f responses. Find the correct TDF field names from Ghidra's response structure definitions.
-2. **DLL bypass the OSDK UI** — Find the function that displays the account creation screen and NOP it. The game should then fall through to Login.
-3. **Skip CreateAccount entirely** — Instead of patching FUN_146e151d0, patch the state machine to go directly from PreAuth to Login (skip CreateAccount + OSDK UI).
-4. **Fake the Login flow** — After CreateAccount, instead of calling the state transition, directly call the Login handler (FUN_146e1c3f0) with fake data.
+### Next steps:
+1. Fix the TDF encoding so CreateAccount response is decoded properly (UID non-zero at +0x13)
+   - This would let the ORIGINAL handler code run and call the state transition naturally
+   - The PreAuth TDF decode works (325 bytes consumed), so the encoder is partially correct
+   - CreateAccount TDF decode fails (0 bytes consumed) — need to investigate why
+2. OR: Find a way to access the state machine from the handler object
+3. OR: Go back to the OSDK account creation screen and make it functional
 
 ## DLL PATCHES (v106 + Patch 16)
 
