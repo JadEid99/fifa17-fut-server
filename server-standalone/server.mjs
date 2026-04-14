@@ -1540,10 +1540,29 @@ function handleFetchClientConfig(pkt) {
   const configs = {};
   
   if (cfid === 'OSDK_CORE') {
-    // Origin SDK core config
-    configs['OSDK_CORE_connIdleTimeout'] = '90s';
-    configs['OSDK_CORE_requestTimeout'] = '60s';
-  } else if (cfid === 'FIFA17_DATA' || cfid === 'ME3_DATA' || cfid.includes('DATA')) {
+    configs['connIdleTimeout'] = '90s';
+    configs['defaultRequestTimeout'] = '60s';
+    configs['pingPeriod'] = '15s';
+    configs['voipHeadsetUpdateRate'] = '1000';
+    configs['xlspConnectionIdleTimeout'] = '300';
+  } else if (cfid === 'OSDK_CLIENT') {
+    // Client config — version requirements and feature flags
+    configs['clientVersion'] = '3175939';
+    configs['minimumClientVersion'] = '0';
+    configs['updateUrl'] = '';
+    configs['forceUpdate'] = '0';
+  } else if (cfid === 'OSDK_NUCLEUS') {
+    // Nucleus (EA account) config
+    configs['nucleusConnect'] = 'https://accounts.ea.com';
+    configs['nucleusProxy'] = 'https://gateway.ea.com';
+    configs['nucleusPortal'] = 'https://signin.ea.com';
+  } else if (cfid === 'OSDK_WEBOFFER') {
+    // Web offer config
+    configs['offerUrl'] = 'http://127.0.0.1:8080/offer';
+  } else if (cfid === 'OSDK_ABUSE_REPORTING' || cfid === 'OSDK_XMS_ABUSE_REPORTING') {
+    // Abuse reporting config
+    configs['enabled'] = '0';
+  } else if (cfid.includes('DATA')) {
     // Game data config — URLs for services
     configs['GAW_SERVER_BASE_URL'] = 'http://127.0.0.1:8080/';
     configs['IMG_MNGR_BASE_URL'] = 'http://127.0.0.1:8080/content/';
