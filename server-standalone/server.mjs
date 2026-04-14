@@ -268,17 +268,13 @@ function decodeHeader(buf) {
   const component = buf.readUInt16BE(6);
   const command = buf.readUInt16BE(8);
   const error = buf.readUInt16BE(10);
-  const typeByte = buf[12];    // message type: 0x00=req, 0x10=resp, 0x20=notify, 0x30=error
-  const seqByte = buf[13];    // sequence/message number
+  const seqByte = buf[12];    // sequence/message number  
+  const flagByte = buf[13];   // flags/type byte
   const extId = buf.readUInt16BE(14);
-  // Map to our internal msgType values
   let msgType = 0x0000;
-  if (typeByte === 0x10) msgType = 0x1000;
-  else if (typeByte === 0x20) msgType = 0x2000;
-  else if (typeByte === 0x30) msgType = 0x3000;
-  const msgId = (typeByte << 8) | seqByte;
-  const flagByte = typeByte; // for logging
-  return { length, component, command, error, msgType, msgId, seqByte, flagByte, typeByte, extId };
+  if (flagByte & 0x80) msgType = 0x3000; // error/response
+  const msgId = (seqByte << 8) | flagByte;
+  return { length, component, command, error, msgType, msgId, seqByte, flagByte, extId };
 }
 function encodeHeader(h) {
   const buf = Buffer.alloc(HEADER_SIZE);
@@ -288,16 +284,14 @@ function encodeHeader(h) {
   buf.writeUInt16BE(h.command, 8);           // command
   buf.writeUInt16BE(h.error || 0, 10);       // error code
   if (h.notify) {
-    // Notifications: type=0x20 (notify), seq=0
-    buf[12] = 0x20;
+    buf[12] = 0x00;
     buf[13] = 0x00;
     buf.writeUInt16BE(0, 14);
   } else if (h.seqByte !== undefined) {
-    // Response: byte12=TYPE (0x10=response), byte13=SEQUENCE from request
-    // Game sends: byte12=0x00(req type), byte13=seq_number
-    // We respond: byte12=0x10(resp type), byte13=same seq_number
-    buf[12] = 0x10; // response type (BlazePK-rs style)
-    buf[13] = h.seqByte; // sequence number from request's byte12
+    // byte12 = sequence number (echo from request)
+    // byte13 = 0x80 for response (confirmed: game processes it)
+    buf[12] = h.seqByte;
+    buf[13] = 0x80;
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
@@ -1492,7 +1486,7 @@ function handleMainHttpRoute(path, bodyXml, session) {
 }
 
 function handlePreAuth(pkt) {
-  const variant = process.env.PREAUTH_VARIANT || 'full';
+  const variant = process.env.PREAUTH_VARIANT || 'empty_test';
   console.log(`[PreAuth] Variant: ${variant}`);
   
   // Decode and log the request body
@@ -1504,9 +1498,9 @@ function handlePreAuth(pkt) {
     console.log(`[PreAuth] TDF decode error: ${e.message}`);
   }
   
-  if (variant === 'empty') {
-    // Test 1: Empty body - tests if header format is OK
-    console.log('[PreAuth] Sending empty response');
+  if (variant === 'empty' || variant === 'empty_test') {
+    // Empty body - tests if the 0xA0 rejection is body-related or header-related
+    console.log('[PreAuth] Sending EMPTY response (header-only test)');
     return buildReply(pkt, Buffer.alloc(0));
   }
   
