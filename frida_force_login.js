@@ -1,69 +1,54 @@
 /*
- * Frida v15: Trace CreateAccount flow
- * 
- * We're past PreAuth. The game sends CreateAccount (cmd=0x0A) but
- * disconnects after our response. Need to understand why.
- *
- * Hooks:
- * 1. The Blaze RPC response dispatcher to see if our response is received
- * 2. The disconnect/error functions to see what triggers the disconnect
- * 3. The OSDK login flow to see where it fails
+ * Frida v16: Trace CreateAccount response handler
+ * Hook FUN_146e151d0 to see if param_3 is 0 (success) or error code
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== FIFA 17 Frida v15 - CreateAccount Trace === Base=' + base);
+console.log('=== Frida v16 - CreateAccount Response Trace ===');
 
-// Track all Auth component (0x0001) RPC calls and responses
-// Hook FUN_146e00070 area - Authentication component handler
-// Actually, let's hook more broadly:
-
-// 1. Hook the disconnect function to see WHY the game disconnects
-Interceptor.attach(addr(0x6f1f3b0), {
+// Hook FUN_146e151d0 - CreateAccount response handler
+Interceptor.attach(addr(0x6e151d0), {
     onEnter: function(args) {
-        var reason = args[1].toInt32();
-        console.log('[DISCONNECT] reason=' + reason + ' from:\n' + 
-            Thread.backtrace(this.context, Backtracer.ACCURATE)
-            .map(DebugSymbol.fromAddress).join('\n'));
-    }
-});
-
-// 2. Hook FUN_146f39a10 (handle disconnect result)
-Interceptor.attach(addr(0x6f39a10), {
-    onEnter: function(args) {
-        var reason = args[1].toInt32();
-        console.log('[DISCONNECT_RESULT] reason=' + reason);
-    }
-});
-
-// 3. Hook the OSDK error logging function FUN_1470dbe40
-Interceptor.attach(addr(0x70dbe40), {
-    onEnter: function(args) {
-        var errCode = args[0].toInt32();
-        try {
-            var file = args[2].readUtf8String();
-            var line = args[3].toInt32();
-            var func = args[4].readUtf8String();
-            console.log('[OSDK_ERROR] code=0x' + (errCode>>>0).toString(16) + ' ' + func + ' (' + file + ':' + line + ')');
-        } catch(e) {
-            console.log('[OSDK_ERROR] code=0x' + (errCode>>>0).toString(16));
+        var p3 = args[2].toInt32();
+        console.log('[CREATE_ACCOUNT_RESP] param3=0x' + (p3>>>0).toString(16) + (p3 === 0 ? ' (SUCCESS)' : ' (ERROR)'));
+        if (p3 === 0) {
+            var p2 = args[1];
+            try {
+                console.log('[CREATE_ACCOUNT_RESP] param2+0x10=' + p2.add(0x10).readU8());
+                console.log('[CREATE_ACCOUNT_RESP] param2+0x11=' + p2.add(0x11).readU8());
+                console.log('[CREATE_ACCOUNT_RESP] param2+0x12=' + p2.add(0x12).readU8());
+                console.log('[CREATE_ACCOUNT_RESP] param2+0x13=' + p2.add(0x13).readU8());
+            } catch(e) { console.log('[CREATE_ACCOUNT_RESP] read error: ' + e); }
         }
     }
 });
 
-// 4. Hook FUN_1470dbf30 (OSDK debug logging)
-Interceptor.attach(addr(0x70dbf30), {
+// Also hook the general RPC response callback to see ALL responses
+// FUN_146e1cf10 is our patched PreAuth handler - skip it
+// Hook FUN_146e00070 - Authentication component general handler
+Interceptor.attach(addr(0x6e00070), {
     onEnter: function(args) {
-        var level = args[0].toInt32();
-        try {
-            var msg = args[1].readUtf8String();
-            if (msg && msg.length > 0 && msg.length < 200) {
-                console.log('[OSDK_LOG] level=' + level + ' ' + msg);
-            }
-        } catch(e) {}
+        var p3 = args[2].toInt32();
+        console.log('[AUTH_HANDLER] param3=0x' + (p3>>>0).toString(16));
     }
 });
 
-// 5. Monitor connection state changes
+// Hook OSDK error logger to see what errors occur
+Interceptor.attach(addr(0x70dbe40), {
+    onEnter: function(args) {
+        var errCode = args[0].toInt32();
+        if (errCode !== 0) {
+            try {
+                var func = args[4].readUtf8String();
+                console.log('[OSDK_ERR] 0x' + (errCode>>>0).toString(16) + ' ' + func);
+            } catch(e) {
+                console.log('[OSDK_ERR] 0x' + (errCode>>>0).toString(16));
+            }
+        }
+    }
+});
+
+// Monitor connection state
 var lastState = -1;
 setInterval(function() {
     try {
@@ -71,11 +56,11 @@ setInterval(function() {
         if (!pOM.isNull()) {
             var state = pOM.add(0x13b8).readU32();
             if (state !== lastState) {
-                console.log('[STATE] connState changed: ' + lastState + ' -> ' + state);
+                console.log('[STATE] ' + lastState + ' -> ' + state);
                 lastState = state;
             }
         }
     } catch(e) {}
-}, 500);
+}, 1000);
 
-console.log('=== Hooks installed. Press Q to trigger connection. ===');
+console.log('=== Ready ===');
