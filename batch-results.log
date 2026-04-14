@@ -1,13 +1,9 @@
-=== S2 disconnect (2026-04-14 08:18:36) ===
+=== S3 disconnect (2026-04-14 08:18:39) ===
 
-[Main] Session 2 connected: 127.0.0.1:54323
-[Main] S2: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 01 00 46 00 00 09 00 00 00  .........F......
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0001 cmd=0x0046 len=0 msgId=2304
-[Main] S2: -> Login/Auth cmd=0x46
-[Main] S2: Sending response (164 bytes)
-[Main] S2: header: 00 00 00 94 00 00 00 01 00 46 00 00 09 20 00 00
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=2688
-[Main] S2: -> Ignoring null/error packet (seq=10 flags=0x80)
-[Main] S2 disconnected
+[Main] Session 3 connected: 127.0.0.1:54328
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=2944
+[Main] S3: -> Ignoring null/error packet (seq=11 flags=0x80)
+[Main] S3 disconnected
