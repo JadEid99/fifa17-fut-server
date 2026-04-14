@@ -1,11 +1,11 @@
-=== S16 sweep#15: b12=0x10(resp) b13=seq (2026-04-14 07:42:57) ===
+=== S17 sweep#16: b12=0x20(notify) b13=seq (2026-04-14 07:43:00) ===
 
-[Main] Session 16 connected: 127.0.0.1:53896
-[Main] S16: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 21 80 00 00  ............!...
-[Main] S16: Raw Blaze binary detected
-[Main] S16: comp=0x0000 cmd=0x0000 len=0 msgId=8576
-[Main] S16: -> Ignoring null/error packet (seq=33 flags=0x80)
-[Main] S16 disconnected
-[SWEEP] Test #15 was: b12=0x10(resp) b13=seq
-[SWEEP] Next test #16: b12=0x20(notify) b13=seq
+[Main] Session 17 connected: 127.0.0.1:53900
+[Main] S17: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 22 80 00 00  ............"...
+[Main] S17: Raw Blaze binary detected
+[Main] S17: comp=0x0000 cmd=0x0000 len=0 msgId=8832
+[Main] S17: -> Ignoring null/error packet (seq=34 flags=0x80)
+[Main] S17 disconnected
+[SWEEP] Test #16 was: b12=0x20(notify) b13=seq
+[SWEEP] Next test #17: echo+0x80 (baseline - game reads but rejects 0xA0)
