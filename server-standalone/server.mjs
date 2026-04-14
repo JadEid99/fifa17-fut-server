@@ -291,7 +291,7 @@ function encodeHeader(h) {
     // byte12 = sequence number (echo from request)
     // byte13 = 0x80 for response (confirmed: game processes it)
     buf[12] = h.seqByte;
-    buf[13] = 0x80;
+    buf[13] = 0x40; // try 0x40 as success response flag (0x80 caused 0xA0 rejection)
   } else {
     buf[12] = 0x10; // fallback: BlazePK response type
     buf[13] = h.error ? 0x80 : 0x00;
@@ -1486,7 +1486,7 @@ function handleMainHttpRoute(path, bodyXml, session) {
 }
 
 function handlePreAuth(pkt) {
-  const variant = process.env.PREAUTH_VARIANT || 'empty_test';
+  const variant = process.env.PREAUTH_VARIANT || 'full';
   console.log(`[PreAuth] Variant: ${variant}`);
   
   // Decode and log the request body
