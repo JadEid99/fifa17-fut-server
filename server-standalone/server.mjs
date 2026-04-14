@@ -1522,39 +1522,48 @@ function handleMainHttpRoute(path, bodyXml, session) {
 }
 
 function handleCreateAccount(session, pkt) {
-  console.log('[CreateAccount] Creating account for session ' + session.id);
+  // Decode the request to get the auth token
+  let authToken = 'unknown';
+  try {
+    const decoded = decodeTdf(pkt.body);
+    const authLine = decoded.lines.find(l => l.includes('AUTH'));
+    if (authLine) {
+      const match = authLine.match(/"([^"]+)"/);
+      if (match) authToken = match[1];
+    }
+  } catch(e) {}
   
-  // The game sends a CreateAccount request with persona details.
-  // We respond with a full session including player ID, persona, session key.
-  // Based on PocketRelay's Login response format.
+  console.log('[CreateAccount] Auth token: ' + authToken);
+  console.log('[CreateAccount] Creating session for persona ' + session.personaId);
+  
+  // Response format based on PocketRelay's authentication response
   const enc = new TdfEncoder();
-  enc.writeInteger('AGUP', 0);
-  enc.writeString('LDHT', '');
-  enc.writeInteger('NTOS', 0);
-  enc.writeString('PCTK', 'FakeAuthToken_FIFA17_' + session.id);
-  enc.writeString('PRIV', '');
-  enc.writeStructStart('SESS');
+  enc.writeInteger('AGUP', 0);       // Age up required (0 = no)
+  enc.writeString('LDHT', '');        // Legal docs hash
+  enc.writeInteger('NTOS', 0);       // Need TOS (0 = no)
+  enc.writeString('PCTK', authToken); // Echo back the auth token
+  enc.writeString('PRIV', '');        // Privacy policy
+  enc.writeStructStart('SESS');       // Session data
   enc.writeInteger('BUID', session.nucleusId);
-  enc.writeInteger('FRST', 0);
-  enc.writeString('KEY ', 'SessionKey_' + session.id);
-  enc.writeInteger('LLOG', 0);
+  enc.writeInteger('FRST', 0);       // First login (0 = no)
+  enc.writeString('KEY ', 'SessionKey_' + session.id + '_' + Date.now());
+  enc.writeInteger('LLOG', Math.floor(Date.now() / 1000)); // Last login timestamp
   enc.writeString('MAIL', 'player' + session.id + '@fut.local');
-  enc.writeStructStart('PDTL');
+  enc.writeStructStart('PDTL');       // Persona details
   enc.writeString('DSNM', session.displayName);
-  enc.writeInteger('LAST', 0);
+  enc.writeInteger('LAST', Math.floor(Date.now() / 1000));
   enc.writeInteger('PID ', session.personaId);
-  enc.writeInteger('STAS', 0);
+  enc.writeInteger('STAS', 0);       // Status (0 = active)
   enc.writeInteger('XREF', 0);
-  enc.writeInteger('XTYP', 0);
+  enc.writeInteger('XTYP', 0);       // External type (0 = none)
   enc.writeStructEnd(); // PDTL
   enc.writeInteger('UID ', session.nucleusId);
   enc.writeStructEnd(); // SESS
-  enc.writeInteger('SPAM', 0);
-  enc.writeString('THST', '');
-  enc.writeString('TSUI', '');
-  enc.writeString('TURI', '');
+  enc.writeInteger('SPAM', 0);       // Spam flag
+  enc.writeString('THST', '');        // TOS host
+  enc.writeString('TSUI', '');        // TOS UI
+  enc.writeString('TURI', '');        // TOS URI
   
-  console.log('[CreateAccount] Responding with session (personaId=' + session.personaId + ', nucleusId=' + session.nucleusId + ')');
   return buildReply(pkt, enc.build());
 }
 
