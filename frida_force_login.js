@@ -1,65 +1,76 @@
 /*
- * Frida v26: Trace the state machine advance function (vtable+0x08)
- * to see what it does with state=3 and find the OSDK UI function to bypass.
+ * Frida v27: Hook our DLL cave to see what param_1[1] actually is
+ * and what the vtable+0x08 call does.
+ * 
+ * Our cave is at a dynamically allocated address. We can find it by
+ * hooking FUN_146e151d0 (which is now a JMP to our cave).
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v26: State Machine Trace ===');
+console.log('=== Frida v27: Cave Runtime Trace ===');
 
-// The CreateAccount cave calls: (*(*(param_1[1]) + 8))(param_1[1], 1, 3)
-// param_1[1] is the Login state machine object with vtable 0x14389f938
-// vtable+0x08 is the advance function
-// Let's hook it to see what it does
+// Read the cave address from the patched FUN_146e151d0
+// The patch is: MOV RAX, cave_addr (48 B8 xx xx xx xx xx xx xx xx) / JMP RAX (FF E0)
+var patchSite = addr(0x6e151d0);
+var byte0 = patchSite.readU8();
+console.log('[INIT] FUN_146e151d0 byte0=0x' + byte0.toString(16));
 
-// Hook the vtable+0x08 function for the Login state machine
-// vtable at 0x14389f938, entry at +0x08 = 0x14389f940
-// Read the function pointer from the vtable
-var loginVtable = ptr('0x14389f938');
-var advanceFnPtr = loginVtable.add(0x08).readPointer();
-console.log('[INIT] Login vtable+0x08 -> ' + advanceFnPtr);
-
-Interceptor.attach(advanceFnPtr, {
-    onEnter: function(args) {
-        var self = args[0];
-        var success = args[1].toInt32();
-        var nextState = args[2].toInt32();
-        console.log('[STATE-ADVANCE] self=' + self + ' success=' + success + ' nextState=' + nextState);
-        
-        // Dump the state machine object
-        try {
-            var vtable = self.readPointer();
-            console.log('[STATE-ADVANCE] vtable=' + vtable);
-            // Read current state info
-            console.log('[STATE-ADVANCE] +0x10=' + self.add(0x10).readU32());
-            console.log('[STATE-ADVANCE] +0x14=' + self.add(0x14).readS64());
-        } catch(e) {}
-    }
-});
-
-// Also hook FUN_146e1c3f0 (Login type processor) to see if it ever gets called
-Interceptor.attach(addr(0x6e1c3f0), {
-    onEnter: function(args) {
-        console.log('[LOGIN-PROC] FUN_146e1c3f0 CALLED! param1=' + args[0] + ' param2=' + args[1]);
-    }
-});
-
-// Hook FUN_146e1e460 (post_PreAuth) to see when it fires
-Interceptor.attach(addr(0x6e1e460), {
-    onEnter: function(args) {
-        console.log('[POST-PREAUTH] FUN_146e1e460 called');
-    }
-});
-
-// Hook any function that might be the OSDK UI display
-// The OSDK UI is likely triggered by a callback registered for state 3
-// Let's trace calls in the 146e15xxx-146e16xxx range after the state advance
-var callCount = 0;
-[0x6e15320, 0x6e15bd0, 0x6e15eb0, 0x6e15fe0].forEach(function(off) {
-    Interceptor.attach(addr(off), {
+if (byte0 === 0x48) {
+    // Patched — read the cave address
+    var caveAddr = patchSite.add(2).readPointer();
+    console.log('[INIT] Cave at ' + caveAddr);
+    
+    // Hook the cave entry to trace param_1
+    Interceptor.attach(caveAddr, {
         onEnter: function(args) {
-            console.log('[FN-' + off.toString(16) + '] called, arg0=' + args[0]);
+            var param1 = args[0]; // RCX = param_1
+            console.log('[CAVE] param_1=' + param1);
+            
+            try {
+                // Read param_1[1] (offset 0x08)
+                var p1_1 = param1.add(0x08).readPointer();
+                console.log('[CAVE] param_1[1]=' + p1_1);
+                
+                if (!p1_1.isNull()) {
+                    // Read vtable of param_1[1]
+                    var vtable = p1_1.readPointer();
+                    console.log('[CAVE] param_1[1].vtable=' + vtable);
+                    
+                    // Read vtable+0x08
+                    var advanceFn = vtable.add(0x08).readPointer();
+                    console.log('[CAVE] vtable+0x08=' + advanceFn);
+                    
+                    // Dump first 8 vtable entries
+                    for (var i = 0; i < 8; i++) {
+                        var entry = vtable.add(i * 8).readPointer();
+                        console.log('[CAVE] vtable[' + i + '] = ' + entry);
+                    }
+                    
+                    // Dump param_1 object (first 0x40 bytes)
+                    var dump = new Uint8Array(param1.readByteArray(0x40));
+                    var hex = Array.from(dump).map(function(b){return ('0'+b.toString(16)).slice(-2)}).join(' ');
+                    console.log('[CAVE] param_1 dump: ' + hex);
+                }
+            } catch(e) {
+                console.log('[CAVE] Error: ' + e);
+            }
         }
     });
+} else {
+    console.log('[INIT] FUN_146e151d0 NOT patched (byte0 != 0x48)');
+    // Hook the original function
+    Interceptor.attach(patchSite, {
+        onEnter: function(args) {
+            console.log('[CA-ORIG] param1=' + args[0] + ' param2=' + args[1] + ' param3=' + args[2]);
+        }
+    });
+}
+
+// Also hook FUN_146e1c3f0 (Login type processor)
+Interceptor.attach(addr(0x6e1c3f0), {
+    onEnter: function(args) {
+        console.log('[LOGIN-PROC] CALLED!');
+    }
 });
 
 console.log('=== Ready ===');
