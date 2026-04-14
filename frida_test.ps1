@@ -49,7 +49,7 @@ Write-Host "[BLAZE] Starting Blaze server..." -ForegroundColor Yellow
 $blazeJob = Start-Job -ScriptBlock { 
     param($r)
     $env:PREAUTH_VARIANT="full"
-    $env:REDIRECT_SECURE="1"
+    $env:REDIRECT_SECURE="0"
     node --openssl-legacy-provider --security-revert=CVE-2023-46809 "$r\server-standalone\server.mjs" 2>&1 
 } -ArgumentList $repoRoot
 Start-Sleep 3
@@ -67,15 +67,10 @@ if (-not $fifaProc) { Write-Host "[ERROR] FIFA17 not running!" -ForegroundColor 
 $fifaPid = $fifaProc.Id
 Write-Host "[FRIDA] Attaching to FIFA17 PID $fifaPid..." -ForegroundColor Yellow
 
-# Run Frida in background, capture output to file directly
+# Run Frida in background, pipe output directly to file
 $fridaLogFile = "$repoRoot\frida_live.log"
 Remove-Item $fridaLogFile -Force -EA SilentlyContinue
-$fridaJob = Start-Job -ScriptBlock {
-    param($fpid, $script, $logPath)
-    $output = frida -p $fpid -l $script 2>&1 | Out-String
-    Set-Content $logPath $output -Encoding UTF8
-    return $output
-} -ArgumentList $fifaPid, $fridaScript, $fridaLogFile
+$fridaProc = Start-Process -FilePath "frida" -ArgumentList "-p $fifaPid -l `"$fridaScript`"" -RedirectStandardOutput $fridaLogFile -RedirectStandardError "$repoRoot\frida_err.log" -PassThru -NoNewWindow
 Start-Sleep 5
 
 # Navigate menus (Frida is already attached)
@@ -97,16 +92,20 @@ Start-Sleep 90
 # Collect Frida output
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow
 Stop-Job $fridaJob -EA SilentlyContinue
-$fridaOut = (Receive-Job $fridaJob 2>&1 | Out-String).Trim()
-Remove-Job $fridaJob -EA SilentlyContinue
+# Stop Frida
+Stop-Process -Id $fridaProc.Id -Force -EA SilentlyContinue
+Start-Sleep 2
 
-# Also try to read from the log file
+# Read Frida output from file
+$fridaOut = ""
 if (Test-Path $fridaLogFile) {
-    $fridaFileOut = Get-Content $fridaLogFile -Raw
-    if ($fridaFileOut.Length -gt $fridaOut.Length) {
-        $fridaOut = $fridaFileOut
-    }
+    $fridaOut = Get-Content $fridaLogFile -Raw
 }
+$fridaErr = ""
+if (Test-Path "$repoRoot\frida_err.log") {
+    $fridaErr = Get-Content "$repoRoot\frida_err.log" -Raw
+}
+if ($fridaErr.Length -gt $fridaOut.Length) { $fridaOut = $fridaErr }
 
 # Collect Blaze output
 $blazeOut = (Receive-Job $blazeJob 2>&1 | Out-String).Trim()
