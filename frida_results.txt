@@ -14,20 +14,6 @@ Attaching...
 [FIELD1_NAME] error: Error: can't decode byte 0x00 in position 11
 [FIELD2_NAME] error: Error: can't decode byte 0x00 in position 6
 === Ready ===
-[Local::PID::98416 ]-> [CA_RESP] p1=0x3eb5d328 p2=0x98f2710 p3=0x0
-[CA_RESP] param2 dump:
-+000: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 
-+010: 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 
-+020: 00 00 00 80 cd cc cc 3d b0 76 bd 44 01 00 00 00 
-+030: 68 53 b3 3e 00 00 00 00 00 00 00 00 66 66 a6 3e 
-[CA_RESP] +0x10 (userId): 0x0
-[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
-[CA_RESP] p1=0x3eb5d328 p2=0x98f4860 p3=0x0
-[CA_RESP] param2 dump:
-+000: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 
-+010: 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 
-+020: 00 00 00 80 30 00 00 00 b0 76 bd 44 01 00 00 00 
-+030: 68 53 b3 3e 00 00 00 00 00 00 00 00 33 05 00 00 
-[CA_RESP] +0x10 (userId): 0x0
-[CA_RESP] +0x18 (pnam ptr): 0x14389a0a8
+[Local::PID::100156 ]-> [CA_RESP] p1=0x3eacd328 p2=0x0 p3=0x40050000
+[CA_RESP] p1=0x3eacd328 p2=0x0 p3=0x40050000
 
