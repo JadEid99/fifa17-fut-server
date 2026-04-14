@@ -1,225 +1,73 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-14 14:54:08) ===
+﻿=== LSX + connect() hook test (2026-04-14 15:00:47) ===
+BLAZE RESULT: UNKNOWN
+LSX RESULT: NO_ACTIVITY
 
---- FRIDA OUTPUT (last 5000 chars) ---
-ntered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
-[OSDK_LOG] level=67108864 OriginUpdate entered
+--- BLAZE SERVER LOG ---
+=== FIFA 17 FUT Private Server ===
 
 
---- BLAZE SERVER LOG (last 3000 chars) ---
-onnect
-[Main] Session 43 connected: 127.0.0.1:61066
-[Main] S43: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3c 80 00 00  ............<...
-[Main] S43: Raw Blaze binary detected
-[Main] S43: comp=0x0000 cmd=0x0000 len=0 msgId=15488
-[Main] S43: -> Ignoring null/error packet (seq=60 flags=0x80)
-[Main] S43 disconnected
-[LOG] Saved: S43 disconnect
-[Main] Session 44 connected: 127.0.0.1:61067
-[Main] S44: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3d 80 00 00  ............=...
-[Main] S44: Raw Blaze binary detected
-[Main] S44: comp=0x0000 cmd=0x0000 len=0 msgId=15744
-[Main] S44: -> Ignoring null/error packet (seq=61 flags=0x80)
-[Main] S44 disconnected
-[LOG] Saved: S44 disconnect
-[Main] Session 45 connected: 127.0.0.1:61068
-[Main] S45: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3e 80 00 00  ............>...
-[Main] S45: Raw Blaze binary detected
-[Main] S45: comp=0x0000 cmd=0x0000 len=0 msgId=16000
-[Main] S45: -> Ignoring null/error packet (seq=62 flags=0x80)
-[Main] S45 disconnected
-[LOG] Saved: S45 disconnect
-[Main] Session 46 connected: 127.0.0.1:61069
-[Main] S46: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00  ............?...
-[Main] S46: Raw Blaze binary detected
-[Main] S46: comp=0x0000 cmd=0x0000 len=0 msgId=16256
-[Main] S46: -> Ignoring null/error packet (seq=63 flags=0x80)
-[Main] S46 disconnected
-[LOG] Saved: S46 disconnect
-[Main] Session 47 connected: 127.0.0.1:61070
-[Main] S47: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 40 80 00 00  ............@...
-[Main] S47: Raw Blaze binary detected
-[Main] S47: comp=0x0000 cmd=0x0000 len=0 msgId=16512
-[Main] S47: -> Ignoring null/error packet (seq=64 flags=0x80)
-[Main] S47 disconnected
-[LOG] Saved: S47 disconnect
-[Main] Session 48 connected: 127.0.0.1:61071
-[Main] S48: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 41 80 00 00  ............A...
-[Main] S48: Raw Blaze binary detected
-[Main] S48: comp=0x0000 cmd=0x0000 len=0 msgId=16768
-[Main] S48: -> Ignoring null/error packet (seq=65 flags=0x80)
-[Main] S48 disconnected
-[LOG] Saved: S48 disconnect
-[Main] Session 49 connected: 127.0.0.1:61072
-[Main] S49: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 42 80 00 00  ............B...
-[Main] S49: Raw Blaze binary detected
-[Main] S49: comp=0x0000 cmd=0x0000 len=0 msgId=17024
-[Main] S49: -> Ignoring null/error packet (seq=66 flags=0x80)
-[Main] S49 disconnected
-[LOG] Saved: S49 disconnect
-[Main] Session 50 connected: 127.0.0.1:61073
-[Main] S50: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 43 80 00 00  ............C...
-[Main] S50: Raw Blaze binary detected
-[Main] S50: comp=0x0000 cmd=0x0000 len=0 msgId=17280
-[Main] S50: -> Ignoring null/error packet (seq=67 flags=0x80)
+Waiting for FIFA 17...
+hosts: 127.0.0.1 winter15.gosredirector.ea.com
 
---- DLL LOG (last 3000 chars) ---
-51972
-[14:51:06.788] PATCHED: cert bypass at 000000014613244B
-[14:51:06.965] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[14:51:06.965] PATCHED: FUN_1470db3c0 body -> fake auth code
-[14:51:07.008] PATCHED: auth flag at 00000001473CE785
-[14:51:07.055] PATCHED: IsLoggedIntoEA -> true
-[14:51:07.055] PATCHED: IsLoggedIntoNetwork -> true
-[14:51:07.129] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[14:51:07.129] PATCHED: SDK gate -> always 1
-[14:51:07.141] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[14:51:07.141] PATCHED: Login vtable check -> return 1
-[14:51:07.141] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[14:51:07.141] LOGIN SilentLogin: already patched
-[14:51:07.141] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[14:51:07.141] LOGIN ExpressLogin: already patched
-[14:51:07.141] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[14:51:07.141] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[14:51:07.141] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[14:51:07.141] PREAUTH_HANDLER: Cave at 0000000003220000, 61 bytes
-[14:51:07.141] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000003220000)
-[14:51:07.141] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[14:51:07.141] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[14:51:07.141] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[14:51:07.141] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[14:51:07.141] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[14:51:07.141] PATCHED: FUN_145e280b0 (version compare) -> always match
-[14:51:07.298] PATCHED: Origin SDK check at 00000001470A8430
-[14:51:07.298] All patches in 672 ms
-[14:51:07.298] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[14:51:07.298] AUTH: Checking login gate globals...
-[14:51:07.298] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[14:51:07.298] AUTH: DAT_144b86bdf = 0 (error flag)
-[14:51:07.298] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[14:51:13.032] AUTH: Slot cleared at 5700 ms
-[14:51:13.032] AUTH: OnlineMgr=0x3EC83E70
-[14:51:13.032] AUTH: slot=0x0 cave=0
-[14:51:13.032] AUTH: Using fake vtable (real not captured)
-[14:51:13.032] AUTH: Injected fake request 000000005D440000 into slot
-[14:51:18.033] AUTH: cave=1 slot=0x0
-[14:51:18.033] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[14:51:18.033] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[14:51:18.033] AUTH: state=2. Auth ready.
-[14:51:18.033] AUTH: OnlineMgr+0xb10 = 0x3EC8A6E0
-[14:51:18.033] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC8A960
-[14:51:18.033] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[14:51:18.033] AUTH: Found 0 objects with vtables in BlazeHub
-[14:51:18.033] AUTH: BlazeHub(000000003EC8A960)+0x53f = 1
-[14:51:18.033] AUTH: Starting continuous +0x53f flag enforcer...
+[Redirector-Raw] Listening on port 42230
+[Main] Blaze server on port 10041
+[HTTP] on port 8080
+[Catch] Listening on port 443
+[Catch] Listening on port 9988
+[Catch] Listening on port 17502
+[Catch] Listening on port 80
+[Catch] Listening on port 9946
+
+--- LSX SERVER LOG ---
+[12:59:23.874] [LSX] === LSX Origin SDK Server ===
+[12:59:23.876] [LSX] Mode: STANDALONE (replacing STP)
+[12:59:23.876] [LSX] Listening on port 4218
+[12:59:23.876] [LSX] Waiting for game connection...
+
+--- DLL LOG ---
+[14:59:26.620] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[14:59:26.620] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[14:59:26.620] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[14:59:26.621] PID: 104716
+[14:59:26.784] PATCHED: cert bypass at 000000014613244B
+[14:59:26.957] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[14:59:26.957] PATCHED: FUN_1470db3c0 body -> fake auth code
+[14:59:27.001] PATCHED: auth flag at 00000001473CE785
+[14:59:27.046] PATCHED: IsLoggedIntoEA -> true
+[14:59:27.046] PATCHED: IsLoggedIntoNetwork -> true
+[14:59:27.128] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[14:59:27.128] PATCHED: SDK gate -> always 1
+[14:59:27.140] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[14:59:27.140] PATCHED: Login vtable check -> return 1
+[14:59:27.140] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[14:59:27.140] LOGIN SilentLogin: already patched
+[14:59:27.140] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[14:59:27.140] LOGIN ExpressLogin: already patched
+[14:59:27.140] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[14:59:27.140] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[14:59:27.140] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[14:59:27.140] PREAUTH_HANDLER: Cave at 00000000009D0000, 61 bytes
+[14:59:27.140] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000009D0000)
+[14:59:27.140] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[14:59:27.140] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[14:59:27.140] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[14:59:27.140] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[14:59:27.140] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[14:59:27.140] PATCHED: FUN_145e280b0 (version compare) -> always match
+[14:59:27.140] OSDK_GetProfileSync: addr=00000001470DA970 bytes=48 89 5C 24
+[14:59:27.140] PATCHED: GetProfileSync -> return 0
+[14:59:27.140] OSDK_GetSettingSync: addr=00000001470DAA30 bytes=48 89 5C 24
+[14:59:27.140] PATCHED: GetSettingSync -> return 0
+[14:59:27.140] OSDK_SetPresence: addr=00000001470DB760 bytes=48 89 5C 24
+[14:59:27.140] PATCHED: SetPresence -> return 0
+[14:59:27.297] PATCHED: Origin SDK check at 00000001470A8430
+[14:59:27.297] All patches in 687 ms
+[14:59:27.297] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[14:59:27.297] AUTH: Checking login gate globals...
+[14:59:27.297] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[14:59:27.297] AUTH: DAT_144b86bdf = 0 (error flag)
+[14:59:27.297] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[14:59:58.471] AUTH: OnlineMgr=0x0
+[14:59:58.471] AUTH: NULL!
+[14:59:58.471] AUTH: Starting continuous +0x53f flag enforcer...
 
