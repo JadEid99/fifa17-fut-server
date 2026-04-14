@@ -1,11 +1,11 @@
-=== S19 sweep#18: echo+0x10 (BlazePK response type) (2026-04-14 07:43:06) ===
+=== S20 sweep#19: echo+0x20 (BlazePK notify type) (2026-04-14 07:43:09) ===
 
-[Main] Session 19 connected: 127.0.0.1:53909
-[Main] S19: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 24 80 00 00  ............$...
-[Main] S19: Raw Blaze binary detected
-[Main] S19: comp=0x0000 cmd=0x0000 len=0 msgId=9344
-[Main] S19: -> Ignoring null/error packet (seq=36 flags=0x80)
-[Main] S19 disconnected
-[SWEEP] Test #18 was: echo+0x10 (BlazePK response type)
-[SWEEP] Next test #19: echo+0x20 (BlazePK notify type)
+[Main] Session 20 connected: 127.0.0.1:53914
+[Main] S20: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 25 80 00 00  ............%...
+[Main] S20: Raw Blaze binary detected
+[Main] S20: comp=0x0000 cmd=0x0000 len=0 msgId=9600
+[Main] S20: -> Ignoring null/error packet (seq=37 flags=0x80)
+[Main] S20 disconnected
+[SWEEP] Test #19 was: echo+0x20 (BlazePK notify type)
+[SWEEP] Next test #20: echo+0x30 (BlazePK error type)
