@@ -10,10 +10,20 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v18 ===
-[FIELD1_NAME] error: Error: can't decode byte 0x00 in position 11
-[FIELD2_NAME] error: Error: can't decode byte 0x00 in position 6
-=== Ready ===
-[Local::PID::100156 ]-> [CA_RESP] p1=0x3eacd328 p2=0x0 p3=0x40050000
-[CA_RESP] p1=0x3eacd328 p2=0x0 p3=0x40050000
+=== Frida v19 - RPC Response Matching Trace ===
+=== Ready. Press Q to trigger connection. ===
+[Local::PID::101848 ]-> [RECV_DATA] first 16 bytes: 18 de 8a 43 01 00 00 00 30 de 8a 43 01 00 00 00
+[RECV_DATA] returned: 0x9774e01
+[RECV_DATA] first 16 bytes: 18 de 8a 43 01 00 00 00 30 de 8a 43 01 00 00 00
+[RECV_DATA] returned: 0x97c8d01
+[FRAME_IN] header: f0 7f a6 3e 00 00 00 00 38 7b a6 3e 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[FRAME_OUT] comp=0x0 cmd=0xa050
+[FRAME_IN] header: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 fe ff ff ff ff ff ff ff
+[FRAME_OUT] comp=0x0 cmd=0xa131
+[FRAME_IN] header: 03 00 00 00 00 00 00 00 00 80 a6 3e 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 51 00 00 00 00 00
+[FRAME_IN] header: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[RPC_COMPLETE] msgId=134217734 error=0x80050000
 
