@@ -333,13 +333,6 @@ function encodeHeader(h) {
   buf.writeUInt16BE(h.extId || 0, 14);
   return buf;
 }
-  } else {
-    buf[12] = 0x10; // fallback: BlazePK response type
-    buf[13] = h.error ? 0x80 : 0x00;
-  }
-  buf.writeUInt16BE(h.extId || 0, 14);      // extended id
-  return buf;
-}
 function readPacket(buf) {
   if (buf.length < HEADER_SIZE) return null;
   const header = decodeHeader(buf);
