@@ -1,146 +1,81 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-14 18:07:17) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-14 18:14:55) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
-0x3eb08008 p3=0x9
-[LOOKUP] result: 0x9732f80
-[CA] param3=0x0 SUCCESS
-[CA] +0x10 userId=0
-[CA] +0x13 byte=0
-[CA] +0x18 pnam_ptr=0x14389a0a8
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x14
-[LOOKUP] result: 0x99a3180
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x1f
-[LOOKUP] result: 0x9732a80
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x20
-[LOOKUP] result: 0x9733ca0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x21
-[LOOKUP] result: 0x9732bc0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x22
-[LOOKUP] result: 0x9732b20
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x23
-[LOOKUP] result: 0x9732ee0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x24
-[LOOKUP] result: 0x9732d00
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1aa0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1b28 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1bb0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1c38 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1cc0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1d48 p3=0x3
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x25
-[LOOKUP] result: 0x9732d00
-[CA] param3=0x0 SUCCESS
-[CA] +0x10 userId=0
-[CA] +0x13 byte=0
-[CA] +0x18 pnam_ptr=0x14389a0a8
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x2f
-[LOOKUP] result: 0x99a4b00
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
+2 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55
+[RPC-DECODE] err=0 bodyLen=85 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55 72 6c 00 01 00 0c 66 6f 72 63 65 55 70 64 61 74 65 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=124
+[BUF-INIT] data: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68
+[RPC-DECODE] err=0 bodyLen=124 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68 74 74 70 73 3a 2f 2f 67 61 74 65 77 61 79 2e 65 61 2e 63 6f 6d 00 0e 6e 75 63 6c 65 75 73 50 6f 72 74 61 6c 00 16 68 74 74 70 73 3a 2f 2f 73 69 67 6e 69 6e 2e 65 61 2e 63 6f 6d 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=46
+[BUF-INIT] data: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] err=0 bodyLen=46 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=23
+[BUF-INIT] data: c2 e8 6d 01 09 50 6c 61 79 65 72 32 31 00 d6 99 00 00 95 d0 ac f3 0e
+[RPC-DECODE] err=0 bodyLen=23 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: c2 e8 6d 01 09 50 6c 61 79 65 72 32 31 00 d6 99 00 00 95 d0 ac f3 0e
+[RPC-DECODE] rpc vtable=0x14389f2b8
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[CA] param2=0x98f4790 param3=0x0 SUCCESS
+[CA] +0x10=0 +0x11=0 +0x12=0 +0x13=0
+[CA] param2 dump: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 00 00 00 80 30 00 00 00
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x98f4790
+[RPC-DECODE] resp+0x10=0
+[RPC-DECODE] resp+0x13=0
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x14389a0a8
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=151
+[BUF-INIT] data: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 9e d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 33 30 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 33 30 40 66 75 74 2e
+[RPC-DECODE] err=0 bodyLen=151 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 9e d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 33 30 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 33 30 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 09 50 6c 61 79 65 72 33 30 00 b2 1c f4 00 00 c2 99 00 00 9e a8 d6 b9 07 cf 48 73 00 00 e3 29 66 00 00 e3 4e 70 00 00 00 d6 99 00 00 9e d0 ac f3 0e 00 cf 08 6d 00 00 d2 8c f4 01 01 00 d3 3d 69 01 01 00 d3 5c a9 01 01 00
+[RPC-DECODE] rpc vtable=0x14389ff48
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x0
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
  S42 disconnected
 [LOG] Saved: S42 disconnect
-[Main] Session 43 connected: 127.0.0.1:62831
+[Main] Session 43 connected: 127.0.0.1:62907
 [Main] S43: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3c 80 00 00  ............<...
 [Main] S43: Raw Blaze binary detected
@@ -148,7 +83,7 @@
 [Main] S43: -> Ignoring null/error packet (msgId=60 type=4)
 [Main] S43 disconnected
 [LOG] Saved: S43 disconnect
-[Main] Session 44 connected: 127.0.0.1:62832
+[Main] Session 44 connected: 127.0.0.1:62908
 [Main] S44: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3d 80 00 00  ............=...
 [Main] S44: Raw Blaze binary detected
@@ -156,7 +91,7 @@
 [Main] S44: -> Ignoring null/error packet (msgId=61 type=4)
 [Main] S44 disconnected
 [LOG] Saved: S44 disconnect
-[Main] Session 45 connected: 127.0.0.1:62833
+[Main] Session 45 connected: 127.0.0.1:62909
 [Main] S45: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3e 80 00 00  ............>...
 [Main] S45: Raw Blaze binary detected
@@ -164,7 +99,7 @@
 [Main] S45: -> Ignoring null/error packet (msgId=62 type=4)
 [Main] S45 disconnected
 [LOG] Saved: S45 disconnect
-[Main] Session 46 connected: 127.0.0.1:62834
+[Main] Session 46 connected: 127.0.0.1:62910
 [Main] S46: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 3f 80 00 00  ............?...
 [Main] S46: Raw Blaze binary detected
@@ -172,7 +107,7 @@
 [Main] S46: -> Ignoring null/error packet (msgId=63 type=4)
 [Main] S46 disconnected
 [LOG] Saved: S46 disconnect
-[Main] Session 47 connected: 127.0.0.1:62835
+[Main] Session 47 connected: 127.0.0.1:62911
 [Main] S47: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 40 80 00 00  ............@...
 [Main] S47: Raw Blaze binary detected
@@ -180,7 +115,7 @@
 [Main] S47: -> Ignoring null/error packet (msgId=64 type=4)
 [Main] S47 disconnected
 [LOG] Saved: S47 disconnect
-[Main] Session 48 connected: 127.0.0.1:62836
+[Main] Session 48 connected: 127.0.0.1:62912
 [Main] S48: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 41 80 00 00  ............A...
 [Main] S48: Raw Blaze binary detected
@@ -188,7 +123,7 @@
 [Main] S48: -> Ignoring null/error packet (msgId=65 type=4)
 [Main] S48 disconnected
 [LOG] Saved: S48 disconnect
-[Main] Session 49 connected: 127.0.0.1:62837
+[Main] Session 49 connected: 127.0.0.1:62913
 [Main] S49: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 42 80 00 00  ............B...
 [Main] S49: Raw Blaze binary detected
@@ -196,7 +131,7 @@
 [Main] S49: -> Ignoring null/error packet (msgId=66 type=4)
 [Main] S49 disconnected
 [LOG] Saved: S49 disconnect
-[Main] Session 50 connected: 127.0.0.1:62838
+[Main] Session 50 connected: 127.0.0.1:62914
 [Main] S50: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 43 80 00 00  ............C...
 [Main] S50: Raw Blaze binary detected
@@ -205,51 +140,51 @@
 
 --- DLL LOG (last 3000 chars) ---
 001473CE785
-[18:04:15.899] PATCHED: IsLoggedIntoEA -> true
-[18:04:15.899] PATCHED: IsLoggedIntoNetwork -> true
-[18:04:15.993] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[18:04:15.993] PATCHED: SDK gate -> always 1
-[18:04:16.005] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[18:04:16.005] PATCHED: Login vtable check -> return 1
-[18:04:16.005] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[18:04:16.005] LOGIN SilentLogin: already patched
-[18:04:16.005] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[18:04:16.005] LOGIN ExpressLogin: already patched
-[18:04:16.005] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[18:04:16.005] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[18:04:16.005] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[18:04:16.005] PREAUTH_HANDLER: Cave at 0000000003220000, 61 bytes
-[18:04:16.005] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000003220000)
-[18:04:16.005] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[18:04:16.005] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[18:04:16.005] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[18:04:16.005] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[18:04:16.005] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[18:04:16.005] PATCHED: FUN_145e280b0 (version compare) -> always match
-[18:04:16.171] PATCHED: Origin SDK check at 00000001470A8430
-[18:04:16.171] All patches in 672 ms
-[18:04:16.171] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[18:04:16.171] AUTH: Checking login gate globals...
-[18:04:16.171] AUTH: DAT_144b86bf8 = 0x1E0000 (Origin SDK manager)
-[18:04:16.171] AUTH: DAT_144b86bdf = 0 (error flag)
-[18:04:16.171] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[18:04:21.904] AUTH: Slot cleared at 5700 ms
-[18:04:21.904] AUTH: OnlineMgr=0x3EC83E70
-[18:04:21.904] AUTH: slot=0x0 cave=0
-[18:04:21.904] AUTH: Using fake vtable (real not captured)
-[18:04:21.904] AUTH: Injected fake request 000000005D3A0000 into slot
-[18:04:26.904] AUTH: cave=1 slot=0x0
-[18:04:26.904] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[18:04:26.904] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[18:04:26.904] AUTH: state=2. Auth ready.
-[18:04:26.904] AUTH: OnlineMgr+0xb10 = 0x3EC8A6E0
-[18:04:26.904] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC8A960
-[18:04:26.904] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[18:04:26.904] AUTH: Found 0 objects with vtables in BlazeHub
-[18:04:26.904] AUTH: BlazeHub(000000003EC8A960)+0x53f = 1
-[18:04:26.904] AUTH: Applying OSDK patches (post-load)...
-[18:04:26.904] PATCHED: GetProfileSync -> return 0 (post-load)
-[18:04:26.904] PATCHED: GetSettingSync -> return 0 (post-load)
-[18:04:26.904] PATCHED: SetPresence -> return 0 (post-load)
-[18:04:26.904] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[18:11:53.424] PATCHED: IsLoggedIntoEA -> true
+[18:11:53.424] PATCHED: IsLoggedIntoNetwork -> true
+[18:11:53.499] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[18:11:53.499] PATCHED: SDK gate -> always 1
+[18:11:53.511] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[18:11:53.511] PATCHED: Login vtable check -> return 1
+[18:11:53.511] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:11:53.511] LOGIN SilentLogin: already patched
+[18:11:53.511] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[18:11:53.511] LOGIN ExpressLogin: already patched
+[18:11:53.511] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[18:11:53.511] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[18:11:53.511] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[18:11:53.511] PREAUTH_HANDLER: Cave at 0000000000400000, 61 bytes
+[18:11:53.511] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 0000000000400000)
+[18:11:53.511] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[18:11:53.511] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[18:11:53.511] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[18:11:53.511] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[18:11:53.511] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[18:11:53.511] PATCHED: FUN_145e280b0 (version compare) -> always match
+[18:11:53.663] PATCHED: Origin SDK check at 00000001470A8430
+[18:11:53.663] All patches in 641 ms
+[18:11:53.663] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[18:11:53.663] AUTH: Checking login gate globals...
+[18:11:53.663] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[18:11:53.663] AUTH: DAT_144b86bdf = 0 (error flag)
+[18:11:53.663] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[18:11:59.300] AUTH: Slot cleared at 5600 ms
+[18:11:59.300] AUTH: OnlineMgr=0x3EBC3E70
+[18:11:59.300] AUTH: slot=0x0 cave=0
+[18:11:59.300] AUTH: Using fake vtable (real not captured)
+[18:11:59.300] AUTH: Injected fake request 000000005D380000 into slot
+[18:12:04.301] AUTH: cave=1 slot=0x0
+[18:12:04.301] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[18:12:04.301] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
+[18:12:04.301] AUTH: state=2. Auth ready.
+[18:12:04.301] AUTH: OnlineMgr+0xb10 = 0x3EBCA6E0
+[18:12:04.301] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBCA960
+[18:12:04.301] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[18:12:04.301] AUTH: Found 0 objects with vtables in BlazeHub
+[18:12:04.301] AUTH: BlazeHub(000000003EBCA960)+0x53f = 1
+[18:12:04.301] AUTH: Applying OSDK patches (post-load)...
+[18:12:04.301] PATCHED: GetProfileSync -> return 0 (post-load)
+[18:12:04.301] PATCHED: GetSettingSync -> return 0 (post-load)
+[18:12:04.301] PATCHED: SetPresence -> return 0 (post-load)
+[18:12:04.301] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 

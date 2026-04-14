@@ -10,180 +10,196 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v22: RPC Trace ===
+=== Frida v23: TDF Decode Trace ===
 === Ready ===
-[Local::PID::98396 ]-> [LOOKUP] enter: p1=0x3eb07f38 p2=0x3eddd228 p3=0x0
-[LOOKUP] result: NULL (no match!)
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3edeb558 p3=0x0
-[LOOKUP] result: NULL (no match!)
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3edf9888 p3=0x0
-[LOOKUP] result: NULL (no match!)
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3ee07bb8 p3=0x0
-[LOOKUP] result: NULL (no match!)
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eddd228 p3=0x0
-[LOOKUP] result: 0x97317c0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x0
-[LOOKUP] result: 0x97317c0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x1
-[LOOKUP] result: 0x97332a0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x3
-[LOOKUP] result: 0x97332a0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x4
-[LOOKUP] result: 0x97317c0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x5
-[LOOKUP] result: 0x97333e0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x6
-[LOOKUP] result: 0x97335c0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x7
-[LOOKUP] result: 0x9731a40
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x8
-[LOOKUP] result: 0x9732f80
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1d48 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1cc0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1c38 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1bb0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1b28 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1aa0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x9
-[LOOKUP] result: 0x9732f80
-[CA] param3=0x0 SUCCESS
-[CA] +0x10 userId=0
-[CA] +0x13 byte=0
-[CA] +0x18 pnam_ptr=0x14389a0a8
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x14
-[LOOKUP] result: 0x99a3180
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x1f
-[LOOKUP] result: 0x9732a80
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x20
-[LOOKUP] result: 0x9733ca0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x21
-[LOOKUP] result: 0x9732bc0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x22
-[LOOKUP] result: 0x9732b20
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x23
-[LOOKUP] result: 0x9732ee0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x24
-[LOOKUP] result: 0x9732d00
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1aa0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1b28 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1bb0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1c38 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1cc0 p3=0x3
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3ebe1d48 p3=0x3
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x25
-[LOOKUP] result: 0x9732d00
-[CA] param3=0x0 SUCCESS
-[CA] +0x10 userId=0
-[CA] +0x13 byte=0
-[CA] +0x18 pnam_ptr=0x14389a0a8
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[LOOKUP] enter: p1=0x3eb07f38 p2=0x3eb08008 p3=0x2f
-[LOOKUP] result: 0x99a4b00
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
-[MATCHER] enter: p1=0x3eb07f38 p2=0x3eb08d08 p3=0x0
-[MATCHER] result: 0x0
+[Local::PID::92432 ]-> [BUF-INIT] outBuf=0x167e4f190 src=0x3ed22210 len=322
+[BUF-INIT] data: 3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e 67 3d 22 55 54 46 2d 38 22 3f 3e 0a 3c 73 65 72 76 65 72 69 6e 73 74 61 6e 63 65 69 6e 66 6f 3e 0a 20 20 3c 61
+[RPC-DECODE] err=0 bodyLen=322 bufStart=0x3ed22210
+[RPC-DECODE] body hex: 3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e 67 3d 22 55 54 46 2d 38 22 3f 3e 0a 3c 73 65 72 76 65 72 69 6e 73 74 61 6e 63 65 69 6e 66 6f 3e 0a 20 20 3c 61 64 64 72 65 73 73 20 6d 65 6d 62 65 72 3d 22 30 22 3e 0a 20 20 20 20 3c 76 61 6c 75 3e 0a 20 20 20 20 20 20 3c 68 6f 73 74 6e 61 6d 65 3e 31 32 37 2e 30 2e 30 2e 31 3c 2f 68 6f 73 74 6e 61 6d 65 3e 0a 20 20 20 20 20 20 3c 69 70 3e 32 31 33 30 37 30 36 34 33 33 3c 2f 69 70 3e 0a 20 20 20 20 20 20 3c 70 6f 72 74 3e 31 30 30 34 31 3c 2f 70 6f 72 74 3e 0a 20 20 20 20 3c 2f 76 61 6c 75 3e 0a 20 20 3c 2f 61 64 64 72 65 73 73 3e 0a 20 20 3c 73 65 63 75 72 65 3e 30 3c 2f 73 65 63 75 72 65 3e 0a 20 20 3c 74 72 69 61 6c 6c 6f 67 69 6e 3e 30 3c 2f 74 72 69 61 6c 6c 6f 67 69 6e 3e 0a 20 20 3c 64 65 66 61 75 6c 74 64 6e 73 61 64 64 72 65 73 73 3e 30 3c 2f 64 65 66 61 75 6c 74 64 6e 73 61 64 64 72 65 73 73 3e 0a 3c 2f 73 65 72 76 65 72 69 6e 73 74 61 6e 63 65 69 6e 66 6f 3e 0a
+[RPC-DECODE] rpc vtable=0x1438834c8
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x3ed55ef0
+[RPC-DECODE] resp+0x10=1133051504
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=376
+[BUF-INIT] data: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 81 e0 03 82 e0 03 83 e0 03 85 e0 03 86 e0 03 90 1f 8e e9 ee 01 01 00 8e fb a6 03 8e fb a6 05 01
+[RPC-DECODE] err=0 bodyLen=376 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 81 e0 03 82 e0 03 83 e0 03 85 e0 03 86 e0 03 90 1f 8e e9 ee 01 01 00 8e fb a6 03 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74 65 00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 33 30 30 00 00 a6 ec f4 01 0d 66 69 66 61 2d 32 30 31 37 2d 70 63 00 b6 9b b2 00 00 ba 1c f0 01 0a 63 65 6d 5f 65 61 5f 69 64 00 c2 9b 24 01 01 00 c2 c8 74 01 03 70 63 00 c3 48 67 01 01 00 c6 fc f3 03 8b 7c 33 03 c3 38 40 01 0a 31 32 37 2e 30 2e 30 2e 31 00 c3 3c 00 00 9e 91 02 ce e8 40 01 09 70 72 6f 64 2d 73 6a 63 00 00 b2 ec 00 00 0a b3 4c 33 03 00 cf 6a 64 00 85 a0 88 d4 08 00 cb 3c a3 01 07 33 30 33 31 30 37 00 cf 69 72 01 20 42 6c 61 7a 65 20 31 35 2e 31 2e 32 2e 31 2e 30 20 28 43 4c 23 20 33 31 37 35 39 33 39 29 0a 00 c3 4d b2 01 04 31 2e 31 00
+[RPC-DECODE] rpc vtable=0x1438a0788
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x3ed55ef0
+[RPC-DECODE] resp+0x10=1153267376
+[RPC-DECODE] resp+0x13=68
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x3ea45368
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=10
+[BUF-INIT] data: cf 4a 6d 00 b8 e0 9e cc b1 67
+[RPC-DECODE] err=0 bodyLen=10 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: cf 4a 6d 00 b8 e0 9e cc b1 67
+[RPC-DECODE] rpc vtable=0x1438a0748
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x977e4a8
+[RPC-DECODE] resp+0x10=2361645112
+[RPC-DECODE] resp+0x13=140
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x0
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=135
+[BUF-INIT] data: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65
+[RPC-DECODE] err=0 bodyLen=135 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74 65 00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 33 30 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=85
+[BUF-INIT] data: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55
+[RPC-DECODE] err=0 bodyLen=85 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55 72 6c 00 01 00 0c 66 6f 72 63 65 55 70 64 61 74 65 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=124
+[BUF-INIT] data: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68
+[RPC-DECODE] err=0 bodyLen=124 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68 74 74 70 73 3a 2f 2f 67 61 74 65 77 61 79 2e 65 61 2e 63 6f 6d 00 0e 6e 75 63 6c 65 75 73 50 6f 72 74 61 6c 00 16 68 74 74 70 73 3a 2f 2f 73 69 67 6e 69 6e 2e 65 61 2e 63 6f 6d 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=46
+[BUF-INIT] data: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] err=0 bodyLen=46 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f2290
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x80000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=22
+[BUF-INIT] data: c2 e8 6d 01 08 50 6c 61 79 65 72 32 00 d6 99 00 00 82 d0 ac f3 0e
+[RPC-DECODE] err=0 bodyLen=22 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: c2 e8 6d 01 08 50 6c 61 79 65 72 32 00 d6 99 00 00 82 d0 ac f3 0e
+[RPC-DECODE] rpc vtable=0x14389f2b8
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[CA] param2=0x98f2710 param3=0x0 SUCCESS
+[CA] +0x10=0 +0x11=0 +0x12=0 +0x13=0
+[CA] param2 dump: 68 ac 89 43 01 00 00 00 01 00 00 00 cd cc cc 3d 00 00 00 00 cd cc 2c 3f a8 a0 89 43 01 00 00 00 00 00 00 80 cd cc cc 3d
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x98f2710
+[RPC-DECODE] resp+0x10=0
+[RPC-DECODE] resp+0x13=0
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x14389a0a8
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=151
+[BUF-INIT] data: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 8b d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 31 31 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 31 31 40 66 75 74 2e
+[RPC-DECODE] err=0 bodyLen=151 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 8b d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 31 31 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 31 31 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 09 50 6c 61 79 65 72 31 31 00 b2 1c f4 00 00 c2 99 00 00 8b a8 d6 b9 07 cf 48 73 00 00 e3 29 66 00 00 e3 4e 70 00 00 00 d6 99 00 00 8b d0 ac f3 0e 00 cf 08 6d 00 00 d2 8c f4 01 01 00 d3 3d 69 01 01 00 d3 5c a9 01 01 00
+[RPC-DECODE] rpc vtable=0x14389ff48
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x0
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=135
+[BUF-INIT] data: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65
+[RPC-DECODE] err=0 bodyLen=135 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74 65 00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 33 30 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=85
+[BUF-INIT] data: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55
+[RPC-DECODE] err=0 bodyLen=85 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55 72 6c 00 01 00 0c 66 6f 72 63 65 55 70 64 61 74 65 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=124
+[BUF-INIT] data: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68
+[RPC-DECODE] err=0 bodyLen=124 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 18 68 74 74 70 73 3a 2f 2f 61 63 63 6f 75 6e 74 73 2e 65 61 2e 63 6f 6d 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 17 68 74 74 70 73 3a 2f 2f 67 61 74 65 77 61 79 2e 65 61 2e 63 6f 6d 00 0e 6e 75 63 6c 65 75 73 50 6f 72 74 61 6c 00 16 68 74 74 70 73 3a 2f 2f 73 69 67 6e 69 6e 2e 65 61 2e 63 6f 6d 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=46
+[BUF-INIT] data: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] err=0 bodyLen=46 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=19
+[BUF-INIT] data: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] err=0 bodyLen=19 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00
+[RPC-DECODE] rpc vtable=0x14389f558
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x96f3f90
+[RPC-DECODE] resp+0x10=1133067288
+[RPC-DECODE] resp+0x13=67
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x69700a7380000000
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=23
+[BUF-INIT] data: c2 e8 6d 01 09 50 6c 61 79 65 72 32 31 00 d6 99 00 00 95 d0 ac f3 0e
+[RPC-DECODE] err=0 bodyLen=23 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: c2 e8 6d 01 09 50 6c 61 79 65 72 32 31 00 d6 99 00 00 95 d0 ac f3 0e
+[RPC-DECODE] rpc vtable=0x14389f2b8
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[CA] param2=0x98f4790 param3=0x0 SUCCESS
+[CA] +0x10=0 +0x11=0 +0x12=0 +0x13=0
+[CA] param2 dump: 68 ac 89 43 01 00 00 00 01 00 00 00 b1 8a 01 00 00 00 00 00 74 b5 01 00 a8 a0 89 43 01 00 00 00 00 00 00 80 30 00 00 00
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x98f4790
+[RPC-DECODE] resp+0x10=0
+[RPC-DECODE] resp+0x13=0
+[RPC-DECODE] resp+0x18 (pnam ptr)=0x14389a0a8
+[BUF-INIT] outBuf=0x167e4f450 src=0x3ea4e070 len=151
+[BUF-INIT] data: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 9e d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 33 30 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 33 30 40 66 75 74 2e
+[RPC-DECODE] err=0 bodyLen=151 bufStart=0x3ea4e070
+[RPC-DECODE] body hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 9e d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 06 73 6b 5f 33 30 00 b2 cb e7 00 00 b6 1a 6c 01 0e 70 33 30 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 09 50 6c 61 79 65 72 33 30 00 b2 1c f4 00 00 c2 99 00 00 9e a8 d6 b9 07 cf 48 73 00 00 e3 29 66 00 00 e3 4e 70 00 00 00 d6 99 00 00 9e d0 ac f3 0e 00 cf 08 6d 00 00 d2 8c f4 01 01 00 d3 3d 69 01 01 00 d3 5c a9 01 01 00
+[RPC-DECODE] rpc vtable=0x14389ff48
+[RPC-DECODE] rpc[0xe] (pre-decoder)=0x0
+[RPC-DECODE] after: rpc[0xc] (resp obj)=0x0
 
