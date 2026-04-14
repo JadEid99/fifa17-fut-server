@@ -1,9 +1,9 @@
-﻿=== Batch Test (2026-04-14 20:18:42) ===
+﻿=== Batch Test (2026-04-14 20:26:46) ===
 RESULT: CREATE_ACCOUNT
 
 --- BLAZE SERVER LOG (last 5000 chars) ---
 tes, starts=0x14
-[SSL] Server verify_data: de1b9646ac89f65d6d2a1204
+[SSL] Server verify_data: 04a2c034b84b96df75b6b67c
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 908 bytes on socket (total pending: 908)
@@ -46,13 +46,13 @@ Connection: keep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 73 f5 91 10 56 70 a2 b8 15 17 71 68 ba 04 6b db 1d e6 89 e4 27 3e
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): ab b3 da 38 0d 00 cc 38 5b c6 eb 9c c4 8e ff 87 cd 77 8d 98 f5 1a
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:65043
+[Redirector-Raw] Disconnected: 127.0.0.1:65147
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:65044
+[Main] Session 1 connected: 127.0.0.1:65148
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
@@ -133,7 +133,7 @@ Connection: keep-alive
 [Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 08 20 00 00
 [Main] S1 disconnected
 [LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:65045
+[Main] Session 2 connected: 127.0.0.1:65149
 [Main] S2: received 54 bytes (total: 54)
 [Main]   0000: 00 00 00 26 00 00 00 01 00 0a 00 00 09 00 00 00  ...&............
 [Main]   0010: 87 5d 28 01 17 46 41 4b 45 41 55 54 48 43 4f 44  .](..FAKEAUTHCOD
@@ -155,7 +155,7 @@ Connection: keep-alive
 [Main] S2: -> Ignoring null/error packet (msgId=10 type=5)
 [Main] S2 disconnected
 [LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:65046
+[Main] Session 3 connected: 127.0.0.1:65150
 [Main] S3: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
 [Main] S3: Raw Blaze binary detected
@@ -165,7 +165,7 @@ Connection: keep-alive
 [Main] S3: -> Ignoring null/error packet (msgId=11 type=5)
 [Main] S3 disconnected
 [LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:65047
+[Main] Session 4 connected: 127.0.0.1:65151
 [Main] S4: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
 [Main] S4: Raw Blaze binary detected
@@ -175,7 +175,7 @@ Connection: keep-alive
 [Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:65048
+[Main] Session 5 connected: 127.0.0.1:65152
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -185,7 +185,7 @@ Connection: keep-alive
 [Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:65050
+[Main] Session 6 connected: 127.0.0.1:65153
 [Main] S6: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
@@ -195,7 +195,7 @@ Connection: keep-alive
 [Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
 [Main] S6 disconnected
 [LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:65052
+[Main] Session 7 connected: 127.0.0.1:65154
 [Main] S7: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
 [Main] S7: Raw Blaze binary detected
@@ -205,7 +205,7 @@ Connection: keep-alive
 [Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
 [Main] S7 disconnected
 [LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:65053
+[Main] Session 8 connected: 127.0.0.1:65156
 [Main] S8: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
 [Main] S8: Raw Blaze binary detected
@@ -215,7 +215,7 @@ Connection: keep-alive
 [Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
 [Main] S8 disconnected
 [LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:65054
+[Main] Session 9 connected: 127.0.0.1:65157
 [Main] S9: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
 [Main] S9: Raw Blaze binary detected
@@ -225,7 +225,7 @@ Connection: keep-alive
 [Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
 [Main] S9 disconnected
 [LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:65055
+[Main] Session 10 connected: 127.0.0.1:65158
 [Main] S10: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
 [Main] S10: Raw Blaze binary detected
@@ -239,7 +239,7 @@ Connection: keep-alive
 [Main] S10: header: 00 00 00 97 00 00 00 01 00 46 00 00 13 20 00 00
 [Main] S10 disconnected
 [LOG] Saved: S10 disconnect
-[Main] Session 11 connected: 127.0.0.1:65058
+[Main] Session 11 connected: 127.0.0.1:65159
 [Main] S11: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 14 80 00 00  ................
 [Main] S11: Raw Blaze binary detected
@@ -249,7 +249,7 @@ Connection: keep-alive
 [Main] S11: -> Ignoring null/error packet (msgId=20 type=5)
 [Main] S11 disconnected
 [LOG] Saved: S11 disconnect
-[Main] Session 12 connected: 127.0.0.1:65060
+[Main] Session 12 connected: 127.0.0.1:65163
 [Main] S12: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 15 80 00 00  ................
 [Main] S12: Raw Blaze binary detected
@@ -259,7 +259,7 @@ Connection: keep-alive
 [Main] S12: -> Ignoring null/error packet (msgId=21 type=5)
 [Main] S12 disconnected
 [LOG] Saved: S12 disconnect
-[Main] Session 13 connected: 127.0.0.1:65061
+[Main] Session 13 connected: 127.0.0.1:65164
 [Main] S13: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 16 80 00 00  ................
 [Main] S13: Raw Blaze binary detected
@@ -269,7 +269,7 @@ Connection: keep-alive
 [Main] S13: -> Ignoring null/error packet (msgId=22 type=5)
 [Main] S13 disconnected
 [LOG] Saved: S13 disconnect
-[Main] Session 14 connected: 127.0.0.1:65062
+[Main] Session 14 connected: 127.0.0.1:65165
 [Main] S14: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 17 80 00 00  ................
 [Main] S14: Raw Blaze binary detected
@@ -279,7 +279,7 @@ Connection: keep-alive
 [Main] S14: -> Ignoring null/error packet (msgId=23 type=5)
 [Main] S14 disconnected
 [LOG] Saved: S14 disconnect
-[Main] Session 15 connected: 127.0.0.1:65063
+[Main] Session 15 connected: 127.0.0.1:65166
 [Main] S15: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 18 80 00 00  ................
 [Main] S15: Raw Blaze binary detected
@@ -289,7 +289,7 @@ Connection: keep-alive
 [Main] S15: -> Ignoring null/error packet (msgId=24 type=5)
 [Main] S15 disconnected
 [LOG] Saved: S15 disconnect
-[Main] Session 16 connected: 127.0.0.1:65064
+[Main] Session 16 connected: 127.0.0.1:65167
 [Main] S16: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 19 80 00 00  ................
 [Main] S16: Raw Blaze binary detected
@@ -299,7 +299,7 @@ Connection: keep-alive
 [Main] S16: -> Ignoring null/error packet (msgId=25 type=5)
 [Main] S16 disconnected
 [LOG] Saved: S16 disconnect
-[Main] Session 17 connected: 127.0.0.1:65065
+[Main] Session 17 connected: 127.0.0.1:65168
 [Main] S17: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1a 80 00 00  ................
 [Main] S17: Raw Blaze binary detected
@@ -309,7 +309,7 @@ Connection: keep-alive
 [Main] S17: -> Ignoring null/error packet (msgId=26 type=5)
 [Main] S17 disconnected
 [LOG] Saved: S17 disconnect
-[Main] Session 18 connected: 127.0.0.1:65066
+[Main] Session 18 connected: 127.0.0.1:65169
 [Main] S18: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1b 80 00 00  ................
 [Main] S18: Raw Blaze binary detected
@@ -319,7 +319,7 @@ Connection: keep-alive
 [Main] S18: -> Ignoring null/error packet (msgId=27 type=5)
 [Main] S18 disconnected
 [LOG] Saved: S18 disconnect
-[Main] Session 19 connected: 127.0.0.1:65067
+[Main] Session 19 connected: 127.0.0.1:65170
 [Main] S19: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1c 80 00 00  ................
 [Main] S19: Raw Blaze binary detected
@@ -329,56 +329,56 @@ Connection: keep-alive
 [Main] S19: -> Ignoring null/error packet (msgId=28 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-85] LOGIN SilentLogin: already patched
-[20:17:14.585] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[20:17:14.585] LOGIN ExpressLogin: already patched
-[20:17:14.585] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[20:17:14.585] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[20:17:14.585] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
-[20:17:14.585] PREAUTH_HANDLER: Cave at 00000000001F0000, 61 bytes
-[20:17:14.585] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000001F0000)
-[20:17:14.585] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
-[20:17:14.585] CA_HANDLER: Cave at 0000000000400000, 17 bytes (flag at 00007FFD4E1B6BB0)
-[20:17:14.585] PATCHED: FUN_146e151d0 -> CreateAccount flag + RET (cave at 0000000000400000)
-[20:17:14.585] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[20:17:14.585] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[20:17:14.585] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[20:17:14.585] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[20:17:14.585] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[20:17:14.585] PATCHED: FUN_145e280b0 (version compare) -> always match
-[20:17:14.719] PATCHED: cert bypass at 000000014613244B
-[20:17:14.766] PATCHED: Origin SDK check at 00000001470A8430
-[20:17:14.766] All patches in 719 ms
-[20:17:14.766] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
-[20:17:14.766] AUTH: Checking login gate globals...
-[20:17:14.766] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[20:17:14.766] AUTH: DAT_144b86bdf = 0 (error flag)
-[20:17:14.766] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[20:17:20.596] AUTH: Slot cleared at 5800 ms
-[20:17:20.596] AUTH: OnlineMgr=0x3EC43E70
-[20:17:20.596] AUTH: slot=0x0 cave=0
-[20:17:20.596] AUTH: Using fake vtable (real not captured)
-[20:17:20.596] AUTH: Injected fake request 000000005D3B0000 into slot
-[20:17:25.597] AUTH: cave=1 slot=0x0
-[20:17:25.597] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[20:17:25.597] AUTH: req[+0xd8]=0x99DA0C8 req[+0xe8]=1
-[20:17:25.597] AUTH: state=2. Auth ready.
-[20:17:25.597] AUTH: OnlineMgr+0xb10 = 0x3EC4A6E0
-[20:17:25.597] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC4A960
-[20:17:25.597] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[20:17:25.597] AUTH: Found 0 objects with vtables in BlazeHub
-[20:17:25.597] AUTH: BlazeHub(000000003EC4A960)+0x53f = 1
-[20:17:25.597] AUTH: Applying OSDK patches (post-load)...
-[20:17:25.597] PATCHED: GetProfileSync -> return 0 (post-load)
-[20:17:25.597] PATCHED: GetSettingSync -> return 0 (post-load)
-[20:17:25.597] PATCHED: SetPresence -> return 0 (post-load)
-[20:17:25.597] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-[20:17:41.787] CA-DETECT: CreateAccount handler was called! Triggering Login flow...
-[20:17:41.787] CA-DETECT: Reset connState to 0 (will trigger reconnect)
+14389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:25:19.186] LOGIN SilentLogin: already patched
+[20:25:19.186] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:25:19.186] LOGIN ExpressLogin: already patched
+[20:25:19.186] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[20:25:19.186] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[20:25:19.186] PREAUTH_HANDLER: addr=0000000146E1CF10 bytes=48 89 5C 24 08 48
+[20:25:19.186] PREAUTH_HANDLER: Cave at 00000000001F0000, 61 bytes
+[20:25:19.186] PATCHED: FUN_146e1cf10 -> always call post_PreAuth (cave at 00000000001F0000)
+[20:25:19.186] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
+[20:25:19.186] CA_HANDLER: Cave at 0000000000400000, 59 bytes (flag at 00007FFD4E1B6BB0)
+[20:25:19.186] PATCHED: FUN_146e151d0 -> CreateAccount flag + RET (cave at 0000000000400000)
+[20:25:19.186] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[20:25:19.186] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[20:25:19.186] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[20:25:19.186] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[20:25:19.186] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[20:25:19.186] PATCHED: FUN_145e280b0 (version compare) -> always match
+[20:25:19.343] PATCHED: Origin SDK check at 00000001470A8430
+[20:25:19.343] All patches in 625 ms
+[20:25:19.343] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
+[20:25:19.343] AUTH: Checking login gate globals...
+[20:25:19.343] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[20:25:19.343] AUTH: DAT_144b86bdf = 0 (error flag)
+[20:25:19.343] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[20:25:25.183] AUTH: Slot cleared at 5800 ms
+[20:25:25.183] AUTH: OnlineMgr=0x3EC53E70
+[20:25:25.183] AUTH: slot=0x0 cave=0
+[20:25:25.183] AUTH: Using fake vtable (real not captured)
+[20:25:25.183] AUTH: Injected fake request 000000005D3B0000 into slot
+[20:25:30.183] AUTH: cave=1 slot=0x0
+[20:25:30.183] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[20:25:30.183] AUTH: req[+0xd8]=0x99D9930 req[+0xe8]=1
+[20:25:30.183] AUTH: state=2. Auth ready.
+[20:25:30.183] AUTH: OnlineMgr+0xb10 = 0x3EC5A6E0
+[20:25:30.183] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC5A960
+[20:25:30.183] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[20:25:30.183] AUTH: Found 0 objects with vtables in BlazeHub
+[20:25:30.183] AUTH: BlazeHub(000000003EC5A960)+0x53f = 1
+[20:25:30.183] AUTH: Applying OSDK patches (post-load)...
+[20:25:30.183] PATCHED: GetProfileSync -> return 0 (post-load)
+[20:25:30.183] PATCHED: GetSettingSync -> return 0 (post-load)
+[20:25:30.183] PATCHED: SetPresence -> return 0 (post-load)
+[20:25:30.183] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[20:25:46.380] CA-DETECT: CreateAccount handler was called! Triggering Login flow...
+[20:25:46.380] CA-DETECT: Reset connState to 0 (will trigger reconnect)
 
-=== S19 disconnect (2026-04-14 18:18:42) ===
+=== S19 disconnect (2026-04-14 18:26:47) ===
 
-[Main] Session 19 connected: 127.0.0.1:65067
+[Main] Session 19 connected: 127.0.0.1:65170
 [Main] S19: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 1c 80 00 00  ................
 [Main] S19: Raw Blaze binary detected
