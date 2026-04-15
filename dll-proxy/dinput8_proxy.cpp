@@ -1044,26 +1044,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
                     // but we initialized it above, so it should be fine
                     Log("EARLY: Fake SDK object at %p, vtable at %p", fo, fv);
                     Log("EARLY: DAT_144b86bf8 = 0x%llX (set BEFORE game init)", *pSdkMgr);
-                    
-                    // Also set DAT_144b7c7a0 (Origin SDK transport object)
-                    // This is the object that has the TCP port at +0x35c
-                    // We create a minimal fake transport object with port=3216
-                    uint64_t* pOriginSDK = (uint64_t*)0x144b7c7a0;
-                    if (*pOriginSDK == 0) {
-                        BYTE* fakeTransport = (BYTE*)VirtualAlloc(NULL, 0x400, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
-                        if (fakeTransport) {
-                            memset(fakeTransport, 0, 0x400);
-                            // Set port at +0x35c to 3216
-                            *(uint16_t*)(fakeTransport + 0x35c) = 3216;
-                            // Set +0x3a0 to same user ID
-                            *(uint64_t*)(fakeTransport + 0x3a0) = 33068179;
-                            // Set +0x3b0 to point to the fake SDK manager (for name lookups)
-                            *(uint64_t*)(fakeTransport + 0x3b0) = (uint64_t)fo;
-                            *pOriginSDK = (uint64_t)fakeTransport;
-                            Log("EARLY: Fake Origin transport at %p, port=3216", fakeTransport);
-                            Log("EARLY: DAT_144b7c7a0 = 0x%llX", *pOriginSDK);
-                        }
-                    }
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {
