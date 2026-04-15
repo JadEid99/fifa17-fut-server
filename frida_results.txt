@@ -12,7 +12,7 @@
 Attaching...
 === Frida v59: Origin IPC Simulator ===
 [INIT] NOPed FUN_146e00f40
-[SDK] Origin SDK object = 0x27a68f10
+[SDK] Origin SDK object = 0x27a48f10
 [SDK] Old port: 4216
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
@@ -21,14 +21,15 @@ Attaching...
 [INIT] Hooked SendXml with ID bypass
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::102640 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Local::PID::104056 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
 [AUTH-REQ] FUN_1470db3c0 called
 [AUTH-REQ] First byte of function: 0xe9
 [RPC] comp=0x5 cmd=0x11
 [RPC] comp=0x9 cmd=PreAuth
 [RPC] comp=0x9 cmd=Ping
 [LOGIN-CHECK] array count=0
-[LOGIN-CHECK] returned 0x0
+[LOGIN-CHECK] *** INJECTED fake login type! ***
+[LOGIN-CHECK] returned 0x1
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
