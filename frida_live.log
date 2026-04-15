@@ -10,12 +10,110 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v36: Web View + HTTP Trace ===
-Hooked LoadURL at 0x1472d5cf0
-Hooked nucleusConnect reader at 0x147237850
-Hooked FUN_146e00f40 (persona creation)
-=== Frida v36 Ready ===
-Watching for: LoadURL, WinHTTP, TCP connect, nucleusConnect, persona creation
-[Local::PID::84388 ]-> [PA-HANDLER] PreAuth handler called R8=0x0
-[CA-HANDLER] CreateAccount handler called R8=0x0
-[PERSONA-CREATE] FUN_146e00f40 called! param1=0x3eb966e0 param2=0x0 param3=0x1
+=== Frida v37: Read TDF Field Descriptors ===
+[CA-RESP] Field descriptor pointer at 0x144878060 = 0x144867628
+[CA-RESP] Field descriptor raw dump (first 0x80 bytes):
+  00: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00  ..........UC....
+  10: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00  ..UC.....v.D....
+  20: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  .v.D............
+  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+[CA-RESP] Possible TDF tag at offset 1: "    "
+[CA-RESP] Possible TDF tag at offset 3: "  8 "
+[CA-RESP] Possible TDF tag at offset 5: "    "
+[CA-RESP] Possible TDF tag at offset 12: " 0  "
+[CA-RESP] Possible TDF tag at offset 13: "    "
+[CA-RESP] Possible TDF tag at offset 20: " 0  "
+[CA-RESP] Possible TDF tag at offset 21: "    "
+[CA-RESP] Possible TDF tag at offset 28: " 0  "
+[CA-RESP] Possible TDF tag at offset 29: "    "
+[CA-RESP] Possible TDF tag at offset 32: " P  "
+[CA-RESP] Possible TDF tag at offset 33: "    "
+[CA-RESP] Possible TDF tag at offset 34: "    "
+[CA-RESP] Possible TDF tag at offset 35: "    "
+[CA-RESP] Possible TDF tag at offset 36: "    "
+[CA-RESP] Possible TDF tag at offset 37: "    "
+[CA-RESP] Possible TDF tag at offset 38: "    "
+[CA-RESP] Possible TDF tag at offset 39: "    "
+[CA-RESP] Possible TDF tag at offset 40: "    "
+[CA-RESP] Possible TDF tag at offset 41: "    "
+[CA-RESP] Possible TDF tag at offset 42: "    "
+[CA-RESP] Possible TDF tag at offset 43: "    "
+[CA-RESP] Possible TDF tag at offset 44: "    "
+[CA-RESP] Possible TDF tag at offset 45: "    "
+[CA-RESP] Possible TDF tag at offset 46: "    "
+[CA-RESP] Possible TDF tag at offset 47: "    "
+[CA-RESP] Possible TDF tag at offset 48: "    "
+[CA-RESP] Possible TDF tag at offset 49: "    "
+[CA-RESP] Possible TDF tag at offset 50: "    "
+[CA-RESP] Possible TDF tag at offset 51: "    "
+[CA-RESP] Possible TDF tag at offset 52: "    "
+[CA-RESP] Possible TDF tag at offset 53: "    "
+[CA-RESP] Possible TDF tag at offset 54: "    "
+[CA-RESP] Possible TDF tag at offset 55: "    "
+[CA-RESP] Possible TDF tag at offset 56: "    "
+[CA-RESP] Possible TDF tag at offset 57: "    "
+[CA-RESP] Possible TDF tag at offset 58: "    "
+[CA-RESP] Possible TDF tag at offset 59: "    "
+[CA-RESP] Possible TDF tag at offset 60: "    "
+[CA-RESP] Possible TDF tag at offset 61: "    "
+[CA-RESP] Possible TDF tag at offset 62: "    "
+[CA-RESP] Possible TDF tag at offset 63: "    "
+[CA-RESP] Possible TDF tag at offset 64: "    "
+[CA-RESP] Possible TDF tag at offset 65: "    "
+[CA-RESP] Possible TDF tag at offset 66: "    "
+[CA-RESP] Possible TDF tag at offset 67: "    "
+[CA-RESP] Possible TDF tag at offset 68: "    "
+[CA-RESP] Possible TDF tag at offset 69: "    "
+[CA-RESP] Possible TDF tag at offset 70: "    "
+[CA-RESP] Possible TDF tag at offset 71: "    "
+[CA-RESP] Possible TDF tag at offset 72: "    "
+[CA-RESP] Possible TDF tag at offset 73: "    "
+[CA-RESP] Possible TDF tag at offset 74: "    "
+[CA-RESP] Possible TDF tag at offset 75: "    "
+[CA-RESP] Possible TDF tag at offset 76: "    "
+[CA-RESP] Possible TDF tag at offset 77: "    "
+[CA-RESP] Possible TDF tag at offset 78: "    "
+[CA-RESP] Possible TDF tag at offset 79: "    "
+[CA-RESP] Possible TDF tag at offset 80: "    "
+[CA-RESP] Possible TDF tag at offset 81: "    "
+[CA-RESP] Possible TDF tag at offset 82: "    "
+[CA-RESP] Possible TDF tag at offset 83: "    "
+[CA-RESP] Possible TDF tag at offset 84: "    "
+[CA-RESP] Possible TDF tag at offset 85: "    "
+[CA-RESP] Possible TDF tag at offset 86: "    "
+[CA-RESP] Possible TDF tag at offset 87: "    "
+[CA-RESP] Possible TDF tag at offset 88: "    "
+[CA-RESP] Possible TDF tag at offset 89: "    "
+[CA-RESP] Possible TDF tag at offset 90: "    "
+[CA-RESP] Possible TDF tag at offset 91: "    "
+[CA-RESP] Possible TDF tag at offset 92: "    "
+[CA-RESP] Possible TDF tag at offset 93: "    "
+[CA-RESP] Possible TDF tag at offset 94: "    "
+
+[LEGAL-RESP] Field descriptor pointer at 0x14487a100 = 0x14486d6f0
+[LEGAL-RESP] Raw dump (first 0x40 bytes):
+  00: 0f 00 00 00 0f 00 00 00 ac 12 55 43 01 00 00 00 
+  10: ac 12 55 43 01 00 00 00 a0 07 87 44 01 00 00 00 
+  20: 03 00 00 00 00 00 00 00 13 00 00 00 13 00 00 00 
+  30: 60 85 88 43 01 00 00 00 60 85 88 43 01 00 00 00 
+
+[TOS-RESP] Field descriptor pointer at 0x1448787e0 = 0x144867628
+[TOS-RESP] Raw dump (first 0x80 bytes):
+  00: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00 
+  10: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00 
+  20: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00 
+  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+
+[INFO] Field descriptors read. Check the hex dumps for TDF tag patterns.
+[INFO] TDF tags are 3-byte encoded: b0=(c0-0x20)<<2|(c1-0x20)>>4, etc.
+=== Frida v37 Ready ===
+[Local::PID::96684 ]-> [PA-HANDLER] Called R8=0x0
+[CA-HANDLER] Called R8=0x0
