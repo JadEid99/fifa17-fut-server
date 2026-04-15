@@ -27,8 +27,40 @@ Revive FIFA 17 Ultimate Team by building a private Blaze server + DLL patches.
 # DLL changes: need full game restart (use batch_test_lsx.ps1)
 ```
 
-## IMMEDIATE PRIORITY — FIX TDF ENCODING
+## IMMEDIATE PRIORITY — MAKE OSDK ACCOUNT CREATION SCREEN FUNCTIONAL
 
+The game expects an account/persona to be created. For a multi-player private server,
+we need account management anyway. The right approach is to make the account creation
+screen work, let users create accounts, and handle submissions on our server.
+
+### Step 1: Restore the OSDK account creation screen
+In the CreateAccount cave (Patch 16), restore the state bytes that trigger the screen:
+- Set *(state + 0x8c6) = 1 (persona creation flag)
+- The screen appeared reliably with this flag set
+
+### Step 2: Figure out why the fields are frozen
+The screen shows but fields are not interactable (loading spinner active).
+TOS responses ARE decoded (54-94 bytes consumed). Need to find what else the game waits for.
+
+Investigation plan:
+1. Hook the TOS response handlers (0xf2, 0xf6, 0x2f) with Frida to see what fields
+   the game reads from the decoded response and whether it gets valid values
+2. Check if the response structure expects more fields than LDVC + TCOL
+3. Look at the Ghidra field table at PTR_DAT_1448787e0 (GetLegalDocContentResponse has 3 fields)
+4. Try returning an error response for TOS commands instead of success — the game might
+   skip TOS display and make the form interactable immediately
+5. Check if the game makes any HTTPS requests during the screen (port 443 catch-all)
+
+### Step 3: Handle form submission
+When the user submits the form, the game should send CreatePersona (cmd 0x50) or similar.
+Our server handles it and returns success with a persona ID.
+
+### Step 4: After persona creation, game advances to Login
+The state machine should naturally advance to Login/SilentLogin after persona creation.
+
+## SECONDARY PRIORITY — FIX TDF ENCODING
+
+Fixing TDF would unblock everything and is still worth pursuing in parallel.
 The #1 path forward is fixing the TDF encoding so the game's RPC framework decodes our
 response bodies. This would unblock EVERYTHING — CreateAccount, Login, PostAuth, etc.
 
