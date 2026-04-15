@@ -39,8 +39,8 @@ Interceptor.attach(addr(0x6e151d0), {
             param2.add(0x10).writeU8(1);  // UID non-zero
             param2.add(0x11).writeU8(0);
             param2.add(0x12).writeU8(0);
-            param2.add(0x13).writeU8(0);  // NO persona creation
-            console.log('[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=0 ***');
+            param2.add(0x13).writeU8(1);  // YES persona creation — triggers state transition (1,3)
+            console.log('[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=1 (persona=YES for state transition) ***');
         } catch(e) {
             console.log('[S2] Write error: ' + e);
         }
@@ -50,11 +50,24 @@ Interceptor.attach(addr(0x6e151d0), {
     }
 });
 
-// Strategy 3: After the handler returns, check if we need PostAuth
-// Hook FUN_146e213e0 (PostAuth setup) to see if it's called
+// Strategy 3: NOP FUN_146e00f40 (OSDK screen loader) so state transition
+// happens but the screen doesn't load
+try {
+    var osdkLoader = addr(0x6e00f40);
+    Memory.patchCode(osdkLoader, 4, function(code) {
+        var w = new X86Writer(code, { pc: osdkLoader });
+        w.putRet();
+        w.flush();
+    });
+    console.log('[S3] Patched FUN_146e00f40 -> RET (OSDK screen NOP)');
+} catch(e) {
+    console.log('[S3] Could not patch FUN_146e00f40: ' + e);
+}
+
+// Track if PostAuth is called
 Interceptor.attach(addr(0x6e213e0), {
     onEnter: function(args) {
-        console.log('[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=' + args[0] + ' ***');
+        console.log('[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=' + args[0] + ' ***');
     }
 });
 
