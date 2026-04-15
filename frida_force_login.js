@@ -36,24 +36,16 @@ try {
 }
 
 // Hook FUN_147572550 (NetResourceAdaptor LoadURL wrapper)
+// DISABLED — fires thousands of times for game asset loading, floods output
+/*
 try {
     Interceptor.attach(addr(0x7572550), {
         onEnter: function(args) {
             console.log('[NET-LOAD] FUN_147572550 called!');
-            for (var i = 0; i < 6; i++) {
-                try {
-                    var s = args[i].readUtf8String(200);
-                    if (s && s.length > 3 && s.length < 200) {
-                        console.log('[NET-LOAD]   arg' + i + ' = "' + s + '"');
-                    }
-                } catch(e) {}
-            }
         }
     });
-    console.log('Hooked NetResourceAdaptor at 0x147572550');
-} catch(e) {
-    console.log('Could not hook NetResourceAdaptor: ' + e);
-}
+} catch(e) {}
+*/
 
 // Hook the nucleusConnect config reader at 0x147237850
 // This function reads the nucleusConnect URL from the config
