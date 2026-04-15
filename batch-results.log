@@ -1,4 +1,4 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-15 21:33:05) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-15 21:38:33) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
      ____
@@ -15,7 +15,7 @@
 Attaching...
 === Frida v59: Origin IPC Simulator ===
 [INIT] NOPed FUN_146e00f40
-[SDK] Origin SDK object = 0x27948f10
+[SDK] Origin SDK object = 0x27a48f10
 [SDK] Old port: 3216
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
@@ -24,64 +24,25 @@ Attaching...
 [INIT] Hooked SendXml
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::98424 ]-> [TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
-[TCP] Connect result: 0xffffff00
-[TCP] Connecting to Origin on port 3216
+[Local::PID::100852 ]-> [TCP] Connecting to Origin on port 4216
+[TCP] Connect result: 0x1
+[XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="00b9c8afef744cbc1dd1b1e8aca6a2ed5fb0f43c5e287f833ea2750983772e0f954f64f2e4e86e9eee82d20216684899" key="e33691f62fc12f4bee7ed4c834bfd3a8" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
+[XML-SEND] <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="4"><GetSetting SettingId="IS_IGO_ENABLED" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="5"><GetGameInfo GameInfoId="FREETRIAL" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="6"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="7"><GetProfile index="0" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="8"><GetSetting SettingId="LANGUAGE" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="9"><SetDownloaderUtilization Utilization="1" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
-[Origin-IPC] Fake Origin server listening on 127.0.0.1:4216
-[Origin-IPC] Client connected: 127.0.0.1:50227
+[Origin-IPC] Fake Origin server listening on 127.0.0.1:3216
+[Origin-IPC] Client connected: 127.0.0.1:50345
+[Origin-IPC] Disconnected: 127.0.0.1:50345
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
 === FIFA 17 FUT Private Server ===
@@ -100,44 +61,44 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Catch] Listening on port 9946
 
 --- DLL LOG (last 3000 chars) ---
-[21:31:26.327] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[21:31:26.327] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[21:31:26.327] CONNECT-HOOK: Exception accessing DAT_148e223d8
-[21:31:26.327] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[21:31:26.327] PID: 98424
-[21:31:26.327] CONNECT-HOOK: Exception accessing DAT_148e223d8
-[21:31:26.669] PATCHED: auth flag at 00000001473CE785
-[21:31:26.733] PATCHED: IsLoggedIntoEA -> true
-[21:31:26.733] PATCHED: IsLoggedIntoNetwork -> true
-[21:31:26.817] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[21:31:26.817] PATCHED: SDK gate -> always 1
-[21:31:26.817] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[21:31:26.829] PATCHED: Login vtable check -> return 1
-[21:31:26.829] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:31:26.829] LOGIN SilentLogin: already patched
-[21:31:26.829] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:31:26.829] LOGIN ExpressLogin: already patched
-[21:31:26.829] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[21:31:26.829] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[21:31:26.829] PREAUTH_HANDLER: first 128 bytes:
-[21:31:26.829]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[21:31:26.829]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[21:31:26.829]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[21:31:26.829]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[21:31:26.829]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[21:31:26.829]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[21:31:26.829]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[21:31:26.829]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[21:31:26.829] PREAUTH_HANDLER: Cave at 00000000005B0000, 44 bytes (XOR R8D + trampoline)
-[21:31:26.829] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[21:31:26.829] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[21:31:26.829] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[21:31:26.829] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[21:31:26.829] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[21:31:26.829] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[21:31:26.829] PATCHED: FUN_145e280b0 (version compare) -> always match
-[21:31:26.879] PATCHED: cert bypass at 000000014613244B
-[21:31:26.923] PATCHED: Origin SDK check at 00000001470A8430
-[21:31:27.253] ORIGIN-PORT-EARLY: SDK=0x27948F10 port=4216 at 938 ms
-[21:31:27.253] ORIGIN-PORT-EARLY: Patched to 3216
+[21:36:52.995] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[21:36:52.995] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[21:36:52.995] CONNECT-HOOK: Exception accessing DAT_148e223d8
+[21:36:52.995] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[21:36:52.996] PID: 100852
+[21:36:52.996] CONNECT-HOOK: Exception accessing DAT_148e223d8
+[21:36:53.290] PATCHED: auth flag at 00000001473CE785
+[21:36:53.336] PATCHED: IsLoggedIntoEA -> true
+[21:36:53.336] PATCHED: IsLoggedIntoNetwork -> true
+[21:36:53.446] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[21:36:53.446] PATCHED: SDK gate -> always 1
+[21:36:53.446] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[21:36:53.457] PATCHED: Login vtable check -> return 1
+[21:36:53.457] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:36:53.457] LOGIN SilentLogin: already patched
+[21:36:53.457] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:36:53.457] LOGIN ExpressLogin: already patched
+[21:36:53.457] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[21:36:53.457] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[21:36:53.457] PREAUTH_HANDLER: first 128 bytes:
+[21:36:53.457]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[21:36:53.457]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[21:36:53.457]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[21:36:53.457]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[21:36:53.457]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[21:36:53.457]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[21:36:53.457]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[21:36:53.457]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[21:36:53.457] PREAUTH_HANDLER: Cave at 0000000003220000, 44 bytes (XOR R8D + trampoline)
+[21:36:53.457] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[21:36:53.457] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[21:36:53.457] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[21:36:53.457] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[21:36:53.457] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[21:36:53.457] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[21:36:53.457] PATCHED: FUN_145e280b0 (version compare) -> always match
+[21:36:53.508] PATCHED: cert bypass at 000000014613244B
+[21:36:53.551] PATCHED: Origin SDK check at 00000001470A8430
+[21:36:53.879] ORIGIN-PORT-EARLY: SDK=0x27A48F10 port=4216 at 891 ms
+[21:36:53.879] ORIGIN-PORT-EARLY: Patched to 3216
 
