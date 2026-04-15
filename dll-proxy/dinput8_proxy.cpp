@@ -543,9 +543,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            // Patch 3: DISABLED — using Origin IPC server instead
-            // The Origin IPC server on port 3216 provides auth codes via XML
-            // if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: Re-enabled — Origin IPC connection fails too early
+            if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
@@ -933,8 +932,18 @@ done:
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
         // Patch 18: Skip age check in FUN_14717d5d0
-        // Patch 18+19: DISABLED — they interfere with CreateAccount flow
-        // When Patch 3 provides auth code, we WANT CreateAccount to be sent
+        // Re-enabled: we want to skip CreateAccount entirely now
+        __try {
+            BYTE* ageCheck = (BYTE*)0x14717d5d0;
+            DWORD op;
+            if (VirtualProtect(ageCheck, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                ageCheck[0] = 0xB0; ageCheck[1] = 0x01; // MOV AL, 1 (age OK)
+                ageCheck[2] = 0xC3; // RET
+                for (int k=3; k<8; k++) ageCheck[k] = 0x90;
+                VirtualProtect(ageCheck, 8, op, &op);
+                Log("PATCHED: FUN_14717d5d0 (age check) -> always pass");
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
     }
     
     // Keep forcing +0x53f flag continuously in background
