@@ -1318,7 +1318,19 @@ function setupMainBlazeHandler(socket, session) {
         if (cmd === 0x000A) { 
           resp = handleCreateAccount(session, pkt);
         }
-        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
+        else if (cmd === 0x0046) {
+          // Logout — respond with SilentLogin response body instead
+          // The RPC framework matches by msgId, so this response goes to
+          // whatever handler is waiting for msgId 9/10.
+          // We respond as cmd=0x0032 (SilentLogin) with full auth data.
+          console.log(`[Main] S${sid}: -> Logout INTERCEPTED — responding as SilentLogin`);
+          resp = handleLogin(session, pkt);
+          // Override the command in the response header to SilentLogin
+          if (resp) {
+            resp.writeUInt16BE(0x0032, 8); // Change cmd from 0x0046 to 0x0032
+          }
+        }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
