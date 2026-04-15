@@ -1,114 +1,102 @@
 /*
- * Frida v49: Change BOTH the command AND the response vtable.
+ * Frida v50: AGGRESSIVE — multiple strategies in one script.
  *
- * The CreateAccount sender (FUN_146e15070) does:
- *   FUN_146dab760(puVar8, loginType, 10, ...);  // build RPC with cmd=10
- *   *puVar8 = &PTR_LAB_14389f2b8;               // set CreateAccountResponse vtable
- *
- * We need to change:
- *   cmd 10 → 0x98 (OriginLogin) at send time
- *   vtable 0x14389f2b8 → 0x1438aee60 (LoginResponse) in the RPC structure
- *
- * The Login sender (cmd=0x28) uses vtable 0x1438aee60 (LoginResponse).
- * LoginResponse has 5 fields and a different TDF decoder that might work.
+ * Strategy 1: Redirect CreateAccount→OriginLogin at wire level
+ * Strategy 2: After response arrives, write Login data directly into
+ *             the response object's fields (+0x10, +0x11, +0x12, +0x13)
+ * Strategy 3: If handler still fails, call PostAuth directly
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v49: Full OriginLogin + LoginResponse Redirect ===');
+console.log('=== Frida v50: AGGRESSIVE Multi-Strategy ===');
 
-var CA_VTABLE = addr(0x389f2b8);  // CreateAccountResponse
-var LOGIN_VTABLE = addr(0x38aee60);  // LoginResponse
-
-// Hook FUN_146df0e80 to change command at send time
+// Strategy 1: Redirect CreateAccount→OriginLogin at send time
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
         var comp = this.context.r8.toInt32();
         var cmd = this.context.r9.toInt32();
         if (comp === 1 && cmd === 10) {
-            console.log('[RPC-SEND] Redirecting CreateAccount(10) -> OriginLogin(0x98)');
+            console.log('[S1] Redirecting CreateAccount -> OriginLogin');
             this.context.r9 = ptr(0x98);
         }
     }
 });
 
-// Hook the CreateAccount sender function to change the response vtable
-// FUN_146e15070 calls FUN_146dab760 then sets *puVar8 = CreateAccountResponse vtable
-// We hook the function and after it returns, scan for the vtable and replace it
-Interceptor.attach(addr(0x6e15070), {
+// Strategy 2: Intercept the CreateAccount handler and write response data directly
+Interceptor.attach(addr(0x6e151d0), {
     onEnter: function(args) {
-        console.log('[CA-SENDER] FUN_146e15070 called');
-    },
-    onLeave: function(retval) {
-        // The function returns param_2 which is the RPC descriptor
-        // But the vtable was set on puVar8 which is inside the function
-        // We can't easily access puVar8 from here
-        // Instead, let's hook the response decoder and change the vtable there
-        console.log('[CA-SENDER] returned');
-    }
-});
-
-// Hook the RPC response decoder — when it creates the response object,
-// change the vtable from CreateAccountResponse to LoginResponse
-Interceptor.attach(addr(0x6db5d60), {
-    onEnter: function(args) {
-        this._rpc = args[0];
-        var bodyBufObj = args[3];
+        var param1 = args[0]; // handler
+        var param2 = args[1]; // response object
+        var param3 = args[2]; // error code
+        
+        console.log('[S2] Handler called, param2=' + param2 + ' R8=' + param3);
+        
+        // Write non-zero values into the response object
+        // The handler reads: +0x10 (UID byte), +0x11, +0x12, +0x13 (persona flag)
         try {
-            var bufStart = bodyBufObj.add(0x08).readPointer();
-            var bufEnd = bodyBufObj.add(0x18).readPointer();
-            var bodyLen = bufEnd.sub(bufStart).toInt32();
-            if (bodyLen === 148) {
-                // This is likely the OriginLogin response (148 bytes = Login response)
-                console.log('[RPC-RESP] 148-byte response — likely OriginLogin/Login response');
-                this._isLoginResp = true;
-            }
-        } catch(e) {}
+            // Set +0x10 = 1 (UID non-zero = account exists)
+            param2.add(0x10).writeU8(1);
+            // Set +0x11 = 0
+            param2.add(0x11).writeU8(0);
+            // Set +0x12 = 0
+            param2.add(0x12).writeU8(0);
+            // Set +0x13 = 0 (NO persona creation)
+            param2.add(0x13).writeU8(0);
+            console.log('[S2] *** Wrote response data: +0x10=1, +0x13=0 ***');
+            
+            // Verify
+            var b10 = param2.add(0x10).readU8();
+            var b13 = param2.add(0x13).readU8();
+            console.log('[S2] Verify: +0x10=' + b10 + ' +0x13=' + b13);
+        } catch(e) {
+            console.log('[S2] Write error: ' + e);
+        }
     },
     onLeave: function(retval) {
-        if (this._isLoginResp) {
-            // After the decoder runs, scan the RPC structure for the CreateAccountResponse vtable
-            // and replace it with LoginResponse vtable
-            try {
-                var rpc = this._rpc;
-                // The response object is created during decode
-                // Scan the RPC structure for the CA vtable
-                for (var off = 0x60; off < 0x100; off += 8) {
-                    try {
-                        var val = rpc.add(off).readPointer();
-                        if (val.equals(CA_VTABLE)) {
-                            console.log('[RPC-RESP] Found CreateAccountResponse vtable at RPC+0x' + off.toString(16) + ', replacing with LoginResponse');
-                            rpc.add(off).writePointer(LOGIN_VTABLE);
-                        }
-                    } catch(e) {}
-                }
-            } catch(e) {}
+        console.log('[S2] Handler returned');
+    }
+});
+
+// Strategy 3: After the handler returns, check if we need PostAuth
+// Hook FUN_146e213e0 (PostAuth setup) to see if it's called
+Interceptor.attach(addr(0x6e213e0), {
+    onEnter: function(args) {
+        console.log('[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=' + args[0] + ' ***');
+    }
+});
+
+// Track what happens after CreateAccount
+Interceptor.attach(addr(0x6e1cf10), {
+    onEnter: function(args) { console.log('[FLOW] PreAuth handler'); }
+});
+
+// Track Logout
+Interceptor.attach(addr(0x6df0e80), {
+    onEnter: function(args) {
+        var comp = this.context.r8.toInt32();
+        var cmd = this.context.r9.toInt32();
+        if (comp === 1 && cmd === 70) {
+            console.log('[FLOW] Logout being sent');
         }
     }
 });
 
-// Hook the handler to see the result
-try {
-    Interceptor.attach(addr(0x6e151d0), {
-        onEnter: function(args) {
-            try {
-                var resp = args[1];
-                var vt = resp.readPointer();
-                var b10 = resp.add(0x10).readU8();
-                var b13 = resp.add(0x13).readU8();
-                console.log('[HANDLER] vtable=' + vt + ' +0x10=' + b10 + ' +0x13=' + b13);
-                if (vt.equals(LOGIN_VTABLE)) {
-                    console.log('[HANDLER] *** LoginResponse vtable detected! ***');
-                }
-            } catch(e) {}
+// Track FetchClientConfig completion
+var fccCount = 0;
+Interceptor.attach(addr(0x6df0e80), {
+    onEnter: function(args) {
+        var comp = this.context.r8.toInt32();
+        var cmd = this.context.r9.toInt32();
+        if (comp === 9 && cmd === 1) {
+            fccCount++;
+            if (fccCount === 6) {
+                console.log('[FLOW] All 6 FetchClientConfig sent');
+            }
         }
-    });
-} catch(e) {}
+    }
+});
 
-// Track PreAuth
-try {
-    Interceptor.attach(addr(0x6e1cf10), {
-        onEnter: function(args) { console.log('[HANDLER] PreAuth'); }
-    });
-} catch(e) {}
-
-console.log('=== Frida v49 Ready ===');
+console.log('=== Frida v50 Ready ===');
+console.log('S1: CreateAccount→OriginLogin redirect');
+console.log('S2: Write response data directly into response object');
+console.log('S3: Track PostAuth call');
