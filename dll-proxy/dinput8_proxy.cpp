@@ -282,9 +282,11 @@ static void PatchPreAuthHandler() {
     }
 }
 
-// Patch 16: Replace FUN_146e151d0 (CreateAccount response handler)
-// Just RET — don't try to call state transition from the cave.
-// The background thread will detect CreateAccount completion and trigger Login.
+// Patch 16: FUN_146e151d0 (CreateAccount response handler)
+// UPDATED: Don't bypass the handler — let the original code run.
+// The server now sends the correct AuthResponse TDF format, so the
+// game's decoder should populate the response object correctly.
+// We just force param_3 (R8D) to 0 (success) like we do for PreAuth.
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
 static void PatchCreateAccountHandler() {
@@ -295,51 +297,34 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        // Allocate a tiny cave that just sets a flag and returns
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        // Same approach as PreAuth (Patch 8): trampoline that forces R8D=0 (success)
+        // then runs the original handler code.
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
-        // Set flag, set state bytes (UID non-zero) but NOT 0x8c6 (persona creation flag)
-        // Then RET — no state transition
+        // XOR R8D, R8D — force param_3 = 0 (success path)
+        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
         
-        // Save registers
-        cave[o++] = 0x53;                                     // PUSH RBX
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x20; // SUB RSP, 0x20
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX (save param_1)
-        
-        // Get state object via vtable+0xb8(param_1)
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX] (vtable)
-        cave[o++] = 0xFF; cave[o++] = 0x90;                    // CALL [RAX + 0xb8]
-        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // RAX = state object. Save in RBX (reuse, param_1 no longer needed)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC3; // MOV RBX, RAX
-        
-        // *(state + 0x8bc) = 0 (success)
-        cave[o++] = 0xC7; cave[o++] = 0x83;
-        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // *(byte*)(state + 0x8c0) = 0x01 (UID byte — non-zero)
-        cave[o++] = 0xC6; cave[o++] = 0x83;
-        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
-        
-        // Do NOT set 0x8c6 — leave it at 0 (no persona creation)
-        
-        // Set flag
+        // Set flag so we know it was called
+        cave[o++] = 0x50; // PUSH RAX (save)
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x58; // POP RAX (restore)
         
-        // Cleanup and return
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x20;
-        cave[o++] = 0x5B;
-        cave[o++] = 0xC3;
+        // Copy the original first 14 bytes (that we'll overwrite with the jump)
+        memcpy(cave + o, func, 14); o += 14;
         
-        Log("CA_HANDLER: Cave at %p, %d bytes (flag at %p)", cave, o, &g_createAcctCalled);
+        // Jump back to func + 14 (continue original code)
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t retAddr = (uint64_t)(func + 14);
+        memcpy(cave + o, &retAddr, 8); o += 8;
+        cave[o++] = 0xFF; cave[o++] = 0xE0;
+        
+        Log("CA_HANDLER: Cave at %p, %d bytes (XOR R8D + trampoline)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -348,9 +333,9 @@ static void PatchCreateAccountHandler() {
             uint64_t caveAddr = (uint64_t)cave;
             memcpy(func + p, &caveAddr, 8); p += 8;
             func[p++] = 0xFF; func[p++] = 0xE0;
-            while (p < 16) func[p++] = 0x90;
+            while (p < 14) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> CreateAccount flag + RET (cave at %p)", cave);
+            Log("PATCHED: FUN_146e151d0 -> XOR R8D,R8D trampoline (let original handler run)");
             g_createAcctPatchDone = 1;
             g_patched++;
         }

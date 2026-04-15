@@ -40,39 +40,34 @@ it should accept the pre-configured account and proceed to Login.
 - Game proceeds to Login → PostAuth → Online Menu
 
 ### The blocker:
-The CreateAccount response TDF isn't being decoded (0 bytes consumed). The game's handler
-sees UID=0 at +0x13, which triggers the "needs persona creation" path (OSDK screen) or
-the error path. If we fix the TDF decode so UID is non-zero, the game takes the
-"account exists" path and advances to Login.
+The CreateAccount response TDF wasn't being decoded (0 bytes consumed). The game's handler
+saw UID=0 at +0x13, which triggered the "needs persona creation" path (OSDK screen).
 
-### Primary approach — Fix TDF encoding:
-The #1 path forward is fixing the TDF encoding so the game's RPC framework decodes our
-response bodies. This would unblock EVERYTHING — CreateAccount, Login, PostAuth, etc.
+### FIX APPLIED (Day 6):
+1. **Server**: CreateAccount response now sends full AuthResponse (same as Login):
+   AGUP, LDHT, NTOS, PCTK, PRIV, SESS{BUID, FRST, KEY, LLOG, MAIL, PDTL{DSNM, LAST, PID, STAS, XREF, XTYP}, UID}, SPAM, THST, TSUI, TURI
+   Previously was sending just PNAM + UID (wrong structure — not what the decoder expects).
+   
+2. **DLL Patch 16**: Changed from "bypass handler entirely" to "trampoline that forces R8D=0
+   (success) then runs original handler code" — same approach as PreAuth (Patch 8).
+   The original handler will now process the correctly-decoded TDF response and advance
+   the state machine naturally.
 
-### What works:
-- PreAuth TDF decode: 325 of 376 bytes consumed ✅
-- TOS responses (0xf2, 0xf6, 0x2f): 54-94 bytes consumed ✅ (with actual text content)
-- Ping response: consumed ✅
+3. **Server**: Fixed TOS/legal responses to match PocketRelay format:
+   - GetLegalDocsInfo (0xF2): EAMC(int), LHST(str), PMC(int), PPUI(str), TSUI(str)
+   - GetTermsOfServiceContent (0xF6): LDVC(str path), TCOL(int), TCOT(str content)
+   - GetPrivacyPolicyContent (0x2F): LDVC(str path), TCOL(int), TCOT(str content)
 
-### What fails (0 bytes consumed):
-- FetchClientConfig responses (all 6) — uses writeMap('CONF', {...})
-- CreateAccount response (PNAM string + UID integer)
+### What to test:
+Run `.\frida_test.ps1` to see if:
+- CreateAccount TDF decode now consumes bytes (was 0, should be >0)
+- The handler advances the state machine to Login
+- Game sends Login instead of Logout after CreateAccount
 
-### Key observation:
-The PreAuth response uses structs, strings, integers, intlists, AND a map — and it works.
-The CreateAccount response uses just a string + integer — and it fails.
-The difference might be in the vtable+0x30 decoder function:
-- PreAuth decoder: 0x146e19840 — WORKS
-- CreateAccount decoder: 0x146e12a60 — FAILS (0 bytes consumed)
-- FetchClientConfig decoder: 0x146e12a00 — FAILS (0 bytes consumed)
-
-The decoder function is different per response type. The CreateAccount decoder might expect
-a different TDF structure or have a bug in how it reads our encoding.
-
-### Investigation needed:
-1. Hook the CreateAccount decoder (0x146e12a60) with Frida to see what it does
-2. Compare the TDF binary format between PreAuth (works) and CreateAccount (fails)
-3. Check if the decoder expects fields in a specific order or with specific tags
+### If TDF decode still fails (0 bytes consumed):
+The Frida v32 script traces the decoder execution with Stalker to identify exactly
+which function fails. Compare the CA decoder call graph with the PreAuth decoder
+call graph to find the difference.
 
 ## CONNECTION PIPELINE — CURRENT STATUS
 

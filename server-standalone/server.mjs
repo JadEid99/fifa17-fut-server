@@ -1321,27 +1321,35 @@ function setupMainBlazeHandler(socket, session) {
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
         else if (cmd === 0x002A) resp = buildReply(pkt, new TdfEncoder().writeInteger('TOSI', 0).build());
         else if (cmd === 0x00F2) {
-          // GetLegalDocsInfo — return legal doc info with version
+          // GetLegalDocsInfo — return legal doc info
+          // PocketRelay format: EAMC(int), LHST(str), PMC(int), PPUI(str), TSUI(str)
           console.log(`[Main] S${sid}: -> GetLegalDocsInfo`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', 'v1.0');
-          enc.writeString('TCOL', 'Terms of Service: You agree to play FIFA 17 on this private server.');
+          enc.writeInteger('EAMC', 0);
+          enc.writeString('LHST', '');
+          enc.writeInteger('PMC ', 0);
+          enc.writeString('PPUI', '');
+          enc.writeString('TSUI', '');
           resp = buildReply(pkt, enc.build());
         }
         else if (cmd === 0x00F6) {
-          // GetTermsOfServiceContent — return actual TOS text
+          // GetTermsOfServiceContent — return TOS content
+          // PocketRelay format: LDVC(str path), TCOL(u16), TCOT(str content)
           console.log(`[Main] S${sid}: -> GetTermsOfServiceContent`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', 'v1.0');
-          enc.writeString('TCOL', 'Terms of Service: You agree to play FIFA 17 on this private server. All data is stored locally.');
+          enc.writeString('LDVC', 'webterms/au/en/pc/default/09082020/02042022');
+          enc.writeInteger('TCOL', 0);
+          enc.writeString('TCOT', 'Terms of Service: You agree to play FIFA 17 on this private server.');
           resp = buildReply(pkt, enc.build());
         }
         else if (cmd === 0x002F) {
-          // GetPrivacyPolicyContent — return privacy policy text
+          // GetPrivacyPolicyContent — return privacy policy
+          // PocketRelay format: LDVC(str path), TCOL(u16), TCOT(str content)
           console.log(`[Main] S${sid}: -> GetPrivacyPolicyContent`);
           const enc = new TdfEncoder();
-          enc.writeString('LDVC', 'v1.0');
-          enc.writeString('TCOL', 'Privacy Policy: No personal data is collected or shared.');
+          enc.writeString('LDVC', 'webprivacy/au/en/pc/default/08202020/02042022');
+          enc.writeInteger('TCOL', 0);
+          enc.writeString('TCOT', 'Privacy Policy: No personal data is collected or shared.');
           resp = buildReply(pkt, enc.build());
         }
         else { console.log(`[Main] S${sid}: -> Auth unknown cmd=0x${cmd.toString(16)}`); resp = buildReply(pkt, Buffer.alloc(0)); }
@@ -1568,12 +1576,56 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
+  // CreateAccount response is an AuthResponse (same as Login).
+  // FIFA 17 sends AUTH token (not email/password), so this is token-based auth.
+  // Based on PocketRelay's BlazeSDK AuthResponse (non-silent path):
+  //   LDHT, NTOS, PCTK, PLST (persona list), PRIV, SKEY, SPAM, THST, TSUI, TURI, UID
+  // 
+  // We send BOTH formats to maximize compatibility — the decoder will read
+  // what it knows and skip the rest.
   const enc = new TdfEncoder();
-  enc.writeString('PNAM', session.displayName);
+  enc.writeInteger('AGUP', 0);
+  enc.writeString('LDHT', '');
+  enc.writeInteger('NTOS', 0);
+  enc.writeString('PCTK', `pctk_${session.id}`);
+  enc.writeString('PRIV', '');
+  enc.writeStructStart('SESS');
+  enc.writeInteger('BUID', session.nucleusId);
+  enc.writeInteger('FRST', 0);
+  enc.writeString('KEY ', `${session.nucleusId.toString(16).toUpperCase()}`);
+  enc.writeInteger('LLOG', 0);
+  enc.writeString('MAIL', `p${session.id}@fut.local`);
+  enc.writeStructStart('PDTL');
+  enc.writeString('DSNM', session.displayName);
+  enc.writeInteger('LAST', 0);
+  enc.writeInteger('PID ', session.personaId);
+  enc.writeInteger('STAS', 0);
+  enc.writeInteger('XREF', 0);
+  enc.writeInteger('XTYP', 0);
+  enc.writeStructEnd(); // PDTL
   enc.writeInteger('UID ', session.nucleusId);
+  enc.writeStructEnd(); // SESS
+  enc.writeInteger('SPAM', 0);
+  enc.writeString('THST', '');
+  enc.writeString('TSUI', '');
+  enc.writeString('TURI', '');
   
   const body = enc.build();
-  console.log('[CreateAccount] PNAM+UID response: ' + body.length + ' bytes (UID=' + session.nucleusId + ')');
+  console.log('[CreateAccount] AuthResponse: ' + body.length + ' bytes (UID=' + session.nucleusId + ', persona=' + session.displayName + ')');
+  
+  // Hex dump for debugging
+  const hex = Array.from(body.subarray(0, Math.min(body.length, 64))).map(b => b.toString(16).padStart(2, '0')).join(' ');
+  console.log('[CreateAccount] Body hex (first 64): ' + hex);
+  
+  // Also decode our own TDF to verify it's correct
+  try {
+    const decoded = decodeTdf(body);
+    console.log('[CreateAccount] Self-decode:');
+    for (const line of decoded.lines) console.log('[CreateAccount]   ' + line);
+  } catch(e) {
+    console.log('[CreateAccount] Self-decode error: ' + e.message);
+  }
+  
   return buildReply(pkt, body);
 }
 
