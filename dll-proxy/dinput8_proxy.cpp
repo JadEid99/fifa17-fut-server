@@ -111,14 +111,11 @@ static void PatchAuthBypass() {
                     // Write marker
                     targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&ma,8);o+=8;
                     targetFunc[o++]=0xC7;targetFunc[o++]=0x00;targetFunc[o++]=1;targetFunc[o++]=0;targetFunc[o++]=0;targetFunc[o++]=0;
-                    // MOV RAX, &fakeAuthCode / MOV [R8], RAX
-                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&aa,8);o+=8;
-                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x00;
-                    // MOV RAX, strlen / MOV [R9], RAX
-                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&al,8);o+=8;
-                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x01;
-                    // XOR EAX,EAX / RET
-                    targetFunc[o++]=0x31;targetFunc[o++]=0xC0;targetFunc[o++]=0xC3;
+                    // Return error (EAX=1) — no auth code provided
+                    // This prevents CreateAccount from being sent
+                    // The Login from PreAuth should fire without interference
+                    targetFunc[o++]=0xB8;targetFunc[o++]=0x01;targetFunc[o++]=0x00;targetFunc[o++]=0x00;targetFunc[o++]=0x00; // MOV EAX, 1
+                    targetFunc[o++]=0xC3; // RET
                     VirtualProtect(targetFunc,48,op,&op);
                     Log("PATCHED: FUN_1470db3c0 body -> fake auth code"); g_authBypassDone=1; g_patched++;
                 } return;
