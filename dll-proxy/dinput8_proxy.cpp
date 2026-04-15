@@ -356,25 +356,49 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC6; cave[o++] = 0x86;
         cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x01;
-        // state[0x8c6] = 1 (persona creation = YES → show OSDK screen)
-        // We WANT the OSDK screen now — we'll serve an HTML page that auto-completes
+        // state[0x8c6] = 0 (NO persona creation — skip OSDK screen)
         cave[o++] = 0xC6; cave[o++] = 0x86;
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
+        cave[o++] = 0x00;
         
-        // Call state transition (1, 3) to show the OSDK screen
-        // sm = param_1[1] (handler+0x08)
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08; // MOV RCX, [RBX+0x08]
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX]
-        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV EDX, 1
-        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 3
-        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08; // CALL [RAX+0x08]
+        // Reset loginSM+0x18 to 0 and re-call FUN_146e19720 to re-trigger Login.
+        // loginSM = g_preAuthParam1 + 0x1DB0
+        // FUN_146e19720 checks loginSM+0x18 != 0 → returns if already called.
+        // We reset +0x18 to 0 so it runs again.
+        cave[o++] = 0x50; // PUSH RAX (save)
+        cave[o++] = 0x51; // PUSH RCX (save)
+        // Load g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
+        memcpy(cave + o, &preAuthAddr, 8); o += 8;
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x00; // MOV RAX, [RAX]
+        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC0; // TEST RAX, RAX
+        cave[o++] = 0x74; // JZ skip
+        int jzOff = o; cave[o++] = 0x00; // placeholder
+        
+        // RAX = preAuthParam1, add 0x1DB0 to get loginSM
+        cave[o++] = 0x48; cave[o++] = 0x05;
+        cave[o++] = 0xB0; cave[o++] = 0x1D; cave[o++] = 0x00; cave[o++] = 0x00;
+        // Reset loginSM+0x18 = 0
+        cave[o++] = 0x48; cave[o++] = 0xC7; cave[o++] = 0x40; cave[o++] = 0x18;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // Call FUN_146e19720(loginSM)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC1; // MOV RCX, RAX
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t loginFnAddr = 0x146e19720;
+        memcpy(cave + o, &loginFnAddr, 8); o += 8;
+        cave[o++] = 0xFF; cave[o++] = 0xD0; // CALL RAX
+        
+        // JZ target:
+        cave[jzOff] = (BYTE)(o - jzOff - 1);
+        cave[o++] = 0x59; // POP RCX
+        cave[o++] = 0x58; // POP RAX
         
         // Epilogue
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
         cave[o++] = 0x5E; cave[o++] = 0x5B; cave[o++] = 0xC3;
         
-        Log("CA_HANDLER: Cave at %p, %d bytes (OSDK screen + state transition)", cave, o);
+        Log("CA_HANDLER: Cave at %p, %d bytes (skip OSDK + reset loginSM + re-call FUN_146e19720)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -385,7 +409,7 @@ static void PatchCreateAccountHandler() {
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 14) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> OSDK screen path (0x8c6=1, transition 1,3)");
+            Log("PATCHED: FUN_146e151d0 -> skip OSDK + re-trigger Login");
             g_createAcctPatchDone = 1;
             g_patched++;
         }
