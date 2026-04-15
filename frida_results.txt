@@ -10,28 +10,275 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v31 ===
-=== Ready ===
-[Local::PID::103576 ]-> [CA] CreateAccount RPC
-[CA] State machine = 0x3eafd328
-[CA] Handler = 0x3eae6080
-[CA] handler.vtable+0xb8 = 0x485455415f525245
-[CA] Handler full dump:
-  +0x0 = 0x143891fe8 (code)
-  +0x8 = 0x9965f00
-  +0x10 = 0x9965f90
-  +0x18 = 0x9966000
-  +0x20 = 0x3ead5368
-  +0x28 = 0x1
-  +0x30 = 0x143891ff0 (code)
+=== Frida v32: TDF Decoder Deep Trace ===
+Base: 0x140000000
+=== Frida v32 Ready ===
+Hooks: RPC decoder, CA decoder, PA decoder, FCC decoder, Stalker traces
+Waiting for game...
+[Local::PID::109296 ]-> 
+[RPC-DECODE] errCode=0 bodyLen=322 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (322b):
+  3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e 67 3d 22 55 54 
+  46 2d 38 22 3f 3e 0a 3c 73 65 72 76 65 72 69 6e 73 74 61 6e 63 65 69 6e 66 6f 3e 0a 20 20 3c 61 
+  64 64 72 65 73 73 20 6d 65 6d 62 65 72 3d 22 30 22 3e 0a 20 20 20 20 3c 76 61 6c 75 3e 0a 20 20 
+  20 20 20 20 3c 68 6f 73 74 6e 61 6d 65 3e 31 32 37 2e 30 2e 30 2e 31 3c 2f 68 6f 73 74 6e 61 6d 
+  
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3ee22210
+  +0x8 = 0x3ee22210
+  +0x10 = 0x3ee22352
+  +0x18 = 0x3ee22352
+  +0x20 = 0x3ee22210
+  +0x28 = 0x0
+  +0x30 = 0x0
   +0x38 = 0x0
-  +0x40 = 0x977a7a0
-  +0x48 = 0x977a7a0
-  +0x50 = 0x977a7b0
-  +0x58 = 0x3ead5368
-  +0x60 = 0x1
-  +0x68 = 0x143892010 (code)
-  +0x70 = 0x0
-  +0x78 = 0x3ead7330
-[CA] SM scan for handler ref:
+
+[RPC-DECODE] errCode=0 bodyLen=376 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (376b):
+  86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 
+  81 e0 03 82 e0 03 83 e0 03 85 e0 03 86 e0 03 90 1f 8e e9 ee 01 01 00 8e fb a6 03 8e fb a6 05 01 
+  01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 
+  52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 72 69 6f 64 00 
+  
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e1e8
+  +0x18 = 0x3eb4e1e8
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[PA-DECODER] === ENTERED ===
+[PA-DECODER] RCX(this)=0x9743340
+[PA-DECODER] RDX=0x97433a8
+[PA-DECODER] TDF reader (RDX):
+  vtable = 0x81
+  +0x0 = 0x81
+  +0x8 = 0x0
+  +0x10 = 0x3eb56080
+  +0x18 = 0x146edfb90
+  +0x20 = 0x3eb47ff0
+  +0x28 = 0x146e1cf10
+  +0x30 = 0x0
+  +0x38 = 0x97435c0
+[STALKER-PA] Tracing PreAuth decoder execution...
+[PA-DECODER] === RETURNED === ret=0x3ee55ef0
+[STALKER-PA] PreAuth decoder call summary (35 unique targets):
+  0x145337c20 x1
+  0x146163600 x1
+  0x1461641a0 x1
+  0x146164330 x1
+  0x146db4be0 x2
+  0x146dd57a0 x1
+  0x146df37a0 x1
+  0x146f3cc50 x1
+  0x14717cb30 x1
+  0x1479ab0f0 x9
+  0x1479ab160 x1
+  0x1479ab1a0 x1
+  0x1479abd20 x1
+  0x1479b0190 x1
+  0x1479b2d50 x1
+  0x1479b78f0 x1
+[STALKER-PA] PreAuth decoder trace complete
+
+[RPC-DECODE] errCode=0 bodyLen=10 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (10b):
+  cf 4a 6d 00 91 aa 85 80 b2 67 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e07a
+  +0x18 = 0x3eb4e07a
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[RPC-DECODE] errCode=0 bodyLen=135 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (135b):
+  8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 
+  66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 
+  72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 65 61 64 73 65 74 55 70 64 61 74 65 52 61 74 65 
+  00 05 31 30 30 30 00 1a 78 6c 73 70 43 6f 6e 6e 65 63 74 69 6f 6e 49 64 6c 65 54 69 6d 65 6f 75 
+  
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e0f7
+  +0x18 = 0x3eb4e0f7
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x9742b20 RDX=0x9742b88
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=85 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (85b):
+  8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 
+  6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55 
+  72 6c 00 01 00 0c 66 6f 72 63 65 55 70 64 61 74 65 00 02 30 00 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e0c5
+  +0x18 = 0x3eb4e0c5
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x9743340 RDX=0x97433a8
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=121 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (121b):
+  8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70 3a 2f 2f 31 
+  32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 16 68 74 74 
+  70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 00 0e 6e 75 63 6c 65 75 73 50 6f 72 74 61 
+  6c 00 16 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 00 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e0e9
+  +0x18 = 0x3eb4e0e9
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x9742ee0 RDX=0x9742f48
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=46 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (46b):
+  8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 
+  2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e09e
+  +0x18 = 0x3eb4e09e
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x97415e0 RDX=0x9741648
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=19 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (19b):
+  8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e083
+  +0x18 = 0x3eb4e083
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x9742a80 RDX=0x9742ae8
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=19 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (19b):
+  8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e083
+  +0x18 = 0x3eb4e083
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[FCC-DECODER] === ENTERED ===
+[FCC-DECODER] RCX=0x9742bc0 RDX=0x9742c28
+[FCC-DECODER] === RETURNED === ret=0x9703f90
+
+[RPC-DECODE] errCode=0 bodyLen=169 handler=0x3eb56080 vtable=0x143891fe8
+[RPC-DECODE] Body hex (169b):
+  86 7d 70 00 00 b2 4a 34 01 01 00 bb 4b f3 00 00 c2 3d 2b 01 07 70 63 74 6b 5f 31 00 c3 2a 76 01 
+  01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 09 37 37 33 35 39 34 30 
+  31 00 b2 cb e7 00 00 b6 1a 6c 01 0d 70 31 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 
+  01 08 50 6c 61 79 65 72 31 00 b2 1c f4 00 00 c2 99 00 00 81 a8 d6 b9 07 cf 48 73 00 00 e3 29 66 
+  
+[RPC-DECODE] bodyBuf object dump:
+  +0x0 = 0x3eb4e070
+  +0x8 = 0x3eb4e070
+  +0x10 = 0x3eb4e119
+  +0x18 = 0x3eb4e119
+  +0x20 = 0x3eb4e070
+  +0x28 = 0x14612d000
+  +0x30 = 0x10c5
+  +0x38 = 0x27e18110
+
+[CA-DECODER] === ENTERED ===
+[CA-DECODER] RCX(this)=0x9742bc0
+[CA-DECODER] RDX=0x9742c28
+[CA-DECODER] R8=0x0
+[CA-DECODER] R9=0x13ff0f450
+[CA-DECODER] Response object BEFORE:
+  +0x0 = 0x14389f2b8
+  +0x8 = 0x9751628
+  +0x10 = 0x3eb47f60
+  +0x18 = 0x8000010
+  +0x20 = 0x3eb6d328
+  +0x28 = 0x2710eef4e23a
+  +0x30 = 0x3eb48008
+  +0x38 = 0x8
+  +0x40 = 0x0
+  +0x48 = 0xa0001
+  +0x50 = 0xa9
+  +0x58 = 0x0
+[CA-DECODER] TDF reader (RDX):
+  vtable = 0x81
+  +0x0 = 0x81
+  +0x8 = 0x0
+  +0x10 = 0x3eb56080
+  +0x18 = 0x1471dc8b0
+  +0x20 = 0x3eb6d328
+  +0x28 = 0x146e11bec
+  +0x30 = 0x100000000
+  +0x38 = 0x97441a0
+[STALKER] Tracing CA decoder execution...
+[CA-DECODER] === RETURNED === ret=0x9902710
+[CA-DECODER] Response object AFTER:
+  +0x0 = 0x14389f2b8
+  +0x8 = 0x9751628
+  +0x10 = 0x3eb47f60
+  +0x18 = 0x8000010
+  +0x20 = 0x3eb6d328
+  +0x28 = 0x2710eef4e23a
+  +0x30 = 0x3eb48008
+  +0x38 = 0x8
+  +0x40 = 0x0
+  +0x48 = 0xa0001
+  +0x50 = 0xa9
+  +0x58 = 0x0
+[STALKER-PA] PreAuth decoder call summary (4 unique targets):
+[STALKER] CA decoder call summary (29 unique targets):
+  0x145337c20 x1
+  0x1453aa860 x1
+  0x1453ac1a0 x1
+  0x146db4be0 x2
+  0x146e06180 x1
+  0x146e06740 x1
+  0x146f3cc50 x1
+Process terminated
+
+Thank you for using Frida!
 
