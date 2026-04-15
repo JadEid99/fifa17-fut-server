@@ -1,16 +1,23 @@
 /*
- * Frida v50: AGGRESSIVE — multiple strategies in one script.
- *
- * Strategy 1: Redirect CreateAccount→OriginLogin at wire level
- * Strategy 2: After response arrives, write Login data directly into
- *             the response object's fields (+0x10, +0x11, +0x12, +0x13)
- * Strategy 3: If handler still fails, call PostAuth directly
+ * Frida v51: After CreateAccount handler triggers (1,3), immediately
+ * simulate TOS acceptance by triggering transitions (4,1), (5,1), (3,1).
+ * This should advance past the OSDK screen to Login.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v50: AGGRESSIVE Multi-Strategy ===');
+console.log('=== Frida v51: Simulate TOS Acceptance ===');
 
-// Strategy 1: Redirect CreateAccount→OriginLogin at send time
+// NOP the OSDK screen loader
+try {
+    Memory.patchCode(addr(0x6e00f40), 4, function(code) {
+        var w = new X86Writer(code, { pc: addr(0x6e00f40) });
+        w.putRet();
+        w.flush();
+    });
+    console.log('[INIT] NOPed FUN_146e00f40');
+} catch(e) { console.log('[INIT] NOP error: ' + e); }
+
+// Redirect CreateAccount→OriginLogin at send time
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
         var comp = this.context.r8.toInt32();
@@ -22,106 +29,81 @@ Interceptor.attach(addr(0x6df0e80), {
     }
 });
 
-// Strategy 2: Intercept the CreateAccount handler — force success AND write response data
+// Intercept CreateAccount handler
 Interceptor.attach(addr(0x6e151d0), {
     onEnter: function(args) {
-        var param1 = args[0]; // handler
-        var param2 = args[1]; // response object
-        var param3 = args[2]; // error code
+        this._param1 = args[0];
+        this.context.r8 = ptr(0); // Force success
         
-        console.log('[S2] Handler called, param1=' + param1 + ' param2=' + param2 + ' R8=' + param3);
-        
-        // Force R8 = 0 (success path) — same as DLL's Patch 8 does for PreAuth
-        this.context.r8 = ptr(0);
-        
-        // Write non-zero values into the response object
+        var param2 = args[1];
         try {
             param2.add(0x10).writeU8(1);  // UID non-zero
-            param2.add(0x11).writeU8(0);
-            param2.add(0x12).writeU8(0);
-            param2.add(0x13).writeU8(1);  // YES persona creation — triggers state transition
-            console.log('[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=1 ***');
-            
-            // Also try to change the state transition parameters
-            // The handler calls: (*vtable+0x08)(sm, 1, 3)
-            // We want to change (1,3) to something else
-            // Hook the state transition function to change params
-        } catch(e) {
-            console.log('[S2] Write error: ' + e);
-        }
+            param2.add(0x13).writeU8(1);  // Persona creation (triggers state transition)
+            console.log('[S2] Wrote +0x10=1, +0x13=1, forced R8=0');
+        } catch(e) {}
     },
     onLeave: function(retval) {
-        console.log('[S2] Handler returned — checking if state advanced...');
+        console.log('[S2] Handler returned. Now simulating TOS acceptance...');
+        
+        // The handler called state transition (1,3) which shows OSDK screen.
+        // Now we need to simulate TOS acceptance by calling more transitions.
+        // The state machine object is at param_1[1] (handler+0x08).
+        try {
+            var handler = this._param1;
+            var sm = handler.add(0x08).readPointer();
+            console.log('[S2] State machine = ' + sm);
+            
+            if (!sm.isNull()) {
+                var smVtable = sm.readPointer();
+                var transitionFn = smVtable.add(0x38).readPointer();
+                console.log('[S2] Transition function = ' + transitionFn);
+                
+                // Call transitions to simulate TOS acceptance
+                var callTransition = new NativeFunction(transitionFn, 'void', ['pointer', 'int', 'int']);
+                
+                // Transition (4,1) — TOS loaded
+                console.log('[S2] Calling transition (4,1)...');
+                callTransition(sm, 4, 1);
+                
+                // Transition (5,1) — TOS accepted  
+                console.log('[S2] Calling transition (5,1)...');
+                callTransition(sm, 5, 1);
+                
+                // Transition (3,1) — proceed to next step
+                console.log('[S2] Calling transition (3,1)...');
+                callTransition(sm, 3, 1);
+                
+                console.log('[S2] *** All TOS transitions called! ***');
+            }
+        } catch(e) {
+            console.log('[S2] Transition error: ' + e);
+        }
     }
 });
 
-// Strategy 3: NOP FUN_146e00f40 AND hook state transition to change (1,3) to (2,1)
-try {
-    var osdkLoader = addr(0x6e00f40);
-    Memory.patchCode(osdkLoader, 4, function(code) {
-        var w = new X86Writer(code, { pc: osdkLoader });
-        w.putRet();
-        w.flush();
-    });
-    console.log('[S3] Patched FUN_146e00f40 -> RET (OSDK screen NOP)');
-} catch(e) {
-    console.log('[S3] Could not patch FUN_146e00f40: ' + e);
-}
-
-// Hook the state transition function — log but DON'T change params
-// (2,1) crashes. Let (1,3) happen — it advances the state machine.
-try {
-    Interceptor.attach(addr(0x6e126b0), {
-        onEnter: function(args) {
-            var p2 = args[1].toInt32();
-            var p3 = args[2].toInt32();
-            console.log('[S3] State transition (' + p2 + ',' + p3 + ')');
-        }
-    });
-    console.log('[S3] Hooked state transition at 0x146E126B0 (logging only)');
-} catch(e) {
-    console.log('[S3] Could not hook state transition: ' + e);
-}
+// Track state transitions
+Interceptor.attach(addr(0x6e126b0), {
+    onEnter: function(args) {
+        console.log('[TRANSITION] (' + args[1].toInt32() + ',' + args[2].toInt32() + ')');
+    }
+});
 
 // Track PostAuth
 Interceptor.attach(addr(0x6e213e0), {
     onEnter: function(args) {
-        console.log('[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=' + args[0] + ' ***');
+        console.log('[POSTAUTH] *** FUN_146e213e0 CALLED! ***');
     }
 });
 
-// Track what happens after CreateAccount
-Interceptor.attach(addr(0x6e1cf10), {
-    onEnter: function(args) { console.log('[FLOW] PreAuth handler'); }
-});
-
-// Track Logout
+// Track any new RPC sends
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
         var comp = this.context.r8.toInt32();
         var cmd = this.context.r9.toInt32();
-        if (comp === 1 && cmd === 70) {
-            console.log('[FLOW] Logout being sent');
+        if (comp > 0 && comp < 0x8000) {
+            console.log('[RPC] comp=' + comp + ' cmd=' + cmd + ' (0x' + cmd.toString(16) + ')');
         }
     }
 });
 
-// Track FetchClientConfig completion
-var fccCount = 0;
-Interceptor.attach(addr(0x6df0e80), {
-    onEnter: function(args) {
-        var comp = this.context.r8.toInt32();
-        var cmd = this.context.r9.toInt32();
-        if (comp === 9 && cmd === 1) {
-            fccCount++;
-            if (fccCount === 6) {
-                console.log('[FLOW] All 6 FetchClientConfig sent');
-            }
-        }
-    }
-});
-
-console.log('=== Frida v50 Ready ===');
-console.log('S1: CreateAccount→OriginLogin redirect');
-console.log('S2: Write response data directly into response object');
-console.log('S3: Track PostAuth call');
+console.log('=== Frida v51 Ready ===');
