@@ -292,6 +292,9 @@ function encodeHeader(h) {
     // Notification: type=2 (010), flags=0 → byte13=0x40, msgId=0
     buf[10] = 0x00; buf[11] = 0x00; buf[12] = 0x00;
     buf[13] = 0x40;
+  } else if ((h.error || 0) !== 0) {
+    // Error response: type=3 (011), flags=0 → byte13=0x60
+    buf[13] = 0x60;
   } else {
     // Response: type=1 (001), flags=0 → byte13=0x20
     buf[13] = 0x20;
@@ -1314,59 +1317,6 @@ function setupMainBlazeHandler(socket, session) {
         
         if (cmd === 0x000A) { 
           resp = handleCreateAccount(session, pkt);
-          // After sending CreateAccount response, send proactive SilentLogin notification
-          // The game's bypass cave skips the handler, so we need to push the login state
-          setTimeout(() => {
-            try {
-              console.log(`[Main] S${sid}: Sending proactive SilentLogin notification...`);
-              const loginEnc = new TdfEncoder();
-              loginEnc.writeInteger('AGUP', 0);
-              loginEnc.writeString('LDHT', '');
-              loginEnc.writeInteger('NTOS', 0);
-              loginEnc.writeString('PCTK', `pctk_${sid}`);
-              loginEnc.writeString('PRIV', '');
-              loginEnc.writeStructStart('SESS');
-              loginEnc.writeInteger('BUID', session.nucleusId);
-              loginEnc.writeInteger('FRST', 0);
-              loginEnc.writeString('KEY ', `${session.nucleusId.toString(16).toUpperCase()}`);
-              loginEnc.writeInteger('LLOG', 0);
-              loginEnc.writeString('MAIL', `p${sid}@fut.local`);
-              loginEnc.writeStructStart('PDTL');
-              loginEnc.writeString('DSNM', session.displayName);
-              loginEnc.writeInteger('LAST', 0);
-              loginEnc.writeInteger('PID ', session.personaId);
-              loginEnc.writeInteger('STAS', 0);
-              loginEnc.writeInteger('XREF', 0);
-              loginEnc.writeInteger('XTYP', 0);
-              loginEnc.writeStructEnd();
-              loginEnc.writeInteger('UID ', session.nucleusId);
-              loginEnc.writeStructEnd();
-              loginEnc.writeInteger('SPAM', 0);
-              loginEnc.writeString('THST', '');
-              loginEnc.writeString('TSUI', '');
-              loginEnc.writeString('TURI', '');
-              const loginBody = loginEnc.build();
-              const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, notify: true });
-              const loginPkt = Buffer.concat([loginHdr, loginBody]);
-              socket.write(loginPkt);
-              console.log(`[Main] S${sid}: Sent proactive SilentLogin (${loginPkt.length} bytes)`);
-              
-              // Also send UserSession notification
-              const userEnc = new TdfEncoder();
-              userEnc.writeStructStart('USER');
-              userEnc.writeInteger('AID ', session.nucleusId);
-              userEnc.writeInteger('ALOC', 1701729619);
-              userEnc.writeInteger('ID  ', session.personaId);
-              userEnc.writeString('NAME', session.displayName);
-              userEnc.writeStructEnd();
-              const userBody = userEnc.build();
-              const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, notify: true });
-              socket.write(Buffer.concat([userHdr, userBody]));
-              console.log(`[Main] S${sid}: Sent UserSession notification`);
-            } catch(e) {
-              console.log(`[Main] S${sid}: Proactive notification error: ${e.message}`);
-            }
-          }, 200);
         }
         else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
@@ -1629,13 +1579,10 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  const enc = new TdfEncoder();
-  enc.writeInteger('BUID', session.nucleusId);
-  enc.writeString('PNAM', session.displayName);
-  
-  const body = enc.build();
-  console.log('[CreateAccount] Response: ' + body.length + ' bytes');
-  return buildReply(pkt, body);
+  console.log('[CreateAccount] Responding with ERROR 0x0F (account already exists)');
+  // Error 0x0F = "Exists" — tells the game the account already exists
+  // The game should then try Login instead of creating a new account
+  return buildReply(pkt, Buffer.alloc(0), 0x000F);
 }
 
 function handleFetchClientConfig(pkt) {
