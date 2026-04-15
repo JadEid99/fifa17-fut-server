@@ -15,18 +15,17 @@ Attaching...
 S1: CreateAccount\u2192OriginLogin redirect
 S2: Write response data directly into response object
 S3: Track PostAuth call
-[Local::PID::5852 ]-> [S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
-[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
-[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
-[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
-[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[Local::PID::71560 ]-> [S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
 [FLOW] PreAuth handler
-[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea57330 ***
 [FLOW] All 6 FetchClientConfig sent
 [S1] Redirecting CreateAccount -> OriginLogin
-[S2] Handler called, param2=0x9902710 R8=0x0
-[S2] *** Wrote response data: +0x10=1, +0x13=0 ***
-[S2] Verify: +0x10=1 +0x13=0
-[S2] Handler returned
+[S2] Handler called, param1=0x3ea7d328 param2=0x9932710 R8=0x0
+[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=0 ***
+[S2] Handler returned — checking if state advanced...
 [FLOW] Logout being sent
 
