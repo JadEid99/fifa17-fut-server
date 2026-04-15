@@ -10,11 +10,11 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v55: Intercept State Transition ===
+=== Frida v56: Block Logout + Intercept State ===
 [INIT] NOPed FUN_146e00f40 (OSDK screen loader)
 [INIT] Hooked state transition with (1,3)\u2192(0,-1) intercept
-=== Frida v55 Ready ===
-[Local::PID::83200 ]-> [POSTAUTH] *** FUN_146e213e0 called! ***
+=== Frida v56 Ready ===
+[Local::PID::109452 ]-> [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
@@ -23,7 +23,7 @@ Attaching...
 [RPC] comp=0x9 cmd=PreAuth (7)
 [RPC] comp=0x9 cmd=Ping (2)
 [LOGIN-TYPES] FUN_146e1c3f0 called (login type processor)
-[LOGIN-TYPES] loginData ptr = 0x3ee46010
+[LOGIN-TYPES] loginData ptr = 0x3ed56010
 [LOGIN-START] FUN_146e19720 called (login job creator)
 [POSTAUTH] *** FUN_146e213e0 called! ***
 [LOGIN-CHECK] FUN_146e1dae0, array count=0
@@ -38,11 +38,12 @@ Attaching...
 [RPC] comp=0x1 cmd=OriginLogin (152)
 [HANDLER] CreateAccount handler entered
 [HANDLER] Wrote +0x10=1, +0x13=1, R8=0
-[STATE #1] transition(1, 3) sm=0x3eb5d2f0
-[STATE]   current_state(sm[5])=0x3eb5d328
+[STATE #1] transition(1, 3) sm=0x3ea6d2f0
+[STATE]   current_state(sm[5])=0x3ea6d328
 [STATE] *** INTERCEPTING (1,3) \u2192 changing to (0, -1) ***
 [STATE] *** Transition changed to (0, -1) ***
 [HANDLER] CreateAccount handler returned
-[RPC] comp=0x1 cmd=Logout (70)
-[STATE #2] transition(0, -1) sm=0x3eb5d2f0
-[STATE]   current_state(sm[5])=0x3eb5d328
+[WIRE] *** BLOCKING Logout! Changing to Ping (harmless) ***
+[RPC] comp=0x9 cmd=Ping (2)
+[STATE #2] transition(0, -1) sm=0x3ea6d2f0
+[STATE]   current_state(sm[5])=0x3ea6d328
