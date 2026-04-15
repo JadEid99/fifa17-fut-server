@@ -295,22 +295,17 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: FUN_146e151d0 (CreateAccount response handler)
-// The cave must set state bytes SYNCHRONOUSLY (not in background thread)
-// because the game processes the handler return immediately.
-//
-// From the DLL log, the handler's vtable+0xb8 IS valid:
-//   handler vtable=0x14389F938, [0xb8]=0x146E140A0 (valid function)
-//   Returns a state object where we set 0x8bc, 0x8c0, 0x8c6
-//
-// Cave does:
-//   1. Call vtable+0xb8(RCX) to get state object
-//   2. Set state[0x8bc] = 0 (success)
-//   3. Set state[0x8c0] = 1 (UID non-zero)
-//   4. Set state[0x8c6] = 0 (NO persona creation)
-//   5. Return (fall-through path, no OSDK screen)
+// Instead of bypassing the handler, we let the ORIGINAL handler run
+// with a fake response object where +0x10=1 (UID non-zero) and +0x13=0
+// (no persona creation). This way the handler sets state bytes AND
+// returns properly to the caller, which lets the queued Login proceed.
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
 static volatile uint64_t g_createAcctParam1 = 0;
+
+// Fake response object — static so it persists
+static BYTE g_fakeCAResponse[0x20] = {0};
+
 static void PatchCreateAccountHandler() {
     if (g_createAcctPatchDone) return;
     
@@ -319,115 +314,74 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        // Set up the fake response object:
+        // +0x10 = 1 (UID byte — non-zero, account exists)
+        // +0x11 = 0
+        // +0x12 = 0
+        // +0x13 = 0 (NO persona creation — skip OSDK screen)
+        memset(g_fakeCAResponse, 0, sizeof(g_fakeCAResponse));
+        g_fakeCAResponse[0x10] = 0x01; // UID non-zero
+        // +0x13 stays 0 (no persona creation)
+        
+        // Cave: force R8D=0 (success), force RDX=&g_fakeCAResponse,
+        // set flag, then run original handler code (trampoline)
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
         
-        // Prologue: save non-volatile registers we'll use
-        cave[o++] = 0x53;                                     // PUSH RBX
-        cave[o++] = 0x56;                                     // PUSH RSI
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
+        // XOR R8D, R8D — force param_3 = 0 (success)
+        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
         
-        // Save param_1 (RCX = handler) in RBX
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
+        // MOV RDX, &g_fakeCAResponse — force param_2 = fake response
+        cave[o++] = 0x48; cave[o++] = 0xBA;
+        uint64_t fakeAddr = (uint64_t)g_fakeCAResponse;
+        memcpy(cave + o, &fakeAddr, 8); o += 8;
         
-        // Also save to global for logging
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
-        memcpy(cave + o, &p1Addr, 8); o += 8;
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08; // MOV [RAX], RCX
-        
-        // Set g_createAcctCalled = 1
+        // Set flag (using PUSH/POP to preserve registers)
+        cave[o++] = 0x50; // PUSH RAX
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Call vtable+0xb8(param_1) to get state object
-        // MOV RAX, [RBX]          ; RAX = vtable
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x03;
-        // MOV RCX, RBX            ; RCX = param_1 (this)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
-        // CALL [RAX + 0xb8]       ; call vtable+0xb8
-        cave[o++] = 0xFF; cave[o++] = 0x90;
-        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // RAX = state object, save in RSI
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV RSI, RAX
-        
-        // Set state[0x8bc] = 0 (success / error code)
-        // MOV DWORD [RSI + 0x8bc], 0
-        cave[o++] = 0xC7; cave[o++] = 0x86;
-        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // Set state[0x8c0] = 1 (UID non-zero — account exists)
-        // MOV BYTE [RSI + 0x8c0], 1
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
-        
-        // Set state[0x8c1] = 0
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC1; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
-        
-        // Set state[0x8c5] = 0
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
-        
-        // Set state[0x8c6] = 0 (NO persona creation — skip OSDK screen)
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
-        
-        // Call FUN_146e19720(loginSM) to start the Login flow.
-        // loginSM = g_preAuthParam1 + 0x1DB0 (Ghidra shows param_1 + 0x3b6
-        // but param_1 is longlong*, so byte offset = 0x3b6 * 8 = 0x1DB0).
-        // Frida v35 confirmed: loginSM+0x08 = BlazeHub (non-zero), 0x53f = 1.
-        
-        // Load g_preAuthParam1
+        // Save param_1 to global
         cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
-        memcpy(cave + o, &preAuthAddr, 8); o += 8;
-        // MOV RCX, [RAX]          ; RCX = g_preAuthParam1
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x08;
-        // TEST RCX, RCX
-        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC9;
-        // JZ skip
-        cave[o++] = 0x74;
-        int jzPatchOffset = o;
-        cave[o++] = 0x00; // placeholder
+        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
+        memcpy(cave + o, &p1Addr, 8); o += 8;
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08; // MOV [RAX], RCX
+        cave[o++] = 0x58; // POP RAX
         
-        // ADD RCX, 0x1DB0         ; RCX = loginSM = preAuthParam1 + 0x1DB0
-        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1;
-        cave[o++] = 0xB0; cave[o++] = 0x1D; cave[o++] = 0x00; cave[o++] = 0x00;
+        // Copy the original first 14 bytes (that we'll overwrite with the jump)
+        memcpy(cave + o, func, 14); o += 14;
         
-        // MOV RAX, FUN_146e19720
+        // Jump back to func + 14 (continue original handler code)
         cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t loginFnAddr = 0x146e19720;
-        memcpy(cave + o, &loginFnAddr, 8); o += 8;
-        // CALL RAX
-        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        uint64_t retAddr = (uint64_t)(func + 14);
+        memcpy(cave + o, &retAddr, 8); o += 8;
+        cave[o++] = 0xFF; cave[o++] = 0xE0;
         
-        // Patch JZ offset
-        cave[jzPatchOffset] = (BYTE)(o - jzPatchOffset - 1);
-        
-        // Epilogue: restore and return
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
-        cave[o++] = 0x5E;                                     // POP RSI
-        cave[o++] = 0x5B;                                     // POP RBX
-        cave[o++] = 0xC3;                                     // RET
-        
-        Log("CA_HANDLER: Cave at %p, %d bytes (sync state setup)", cave, o);
+        Log("CA_HANDLER: Cave at %p, %d bytes (trampoline with fake response)", cave, o);
+        Log("CA_HANDLER: fakeResponse at %p (+0x10=0x%02X, +0x13=0x%02X)",
+            g_fakeCAResponse, g_fakeCAResponse[0x10], g_fakeCAResponse[0x13]);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
             int p = 0;
             func[p++] = 0x48; func[p++] = 0xB8;
             uint64_t caveAddr = (uint64_t)cave;
+            memcpy(func + p, &caveAddr, 8); p += 8;
+            func[p++] = 0xFF; func[p++] = 0xE0;
+            while (p < 14) func[p++] = 0x90;
+            VirtualProtect(func, 16, op, &op);
+            Log("PATCHED: FUN_146e151d0 -> trampoline with fake response (UID=1, persona=0)");
+            g_createAcctPatchDone = 1;
+            g_patched++;
+        }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("CA_HANDLER: Exception");
+    }
+}
             memcpy(func + p, &caveAddr, 8); p += 8;
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 16) func[p++] = 0x90;
@@ -836,29 +790,15 @@ done:
                 }
                 
                 // CreateAccount handled by sync cave (state bytes set, no OSDK screen)
-                // The game sends Logout after this — we can't prevent it from the DLL.
+                // CreateAccount handled by trampoline with fake response
                 if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
-                    Log("CA-DETECT: CreateAccount done (sync cave). handler=0x%llX preAuth=0x%llX", 
+                    Log("CA-DETECT: CreateAccount done (trampoline). handler=0x%llX preAuth=0x%llX", 
                         g_createAcctParam1, g_preAuthParam1);
-                    
-                    // Diagnostic: check if loginSM was initialized by PreAuth
                     if (g_preAuthParam1 != 0) {
-                        uint64_t loginSM = g_preAuthParam1 + 0x3b6;
-                        uint64_t blazeHubInSM = *(uint64_t*)(loginSM + 0x08);
-                        Log("CA-DETECT: loginSM=0x%llX, loginSM+0x08(BlazeHub)=0x%llX", loginSM, blazeHubInSM);
-                        // Also check the PreAuth handler object itself
-                        uint64_t handlerByte3be = *(uint64_t*)(g_preAuthParam1 + 0x3be);
-                        Log("CA-DETECT: preAuth+0x3be=0x%llX (loginSM+0x08 alias)", handlerByte3be);
-                        // Check if FUN_146e1c3f0 was called by checking loginSM+0x1b0
-                        uint8_t sm1b0 = *(uint8_t*)(loginSM + 0x1b0);
-                        uint32_t sm20 = *(uint32_t*)(loginSM + 0x20);
-                        Log("CA-DETECT: loginSM+0x1b0=%d, loginSM+0x20=%d", sm1b0, sm20);
-                        // Dump first 0x30 bytes of loginSM
-                        Log("CA-DETECT: loginSM dump:");
-                        for (int d = 0; d < 0x30; d += 8) {
-                            Log("  +0x%02X = 0x%llX", d, *(uint64_t*)(loginSM + d));
-                        }
+                        uint64_t loginSM = g_preAuthParam1 + 0x1DB0;
+                        Log("CA-DETECT: loginSM=0x%llX +0x08=0x%llX +0x18=0x%llX",
+                            loginSM, *(uint64_t*)(loginSM + 0x08), *(uint64_t*)(loginSM + 0x18));
                     }
                 }
             }
