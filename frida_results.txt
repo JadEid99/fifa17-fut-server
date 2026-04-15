@@ -10,16 +10,29 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v39: Dump CreateAccount Response Object ===
-=== Frida v39 Ready ===
-Will dump CreateAccount response object bytes at +0x10-0x13
-[Local::PID::87188 ]-> [PA-HANDLER] Called R8=0x0
-
-[CA-HANDLER] Called! param1=0x3ea7d328 param2=0x9902710 param3=0x0
-[CA-HANDLER] Response object (param_2) dump:
-  +0x0 = 0x14389ac68
-  +0x8 = 0x3dcccccd00000001
-Process terminated
-
-Thank you for using Frida!
+=== Frida v40: Login Flow Trace ===
+=== Frida v40 Ready ===
+[Local::PID::75260 ]-> [RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[PA-HANDLER] Called R8=0x0
+[POST-PREAUTH] FUN_146e1e460 CALLED
+[LOGIN-INIT] FUN_146e1c3f0 CALLED! loginSM=0x3eb99da0 param2=0x3eea6000
+[LOGIN-INIT] loginSM+0x08 (BlazeHub) = 0x3eb97330
+[LOGIN-INIT] BlazeHub+0x53f = 1
+[LOGIN-START] FUN_146e19720 CALLED! param1=0x3eb99da0
+[LOGIN-START] loginSM+0x18 (guard) = 0x0
+[LOGIN-START] loginSM+0x1f8 (login type) = 0
+[JOB-CREATE] FUN_1478aa0f0 CALLED! callback=0x146e1d730 context=0x3eb99da0 param3=0x0
+[JOB-CREATE] returned job=0x2a852370
+[LOGIN-START] FUN_146e19720 returned
+[LOGIN-INIT] FUN_146e1c3f0 returned
+[PA-HANDLER] Returned
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
+[RPC-DISPATCH] FUN_146db5a60 called
 
