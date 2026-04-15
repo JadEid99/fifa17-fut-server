@@ -12,36 +12,7 @@
 Attaching...
 === Frida v43: Dump Login Type Entry + Force Login ===
 === Frida v43 Ready ===
-[Local::PID::88328 ]-> [PA-HANDLER] Called
-[LOGIN-INIT] loginSM=0x3eb29da0
-[LOGIN-INIT] Login type entry at +0xE0 = 0x3eb29ec0
-[LOGIN-INIT] Entry dump (0x40 bytes):
-  +0x0 = 0x143888ff8 [f8 8f 88 43 01 00 00 00]
-  +0x8 = 0x80000000 [00 00 00 80 00 00 00 00]
-  +0x10 = 0x4 [04 00 00 00 00 00 00 00]
-  +0x18 = 0x143888ea8 [a8 8e 88 43 01 00 00 00]
-  +0x20 = 0x80000000 [00 00 00 80 00 00 00 00]
-  +0x28 = 0x7 [07 00 00 00 00 00 00 00]
-  +0x30 = 0xe4bc0a8b216 [16 b2 a8 c0 4b 0e 00 00]
-  +0x38 = 0x0 [00 00 00 00 00 00 00 00]
-[LOGIN-INIT] entry[0] = 248
-[LOGIN-INIT] entry+0x18 = 0x143888ea8
-[LOGIN-INIT] entry+0x18 dump:
-  +0x0 = 0x146e7ed30
-  +0x8 = 0x14615cd90
-  +0x10 = 0x146de2050
-  +0x18 = 0x1479acf90
-  +0x20 = 0x1479ba1e0
-  +0x28 = 0x1479ba120
-[LOGIN-INIT] +0xC8 area:
-  +0xc0 = 0x80000000
-  +0xc8 = 0x14486b590
-  +0xd0 = 0x143882d60
-  +0xd8 = 0x14486db60
-  +0xe0 = 0x3eb29ec0
-  +0xe8 = 0x1
-  +0xf0 = 0x3eb25368
-  +0xf8 = 0x3eb29ec0
-[LOGIN-INIT] Job handle = 0x2a7d1f80
-[FORCE-LOGIN] Attempting FUN_146e1eb70(loginSM, &entry, authConfig, 1)...
-[FORCE-LOGIN] CRASHED: Error: access violation accessing 0x40e00000
+[Local::PID::67940 ]-> 
+[Local::PID::67940 ]-> Process terminated
+
+Thank you for using Frida!
