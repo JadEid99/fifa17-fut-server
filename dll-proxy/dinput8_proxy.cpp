@@ -543,8 +543,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            // Patch 3: Re-enabled — Origin IPC connection fails too early
-            if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: DISABLED — using Origin IPC server for auth
+            // if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
