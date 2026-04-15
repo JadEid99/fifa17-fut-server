@@ -295,18 +295,10 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: FUN_146e151d0 (CreateAccount response handler)
-// STABLE APPROACH: Set state bytes to skip OSDK screen, then return.
-// The game sends Logout after this, but at least it doesn't crash.
-//
-// We've confirmed:
-// - Setting 0x8c0=1, 0x8c6=0 skips the OSDK screen (no persona creation)
-// - The original handler crashes with fake response objects
-// - FUN_146e19720 is a one-shot (already called during PreAuth)
-// - State transition (1,3) triggers the OSDK screen
-//
-// NEXT APPROACH: Instead of trying to skip CreateAccount entirely,
-// use the OSDK screen path (0x8c6=1) and serve an HTML page that
-// auto-completes the account creation via the Nucleus web view.
+// Let the ORIGINAL handler run with R8D=0 (success), same as PreAuth.
+// The server now sends a minimal 2-field response (BUID + PNAM).
+// If the TDF decoder populates response[0x10] correctly, the handler
+// will see UID non-zero and take the "account exists" path.
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
 static volatile uint64_t g_createAcctParam1 = 0;
@@ -319,57 +311,34 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        // Same approach as PreAuth (Patch 8): trampoline that forces R8D=0
+        // then runs the original handler code.
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
+        // XOR R8D, R8D — force param_3 = 0 (success path)
+        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
         
-        // Prologue
-        cave[o++] = 0x53; // PUSH RBX
-        cave[o++] = 0x56; // PUSH RSI
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
-        
-        // Save param_1 and set flag
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
-        memcpy(cave + o, &p1Addr, 8); o += 8;
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08; // MOV [RAX], RCX
+        // Set flag
+        cave[o++] = 0x50; // PUSH RAX
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x58; // POP RAX
         
-        // Call vtable+0xb8(param_1) to get state object
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x03; // MOV RAX, [RBX]
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9; // MOV RCX, RBX
-        cave[o++] = 0xFF; cave[o++] = 0x90;
-        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV RSI, RAX (state)
+        // Copy the original first 14 bytes
+        memcpy(cave + o, func, 14); o += 14;
         
-        // state[0x8bc] = 0 (success)
-        cave[o++] = 0xC7; cave[o++] = 0x86;
-        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // state[0x8c0] = 1 (UID non-zero)
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x01;
-        // state[0x8c6] = 0 (NO persona creation — skip OSDK screen)
-        cave[o++] = 0xC6; cave[o++] = 0x86;
-        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x00;
+        // Jump back to func + 14
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t retAddr = (uint64_t)(func + 14);
+        memcpy(cave + o, &retAddr, 8); o += 8;
+        cave[o++] = 0xFF; cave[o++] = 0xE0;
         
-        // Don't call FUN_146e19720 or state transitions.
-        // The Logout is prevented by patching FUN_1472d62a0 (OSDK Logout) to NOP.
-        // Without Logout, the game should fall through to the Login path.
-        
-        // Epilogue
-        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
-        cave[o++] = 0x5E; cave[o++] = 0x5B; cave[o++] = 0xC3;
-        
-        Log("CA_HANDLER: Cave at %p, %d bytes (skip OSDK + reset loginSM + re-call FUN_146e19720)", cave, o);
+        Log("CA_HANDLER: Cave at %p, %d bytes (XOR R8D + trampoline, let original run)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -380,7 +349,7 @@ static void PatchCreateAccountHandler() {
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 14) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> skip OSDK + re-trigger Login");
+            Log("PATCHED: FUN_146e151d0 -> XOR R8D + trampoline (original handler runs)");
             g_createAcctPatchDone = 1;
             g_patched++;
         }
@@ -801,16 +770,10 @@ done:
                 }
                 
                 // CreateAccount handled by sync cave (state bytes set, no OSDK screen)
-                // CreateAccount handled by trampoline with fake response
+                // CreateAccount handled by trampoline (original handler runs)
                 if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
-                    Log("CA-DETECT: CreateAccount done (trampoline). handler=0x%llX preAuth=0x%llX", 
-                        g_createAcctParam1, g_preAuthParam1);
-                    if (g_preAuthParam1 != 0) {
-                        uint64_t loginSM = g_preAuthParam1 + 0x1DB0;
-                        Log("CA-DETECT: loginSM=0x%llX +0x08=0x%llX +0x18=0x%llX",
-                            loginSM, *(uint64_t*)(loginSM + 0x08), *(uint64_t*)(loginSM + 0x18));
-                    }
+                    Log("CA-DETECT: CreateAccount handler ran (original code with R8D=0)");
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}

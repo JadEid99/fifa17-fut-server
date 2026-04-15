@@ -1576,55 +1576,20 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  // CreateAccount response is an AuthResponse (same as Login).
-  // FIFA 17 sends AUTH token (not email/password), so this is token-based auth.
-  // Based on PocketRelay's BlazeSDK AuthResponse (non-silent path):
-  //   LDHT, NTOS, PCTK, PLST (persona list), PRIV, SKEY, SPAM, THST, TSUI, TURI, UID
-  // 
-  // We send BOTH formats to maximize compatibility — the decoder will read
-  // what it knows and skip the rest.
+  // CreateAccount response — the game expects exactly 2 fields.
+  // The TDF decoder reads them into the response object.
+  // We need to find the right tags. Trying different combinations.
+  // The handler reads response[0x10] (UID byte) and response[0x13] (persona flag).
+  //
+  // Attempt: send just BUID (integer) and PNAM (string) — minimal response
   const enc = new TdfEncoder();
-  enc.writeInteger('AGUP', 0);
-  enc.writeString('LDHT', '');
-  enc.writeInteger('NTOS', 0);
-  enc.writeString('PCTK', `pctk_${session.id}`);
-  enc.writeString('PRIV', '');
-  enc.writeStructStart('SESS');
-  enc.writeInteger('BUID', session.nucleusId);
-  enc.writeInteger('FRST', 0);
-  enc.writeString('KEY ', `${session.nucleusId.toString(16).toUpperCase()}`);
-  enc.writeInteger('LLOG', 0);
-  enc.writeString('MAIL', `p${session.id}@fut.local`);
-  enc.writeStructStart('PDTL');
-  enc.writeString('DSNM', session.displayName);
-  enc.writeInteger('LAST', 0);
-  enc.writeInteger('PID ', session.personaId);
-  enc.writeInteger('STAS', 0);
-  enc.writeInteger('XREF', 0);
-  enc.writeInteger('XTYP', 0);
-  enc.writeStructEnd(); // PDTL
-  enc.writeInteger('UID ', session.nucleusId);
-  enc.writeStructEnd(); // SESS
-  enc.writeInteger('SPAM', 0);
-  enc.writeString('THST', '');
-  enc.writeString('TSUI', '');
-  enc.writeString('TURI', '');
+  enc.writeInteger('BUID', session.nucleusId);  // Account/User ID
+  enc.writeString('PNAM', session.displayName);  // Persona name
   
   const body = enc.build();
-  console.log('[CreateAccount] AuthResponse: ' + body.length + ' bytes (UID=' + session.nucleusId + ', persona=' + session.displayName + ')');
-  
-  // Hex dump for debugging
-  const hex = Array.from(body.subarray(0, Math.min(body.length, 64))).map(b => b.toString(16).padStart(2, '0')).join(' ');
-  console.log('[CreateAccount] Body hex (first 64): ' + hex);
-  
-  // Also decode our own TDF to verify it's correct
-  try {
-    const decoded = decodeTdf(body);
-    console.log('[CreateAccount] Self-decode:');
-    for (const line of decoded.lines) console.log('[CreateAccount]   ' + line);
-  } catch(e) {
-    console.log('[CreateAccount] Self-decode error: ' + e.message);
-  }
+  console.log('[CreateAccount] Minimal response: ' + body.length + ' bytes (BUID=' + session.nucleusId + ', PNAM=' + session.displayName + ')');
+  const hex = Array.from(body).map(b => b.toString(16).padStart(2, '0')).join(' ');
+  console.log('[CreateAccount] Hex: ' + hex);
   
   return buildReply(pkt, body);
 }
