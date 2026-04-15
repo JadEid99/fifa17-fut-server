@@ -383,38 +383,8 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
-        // DO NOT call state transition (1, 3) — that triggers the OSDK screen.
-        // Instead, call FUN_146e19720(loginSM) directly to start the Login flow.
-        // loginSM = g_preAuthParam1 + 0x3b6 (set during PreAuth handler).
-        // We must do this synchronously — the background thread is too late.
-        
-        // Load g_preAuthParam1
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
-        memcpy(cave + o, &preAuthAddr, 8); o += 8;
-        // MOV RCX, [RAX]          ; RCX = g_preAuthParam1
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x08;
-        // TEST RCX, RCX           ; check if preAuthParam1 is set
-        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC9;
-        // JZ skip (skip the call if preAuthParam1 is 0)
-        cave[o++] = 0x74; 
-        int jzPatchOffset = o; // we'll fill this in after
-        cave[o++] = 0x00; // placeholder
-        
-        // ADD RCX, 0x3b6          ; RCX = loginSM = preAuthParam1 + 0x3b6
-        // Use: ADD RCX, imm32
-        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1;
-        cave[o++] = 0xB6; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00;
-        
-        // MOV RAX, FUN_146e19720
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t loginFnAddr = 0x146e19720;
-        memcpy(cave + o, &loginFnAddr, 8); o += 8;
-        // CALL RAX                ; call FUN_146e19720(loginSM)
-        cave[o++] = 0xFF; cave[o++] = 0xD0;
-        
-        // Patch the JZ offset
-        cave[jzPatchOffset] = (BYTE)(o - jzPatchOffset - 1);
+        // Don't call FUN_146e19720 — it crashes because loginSM isn't fully initialized.
+        // The game will send Logout after this. The server will handle it.
         
         // Epilogue: restore and return
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
@@ -836,55 +806,13 @@ done:
                     }
                 }
                 
-                // CreateAccount is now handled synchronously in the cave (state bytes set)
-                // After the cave runs, we need to trigger the Login flow.
-                // The cave sets 0x8c0=1 (UID non-zero), 0x8c6=0 (no persona creation)
-                // which skips the OSDK screen. But we still need to start Login.
-                //
-                // FUN_146e1c3f0 is the Login type processor, called by PreAuth handler.
-                // It takes (loginSM, ...) where loginSM = preAuthParam1 + 0x3b6.
-                // But calling it requires proper initialization.
-                //
-                // Simpler: call FUN_146e19720(loginSM) which is the Login start function.
-                // It's called by FUN_146e1c3f0 after setup.
-                if (g_createAcctCalled == 1 && g_preAuthParam1 != 0) {
+                // CreateAccount handled by sync cave (state bytes set, no OSDK screen)
+                // The game sends Logout after this — we can't prevent it from the DLL.
+                // The server will need to handle the reconnection flow.
+                if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
-                    Log("CA-DETECT: CreateAccount handler ran (sync cave). handler=0x%llX", g_createAcctParam1);
-                    
-                    uint64_t loginSM = g_preAuthParam1 + 0x3b6;
-                    Log("CA-DETECT: Trying FUN_146e19720 on loginSM=0x%llX (preAuth+0x3b6)", loginSM);
-                    
-                    __try {
-                        // Check if loginSM+0x08 has the BlazeHub pointer (set by PreAuth)
-                        uint64_t blazeHubInSM = *(uint64_t*)(loginSM + 0x08);
-                        Log("CA-DETECT: loginSM+0x08 = 0x%llX", blazeHubInSM);
-                        
-                        if (blazeHubInSM != 0) {
-                            Log("CA-DETECT: Calling FUN_146e19720(loginSM)...");
-                            typedef void (*LoginStartFn)(uint64_t);
-                            LoginStartFn fn = (LoginStartFn)0x146e19720;
-                            fn(loginSM);
-                            Log("CA-DETECT: FUN_146e19720 returned OK!");
-                        } else {
-                            // Initialize loginSM with BlazeHub
-                            uint64_t connMgr = *(uint64_t*)(om + 0xb10);
-                            uint64_t blazeHub = 0;
-                            if (connMgr != 0) blazeHub = *(uint64_t*)(connMgr + 0xf8);
-                            if (blazeHub != 0) {
-                                *(uint64_t*)(loginSM + 0x08) = blazeHub;
-                                *(uint64_t*)(loginSM + 0x18) = 0;
-                                Log("CA-DETECT: Initialized loginSM, calling FUN_146e19720...");
-                                typedef void (*LoginStartFn)(uint64_t);
-                                LoginStartFn fn = (LoginStartFn)0x146e19720;
-                                fn(loginSM);
-                                Log("CA-DETECT: FUN_146e19720 returned OK!");
-                            } else {
-                                Log("CA-DETECT: BlazeHub is NULL");
-                            }
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {
-                        Log("CA-DETECT: CRASHED calling FUN_146e19720");
-                    }
+                    Log("CA-DETECT: CreateAccount done (sync cave). handler=0x%llX preAuth=0x%llX", 
+                        g_createAcctParam1, g_preAuthParam1);
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
