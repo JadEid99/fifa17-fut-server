@@ -1,4 +1,4 @@
-﻿=== Batch Test (2026-04-15 14:55:37) ===
+﻿=== Batch Test (2026-04-15 15:04:31) ===
 RESULT: CREATE_ACCOUNT
 
 --- BLAZE SERVER LOG (last 5000 chars) ---
@@ -8,20 +8,20 @@ RESULT: CREATE_ACCOUNT
 Waiting for FIFA 17...
 hosts: 127.0.0.1 winter15.gosredirector.ea.com
 
+[QOS-UDP] Listening on UDP port 17502
 [Redirector-Raw] Listening on port 42230
 [Main] Blaze server on port 10041
 [HTTP] on port 8080
 [Catch] Listening on port 443
 [Catch] Listening on port 9988
-[Catch] Listening on port 17502
 [Catch] Listening on port 80
 [Catch] Listening on port 9946
-[Redirector-Raw] Client connected: 127.0.0.1:60259
+[Redirector-Raw] Client connected: 127.0.0.1:60460
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 df 8a 8c 49  ....o...k..i...I
-  0010: c9 b6 0f f0 1b 44 78 c2 2c 9d b1 39 a2 a6 f2 85  .....Dx.,..9....
-  0020: ba 92 5c 35 3c 4f 8d d6 0a 0f 8b 00 00 10 00 9d  ..\5<O..........
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 df 8c c0 9b  ....o...k..i....
+  0010: eb ea 88 01 ad 1f df af 87 1b c6 80 c0 7b af 65  .............{.e
+  0020: 21 5e 82 55 f4 7e 33 1b a4 d5 89 00 00 10 00 9d  !^.U.~3.........
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -29,45 +29,45 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69df8a8c49c9b60f...
+[SSL] ClientHello: version=0x303 random=69df8cc09bebea88...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 aa 8f 3f 21 26
-  0010: 49 15 74 e2 82 83 8d 06 26 3a 3e 68 aa d0 07 13
-  0020: b6 40 4f 34 b4 8c ad 4e b3 53 d9 f8 e6 81 0f fa
-  0030: 82 85 cb ef 55 c0 43 bd 82 ec 63 77 da a8 b8 83
-  0040: a9 0b e6 69 73 8c 3c ff 69 e8 fa 6e 06 ef 10 d9
-  0050: 02 23 17 9e a3 38 c3 32 60 45 0a b6 fd 55 61 1b
-  0060: cb 15 92 df b0 a8 01 04 48 7d 18 24 6a 10 19 33
-  0070: ef ac a2 89 49 95 29 c9 d7 43 fe 92 2d cd bf d3
-  0080: 76 a1 d0 d0 ce db 10 d3 ea 70 7a
+  0000: 16 03 03 00 86 10 00 00 82 00 80 41 32 4f 8a 91
+  0010: f2 27 e4 c4 3c 66 cf 61 b7 2d ae 27 33 c7 70 c2
+  0020: 30 e6 f9 cb 81 c6 44 3f a0 68 54 48 e1 76 ad 76
+  0030: d1 21 da 54 31 bd 34 7f 18 05 cc 44 34 17 42 0f
+  0040: 8d f8 1d 34 e3 6b 93 61 be e9 ef 26 e3 42 a8 0d
+  0050: e3 55 69 49 4a 0c 61 52 c3 00 a3 a9 1d 0c 3f 08
+  0060: 11 83 22 43 df 42 52 0e 7c dd b0 8c 78 df 47 e1
+  0070: 71 52 f2 7c a0 dc 03 d3 1a 33 2c ad e0 e7 ed 92
+  0080: 1a 7d 13 6a cd 17 13 2d 4c 63 0c
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: fd4271d4a87afa955e4c9b3f0862163a...
+[SSL] Master secret derived: b7fc21772e97a701025d69dad51c6301...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 b9 f9 63 3c 6f
-  0010: 96 c9 38 e2 3d b1 59 03 ae 5b 79 fc b1 87 86 56
-  0020: 40 b1 86 1a 7c 8a 8b f5 74 ea e1 a7 52 37 9c
+  0000: 14 03 03 00 01 01 16 03 03 00 24 f3 3e b6 c9 90
+  0010: 57 57 e5 dd 37 d7 22 c2 2e 80 b5 02 8a 26 15 7e
+  0020: ca 6d af e0 b0 57 e3 0f be f7 c3 11 39 b0 b0
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: cfc16816e689e5b3b9741c6e3f19350e
+[SSL] RC4 decryption initialized with clientWriteKey: 7bfba87d065ba0e6d6d186b11ae3039a
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c19a4340a964d9ce171d386cd42980d57fad0b1893744e411806e763e6a0a4546
-[SSL] Client Finished plaintext (16 bytes): 1400000c19a4340a964d9ce171d386cd
-[SSL] Client Finished MAC: 42980d57fad0b1893744e411806e763e6a0a4546
-[SSL] Client verify_data:   19a4340a964d9ce171d386cd
-[SSL] Expected verify_data:  19a4340a964d9ce171d386cd
+[SSL] Decrypted hex: 1400000c9d91f3cbbf685f90a36117d9cde3f8d05b9026ffb923d89eb5de34e01a6c3c6d
+[SSL] Client Finished plaintext (16 bytes): 1400000c9d91f3cbbf685f90a36117d9
+[SSL] Client Finished MAC: cde3f8d05b9026ffb923d89eb5de34e01a6c3c6d
+[SSL] Client verify_data:   9d91f3cbbf685f90a36117d9
+[SSL] Expected verify_data:  9d91f3cbbf685f90a36117d9
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 42980d57fad0b1893744e411806e763e6a0a4546
-[SSL] Actual client MAC:   42980d57fad0b1893744e411806e763e6a0a4546
+[SSL] Expected client MAC: cde3f8d05b9026ffb923d89eb5de34e01a6c3c6d
+[SSL] Actual client MAC:   cde3f8d05b9026ffb923d89eb5de34e01a6c3c6d
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1038 bytes
@@ -77,7 +77,7 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 2fb87f338886593d4f5ecc2a
+[SSL] Server verify_data: 7cef3d675e3afa4969986115
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 908 bytes on socket (total pending: 908)
@@ -120,13 +120,13 @@ Connection: keep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 95 7f a4 f1 02 2a 16 c6 69 50 03 c0 43 8d 51 d1 58 1b fd 6d 07 ae
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): d3 e2 01 7a 07 24 a8 b4 4a 9d 00 f5 e5 46 b5 38 fe 8c b8 6a 95 69
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:60259
+[Redirector-Raw] Disconnected: 127.0.0.1:60460
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:60260
+[Main] Session 1 connected: 127.0.0.1:60461
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
@@ -207,164 +207,64 @@ Connection: keep-alive
 [Main] S1:   EXTB (blob) [0 bytes]
 [Main] S1:   EXTI (int) = 0
 [CreateAccount] Auth token: FAKEAUTHCODE1234567890
-[CreateAccount] Responding with ERROR 0x0F (account already exists)
-[Main] S1: Sending response (16 bytes)
-[Main] S1: header: 00 00 00 00 00 00 00 01 00 0a 00 00 08 60 00 0f
+[CreateAccount] Response: 22 bytes
+[Main] S1: Sending response (38 bytes)
+[Main] S1: header: 00 00 00 16 00 00 00 01 00 0a 00 00 08 20 00 00
 [Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
 [Main] S1: -> Ping (msgId=9), sending pong
 [Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
 [Main] S1: -> Ignoring null/error packet (msgId=9 type=5)
 [Main] S1: comp=0x0001 cmd=0x0046 len=0 msgId=10
 [Main] S1: -> Auth cmd=0x46 (Logout)
-[Main] S1: -> Logout IGNORED (not responding, keeping connection alive)
-[Main] S1 disconnected
-[LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:60261
-[Main] S2: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
-[Main] S2: Raw Blaze binary detected
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=11
-[Main] S2: -> Ping (msgId=11), sending pong
-[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=11
-[Main] S2: -> Ignoring null/error packet (msgId=11 type=5)
-[Main] S2 disconnected
-[LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:60262
-[Main] S3: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
-[Main] S3: Raw Blaze binary detected
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S3: -> Ping (msgId=12), sending pong
-[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S3: -> Ignoring null/error packet (msgId=12 type=5)
-[Main] S3 disconnected
-[LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:60264
-[Main] S4: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
-[Main] S4: Raw Blaze binary detected
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S4: -> Ping (msgId=13), sending pong
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S4: -> Ignoring null/error packet (msgId=13 type=5)
-[Main] S4 disconnected
-[LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:60267
-[Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
-[Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S5: -> Ping (msgId=14), sending pong
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S5: -> Ignoring null/error packet (msgId=14 type=5)
-[Main] S5 disconnected
-[LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:60268
-[Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
-[Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S6: -> Ping (msgId=15), sending pong
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S6: -> Ignoring null/error packet (msgId=15 type=5)
-[Main] S6 disconnected
-[LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:60269
-[Main] S7: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
-[Main] S7: Raw Blaze binary detected
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S7: -> Ping (msgId=16), sending pong
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S7: -> Ignoring null/error packet (msgId=16 type=5)
-[Main] S7 disconnected
-[LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:60270
-[Main] S8: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
-[Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S8: -> Ping (msgId=17), sending pong
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S8: -> Ignoring null/error packet (msgId=17 type=5)
-[Main] S8 disconnected
-[LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:60271
-[Main] S9: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
-[Main] S9: Raw Blaze binary detected
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S9: -> Ping (msgId=18), sending pong
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S9: -> Ignoring null/error packet (msgId=18 type=5)
-[Main] S9 disconnected
-[LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:60272
-[Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 13 80 00 00  ................
-[Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=19
-[Main] S10: -> Ping (msgId=19), sending pong
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=19
-[Main] S10: -> Ignoring null/error packet (msgId=19 type=5)
+[Main] S1: Sending response (164 bytes)
+[Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 0a 20 00 00
 
 --- DLL LOG (last 3000 chars) ---
 6
-[14:54:09.976]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[14:54:09.976]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[14:54:09.976]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[14:54:09.976]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[14:54:09.976]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[14:54:09.976]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[14:54:09.976] PREAUTH_HANDLER: Cave at 00000000009D0000, 44 bytes (XOR R8D + trampoline)
-[14:54:09.976] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[14:54:09.976] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
-[14:54:09.976] CA_HANDLER: Cave at 00000000009E0000, 84 bytes (bypass + state bytes)
-[14:54:09.976] PATCHED: FUN_146e151d0 -> bypass cave (state bytes, no OSDK)
-[14:54:09.976] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[14:54:09.976] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[14:54:09.976] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[14:54:09.976] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[14:54:09.976] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[14:54:09.976] PATCHED: FUN_145e280b0 (version compare) -> always match
-[14:54:10.126] PATCHED: Origin SDK check at 00000001470A8430
-[14:54:10.127] All patches in 687 ms
-[14:54:10.127] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
-[14:54:10.127] AUTH: Checking login gate globals...
-[14:54:10.127] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[14:54:10.127] AUTH: DAT_144b86bdf = 0 (error flag)
-[14:54:10.127] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[14:54:15.661] AUTH: Slot cleared at 5500 ms
-[14:54:15.661] AUTH: OnlineMgr=0x3EBE3E70
-[14:54:15.661] AUTH: slot=0x0 cave=0
-[14:54:15.661] AUTH: Using fake vtable (real not captured)
-[14:54:15.661] AUTH: Injected fake request 000000005D3A0000 into slot
-[14:54:20.661] AUTH: cave=1 slot=0x0
-[14:54:20.661] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[14:54:20.661] AUTH: req[+0xd8]=0x99D9930 req[+0xe8]=1
-[14:54:20.661] AUTH: state=2. Auth ready.
-[14:54:20.661] AUTH: OnlineMgr+0xb10 = 0x3EBEA6E0
-[14:54:20.661] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBEA960
-[14:54:20.661] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[14:54:20.661] AUTH: Found 0 objects with vtables in BlazeHub
-[14:54:20.661] AUTH: BlazeHub(000000003EBEA960)+0x53f = 1
-[14:54:20.661] AUTH: Applying OSDK patches (post-load)...
-[14:54:20.661] PATCHED: GetProfileSync -> return 0 (post-load)
-[14:54:20.661] PATCHED: GetSettingSync -> return 0 (post-load)
-[14:54:20.661] PATCHED: SetPresence -> return 0 (post-load)
-[14:54:20.661] LOGOUT_NOP: addr=00000001472D62A0 bytes=48 83 EC 28
-[14:54:20.661] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET (NOP)
-[14:54:20.661] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-[14:54:37.049] CA-DETECT: CreateAccount handler ran (original code with R8D=0)
+[15:03:03.501]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[15:03:03.501]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[15:03:03.501]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[15:03:03.501]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[15:03:03.501]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[15:03:03.501]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[15:03:03.501] PREAUTH_HANDLER: Cave at 0000000000560000, 44 bytes (XOR R8D + trampoline)
+[15:03:03.501] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[15:03:03.501] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
+[15:03:03.501] CA_HANDLER: Cave at 0000000000AE0000, 84 bytes (bypass + state bytes)
+[15:03:03.501] PATCHED: FUN_146e151d0 -> bypass cave (state bytes, no OSDK)
+[15:03:03.501] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[15:03:03.501] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[15:03:03.501] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[15:03:03.501] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[15:03:03.501] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[15:03:03.501] PATCHED: FUN_145e280b0 (version compare) -> always match
+[15:03:03.642] PATCHED: Origin SDK check at 00000001470A8430
+[15:03:03.642] All patches in 641 ms
+[15:03:03.642] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
+[15:03:03.642] AUTH: Checking login gate globals...
+[15:03:03.642] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[15:03:03.642] AUTH: DAT_144b86bdf = 0 (error flag)
+[15:03:03.642] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[15:03:09.483] AUTH: Slot cleared at 5800 ms
+[15:03:09.483] AUTH: OnlineMgr=0x3EC03E70
+[15:03:09.483] AUTH: slot=0x0 cave=0
+[15:03:09.483] AUTH: Using fake vtable (real not captured)
+[15:03:09.483] AUTH: Injected fake request 000000005D3A0000 into slot
+[15:03:14.484] AUTH: cave=1 slot=0x0
+[15:03:14.484] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[15:03:14.484] AUTH: req[+0xd8]=0x99D9930 req[+0xe8]=1
+[15:03:14.484] AUTH: state=2. Auth ready.
+[15:03:14.484] AUTH: OnlineMgr+0xb10 = 0x3EC0A6E0
+[15:03:14.484] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC0A960
+[15:03:14.484] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[15:03:14.484] AUTH: Found 0 objects with vtables in BlazeHub
+[15:03:14.484] AUTH: BlazeHub(000000003EC0A960)+0x53f = 1
+[15:03:14.484] AUTH: Applying OSDK patches (post-load)...
+[15:03:14.484] PATCHED: GetProfileSync -> return 0 (post-load)
+[15:03:14.484] PATCHED: GetSettingSync -> return 0 (post-load)
+[15:03:14.484] PATCHED: SetPresence -> return 0 (post-load)
+[15:03:14.484] LOGOUT_NOP: addr=00000001472D62A0 bytes=48 83 EC 28
+[15:03:14.484] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET (NOP)
+[15:03:14.484] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[15:04:00.954] CA-DETECT: CreateAccount handler ran (original code with R8D=0)
 
-=== S10 disconnect (2026-04-15 12:55:39) ===
-
-[Main] Session 10 connected: 127.0.0.1:60272
-[Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 13 80 00 00  ................
-[Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=19
-[Main] S10: -> Ping (msgId=19), sending pong
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=19
-[Main] S10: -> Ignoring null/error packet (msgId=19 type=5)
-[Main] S10 disconnected
