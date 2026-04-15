@@ -55,6 +55,14 @@ $blazeJob = Start-Job -ScriptBlock {
 } -ArgumentList $repoRoot
 Start-Sleep 3
 
+# Start Origin IPC server
+Write-Host "[ORIGIN] Starting fake Origin IPC server..." -ForegroundColor Yellow
+$originJob = Start-Job -ScriptBlock { 
+    param($r)
+    node "$r\server-standalone\origin-ipc-server.mjs" 2>&1 
+} -ArgumentList $repoRoot
+Start-Sleep 2
+
 # Launch game
 Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe
@@ -110,6 +118,11 @@ $blazeOut = (Receive-Job $blazeJob 2>&1 | Out-String).Trim()
 Stop-Job $blazeJob -EA SilentlyContinue
 Remove-Job $blazeJob -EA SilentlyContinue
 
+# Collect Origin IPC output
+$originOut = (Receive-Job $originJob 2>&1 | Out-String).Trim()
+Stop-Job $originJob -EA SilentlyContinue
+Remove-Job $originJob -EA SilentlyContinue
+
 # DLL log
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
 
@@ -121,12 +134,16 @@ Write-Host "[FRIDA] Results saved to frida_results.txt ($($fridaOut.Length) char
 $bs1 = if($blazeOut.Length -gt 3000){$blazeOut.Substring($blazeOut.Length-3000)}else{$blazeOut}
 $dl1 = if($dllLog.Length -gt 3000){$dllLog.Substring($dllLog.Length-3000)}else{$dllLog}
 $fr1 = if($fridaOut.Length -gt 5000){$fridaOut.Substring($fridaOut.Length-5000)}else{$fridaOut}
+$or1 = if($originOut.Length -gt 3000){$originOut.Substring($originOut.Length-3000)}else{$originOut}
 
 $results = @"
 === Frida Deep RPC Trace v2 ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
 $fr1
+
+--- ORIGIN IPC SERVER (last 3000 chars) ---
+$or1
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
 $bs1

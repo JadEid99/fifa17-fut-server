@@ -1,27 +1,25 @@
 /*
- * Frida v58: ORIGIN IPC INTERCEPT
+ * Frida v59: ORIGIN IPC SIMULATOR
  *
- * Strategy: Instead of manipulating the game's internal state,
- * intercept the Origin SDK's XML communication and respond directly.
+ * v58 revealed:
+ * - Origin SDK uses LSX XML format over TCP on localhost
+ * - Port is at originSDK+0x35c (was 4216 — set by DLL's fake SDK object)
+ * - First message: <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+ * - Patch 3 intercepts FUN_1470db3c0 BEFORE it can call SendXml
+ * - Game sends CreateAccount because it never goes through Origin's proper auth flow
  *
- * The Origin SDK uses TCP sockets on localhost to talk to Origin.
- * We hook the XML send/receive functions to:
- * 1. Dump the XML the game sends (to understand the protocol)
- * 2. Intercept the auth code request and provide a fake response
- *
- * Key functions:
- * - FUN_1470e6ee0: Sends XML string to Origin via TCP
- * - FUN_1470e0f30: DispatchIncoming - receives and parses XML from Origin
- * - FUN_1470e67f0: RequestAuthCode wrapper (SendXml for auth)
- * - FUN_1470e1ed0: Send-and-wait (sends XML, waits for response with timeout)
- * - FUN_14712ca40: TCP connect to Origin (socket + connect)
- *
- * Also: DAT_144b7c7a0 = Origin SDK object pointer
- *        originSDK+0x35c = TCP port to connect to
+ * v59 strategy:
+ * - Run a fake Origin TCP server on port 3216 (origin-ipc-server.mjs)
+ * - Patch originSDK+0x35c to port 3216
+ * - Let FUN_1470db3c0 run naturally (undo Patch 3's body replacement)
+ * - The game will call SendXml → our server responds with auth code
+ * - Game processes auth code through normal Origin flow → SilentLogin
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v58: Origin IPC Intercept ===');
+console.log('=== Frida v59: Origin IPC Simulator ===');
+
+var ORIGIN_PORT = 3216; // Must match origin-ipc-server.mjs
 
 // ============================================================
 // Step 1: NOP OSDK screen (safety net)
@@ -36,134 +34,98 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 2: Read Origin SDK state
+// Step 2: Patch Origin SDK port to point to our server
 // ============================================================
 try {
     var sdkPtr = addr(0x4b7c7a0).readPointer();
-    console.log('[SDK] DAT_144b7c7a0 (Origin SDK) = ' + sdkPtr);
+    console.log('[SDK] Origin SDK object = ' + sdkPtr);
     if (!sdkPtr.isNull()) {
-        var port = sdkPtr.add(0x35c).readU16();
-        console.log('[SDK] Origin TCP port (SDK+0x35c) = ' + port);
-        // Read the SDK object's name/type
-        try {
-            var namePtr = sdkPtr.add(0x3b0).readPointer();
-            if (!namePtr.isNull()) {
-                var nameStr = namePtr.add(0x120).readPointer();
-                console.log('[SDK] SDK+0x3b0+0x120 = ' + nameStr);
-            }
-        } catch(e) {}
+        var oldPort = sdkPtr.add(0x35c).readU16();
+        console.log('[SDK] Old port: ' + oldPort);
+        sdkPtr.add(0x35c).writeU16(ORIGIN_PORT);
+        var newPort = sdkPtr.add(0x35c).readU16();
+        console.log('[SDK] New port: ' + newPort + ' (patched to ' + ORIGIN_PORT + ')');
+    } else {
+        console.log('[SDK] SDK object is NULL — will patch later');
     }
-} catch(e) { console.log('[SDK] Read error: ' + e); }
+} catch(e) { console.log('[SDK] Port patch error: ' + e); }
 
 // ============================================================
-// Step 3: Hook XML send function (FUN_1470e6ee0)
-// This is where the game sends XML to Origin via TCP
+// Step 3: Hook all XML communication
 // ============================================================
 try {
     Interceptor.attach(addr(0x70e6ee0), {
         onEnter: function(args) {
             try {
                 var xmlStr = args[1].readUtf8String();
-                console.log('[XML-SEND] === Outgoing XML ===');
-                console.log(xmlStr);
-                console.log('[XML-SEND] === End XML ===');
+                console.log('[XML-SEND] ' + xmlStr);
             } catch(e) {
-                console.log('[XML-SEND] Could not read XML: ' + e);
+                console.log('[XML-SEND] (could not read)');
             }
         }
     });
-    console.log('[INIT] Hooked XML send (FUN_1470e6ee0)');
-} catch(e) { console.log('[INIT] XML send hook error: ' + e); }
+    console.log('[INIT] Hooked XML send');
+} catch(e) {}
 
 // ============================================================
-// Step 4: Hook TCP connect (FUN_14712ca40)
-// This is where the game connects to Origin's TCP port
+// Step 4: Hook TCP connect to log connection attempts
 // ============================================================
 try {
     Interceptor.attach(addr(0x712ca40), {
         onEnter: function(args) {
-            // param_4 is the port (u16)
             var port = args[3].toInt32() & 0xFFFF;
             console.log('[TCP] Connecting to Origin on port ' + port);
-            this._port = port;
         },
         onLeave: function(retval) {
             console.log('[TCP] Connect result: ' + retval);
         }
     });
     console.log('[INIT] Hooked TCP connect');
-} catch(e) { console.log('[INIT] TCP connect hook error: ' + e); }
+} catch(e) {}
 
 // ============================================================
-// Step 5: Hook FUN_1470db3c0 (RequestAuthCode) 
-// This is the auth code provider that our DLL patches
+// Step 5: Hook RequestAuthCode to see if it reaches SendXml
 // ============================================================
 try {
     Interceptor.attach(addr(0x70db3c0), {
         onEnter: function(args) {
-            console.log('[AUTH-REQ] FUN_1470db3c0 called (RequestAuthCode)');
-            console.log('[AUTH-REQ] param1=' + args[0] + ' param2=' + args[1]);
-            // Check if Origin SDK is available
-            var sdkAvail = addr(0x4b7c7a0).readPointer();
-            console.log('[AUTH-REQ] Origin SDK ptr = ' + sdkAvail);
+            console.log('[AUTH-REQ] FUN_1470db3c0 called');
+            // Check if the function body is still our DLL's patch or original
+            var firstByte = addr(0x70db3c0).readU8();
+            console.log('[AUTH-REQ] First byte of function: 0x' + firstByte.toString(16));
+            // DLL Patch 3 writes: MOV RAX, imm64 (0x48 0xB8 ...)
+            // Original starts with different bytes
+            if (firstByte === 0x48) {
+                console.log('[AUTH-REQ] WARNING: DLL Patch 3 is active — function body replaced');
+                console.log('[AUTH-REQ] The fake auth code will be returned, not Origin SendXml');
+            }
         }
     });
     console.log('[INIT] Hooked RequestAuthCode');
-} catch(e) { console.log('[INIT] Auth hook error: ' + e); }
-
-// ============================================================
-// Step 6: Hook FUN_1470e2840 (Origin SDK availability check)
-// ============================================================
-try {
-    Interceptor.attach(addr(0x70e2840), {
-        onEnter: function(args) {},
-        onLeave: function(retval) {
-            console.log('[SDK-CHECK] FUN_1470e2840 returned ' + retval + ' (Origin available: ' + (retval.toInt32() !== 0) + ')');
-        }
-    });
-    console.log('[INIT] Hooked SDK availability check');
 } catch(e) {}
 
 // ============================================================
-// Step 7: Hook the DispatchIncoming XML parser
-// ============================================================
-try {
-    // FUN_1470e0f30 is the main dispatch loop
-    Interceptor.attach(addr(0x70e0f30), {
-        onEnter: function(args) {
-            console.log('[XML-RECV] DispatchIncoming called');
-        }
-    });
-    console.log('[INIT] Hooked DispatchIncoming');
-} catch(e) { console.log('[INIT] Dispatch hook error: ' + e); }
-
-// ============================================================
-// Step 8: Hook FUN_1470e67f0 (SendXml for auth code)
+// Step 6: Hook SendXml (FUN_1470e67f0) for auth
 // ============================================================
 try {
     Interceptor.attach(addr(0x70e67f0), {
         onEnter: function(args) {
-            console.log('[SENDXML] FUN_1470e67f0 called (auth SendXml)');
+            console.log('[SENDXML] Auth SendXml called');
             try {
-                var param3 = args[2]; // request type string
-                var param4 = args[3]; // additional data
-                if (!param3.isNull()) {
-                    console.log('[SENDXML] param3 (type) = "' + param3.readUtf8String() + '"');
+                if (!args[2].isNull()) {
+                    console.log('[SENDXML] type = "' + args[2].readUtf8String() + '"');
                 }
-                if (!param4.isNull()) {
-                    try { console.log('[SENDXML] param4 = "' + param4.readUtf8String() + '"'); } catch(e) {}
-                }
-            } catch(e) { console.log('[SENDXML] read error: ' + e); }
+            } catch(e) {}
         },
         onLeave: function(retval) {
             console.log('[SENDXML] returned ' + retval);
         }
     });
     console.log('[INIT] Hooked SendXml');
-} catch(e) { console.log('[INIT] SendXml hook error: ' + e); }
+} catch(e) {}
 
 // ============================================================
-// Step 9: Track RPC sends (keep for reference)
+// Step 7: Track RPC sends
 // ============================================================
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
@@ -183,7 +145,7 @@ Interceptor.attach(addr(0x6df0e80), {
 });
 
 // ============================================================
-// Step 10: Monitor state transitions
+// Step 8: Monitor state transitions
 // ============================================================
 try {
     Interceptor.attach(addr(0x6e126b0), {
@@ -193,4 +155,43 @@ try {
     });
 } catch(e) {}
 
-console.log('=== Frida v58 Ready ===');
+// ============================================================
+// Step 9: Monitor login check
+// ============================================================
+try {
+    Interceptor.attach(addr(0x6e1dae0), {
+        onEnter: function(args) {
+            var loginSM = args[0];
+            try {
+                var arrStart = loginSM.add(0x218).readPointer();
+                var arrEnd = loginSM.add(0x220).readPointer();
+                var count = arrEnd.sub(arrStart).toInt32() / 0x20;
+                console.log('[LOGIN-CHECK] array count=' + count);
+            } catch(e) {
+                console.log('[LOGIN-CHECK] called');
+            }
+        },
+        onLeave: function(retval) {
+            console.log('[LOGIN-CHECK] returned ' + retval);
+        }
+    });
+} catch(e) {}
+
+// ============================================================
+// Step 10: Periodically re-patch the port (DLL may overwrite)
+// ============================================================
+var portPatchInterval = setInterval(function() {
+    try {
+        var sdkPtr = addr(0x4b7c7a0).readPointer();
+        if (!sdkPtr.isNull()) {
+            var currentPort = sdkPtr.add(0x35c).readU16();
+            if (currentPort !== ORIGIN_PORT) {
+                sdkPtr.add(0x35c).writeU16(ORIGIN_PORT);
+                console.log('[PORT-PATCH] Re-patched port from ' + currentPort + ' to ' + ORIGIN_PORT);
+            }
+        }
+    } catch(e) {}
+}, 1000);
+
+console.log('=== Frida v59 Ready ===');
+console.log('[INFO] Make sure origin-ipc-server.mjs is running on port ' + ORIGIN_PORT);
