@@ -10,27 +10,37 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v50: AGGRESSIVE Multi-Strategy ===
-[S3] Patched FUN_146e00f40 -> RET (OSDK screen NOP)
-[S3] Hooked state transition at 0x146E126B0
-=== Frida v50 Ready ===
-S1: CreateAccount\u2192OriginLogin redirect
-S2: Write response data directly into response object
-S3: Track PostAuth call
-[Local::PID::87048 ]-> [S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[FLOW] PreAuth handler
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
-[FLOW] All 6 FetchClientConfig sent
+=== Frida v51: Simulate TOS Acceptance ===
+[INIT] NOPed FUN_146e00f40
+=== Frida v51 Ready ===
+[Local::PID::95492 ]-> [POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[RPC] comp=5 cmd=17 (0x11)
+[RPC] comp=9 cmd=7 (0x7)
+[RPC] comp=9 cmd=2 (0x2)
+[POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[RPC] comp=9 cmd=1 (0x1)
+[RPC] comp=9 cmd=1 (0x1)
+[RPC] comp=9 cmd=1 (0x1)
+[RPC] comp=9 cmd=1 (0x1)
+[RPC] comp=9 cmd=1 (0x1)
+[RPC] comp=9 cmd=1 (0x1)
 [S1] Redirecting CreateAccount -> OriginLogin
-[S2] Handler called, param1=0x3eb5d328 param2=0x98f2710 R8=0x0
-[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=1 ***
-[S3] *** State transition (1,3) intercepted -> changing to (2,1) ***
-[S2] Handler returned — checking if state advanced...
-Process terminated
-
-Thank you for using Frida!
+[RPC] comp=1 cmd=152 (0x98)
+[S2] Wrote +0x10=1, +0x13=1, forced R8=0
+[TRANSITION] (1,3)
+[RPC] comp=1 cmd=242 (0xf2)
+[S2] Handler returned. Now simulating TOS acceptance...
+[S2] State machine = 0x3eb1d2f0
+[S2] Transition function = 0x146e16dc0
+[S2] Calling transition (4,1)...
+[S2] Calling transition (5,1)...
+[S2] Calling transition (3,1)...
+[S2] *** All TOS transitions called! ***
+[RPC] comp=1 cmd=246 (0xf6)
+[RPC] comp=1 cmd=47 (0x2f)
+[TRANSITION] (3,-1)
 
