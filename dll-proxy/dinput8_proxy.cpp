@@ -58,6 +58,95 @@ static char g_fakeAuthCode[] = "FAKEAUTHCODE1234567890";
 static volatile int g_caveExecuted = 0;
 static volatile uint64_t g_preAuthParam1 = 0;  // saved from PreAuth cave for login flow
 
+// ============================================================
+// Winsock connect() hook — redirect Origin SDK TCP to our server
+// The Origin SDK connects to 127.0.0.1 on a dynamic port during init.
+// We redirect ANY localhost connection on high ports to our Origin IPC server.
+// ============================================================
+static const uint16_t ORIGIN_IPC_PORT = 3216;
+typedef int (WSAAPI *connect_t)(SOCKET s, const struct sockaddr* name, int namelen);
+static connect_t g_realConnect = NULL;
+
+static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namelen) {
+    if (name && name->sa_family == AF_INET && namelen >= sizeof(struct sockaddr_in)) {
+        struct sockaddr_in* sin = (struct sockaddr_in*)name;
+        uint16_t port = ntohs(sin->sin_port);
+        uint32_t addr = ntohl(sin->sin_addr.s_addr);
+        // Redirect localhost connections on Origin's dynamic port range (3000-65535, not our known ports)
+        if (addr == 0x7F000001 && port != ORIGIN_IPC_PORT && port != 10041 && port != 42230 && port != 8080 && port != 17502 && port > 3000) {
+            Log("CONNECT-HOOK: Redirecting 127.0.0.1:%d -> 127.0.0.1:%d", port, ORIGIN_IPC_PORT);
+            struct sockaddr_in redirected = *sin;
+            redirected.sin_port = htons(ORIGIN_IPC_PORT);
+            return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
+        }
+    }
+    return g_realConnect(s, name, namelen);
+}
+
+static void HookWinsockConnect() {
+    // IAT hook: find connect() in the game's import table and replace it
+    HMODULE gameModule = GetModuleHandleA(NULL);
+    HMODULE ws2Module = GetModuleHandleA("ws2_32.dll");
+    if (!ws2Module) ws2Module = LoadLibraryA("ws2_32.dll");
+    if (!ws2Module) { Log("CONNECT-HOOK: ws2_32.dll not found"); return; }
+    
+    g_realConnect = (connect_t)GetProcAddress(ws2Module, "connect");
+    if (!g_realConnect) { Log("CONNECT-HOOK: connect() not found"); return; }
+    
+    // Scan the game's IAT for the connect() import
+    BYTE* base = (BYTE*)gameModule;
+    IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
+    IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
+    IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + nt->OptionalHeader.DataDirectory[1].VirtualAddress);
+    
+    for (; imports->Name; imports++) {
+        char* dllName = (char*)(base + imports->Name);
+        // Check if this is ws2_32.dll (case-insensitive)
+        if (_stricmp(dllName, "ws2_32.dll") == 0 || _stricmp(dllName, "WS2_32.dll") == 0 || _stricmp(dllName, "WS2_32.DLL") == 0) {
+            IMAGE_THUNK_DATA* thunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
+            IMAGE_THUNK_DATA* origThunk = (IMAGE_THUNK_DATA*)(base + imports->OriginalFirstThunk);
+            for (; thunk->u1.Function; thunk++, origThunk++) {
+                if ((void*)thunk->u1.Function == (void*)g_realConnect) {
+                    DWORD oldProtect;
+                    if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
+                        thunk->u1.Function = (ULONGLONG)HookedConnect;
+                        VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
+                        Log("CONNECT-HOOK: Hooked connect() in IAT (ws2_32.dll)");
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    Log("CONNECT-HOOK: connect() not found in IAT, trying inline hook...");
+    // Fallback: patch connect() directly with a JMP to our hook
+    // This is more aggressive but catches all callers
+    BYTE* connectAddr = (BYTE*)g_realConnect;
+    BYTE* cave = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (cave) {
+        // Save original bytes and create trampoline
+        memcpy(cave, connectAddr, 16);
+        // JMP back to connect+16
+        cave[16] = 0x48; cave[17] = 0xB8;
+        uint64_t retAddr = (uint64_t)(connectAddr + 16);
+        memcpy(cave + 18, &retAddr, 8);
+        cave[26] = 0xFF; cave[27] = 0xE0;
+        g_realConnect = (connect_t)cave;
+        
+        // Patch connect() entry to JMP to HookedConnect
+        DWORD op;
+        if (VirtualProtect(connectAddr, 16, PAGE_EXECUTE_READWRITE, &op)) {
+            connectAddr[0] = 0x48; connectAddr[1] = 0xB8;
+            uint64_t hookAddr = (uint64_t)HookedConnect;
+            memcpy(connectAddr + 2, &hookAddr, 8);
+            connectAddr[10] = 0xFF; connectAddr[11] = 0xE0;
+            for (int k = 12; k < 16; k++) connectAddr[k] = 0x90;
+            VirtualProtect(connectAddr, 16, op, &op);
+            Log("CONNECT-HOOK: Inline hooked connect() at %p", connectAddr);
+        }
+    }
+}
+
 // Patch 1: Cert bypass
 static void PatchCertCheck() {
     if (g_codePatchDone) return;
@@ -1049,6 +1138,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
         } __except(EXCEPTION_EXECUTE_HANDLER) {
             // If the address isn't mapped yet, we'll set it in the background thread
         }
+        
+        // Hook Winsock connect() to redirect Origin SDK TCP connections
+        HookWinsockConnect();
         
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
