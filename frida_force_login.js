@@ -1,116 +1,76 @@
 /*
- * Frida v43: Dump the login type entry at loginSM+0xE0 and try to
- * call FUN_146e1eb70 directly to force a Login RPC.
+ * Frida v44: Dump the PreAuth response object after decoding to see
+ * which fields are populated and which are empty.
+ * Focus on offset +0xb8 (login type list) and nearby fields.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v43: Dump Login Type Entry + Force Login ===');
+console.log('=== Frida v44: PreAuth Response Object Dump ===');
 
-var savedLoginSM = null;
-
-Interceptor.attach(addr(0x6e1c3f0), {
+// Hook the PreAuth handler to dump param_2 (decoded response)
+Interceptor.attach(addr(0x6e1cf10), {
     onEnter: function(args) {
-        savedLoginSM = args[0];
-        console.log('[LOGIN-INIT] loginSM=' + savedLoginSM);
-    },
-    onLeave: function(retval) {
-        if (!savedLoginSM) return;
-        var sm = savedLoginSM;
+        var param1 = args[0];
+        var param2 = args[1]; // decoded PreAuth response
+        var param3 = args[2];
         
+        console.log('[PA-HANDLER] param1=' + param1 + ' param2=' + param2 + ' param3=' + param3);
+        
+        // Dump the decoded PreAuth response object
+        // Focus on the fields the handler reads
         try {
-            // Dump the login type entry at +0xE0
-            var entry = sm.add(0xE0).readPointer();
-            console.log('[LOGIN-INIT] Login type entry at +0xE0 = ' + entry);
-            
-            if (!entry.isNull()) {
-                console.log('[LOGIN-INIT] Entry dump (0x40 bytes):');
-                var bytes = new Uint8Array(entry.readByteArray(0x40));
-                for (var row = 0; row < 0x40; row += 8) {
-                    var val = entry.add(row).readPointer();
-                    var hex = '';
-                    for (var i = 0; i < 8 && row + i < 0x40; i++) {
-                        hex += ('0' + bytes[row + i].toString(16)).slice(-2) + ' ';
-                    }
+            console.log('[PA-RESP] PreAuth response object dump:');
+            for (var off = 0; off < 0x250; off += 8) {
+                var val = param2.add(off).readPointer();
+                if (!val.isNull() && !val.equals(ptr(0))) {
+                    var label = '';
+                    if (off === 0x00) label = ' (vtable)';
+                    if (off === 0x10) label = ' (INST string?)';
+                    if (off === 0x28) label = ' (NASP string?)';
+                    if (off === 0x40) label = ' (PLAT string?)';
+                    if (off === 0x58) label = ' (RSRC string?)';
+                    if (off === 0x70) label = ' (QOSS struct?)';
+                    if (off === 0xb8) label = ' *** LOGIN TYPE LIST ***';
+                    if (off === 0x120) label = ' (param_2+0x120 passed to FUN_146e1c3f0)';
+                    if (off === 0x1f0) label = ' (SVER string?)';
+                    if (off === 0x1d8) label = ' (PTVR string?)';
+                    if (off === 0x1c0) label = ' (PTAG string?)';
+                    if (off === 0x220) label = ' (ANON?)';
+                    if (off === 0x240) label = ' (used by FUN_146124610)';
+                    
                     // Try to read as string
                     var str = '';
-                    try { str = val.readUtf8String(30); } catch(e) {}
-                    console.log('  +0x' + row.toString(16) + ' = ' + val + ' [' + hex.trim() + ']' + (str && str.length > 2 ? ' "' + str + '"' : ''));
-                }
-                
-                // Check entry[0] — might be a flag or type
-                var e0 = entry.readU8();
-                console.log('[LOGIN-INIT] entry[0] = ' + e0);
-                
-                // Check entry+0x18 — used by FUN_146e1dae0 loop
-                var e18 = entry.add(0x18).readPointer();
-                console.log('[LOGIN-INIT] entry+0x18 = ' + e18);
-                if (!e18.isNull()) {
-                    // This might be the auth token or login config
                     try {
-                        var s18 = e18.readUtf8String(50);
-                        console.log('[LOGIN-INIT] entry+0x18 -> "' + s18 + '"');
+                        var s = val.readUtf8String(30);
+                        if (s && s.length > 1 && s.length < 30 && /^[\x20-\x7e]+$/.test(s)) {
+                            str = ' "' + s + '"';
+                        }
                     } catch(e) {}
-                    // Dump it
-                    console.log('[LOGIN-INIT] entry+0x18 dump:');
-                    for (var off = 0; off < 0x30; off += 8) {
-                        console.log('  +0x' + off.toString(16) + ' = ' + e18.add(off).readPointer());
-                    }
+                    
+                    console.log('  +0x' + off.toString(16) + ' = ' + val + label + str);
                 }
             }
             
-            // Also dump +0xC8 area (login type count/config)
-            console.log('[LOGIN-INIT] +0xC8 area:');
-            for (var off = 0xC0; off < 0x100; off += 8) {
-                var val = sm.add(off).readPointer();
-                if (!val.isNull()) {
-                    console.log('  +0x' + off.toString(16) + ' = ' + val);
-                }
+            // Specifically dump the +0xb8 area (login type list)
+            console.log('[PA-RESP] Login type list area (+0xb8):');
+            var listObj = param2.add(0xb8);
+            for (var off = 0; off < 0x40; off += 8) {
+                var val = listObj.add(off).readPointer();
+                console.log('  +0xb8+0x' + off.toString(16) + ' = ' + val);
             }
             
-            // Now try to call FUN_146e1eb70 directly
-            // FUN_146e1eb70(loginSM, param_2_ptr, param_3_authtoken, 1)
-            // param_2 is a pointer to the login type entry
-            // param_3 is entry+0x18 (auth token/config)
-            var job = sm.add(0x18).readPointer();
-            console.log('[LOGIN-INIT] Job handle = ' + job);
-            
-            if (!job.isNull() && !entry.isNull()) {
-                var authConfig = entry.add(0x18).readPointer();
-                if (!authConfig.isNull()) {
-                    console.log('[FORCE-LOGIN] Attempting FUN_146e1eb70(loginSM, &entry, authConfig, 1)...');
-                    var loginSendFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
-                    try {
-                        var result = loginSendFn(sm, sm.add(0xE0), authConfig, 1);
-                        console.log('[FORCE-LOGIN] FUN_146e1eb70 returned: ' + result);
-                    } catch(e) {
-                        console.log('[FORCE-LOGIN] CRASHED: ' + e);
-                    }
-                } else {
-                    console.log('[FORCE-LOGIN] authConfig is null, cannot call');
-                }
+            // Dump +0x120 area (passed to FUN_146e1c3f0 as param_2)
+            console.log('[PA-RESP] +0x120 area (login config):');
+            var configObj = param2.add(0x120);
+            for (var off = 0; off < 0x40; off += 8) {
+                var val = configObj.add(off).readPointer();
+                console.log('  +0x120+0x' + off.toString(16) + ' = ' + val);
             }
+            
         } catch(e) {
-            console.log('[LOGIN-INIT] Error: ' + e);
+            console.log('[PA-RESP] Error: ' + e);
         }
     }
 });
 
-// Track if Login RPC is actually sent
-Interceptor.attach(addr(0x78aa320), {
-    onEnter: function(args) {
-        console.log('[AUTH-SEND] FUN_1478aa320 CALLED! (sends auth token to server)');
-        try {
-            // arg1 might be the auth token string
-            var s = args[1].readUtf8String(50);
-            if (s) console.log('[AUTH-SEND] token: "' + s + '"');
-        } catch(e) {}
-    }
-});
-
-try {
-    Interceptor.attach(addr(0x6e1cf10), {
-        onEnter: function(args) { console.log('[PA-HANDLER] Called'); }
-    });
-} catch(e) {}
-
-console.log('=== Frida v43 Ready ===');
+console.log('=== Frida v44 Ready ===');
