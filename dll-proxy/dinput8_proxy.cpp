@@ -84,43 +84,37 @@ static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
 }
 
 static void HookWinsockConnect() {
-    // IAT hook: find connect() in the game's import table and replace it
-    HMODULE gameModule = GetModuleHandleA(NULL);
-    HMODULE ws2Module = GetModuleHandleA("ws2_32.dll");
-    if (!ws2Module) ws2Module = LoadLibraryA("ws2_32.dll");
-    if (!ws2Module) { Log("CONNECT-HOOK: ws2_32.dll not found"); return; }
-    
-    g_realConnect = (connect_t)GetProcAddress(ws2Module, "connect");
-    if (!g_realConnect) { Log("CONNECT-HOOK: connect() not found"); return; }
-    
-    // Scan the game's IAT for the connect() import
+    // The game calls connect() via a function pointer at DAT_148e223d8
+    // (not through the standard IAT). We replace that pointer.
     __try {
-        BYTE* base = (BYTE*)gameModule;
-        IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
-        IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
-        IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + nt->OptionalHeader.DataDirectory[1].VirtualAddress);
-        
-        for (; imports->Name; imports++) {
-            char* dllName = (char*)(base + imports->Name);
-            if (_stricmp(dllName, "ws2_32.dll") == 0 || _stricmp(dllName, "WS2_32.dll") == 0 || _stricmp(dllName, "WS2_32.DLL") == 0) {
-                IMAGE_THUNK_DATA* thunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
-                for (; thunk->u1.Function; thunk++) {
-                    if ((void*)thunk->u1.Function == (void*)g_realConnect) {
-                        DWORD oldProtect;
-                        if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
-                            thunk->u1.Function = (ULONGLONG)HookedConnect;
-                            VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
-                            Log("CONNECT-HOOK: Hooked connect() in IAT");
-                            return;
-                        }
-                    }
+        uint64_t* pConnectPtr = (uint64_t*)0x148e223d8;
+        uint64_t currentVal = *pConnectPtr;
+        if (currentVal != 0 && currentVal != (uint64_t)HookedConnect) {
+            g_realConnect = (connect_t)currentVal;
+            *pConnectPtr = (uint64_t)HookedConnect;
+            Log("CONNECT-HOOK: Patched DAT_148e223d8 from 0x%llX to HookedConnect", currentVal);
+        } else if (currentVal == 0) {
+            // Not initialized yet — try IAT as fallback
+            HMODULE ws2Module = GetModuleHandleA("ws2_32.dll");
+            if (!ws2Module) ws2Module = LoadLibraryA("ws2_32.dll");
+            if (ws2Module) {
+                g_realConnect = (connect_t)GetProcAddress(ws2Module, "connect");
+                if (g_realConnect) {
+                    *pConnectPtr = (uint64_t)HookedConnect;
+                    Log("CONNECT-HOOK: DAT_148e223d8 was 0, set to HookedConnect (real=%p)", g_realConnect);
                 }
             }
+        } else {
+            Log("CONNECT-HOOK: Already hooked");
         }
     } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("CONNECT-HOOK: Exception scanning IAT");
+        Log("CONNECT-HOOK: Exception accessing DAT_148e223d8");
+        // Fallback: try IAT
+        HMODULE ws2Module = GetModuleHandleA("ws2_32.dll");
+        if (ws2Module) {
+            g_realConnect = (connect_t)GetProcAddress(ws2Module, "connect");
+        }
     }
-    Log("CONNECT-HOOK: connect() not found in IAT");
 }
 
 // Patch 1: Cert bypass
@@ -538,7 +532,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Hook connect() ASAP to redirect Origin SDK TCP connections
+    // Re-try connect hook in case DllMain was too early
     HookWinsockConnect();
     
     DWORD st = GetTickCount();
@@ -1118,7 +1112,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
             // If the address isn't mapped yet, we'll set it in the background thread
         }
         
-        // Hook connect() moved to PatchThread (DllMain is too early — ws2_32 may not be loaded)
+        // Hook connect() — try in DllMain first (just a pointer write, safe)
+        HookWinsockConnect();
         
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
