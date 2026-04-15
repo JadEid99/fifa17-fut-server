@@ -170,8 +170,26 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 9: Monitor login check
+// Step 9: LOGIN TYPE INJECTION (from v57) — the key breakthrough
+// Inject a fake login type entry into the array BEFORE FUN_146e1dae0 iterates it
 // ============================================================
+var fakeEntryStr = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
+var fakeAuthToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
+var fakeEntry = Memory.alloc(0x40);
+fakeEntry.writePointer(fakeEntryStr);
+fakeEntry.add(0x08).writeU64(0);
+fakeEntry.add(0x10).writeU64(0);
+var fakeConfig = fakeEntry.add(0x20);
+fakeConfig.writeU64(0);
+fakeConfig.add(0x08).writeU64(0);
+fakeConfig.add(0x10).writePointer(fakeAuthToken);
+fakeConfig.add(0x18).writeU64(0);
+fakeConfig.add(0x20).writeU64(0);
+fakeConfig.add(0x28).writeU16(0); // transport type 0 = Login
+fakeEntry.add(0x18).writePointer(fakeConfig);
+var fakeEntryEnd = fakeEntry.add(0x20);
+var loginTypeInjected = false;
+
 try {
     Interceptor.attach(addr(0x6e1dae0), {
         onEnter: function(args) {
@@ -181,15 +199,38 @@ try {
                 var arrEnd = loginSM.add(0x220).readPointer();
                 var count = arrEnd.sub(arrStart).toInt32() / 0x20;
                 console.log('[LOGIN-CHECK] array count=' + count);
-            } catch(e) {
-                console.log('[LOGIN-CHECK] called');
-            }
+                
+                if (count === 0 && !loginTypeInjected) {
+                    loginTypeInjected = true;
+                    loginSM.add(0x218).writePointer(fakeEntry);
+                    loginSM.add(0x220).writePointer(fakeEntryEnd);
+                    console.log('[LOGIN-CHECK] *** INJECTED fake login type! ***');
+                }
+            } catch(e) { console.log('[LOGIN-CHECK] error: ' + e); }
         },
         onLeave: function(retval) {
             console.log('[LOGIN-CHECK] returned ' + retval);
         }
     });
 } catch(e) {}
+
+// Also block Logout after CreateAccount
+var blockLogout = false;
+Interceptor.attach(addr(0x6e151d0), {
+    onEnter: function(args) {
+        console.log('[HANDLER] CreateAccount handler entered');
+        blockLogout = true;
+        this.context.r8 = ptr(0);
+        try {
+            args[1].add(0x10).writeU8(1);
+            args[1].add(0x13).writeU8(0); // no OSDK
+            console.log('[HANDLER] Wrote +0x10=1, +0x13=0, R8=0');
+        } catch(e) {}
+    },
+    onLeave: function(retval) {
+        console.log('[HANDLER] returned');
+    }
+});
 
 // ============================================================
 // Step 10: Periodically re-patch the port (DLL may overwrite)
