@@ -733,8 +733,44 @@ static DWORD WINAPI PatchThread(LPVOID) {
         *pSlot = (uint64_t)fr;
         Log("AUTH: Injected fake request %p into slot", fr);
         
-        // Wait for game tick to process it
-        Sleep(5000);
+        // Wait for game tick to process it — poll every 100ms instead of sleeping 5s
+        for (int authWait = 0; authWait < 50; authWait++) {
+            Sleep(100);
+            // Check for login injection opportunity during this wait
+            if (g_preAuthParam1 != 0 && !loginInjected) {
+                uint64_t loginSM2 = g_preAuthParam1 + 0x1DB0;
+                uint64_t as2 = *(uint64_t*)(loginSM2 + 0x218);
+                uint64_t ae2 = *(uint64_t*)(loginSM2 + 0x220);
+                uint64_t jh2 = *(uint64_t*)(loginSM2 + 0x18);
+                if (as2 == 0 && ae2 == 0 && jh2 != 0) {
+                    loginInjected = 1;
+                    Log("LOGIN-INJECT-AUTHWAIT: loginSM=0x%llX job=0x%llX at authWait=%d", loginSM2, jh2, authWait);
+                    BYTE* fe2 = (BYTE*)VirtualAlloc(NULL, 0x40, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+                    if (fe2) {
+                        memset(fe2, 0, 0x40);
+                        static char lf3[] = "\x01";
+                        *(uint64_t*)(fe2 + 0) = (uint64_t)lf3;
+                        BYTE* fc2 = fe2 + 0x20;
+                        static char at3[] = "FAKEAUTHCODE1234567890";
+                        *(uint64_t*)(fc2 + 0x10) = (uint64_t)at3;
+                        *(uint16_t*)(fc2 + 0x28) = 0;
+                        *(uint64_t*)(fe2 + 0x18) = (uint64_t)fc2;
+                        *(uint64_t*)(loginSM2 + 0x218) = (uint64_t)fe2;
+                        *(uint64_t*)(loginSM2 + 0x220) = (uint64_t)(fe2 + 0x20);
+                        Log("LOGIN-INJECT-AUTHWAIT: Calling FUN_146e1eb70...");
+                        __try {
+                            typedef uint64_t (*LoginSendFn2)(uint64_t, BYTE*, uint64_t, int);
+                            LoginSendFn2 fn2 = (LoginSendFn2)0x146e1eb70;
+                            uint64_t r2 = fn2(loginSM2, fe2, (uint64_t)fc2, 1);
+                            Log("LOGIN-INJECT-AUTHWAIT: returned 0x%llX", r2);
+                        } __except(EXCEPTION_EXECUTE_HANDLER) {
+                            Log("LOGIN-INJECT-AUTHWAIT: CRASHED");
+                        }
+                    }
+                }
+            }
+            if (g_caveExecuted) break;
+        }
         Log("AUTH: cave=%d slot=0x%llX", g_caveExecuted, *pSlot);
         
         if (g_caveExecuted) {
