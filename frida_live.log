@@ -10,22 +10,54 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v45: Dump FUN_146e15070 ===
-[DUMP] FUN_146e15070 first 200 bytes:
-  +00: 48 89 e0 56 57 41 56 48 81 ec 80 00 00 00 48 c7  H..VWAVH......H.
-  +10: 40 a8 fe ff ff ff 48 89 58 18 48 89 68 20 4d 89  @.....H.X.H.h M.
-  +20: ce 4c 89 c5 48 89 d6 48 89 cf 0f b6 0d 99 8f a6  .L..H..H........
-  +30: fd 84 0d 7f e8 50 fd bb 00 00 00 00 0f 94 d3 89  .....P..........
-  +40: 58 10 e8 29 fb f9 ff 48 89 44 24 48 31 c9 89 8c  X..)...H.D$H1...
-  +50: 24 a0 00 00 00 48 8d 8c 24 a0 00 00 00 48 89 4c  $....H..$....H.L
-  +60: 24 50 4c 8b 10 41 89 d9 4c 8d 05 31 df a6 fc ba  $PL..A..L..1....
-  +70: 0f a2 ff e7 48 89 c1 8d 92 91 5e 00 18 41 ff 52  ....H.....^..A.R
-  +80: 10 48 89 c3 48 89 44 24 58 48 85 c0 74 6d 41 0f  .H..H.D$XH..tmA.
-  +90: 10 06 0f 29 44 24 60 41 0f 10 46 10 0f 29 44 24  ...)D$`A..F..)D$
-  +a0: 70 48 8b 47 08 41 b8 0f 05 c3 90 48 89 44 24 20  pH.G.A.....H.D$ 
-  +b0: 4c 8b 8c 24 d0 00 00 00 45 8d 80 fb fa 3c 6f 0f  L..$....E....<o.
-  +c0: b7 57 10 48 89 d9 e8 25  .W.H...%
-
-[SEARCH] Looking for value 10 (0x0A) in instructions:
-=== Done ===
-[Local::PID::102876 ]-> 
+=== Frida v46: OriginLogin Redirect (Runtime Patch) ===
+Hooked FUN_146dab760 (RPC builder) — will redirect CreateAccount\u2192OriginLogin
+=== Frida v46 Ready ===
+Will intercept CreateAccount\u2192OriginLogin at FUN_146dab760
+Will log all RPC sends and responses
+[Local::PID::105964 ]-> [RPC-BUILD] cmd=17 (0x11)
+[RPC-SEND] FUN_146df0e80 called, R8=5 (0x5), R9=17
+[RPC-RESP] Response received, bodyLen=322
+[RPC-RESP] First bytes: 3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e 67 3d 22 55 54 
+[RPC-BUILD] cmd=7 (0x7)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=7
+[RPC-RESP] Response received, bodyLen=628
+[HANDLER] PreAuth called R8=0x0
+[RPC-BUILD] cmd=2 (0x2)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=2
+[RPC-RESP] Response received, bodyLen=10
+[RPC-RESP] First bytes: cf 4a 6d 00 81 b6 e5 9d b2 67 
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-BUILD] cmd=1 (0x1)
+[RPC-SEND] FUN_146df0e80 called, R8=9 (0x9), R9=1
+[RPC-RESP] Response received, bodyLen=135
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 
+[RPC-RESP] Response received, bodyLen=85
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 
+[RPC-RESP] Response received, bodyLen=121
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70 3a 2f 2f 31 
+[RPC-RESP] Response received, bodyLen=46
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 
+[RPC-RESP] Response received, bodyLen=19
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
+[RPC-RESP] Response received, bodyLen=19
+[RPC-RESP] First bytes: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
+[RPC-BUILD] *** INTERCEPTED cmd=10 (CreateAccount) -> changing to 0x98 (OriginLogin) ***
+[RPC-SEND] FUN_146df0e80 called, R8=1 (0x1), R9=10
+[RPC-RESP] Response received, bodyLen=22
+[RPC-RESP] First bytes: 8b 5a 64 00 81 d0 ac f3 0e c2 e8 6d 01 08 50 6c 61 79 65 72 31 00 
+[HANDLER] CreateAccount/OriginLogin called R8=0x0
+[HANDLER] Response +0x10=0 +0x11=0 +0x12=0 +0x13=0
+[RPC-BUILD] cmd=70 (0x46)
+[RPC-SEND] FUN_146df0e80 called, R8=1 (0x1), R9=70
+[RPC-RESP] Response received, bodyLen=148
+[RPC-RESP] First bytes: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c 
