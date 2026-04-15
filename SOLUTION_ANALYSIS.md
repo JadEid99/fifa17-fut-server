@@ -51,27 +51,43 @@ Instead of trying to fix the TDF decoder or redirect commands, we should:
    - Call `FUN_146e1dae0` on the game's main thread (not DLL bg thread)
    - This would make the game send Login/SilentLogin natively
 
-### Proposed Solution: Populate Login Types in PreAuth Response TDF
+## BREAKTHROUGH: v57 Login Type Injection
 
-The PreAuth response has 14 TDF fields (0xe members). One of these fields populates offset +0x120 in the response object, which is the login type data passed to `FUN_146e1c3f0`.
+v57 achieved what no previous version could:
+- `FUN_146e1eb70` was called for the FIRST TIME EVER
+- `FUN_146e1dae0` returned 1 for the FIRST TIME EVER  
+- Login RPC was queued (returned job handle 0x99cd801)
+- BUT: the Login job was queued as async and the connection died before it could fire
 
-If we can identify the correct TDF tag and format for login types, we can include them in the PreAuth response. The game would then:
-1. Parse PreAuth → populate login type array
-2. Call FUN_146e1dae0 → iterate array → call FUN_146e1eb70
-3. FUN_146e1eb70 sends Login/SilentLogin RPC to server
-4. Server responds with session
-5. Game proceeds to PostAuth → Online menu
+The Login RPC never appeared on the wire because CreateAccount still runs after PreAuth,
+and the game disconnects after CreateAccount regardless of state machine state.
 
-This completely bypasses CreateAccount.
+## Origin IPC Simulator — The Real Solution
 
-### How to Find the Login Type TDF Field
+### Discovery from Ghidra
 
-The PreAuth response TDF member info table is at `PTR_DAT_144874a90` with 14 entries.
-Each entry is typically: [3-byte encoded tag][1-byte type][4-byte offset into object].
+The Origin SDK communicates via **TCP sockets** (not shared memory or named pipes):
+- `FUN_14712ca40` creates a TCP socket: `socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)`
+- Connects to `127.0.0.1` on a port stored at `originSDK+0x35c`
+- Exchanges XML messages via `Origin::OriginSDK::SendXml`
+- Auth code requests go through `FUN_1470e67f0` → `FUN_1470e1ed0` (15s timeout)
 
-We need to find the entry that maps to offset 0x120 in the response object.
+### How It Works
 
-The Ghidra binary data at 0x144874a90 contains this table. We need to read the raw bytes.
+1. Game calls `FUN_1470db3c0` (RequestAuthCode)
+2. If Origin SDK is available (`DAT_144b7c7a0 != 0`), it calls `FUN_1470e3560()` to get the SDK object
+3. SDK object calls `FUN_1470e67f0` (SendXml) which builds an XML request
+4. XML is sent via TCP to Origin client on localhost
+5. Origin responds with XML containing the auth code
+6. Game uses auth code to send SilentLogin (not CreateAccount!)
+
+### Plan
+
+1. Build a lightweight TCP server that listens on a known port
+2. Responds to Origin SDK XML requests with fake auth codes
+3. Patch the Origin SDK port (`originSDK+0x35c`) to point to our server
+4. Set `DAT_144b7c7a0` to a valid SDK object (already done in DLL)
+5. The game should then get a "real" auth code and send SilentLogin directly
 
 ## BREAKTHROUGH: OSDK Completion Bypass (Frida v54)
 
