@@ -10,13 +10,23 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v49: Full OriginLogin + LoginResponse Redirect ===
-=== Frida v49 Ready ===
-[Local::PID::106764 ]-> [HANDLER] PreAuth
-[CA-SENDER] FUN_146e15070 called
-[RPC-SEND] Redirecting CreateAccount(10) -> OriginLogin(0x98)
-[CA-SENDER] returned
-[RPC-RESP] 148-byte response — likely OriginLogin/Login response
-[HANDLER] vtable=0x14389ac68 +0x10=0 +0x13=0
-[RPC-RESP] 148-byte response — likely OriginLogin/Login response
+=== Frida v50: AGGRESSIVE Multi-Strategy ===
+=== Frida v50 Ready ===
+S1: CreateAccount\u2192OriginLogin redirect
+S2: Write response data directly into response object
+S3: Track PostAuth call
+[Local::PID::5852 ]-> [S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[FLOW] PreAuth handler
+[S3] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3ea87330 ***
+[FLOW] All 6 FetchClientConfig sent
+[S1] Redirecting CreateAccount -> OriginLogin
+[S2] Handler called, param2=0x9902710 R8=0x0
+[S2] *** Wrote response data: +0x10=1, +0x13=0 ***
+[S2] Verify: +0x10=1 +0x13=0
+[S2] Handler returned
+[FLOW] Logout being sent
 
