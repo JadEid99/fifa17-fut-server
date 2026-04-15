@@ -372,9 +372,37 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0x00;
         
         // DO NOT call state transition (1, 3) — that triggers the OSDK screen.
-        // The caller of this handler should advance the state machine based on
-        // the state bytes we set. If it doesn't, we may need to find the
-        // correct transition values or call FUN_146e19720 directly.
+        // Instead, call FUN_146e19720(loginSM) directly to start the Login flow.
+        // loginSM = g_preAuthParam1 + 0x3b6 (set during PreAuth handler).
+        // We must do this synchronously — the background thread is too late.
+        
+        // Load g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
+        memcpy(cave + o, &preAuthAddr, 8); o += 8;
+        // MOV RCX, [RAX]          ; RCX = g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x08;
+        // TEST RCX, RCX           ; check if preAuthParam1 is set
+        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC9;
+        // JZ skip (skip the call if preAuthParam1 is 0)
+        cave[o++] = 0x74; 
+        int jzPatchOffset = o; // we'll fill this in after
+        cave[o++] = 0x00; // placeholder
+        
+        // ADD RCX, 0x3b6          ; RCX = loginSM = preAuthParam1 + 0x3b6
+        // Use: ADD RCX, imm32
+        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1;
+        cave[o++] = 0xB6; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // MOV RAX, FUN_146e19720
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t loginFnAddr = 0x146e19720;
+        memcpy(cave + o, &loginFnAddr, 8); o += 8;
+        // CALL RAX                ; call FUN_146e19720(loginSM)
+        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        
+        // Patch the JZ offset
+        cave[jzPatchOffset] = (BYTE)(o - jzPatchOffset - 1);
         
         // Epilogue: restore and return
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
