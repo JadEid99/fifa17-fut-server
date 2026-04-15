@@ -371,6 +371,20 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
+        // Now call the state transition: param_1[1] → vtable+0x08(sm, 1, 3)
+        // This advances the state machine from CreateAccount to Login.
+        // Without this, the game just sends Logout after CreateAccount.
+        // MOV RCX, [RBX + 0x08]   ; RCX = handler+0x08 = state machine
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08;
+        // MOV RAX, [RCX]          ; RAX = sm vtable
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01;
+        // MOV EDX, 1              ; param2 = 1
+        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // MOV R8D, 3              ; param3 = 3
+        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // CALL [RAX + 0x08]       ; call sm->vtable+0x08(sm, 1, 3)
+        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08;
+        
         // Epilogue: restore and return
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
         cave[o++] = 0x5E;                                     // POP RSI
