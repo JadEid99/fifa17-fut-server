@@ -111,11 +111,14 @@ static void PatchAuthBypass() {
                     // Write marker
                     targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&ma,8);o+=8;
                     targetFunc[o++]=0xC7;targetFunc[o++]=0x00;targetFunc[o++]=1;targetFunc[o++]=0;targetFunc[o++]=0;targetFunc[o++]=0;
-                    // Return error (EAX=1) — no auth code provided
-                    // This prevents CreateAccount from being sent
-                    // The Login from PreAuth should fire without interference
-                    targetFunc[o++]=0xB8;targetFunc[o++]=0x01;targetFunc[o++]=0x00;targetFunc[o++]=0x00;targetFunc[o++]=0x00; // MOV EAX, 1
-                    targetFunc[o++]=0xC3; // RET
+                    // MOV RAX, &fakeAuthCode / MOV [R8], RAX
+                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&aa,8);o+=8;
+                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x00;
+                    // MOV RAX, strlen / MOV [R9], RAX
+                    targetFunc[o++]=0x48;targetFunc[o++]=0xB8;memcpy(targetFunc+o,&al,8);o+=8;
+                    targetFunc[o++]=0x49;targetFunc[o++]=0x89;targetFunc[o++]=0x01;
+                    // XOR EAX,EAX / RET (success)
+                    targetFunc[o++]=0x31;targetFunc[o++]=0xC0;targetFunc[o++]=0xC3;
                     VirtualProtect(targetFunc,48,op,&op);
                     Log("PATCHED: FUN_1470db3c0 body -> fake auth code"); g_authBypassDone=1; g_patched++;
                 } return;
@@ -516,8 +519,43 @@ static DWORD WINAPI PatchThread(LPVOID) {
                     } __except(EXCEPTION_EXECUTE_HANDLER) {}
                 }
             }
-            // Patch 16 REMOVED — let the RPC framework handle CreateAccount naturally
-            // if(!g_createAcctPatchDone) PatchCreateAccountHandler();
+            // Patch 16: CreateAccount bypass cave (re-enabled)
+            if(!g_createAcctPatchDone) PatchCreateAccountHandler();
+            
+            // Patch 20: Change CreateAccount (cmd=0x0A) to OriginLogin (cmd=0x98)
+            // FUN_146e15070 sends CreateAccount. It calls FUN_146dab760 with cmd=10.
+            // We patch FUN_146e15070 to send OriginLogin (0x98) instead.
+            // The OriginLogin handler might have a working TDF decoder.
+            {
+                static int originLoginPatched = 0;
+                if (!originLoginPatched) {
+                    __try {
+                        // Search for the byte pattern in FUN_146e15070 that sets cmd=10
+                        // FUN_146dab760(puVar8, loginType, 10, param_7, connection)
+                        // The 3rd arg (R8) = 10 = 0x0A
+                        // Look for: 41 B8 0A 00 00 00 (MOV R8D, 0x0A) near 0x146e15070
+                        BYTE* fn = (BYTE*)0x146e15070;
+                        for (int scan = 0; scan < 200; scan++) {
+                            if (fn[scan] == 0x41 && fn[scan+1] == 0xB8 && fn[scan+2] == 0x0A && 
+                                fn[scan+3] == 0x00 && fn[scan+4] == 0x00 && fn[scan+5] == 0x00) {
+                                DWORD op;
+                                if (VirtualProtect(fn + scan, 6, PAGE_EXECUTE_READWRITE, &op)) {
+                                    fn[scan+2] = 0x98; // Change 0x0A to 0x98 (OriginLogin)
+                                    VirtualProtect(fn + scan, 6, op, &op);
+                                    Log("PATCHED: FUN_146e15070+0x%X: CreateAccount(0x0A) -> OriginLogin(0x98)", scan);
+                                    originLoginPatched = 1;
+                                }
+                                break;
+                            }
+                        }
+                        if (!originLoginPatched) {
+                            Log("PATCH20: Could not find MOV R8D,0x0A in FUN_146e15070");
+                        }
+                    } __except(EXCEPTION_EXECUTE_HANDLER) {
+                        Log("PATCH20: Exception");
+                    }
+                }
+            }
             if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
@@ -531,7 +569,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_createAcctPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     

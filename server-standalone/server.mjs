@@ -1292,76 +1292,7 @@ function setupMainBlazeHandler(socket, session) {
         return;
       }
       if (comp === 0x0009) {
-        if (cmd === 0x0007) { 
-          console.log(`[Main] S${sid}: -> PreAuth`); 
-          resp = handlePreAuth(pkt);
-          // After PreAuth response, schedule a proactive SilentLogin on this connection
-          // This runs on the game's connection BEFORE FetchClientConfig
-          setTimeout(() => {
-            try {
-              const loginEnc = new TdfEncoder();
-              loginEnc.writeInteger('AGUP', 0);
-              loginEnc.writeString('LDHT', '');
-              loginEnc.writeInteger('NTOS', 0);
-              loginEnc.writeString('PCTK', `pctk_${sid}`);
-              loginEnc.writeString('PRIV', '');
-              loginEnc.writeStructStart('SESS');
-              loginEnc.writeInteger('BUID', session.nucleusId);
-              loginEnc.writeInteger('FRST', 0);
-              loginEnc.writeString('KEY ', `${session.nucleusId.toString(16).toUpperCase()}`);
-              loginEnc.writeInteger('LLOG', 0);
-              loginEnc.writeString('MAIL', `p${sid}@fut.local`);
-              loginEnc.writeStructStart('PDTL');
-              loginEnc.writeString('DSNM', session.displayName);
-              loginEnc.writeInteger('LAST', 0);
-              loginEnc.writeInteger('PID ', session.personaId);
-              loginEnc.writeInteger('STAS', 0);
-              loginEnc.writeInteger('XREF', 0);
-              loginEnc.writeInteger('XTYP', 0);
-              loginEnc.writeStructEnd();
-              loginEnc.writeInteger('UID ', session.nucleusId);
-              loginEnc.writeStructEnd();
-              loginEnc.writeInteger('SPAM', 0);
-              loginEnc.writeString('THST', '');
-              loginEnc.writeString('TSUI', '');
-              loginEnc.writeString('TURI', '');
-              const loginBody = loginEnc.build();
-              // Send as notification (type=2) with comp=0x0001, cmd=0x0032
-              const loginHdr = encodeHeader({ length: loginBody.length, component: 0x0001, command: 0x0032, error: 0, notify: true });
-              const loginPkt = Buffer.concat([loginHdr, loginBody]);
-              socket.write(loginPkt);
-              console.log(`[Main] S${sid}: *** Sent proactive SilentLogin notification (${loginPkt.length}b) ***`);
-              
-              // Also send UserSession notification
-              const userEnc = new TdfEncoder();
-              userEnc.writeStructStart('USER');
-              userEnc.writeInteger('AID ', session.nucleusId);
-              userEnc.writeInteger('ALOC', 1701729619);
-              userEnc.writeInteger('ID  ', session.personaId);
-              userEnc.writeString('NAME', session.displayName);
-              userEnc.writeStructEnd();
-              const userBody = userEnc.build();
-              const userHdr = encodeHeader({ length: userBody.length, component: 0x7802, command: 0x0002, error: 0, notify: true });
-              socket.write(Buffer.concat([userHdr, userBody]));
-              console.log(`[Main] S${sid}: *** Sent UserSession notification ***`);
-              
-              // Send UserSessionExtendedData
-              const extEnc = new TdfEncoder();
-              extEnc.writeStructStart('USER');
-              extEnc.writeInteger('AID ', session.nucleusId);
-              extEnc.writeInteger('ALOC', 1701729619);
-              extEnc.writeInteger('ID  ', session.personaId);
-              extEnc.writeString('NAME', session.displayName);
-              extEnc.writeStructEnd();
-              const extBody = extEnc.build();
-              const extHdr = encodeHeader({ length: extBody.length, component: 0x7802, command: 0x0005, error: 0, notify: true });
-              socket.write(Buffer.concat([extHdr, extBody]));
-              console.log(`[Main] S${sid}: *** Sent UserSessionExtendedData ***`);
-            } catch(e) {
-              console.log(`[Main] S${sid}: Proactive login error: ${e.message}`);
-            }
-          }, 50); // 50ms after PreAuth response
-        }
+        if (cmd === 0x0007) { console.log(`[Main] S${sid}: -> PreAuth`); resp = handlePreAuth(pkt); }
         else if (cmd === 0x0008) { console.log(`[Main] S${sid}: -> PostAuth`); resp = handlePostAuth(session, pkt); }
         else if (cmd === 0x0002) resp = handlePing(pkt);
         else if (cmd === 0x0003) resp = handleGetTelemetry(pkt);
@@ -1387,19 +1318,7 @@ function setupMainBlazeHandler(socket, session) {
         if (cmd === 0x000A) { 
           resp = handleCreateAccount(session, pkt);
         }
-        else if (cmd === 0x0046) {
-          // Logout — respond with SilentLogin response body instead
-          // The RPC framework matches by msgId, so this response goes to
-          // whatever handler is waiting for msgId 9/10.
-          // We respond as cmd=0x0032 (SilentLogin) with full auth data.
-          console.log(`[Main] S${sid}: -> Logout INTERCEPTED — responding as SilentLogin`);
-          resp = handleLogin(session, pkt);
-          // Override the command in the response header to SilentLogin
-          if (resp) {
-            resp.writeUInt16BE(0x0032, 8); // Change cmd from 0x0046 to 0x0032
-          }
-        }
-        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
