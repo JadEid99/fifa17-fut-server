@@ -382,18 +382,6 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: Exception");
     }
 }
-            memcpy(func + p, &caveAddr, 8); p += 8;
-            func[p++] = 0xFF; func[p++] = 0xE0;
-            while (p < 16) func[p++] = 0x90;
-            VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> sync state setup cave");
-            g_createAcctPatchDone = 1;
-            g_patched++;
-        }
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        Log("CA_HANDLER: Exception");
-    }
-}
 
 // Patch 9: FUN_1470e0390 (Origin::OriginSDK::CheckOnline) -> always return success
 // Also patch FUN_1470da720 (GetGameVersion) -> return 0 + write expected bytes
