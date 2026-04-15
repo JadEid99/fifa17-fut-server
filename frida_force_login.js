@@ -1,44 +1,114 @@
 /*
- * Frida v45: Dump FUN_146e15070 bytes to find the CreateAccount command (0x0A)
+ * Frida v46: MULTI-EXPERIMENT — test OriginLogin redirect at runtime
+ *
+ * Instead of rebuilding the DLL, use Frida to:
+ * 1. Intercept FUN_146dab760 (RPC builder) and change cmd 10→0x98
+ * 2. Log ALL auth RPC sends to see what commands go out
+ * 3. Hook the OriginLogin response handler to see if TDF works
+ * 4. Dump the response object after OriginLogin decode
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v45: Dump FUN_146e15070 ===');
+console.log('=== Frida v46: OriginLogin Redirect (Runtime Patch) ===');
 
-// Dump first 200 bytes of FUN_146e15070
-var fn = addr(0x6e15070);
-var bytes = new Uint8Array(fn.readByteArray(200));
-console.log('[DUMP] FUN_146e15070 first 200 bytes:');
-for (var row = 0; row < 200; row += 16) {
-    var hex = '';
-    var ascii = '';
-    for (var col = 0; col < 16 && row + col < 200; col++) {
-        hex += ('0' + bytes[row + col].toString(16)).slice(-2) + ' ';
-        ascii += (bytes[row + col] >= 32 && bytes[row + col] < 127) ? String.fromCharCode(bytes[row + col]) : '.';
+// ============================================================
+// EXPERIMENT 1: Intercept FUN_146dab760 to change cmd 10→0x98
+// FUN_146dab760(puVar8, loginType, COMMAND, param_7, connection)
+// 3rd arg (R8) = command. If 10 (CreateAccount), change to 0x98 (OriginLogin)
+// ============================================================
+Interceptor.attach(addr(0x6dab760), {
+    onEnter: function(args) {
+        var cmd = this.context.r8.toInt32();
+        if (cmd === 10) {
+            console.log('[RPC-BUILD] *** INTERCEPTED cmd=10 (CreateAccount) -> changing to 0x98 (OriginLogin) ***');
+            this.context.r8 = ptr(0x98);
+        } else if (cmd > 0 && cmd < 0x200) {
+            console.log('[RPC-BUILD] cmd=' + cmd + ' (0x' + cmd.toString(16) + ')');
+        }
     }
-    console.log('  +' + ('0' + row.toString(16)).slice(-2) + ': ' + hex + ' ' + ascii);
-}
+});
+console.log('Hooked FUN_146dab760 (RPC builder) — will redirect CreateAccount→OriginLogin');
 
-// Search for value 0x0A in various instruction encodings
-console.log('\n[SEARCH] Looking for value 10 (0x0A) in instructions:');
-for (var i = 0; i < 190; i++) {
-    // MOV R8D, imm32: 41 B8 0A 00 00 00
-    if (bytes[i] === 0x41 && bytes[i+1] === 0xB8 && bytes[i+2] === 0x0A) {
-        console.log('  +' + i.toString(16) + ': MOV R8D, 0x0A (41 B8 0A ...)');
+// ============================================================
+// EXPERIMENT 2: Log ALL auth component (0x0001) RPC sends
+// Hook FUN_146df0e80 to see what RPCs are dispatched
+// ============================================================
+Interceptor.attach(addr(0x6df0e80), {
+    onEnter: function(args) {
+        // args: connection, rpcDesc, loginType, command, ...
+        var cmd = this.context.r9.toInt32(); // 4th arg = command
+        // Actually in the Ghidra decompilation, the command is the 4th positional arg
+        // Let's just log R8 and R9 to see
+        var r8 = this.context.r8.toInt32();
+        var r9 = this.context.r9.toInt32();
+        if (r8 > 0 && r8 < 0x200) {
+            console.log('[RPC-SEND] FUN_146df0e80 called, R8=' + r8 + ' (0x' + r8.toString(16) + '), R9=' + r9);
+        }
     }
-    // MOV R8D, imm8 via different encoding
-    if (bytes[i] === 0x41 && bytes[i+1] === 0xB0 && bytes[i+2] === 0x0A) {
-        console.log('  +' + i.toString(16) + ': MOV R8B, 0x0A (41 B0 0A)');
-    }
-    // PUSH 0x0A / MOV ECX,0x0A etc
-    if (bytes[i] === 0x6A && bytes[i+1] === 0x0A) {
-        console.log('  +' + i.toString(16) + ': PUSH 0x0A (6A 0A)');
-    }
-    // MOV reg, 0x0A (various)
-    if (bytes[i+1] === 0x0A && bytes[i+2] === 0x00 && bytes[i+3] === 0x00 && bytes[i+4] === 0x00) {
-        console.log('  +' + i.toString(16) + ': possible imm32=0x0A: ' + 
-            ('0'+bytes[i].toString(16)).slice(-2) + ' 0A 00 00 00');
-    }
-}
+});
 
-console.log('=== Done ===');
+// ============================================================
+// EXPERIMENT 3: Hook the OriginLogin response handler
+// OriginLogin vtable is at 0x14389FA70 (SilentLogin) or nearby
+// The response handler is called after the server responds
+// ============================================================
+
+// Hook the RPC response decoder to see OriginLogin responses
+Interceptor.attach(addr(0x6db5d60), {
+    onEnter: function(args) {
+        var bodyBufObj = args[3];
+        try {
+            var bufStart = bodyBufObj.add(0x08).readPointer();
+            var bufEnd = bodyBufObj.add(0x18).readPointer();
+            var bodyLen = bufEnd.sub(bufStart).toInt32();
+            if (bodyLen > 0) {
+                console.log('[RPC-RESP] Response received, bodyLen=' + bodyLen);
+                if (bodyLen > 4 && bodyLen < 500) {
+                    var hex = '';
+                    var arr = new Uint8Array(bufStart.readByteArray(Math.min(bodyLen, 32)));
+                    for (var i = 0; i < arr.length; i++) hex += ('0' + arr[i].toString(16)).slice(-2) + ' ';
+                    console.log('[RPC-RESP] First bytes: ' + hex);
+                }
+            }
+        } catch(e) {}
+    }
+});
+
+// ============================================================
+// EXPERIMENT 4: Track handlers
+// ============================================================
+try {
+    Interceptor.attach(addr(0x6e1cf10), {
+        onEnter: function(args) { console.log('[HANDLER] PreAuth called R8=' + args[2]); }
+    });
+} catch(e) {}
+
+try {
+    Interceptor.attach(addr(0x6e151d0), {
+        onEnter: function(args) {
+            console.log('[HANDLER] CreateAccount/OriginLogin called R8=' + args[2]);
+            // Dump param_2 (response object) to see if TDF populated it
+            try {
+                var resp = args[1];
+                var b10 = resp.add(0x10).readU8();
+                var b11 = resp.add(0x11).readU8();
+                var b12 = resp.add(0x12).readU8();
+                var b13 = resp.add(0x13).readU8();
+                console.log('[HANDLER] Response +0x10=' + b10 + ' +0x11=' + b11 + ' +0x12=' + b12 + ' +0x13=' + b13);
+            } catch(e) {}
+        }
+    });
+} catch(e) {}
+
+// ============================================================
+// EXPERIMENT 5: Track if PostAuth is ever requested
+// ============================================================
+Interceptor.attach(addr(0x6db5a60), {
+    onEnter: function(args) {
+        // This is the RPC response dispatcher — log all calls
+    }
+});
+
+console.log('=== Frida v46 Ready ===');
+console.log('Will intercept CreateAccount→OriginLogin at FUN_146dab760');
+console.log('Will log all RPC sends and responses');

@@ -101,6 +101,13 @@ handler), the RPC would be processed on the right thread.
 ## BUILD & TEST
 ```
 git pull
-.\batch_test_lsx.ps1       # No Frida
-.\frida_test.ps1           # With Frida
+.\frida_test.ps1           # USE THIS — Frida does runtime patching, faster iteration
+.\batch_test_lsx.ps1       # Only for DLL-only changes
 ```
+
+## OPTIMIZED TEST APPROACH
+1. Use Frida for runtime patching instead of DLL rebuilds — faster iteration
+2. Frida v46 hooks FUN_146dab760 to redirect CreateAccount→OriginLogin at runtime
+3. All RPC sends and responses are logged to identify exactly what happens
+4. Response objects are dumped to verify TDF decode works for OriginLogin
+5. If Frida confirms OriginLogin works, THEN bake it into the DLL

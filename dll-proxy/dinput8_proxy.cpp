@@ -500,36 +500,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
             // Patch 16: CreateAccount bypass cave (re-enabled)
             if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             
-            // Patch 20: Change CreateAccount (cmd=0x0A) to OriginLogin (cmd=0x98)
-            // The command is computed as: MOV R8D, 0x90C3050F; LEA R8D, [R8D + 0x6F3CFAFB]
-            // Result: 0x90C3050F + 0x6F3CFAFB = 0x0A (CreateAccount)
-            // To get 0x98 (OriginLogin): change offset to 0x6F3CFB89
-            // Bytes at FUN_146e15070+0xBA: FB FA 3C 6F -> 89 FB 3C 6F
-            {
-                static int originLoginPatched = 0;
-                if (!originLoginPatched) {
-                    __try {
-                        BYTE* fn = (BYTE*)0x146e15070;
-                        // Verify the expected bytes at +0xBB (offset was off by 1)
-                        if (fn[0xBB] == 0xFB && fn[0xBC] == 0xFA && fn[0xBD] == 0x3C && fn[0xBE] == 0x6F) {
-                            DWORD op;
-                            if (VirtualProtect(fn + 0xBB, 4, PAGE_EXECUTE_READWRITE, &op)) {
-                                fn[0xBB] = 0x89;
-                                fn[0xBC] = 0xFB;
-                                // fn[0xBD] and fn[0xBE] stay the same (3C 6F)
-                                VirtualProtect(fn + 0xBB, 4, op, &op);
-                                Log("PATCHED: FUN_146e15070+0xBB: CreateAccount(0x0A) -> OriginLogin(0x98)");
-                                originLoginPatched = 1;
-                            }
-                        } else {
-                            Log("PATCH20: Bytes at +0xBB don't match: %02X %02X %02X %02X (expected FB FA 3C 6F)",
-                                fn[0xBB], fn[0xBC], fn[0xBD], fn[0xBE]);
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {
-                        Log("PATCH20: Exception");
-                    }
-                }
-            }
+            // Patch 20: DISABLED — using Frida runtime redirect instead
+            // Frida v46 hooks FUN_146dab760 to change cmd 10→0x98 at runtime
             if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
