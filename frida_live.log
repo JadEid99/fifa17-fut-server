@@ -10,31 +10,31 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v47: OriginLogin Redirect at RPC Send ===
-=== Frida v47 Ready ===
-[Local::PID::108832 ]-> [RPC-SEND] comp=5 cmd=17 (0x11)
-[RPC-RESP] bodyLen=322 first: 3c 3f 78 6d 6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e 63 6f 64 69 6e 67 3d 22 55 54 
-[RPC-SEND] comp=9 cmd=7 (0x7)
-[RPC-RESP] bodyLen=628 first: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 
-[HANDLER] PreAuth R8=0x0
-[RPC-SEND] comp=9 cmd=2 (0x2)
-[RPC-RESP] bodyLen=10 first: cf 4a 6d 00 86 db 8f 9e b2 67 
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-SEND] comp=9 cmd=1 (0x1)
-[RPC-RESP] bodyLen=135 first: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 
-[RPC-RESP] bodyLen=85 first: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 
-[RPC-RESP] bodyLen=121 first: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70 3a 2f 2f 31 
-[RPC-RESP] bodyLen=46 first: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 
-[RPC-RESP] bodyLen=19 first: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[RPC-RESP] bodyLen=19 first: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[RPC-SEND] *** INTERCEPTED CreateAccount (comp=1,cmd=10) -> OriginLogin (cmd=0x98) ***
-[RPC-RESP] bodyLen=148 first: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c 
-[HANDLER] CreateAccount/OriginLogin R8=0x0
-[HANDLER] Response +0x10=0 +0x13=0
-[HANDLER] Response vtable=0x14389ac68
-[RPC-SEND] comp=1 cmd=70 (0x46)
-[RPC-RESP] bodyLen=148 first: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c 
+=== Frida v48: Full OriginLogin Redirect ===
+=== Frida v48 Ready ===
+[Local::PID::86896 ]-> [RPC-SEND] comp=5 cmd=17
+[RPC-RESP] bodyLen=322
+[RPC-SEND] comp=9 cmd=7
+[RPC-RESP] bodyLen=628
+[RPC-SEND] comp=9 cmd=2
+[RPC-RESP] bodyLen=10
+[RPC-SEND] comp=9 cmd=1
+[RPC-SEND] comp=9 cmd=1
+[RPC-SEND] comp=9 cmd=1
+[RPC-SEND] comp=9 cmd=1
+[RPC-SEND] comp=9 cmd=1
+[RPC-SEND] comp=9 cmd=1
+[RPC-RESP] bodyLen=135
+[RPC-RESP] bodyLen=85
+[RPC-RESP] bodyLen=121
+[RPC-RESP] bodyLen=46
+[RPC-RESP] bodyLen=19
+[RPC-RESP] bodyLen=19
+[RPC-BUILD] CreateAccount detected, changing R8 to 0x98
+[RPC-BUILD] Post-build: scanning RPC structure for cmd value...
+[RPC-SEND] Changing cmd 10->0x98 at send time
+[RPC-RESP] bodyLen=148
+[HANDLER] Called R8=0x0
+[HANDLER] vtable=0x14389ac68 +0x10=0 +0x13=0
+[RPC-SEND] comp=1 cmd=70
+[RPC-RESP] bodyLen=148
