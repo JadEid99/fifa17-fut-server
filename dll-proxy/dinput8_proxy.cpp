@@ -485,40 +485,18 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
-            // Patch 19: Login check must be patched BEFORE PreAuth runs
+            // Patch 19: Login check — DISABLED (interferes with CreateAccount flow)
+            // Patch 18: Age check — DISABLED (interferes with CreateAccount flow)
+            /*
             {
                 static int loginCheckPatched = 0;
-                if (!loginCheckPatched) {
-                    __try {
-                        BYTE* f = (BYTE*)0x146e1dae0;
-                        DWORD op;
-                        if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                            f[0] = 0xB0; f[1] = 0x01; f[2] = 0xC3;
-                            for (int k=3; k<8; k++) f[k] = 0x90;
-                            VirtualProtect(f, 8, op, &op);
-                            Log("PATCHED: FUN_146e1dae0 (login check) -> return 1 (EARLY)");
-                            loginCheckPatched = 1;
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
-                }
+                ...
             }
-            // Patch 18: Age check must also be patched early
             {
                 static int ageCheckPatched = 0;
-                if (!ageCheckPatched) {
-                    __try {
-                        BYTE* f = (BYTE*)0x14717d5d0;
-                        DWORD op;
-                        if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                            f[0] = 0xC3;
-                            for (int k=1; k<8; k++) f[k] = 0x90;
-                            VirtualProtect(f, 8, op, &op);
-                            Log("PATCHED: FUN_14717d5d0 (age check) -> RET (EARLY)");
-                            ageCheckPatched = 1;
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
-                }
+                ...
             }
+            */
             // Patch 16: CreateAccount bypass cave (re-enabled)
             if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             
@@ -899,46 +877,11 @@ done:
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
         
         // Patch 18: Skip age check in FUN_14717d5d0
-        // This function checks the user's age and shows "OSDK_UNDERAGE_ERROR"
-        // if the DOB is missing or the user is too young.
-        // We patch it to return immediately — skip the entire age check.
-        __try {
-            BYTE* ageCheckFn = (BYTE*)0x14717d5d0;
-            Log("AGE_CHECK: addr=%p bytes=%02X %02X %02X %02X", ageCheckFn, ageCheckFn[0], ageCheckFn[1], ageCheckFn[2], ageCheckFn[3]);
-            DWORD op;
-            if (VirtualProtect(ageCheckFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                ageCheckFn[0] = 0xC3; // RET
-                for (int k=1; k<8; k++) ageCheckFn[k] = 0x90;
-                VirtualProtect(ageCheckFn, 8, op, &op);
-                Log("PATCHED: FUN_14717d5d0 (age check) -> RET (skip age restriction)");
-            }
-        } __except(EXCEPTION_EXECUTE_HANDLER) {
-            Log("AGE_CHECK: Exception");
-        }
-        
-        // Patch 19: Make FUN_146e1dae0 always return true (1)
-        // Frida v41 showed: Login job is created but FUN_146e1dae0 returns false
-        // because the login type array (loginSM+0x218 to +0x220) is empty.
-        // The array is empty because the PreAuth TDF decoder doesn't populate it.
-        // Returning true makes the Login flow proceed to send the actual Login RPC.
-        __try {
-            BYTE* loginCheckFn = (BYTE*)0x146e1dae0;
-            Log("LOGIN_CHECK: addr=%p bytes=%02X %02X %02X %02X", loginCheckFn, loginCheckFn[0], loginCheckFn[1], loginCheckFn[2], loginCheckFn[3]);
-            DWORD op;
-            if (VirtualProtect(loginCheckFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                loginCheckFn[0] = 0xB0; loginCheckFn[1] = 0x01; // MOV AL, 1
-                loginCheckFn[2] = 0xC3; // RET
-                for (int k=3; k<8; k++) loginCheckFn[k] = 0x90;
-                VirtualProtect(loginCheckFn, 8, op, &op);
-                Log("PATCHED: FUN_146e1dae0 (login check) -> return 1 (always proceed)");
-            }
-        } __except(EXCEPTION_EXECUTE_HANDLER) {
-            Log("LOGIN_CHECK: Exception");
-        }
+        // Patch 18+19: DISABLED — they interfere with CreateAccount flow
+        // When Patch 3 provides auth code, we WANT CreateAccount to be sent
     }
     
     // Keep forcing +0x53f flag continuously in background
-    // This ensures it's set before any connection attempt
     Log("AUTH: Starting continuous flag enforcer (+0x53f + connState)...");
     for (int i = 0; i < 6000; i++) { // 10 minutes
         __try {
