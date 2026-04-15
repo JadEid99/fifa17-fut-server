@@ -630,6 +630,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
     
     Log("AUTH: Polling for slot to clear + forcing 0x53f flag...");
     Sleep(1000);
+    static int loginInjected = 0;
     
     for (int wait = 0; wait < 300; wait++) {
         __try {
@@ -645,6 +646,39 @@ static DWORD WINAPI PatchThread(LPVOID) {
                     if (bh != 0) {
                         uint8_t* pF = (uint8_t*)(bh + 0x53f);
                         if (*pF == 0) { *pF = 1; }
+                    }
+                }
+                
+                // Login injection: check if PreAuth has run and inject login entry
+                if (g_preAuthParam1 != 0 && !loginInjected) {
+                    uint64_t loginSM = g_preAuthParam1 + 0x1DB0;
+                    uint64_t arrStart = *(uint64_t*)(loginSM + 0x218);
+                    uint64_t arrEnd = *(uint64_t*)(loginSM + 0x220);
+                    uint64_t jobHandle = *(uint64_t*)(loginSM + 0x18);
+                    
+                    if (arrStart == 0 && arrEnd == 0 && jobHandle != 0) {
+                        loginInjected = 1;
+                        Log("LOGIN-INJECT-EARLY: loginSM=0x%llX job=0x%llX at %d ms", loginSM, jobHandle, 1000+wait*100);
+                        
+                        BYTE* fakeEntry = (BYTE*)VirtualAlloc(NULL, 0x40, MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+                        if (fakeEntry) {
+                            memset(fakeEntry, 0, 0x40);
+                            static char loginFlag2[] = "\x01";
+                            *(uint64_t*)(fakeEntry + 0) = (uint64_t)loginFlag2;
+                            BYTE* fakeConfig = fakeEntry + 0x20;
+                            static char authToken2[] = "FAKEAUTHCODE1234567890";
+                            *(uint64_t*)(fakeConfig + 0x10) = (uint64_t)authToken2;
+                            *(uint16_t*)(fakeConfig + 0x28) = 0;
+                            *(uint64_t*)(fakeEntry + 0x18) = (uint64_t)fakeConfig;
+                            *(uint64_t*)(loginSM + 0x218) = (uint64_t)fakeEntry;
+                            *(uint64_t*)(loginSM + 0x220) = (uint64_t)(fakeEntry + 0x20);
+                            
+                            Log("LOGIN-INJECT-EARLY: Calling FUN_146e1eb70...");
+                            typedef uint64_t (*LoginSendFn)(uint64_t, BYTE*, uint64_t, int);
+                            LoginSendFn fn = (LoginSendFn)0x146e1eb70;
+                            uint64_t result = fn(loginSM, fakeEntry, (uint64_t)fakeConfig, 1);
+                            Log("LOGIN-INJECT-EARLY: returned 0x%llX", result);
+                        }
                     }
                 }
                 // Still try to capture vtable if we missed it
