@@ -295,16 +295,21 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: FUN_146e151d0 (CreateAccount response handler)
-// Instead of bypassing the handler, we let the ORIGINAL handler run
-// with a fake response object where +0x10=1 (UID non-zero) and +0x13=0
-// (no persona creation). This way the handler sets state bytes AND
-// returns properly to the caller, which lets the queued Login proceed.
+// STABLE APPROACH: Set state bytes to skip OSDK screen, then return.
+// The game sends Logout after this, but at least it doesn't crash.
+//
+// We've confirmed:
+// - Setting 0x8c0=1, 0x8c6=0 skips the OSDK screen (no persona creation)
+// - The original handler crashes with fake response objects
+// - FUN_146e19720 is a one-shot (already called during PreAuth)
+// - State transition (1,3) triggers the OSDK screen
+//
+// NEXT APPROACH: Instead of trying to skip CreateAccount entirely,
+// use the OSDK screen path (0x8c6=1) and serve an HTML page that
+// auto-completes the account creation via the Nucleus web view.
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
 static volatile uint64_t g_createAcctParam1 = 0;
-
-// Fake response object — static so it persists
-static BYTE g_fakeCAResponse[0x20] = {0};
 
 static void PatchCreateAccountHandler() {
     if (g_createAcctPatchDone) return;
@@ -314,56 +319,62 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        // Set up the fake response object:
-        // +0x10 = 1 (UID byte — non-zero, account exists)
-        // +0x11 = 0
-        // +0x12 = 0
-        // +0x13 = 0 (NO persona creation — skip OSDK screen)
-        memset(g_fakeCAResponse, 0, sizeof(g_fakeCAResponse));
-        g_fakeCAResponse[0x10] = 0x01; // UID non-zero
-        // +0x13 stays 0 (no persona creation)
-        
-        // Cave: force R8D=0 (success), force RDX=&g_fakeCAResponse,
-        // set flag, then run original handler code (trampoline)
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
         
-        // XOR R8D, R8D — force param_3 = 0 (success)
-        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
+        // Prologue
+        cave[o++] = 0x53; // PUSH RBX
+        cave[o++] = 0x56; // PUSH RSI
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
         
-        // MOV RDX, &g_fakeCAResponse — force param_2 = fake response
-        cave[o++] = 0x48; cave[o++] = 0xBA;
-        uint64_t fakeAddr = (uint64_t)g_fakeCAResponse;
-        memcpy(cave + o, &fakeAddr, 8); o += 8;
-        
-        // Set flag (using PUSH/POP to preserve registers)
-        cave[o++] = 0x50; // PUSH RAX
+        // Save param_1 and set flag
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
+        memcpy(cave + o, &p1Addr, 8); o += 8;
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08; // MOV [RAX], RCX
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // Save param_1 to global
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
-        memcpy(cave + o, &p1Addr, 8); o += 8;
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08; // MOV [RAX], RCX
-        cave[o++] = 0x58; // POP RAX
         
-        // Copy the original first 14 bytes (that we'll overwrite with the jump)
-        memcpy(cave + o, func, 14); o += 14;
+        // Call vtable+0xb8(param_1) to get state object
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x03; // MOV RAX, [RBX]
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9; // MOV RCX, RBX
+        cave[o++] = 0xFF; cave[o++] = 0x90;
+        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV RSI, RAX (state)
         
-        // Jump back to func + 14 (continue original handler code)
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t retAddr = (uint64_t)(func + 14);
-        memcpy(cave + o, &retAddr, 8); o += 8;
-        cave[o++] = 0xFF; cave[o++] = 0xE0;
+        // state[0x8bc] = 0 (success)
+        cave[o++] = 0xC7; cave[o++] = 0x86;
+        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // state[0x8c0] = 1 (UID non-zero)
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
+        // state[0x8c6] = 1 (persona creation = YES → show OSDK screen)
+        // We WANT the OSDK screen now — we'll serve an HTML page that auto-completes
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
         
-        Log("CA_HANDLER: Cave at %p, %d bytes (trampoline with fake response)", cave, o);
-        Log("CA_HANDLER: fakeResponse at %p (+0x10=0x%02X, +0x13=0x%02X)",
-            g_fakeCAResponse, g_fakeCAResponse[0x10], g_fakeCAResponse[0x13]);
+        // Call state transition (1, 3) to show the OSDK screen
+        // sm = param_1[1] (handler+0x08)
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x4B; cave[o++] = 0x08; // MOV RCX, [RBX+0x08]
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x01; // MOV RAX, [RCX]
+        cave[o++] = 0xBA; cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV EDX, 1
+        cave[o++] = 0x41; cave[o++] = 0xB8; cave[o++] = 0x03; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; // MOV R8D, 3
+        cave[o++] = 0xFF; cave[o++] = 0x50; cave[o++] = 0x08; // CALL [RAX+0x08]
+        
+        // Epilogue
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
+        cave[o++] = 0x5E; cave[o++] = 0x5B; cave[o++] = 0xC3;
+        
+        Log("CA_HANDLER: Cave at %p, %d bytes (OSDK screen + state transition)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -374,7 +385,7 @@ static void PatchCreateAccountHandler() {
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 14) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> trampoline with fake response (UID=1, persona=0)");
+            Log("PATCHED: FUN_146e151d0 -> OSDK screen path (0x8c6=1, transition 1,3)");
             g_createAcctPatchDone = 1;
             g_patched++;
         }

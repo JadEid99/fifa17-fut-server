@@ -1835,31 +1835,64 @@ function startHttpServer() {
       // Nucleus API handlers for OSDK account creation flow
       const url = req.url || '';
       
-      if (url.includes('/connect/auth') || url.includes('/connect/token')) {
-        // OAuth token request
-        console.log('[HTTP-NUCLEUS] Auth/token request');
+      if (url.includes('/connect/token')) {
+        // OAuth token exchange — game sends auth code, we return access token
+        console.log('[HTTP-NUCLEUS] Token exchange request');
+        console.log(`[HTTP-NUCLEUS] Body: ${body}`);
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ access_token: 'fake_token_12345', token_type: 'Bearer', expires_in: 3600 }));
+        res.end(JSON.stringify({ 
+          access_token: 'fake_access_token_12345', 
+          token_type: 'Bearer', 
+          expires_in: 3600,
+          refresh_token: 'fake_refresh_12345'
+        }));
+      } else if (url.includes('/connect/auth')) {
+        // OAuth authorize — redirect with auth code
+        console.log('[HTTP-NUCLEUS] OAuth authorize');
+        const redirectMatch = url.match(/redirect_uri=([^&]+)/);
+        const redirectUri = redirectMatch ? decodeURIComponent(redirectMatch[1]) : '/callback';
+        console.log(`[HTTP-NUCLEUS] Redirecting to: ${redirectUri}`);
+        res.writeHead(302, { 'Location': `${redirectUri}?code=FAKE_AUTH_CODE_12345` });
+        res.end();
       } else if (url.includes('/identity/pids/me/personas')) {
-        // List personas — return one existing persona to skip creation
         console.log('[HTTP-NUCLEUS] List personas');
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ personas: { persona: [{ personaId: 1000000001, pidId: 2000000001, displayName: 'Player1', namespaceName: 'cem_ea_id', isVisible: true, status: 'ACTIVE' }] } }));
       } else if (url.includes('/identity/pids')) {
-        // PID lookup
-        console.log('[HTTP-NUCLEUS] PID lookup');
+        console.log('[HTTP-NUCLEUS] PID request');
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ pid: { pidId: 2000000001, email: 'player@fut.local', dob: '1990-01-01', status: 'ACTIVE', country: 'US' } }));
+        res.end(JSON.stringify({ pid: { pidId: 2000000001, email: 'player@fut.local', dob: '1990-01-01', status: 'ACTIVE', country: 'US', displayName: 'Player1' } }));
       } else if (url.includes('/proxy/identity')) {
-        // Proxy identity request
         console.log('[HTTP-NUCLEUS] Proxy identity');
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ pid: { pidId: 2000000001, displayName: 'Player1' } }));
       } else {
-        // Catch-all — log and return OK
-        console.log(`[HTTP] Unhandled: ${req.method} ${url}`);
-        res.setHeader('Content-Type', 'application/json');
-        res.end('{"status":"ok"}');
+        // CATCH-ALL: Log everything and serve HTML for web view requests
+        console.log(`[HTTP] *** CATCH-ALL: ${req.method} ${url} ***`);
+        console.log(`[HTTP] Headers: ${JSON.stringify(req.headers).substring(0, 500)}`);
+        if (body) console.log(`[HTTP] Body: ${body.substring(0, 500)}`);
+        
+        // Check if this looks like a browser/web view request
+        const accept = req.headers['accept'] || '';
+        if (accept.includes('text/html') || !accept.includes('json')) {
+          // Serve HTML page for the OSDK web view
+          res.setHeader('Content-Type', 'text/html');
+          res.end(`<!DOCTYPE html>
+<html><head><title>EA Account</title></head>
+<body>
+<h2>Account Created Successfully</h2>
+<p>Your FIFA 17 account has been set up. Redirecting...</p>
+<script>
+// Auto-redirect with auth code after 500ms
+setTimeout(function() {
+  window.location.href = '/callback?code=FAKE_AUTH_CODE_12345&state=done';
+}, 500);
+</script>
+</body></html>`);
+        } else {
+          res.setHeader('Content-Type', 'application/json');
+          res.end('{"status":"ok"}');
+        }
       }
     });
   }).listen(HTTP_PORT, '0.0.0.0', () => console.log(`[HTTP] on port ${HTTP_PORT}`));
