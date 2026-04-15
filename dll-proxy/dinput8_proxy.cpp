@@ -283,12 +283,18 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: FUN_146e151d0 (CreateAccount response handler)
-// UPDATED: Don't bypass the handler — let the original code run.
-// The server now sends the correct AuthResponse TDF format, so the
-// game's decoder should populate the response object correctly.
-// We just force param_3 (R8D) to 0 (success) like we do for PreAuth.
+// The vtable+0x30 decoder (0x146e12a60) initializes the response object but
+// does NOT read TDF data — the TDF decoding happens elsewhere in the RPC framework.
+// Since the response object fields are always zeros after decode, the original
+// handler crashes when it tries to process them.
+//
+// APPROACH: Bypass the handler entirely. Set the flag and return.
+// The DLL background thread will detect the flag and handle the state transition.
+// We also need to set the response object's UID field to non-zero so the
+// game's state machine takes the "account exists" path.
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
+static volatile uint64_t g_createAcctParam1 = 0;
 static void PatchCreateAccountHandler() {
     if (g_createAcctPatchDone) return;
     
@@ -297,34 +303,34 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        // Same approach as PreAuth (Patch 8): trampoline that forces R8D=0 (success)
-        // then runs the original handler code.
+        // Cave: save param_1, set flag, return immediately
+        // The original handler would crash because the response object is empty.
         BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
-        // XOR R8D, R8D — force param_3 = 0 (success path)
-        cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
         
-        // Set flag so we know it was called
-        cave[o++] = 0x50; // PUSH RAX (save)
+        // Save param_1 (RCX) for the background thread
+        // MOV RAX, &g_createAcctParam1
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
+        memcpy(cave + o, &p1Addr, 8); o += 8;
+        // MOV [RAX], RCX
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08;
+        
+        // Set g_createAcctCalled = 1
+        // MOV RAX, &g_createAcctCalled
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t flagAddr = (uint64_t)&g_createAcctCalled;
         memcpy(cave + o, &flagAddr, 8); o += 8;
+        // MOV DWORD [RAX], 1
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        cave[o++] = 0x58; // POP RAX (restore)
         
-        // Copy the original first 14 bytes (that we'll overwrite with the jump)
-        memcpy(cave + o, func, 14); o += 14;
+        // RET
+        cave[o++] = 0xC3;
         
-        // Jump back to func + 14 (continue original code)
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t retAddr = (uint64_t)(func + 14);
-        memcpy(cave + o, &retAddr, 8); o += 8;
-        cave[o++] = 0xFF; cave[o++] = 0xE0;
-        
-        Log("CA_HANDLER: Cave at %p, %d bytes (XOR R8D + trampoline)", cave, o);
+        Log("CA_HANDLER: Cave at %p, %d bytes (save param1 + flag + RET)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -333,9 +339,9 @@ static void PatchCreateAccountHandler() {
             uint64_t caveAddr = (uint64_t)cave;
             memcpy(func + p, &caveAddr, 8); p += 8;
             func[p++] = 0xFF; func[p++] = 0xE0;
-            while (p < 14) func[p++] = 0x90;
+            while (p < 16) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> XOR R8D,R8D trampoline (let original handler run)");
+            Log("PATCHED: FUN_146e151d0 -> save param1 + flag + RET");
             g_createAcctPatchDone = 1;
             g_patched++;
         }
