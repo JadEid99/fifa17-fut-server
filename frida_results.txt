@@ -13,7 +13,7 @@ Attaching...
 === Frida v51: Simulate TOS Acceptance ===
 [INIT] NOPed FUN_146e00f40
 === Frida v51 Ready ===
-[Local::PID::95492 ]-> [POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[Local::PID::95244 ]-> [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
@@ -34,13 +34,12 @@ Attaching...
 [TRANSITION] (1,3)
 [RPC] comp=1 cmd=242 (0xf2)
 [S2] Handler returned. Now simulating TOS acceptance...
-[S2] State machine = 0x3eb1d2f0
-[S2] Transition function = 0x146e16dc0
-[S2] Calling transition (4,1)...
-[S2] Calling transition (5,1)...
-[S2] Calling transition (3,1)...
-[S2] *** All TOS transitions called! ***
+[S2] State machine = 0x3eb3d2f0
+[S2] vtable+0x38 = 0x146e16dc0, vtable+0x08 = 0x146e126b0
+[S2] Calling transition (0,1) via vtable+0x08...
+[S2] *** Transitions called! ***
 [RPC] comp=1 cmd=246 (0xf6)
 [RPC] comp=1 cmd=47 (0x2f)
-[TRANSITION] (3,-1)
+[RPC] comp=1 cmd=70 (0x46)
+[TRANSITION] (0,-1)
 
