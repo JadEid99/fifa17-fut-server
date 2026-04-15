@@ -1763,7 +1763,13 @@ function handlePreAuth(pkt) {
     'defaultRequestTimeout': '60s',
     'pingPeriod': '15s',
     'voipHeadsetUpdateRate': '1000',
-    'xlspConnectionIdleTimeout': '300'
+    'xlspConnectionIdleTimeout': '300',
+    'nucleusConnect': 'http://127.0.0.1:8080',
+    'nucleusProxy': 'http://127.0.0.1:8080',
+    'nucleusPortal': 'http://127.0.0.1:8080',
+    'identityDisplayUri': 'console2/welcome',
+    'identityRedirectUri': 'http://127.0.0.1:8080/success',
+    'blazeServerClientId': 'GOS-BlazeServer-FIFA17-PC'
   });
   enc.writeStructEnd();
   enc.writeString('INST', 'fifa-2017-pc');  // Must match game's SVCN
