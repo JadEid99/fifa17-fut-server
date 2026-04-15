@@ -59,8 +59,8 @@ for ($fmt = 0; $fmt -le 5; $fmt++) {
     }
     
     if (-not $gameStarted) {
-        Write-Host "[RESULT] Format $fmt: GAME DID NOT START" -ForegroundColor Red
-        $allResults += "Format $fmt: GAME_NOT_STARTED`n"
+        Write-Host "[RESULT] Format ${fmt} - GAME DID NOT START" -ForegroundColor Red
+        $allResults += "Format ${fmt} - GAME_NOT_STARTED`n"
         
         # Collect Origin output
         $originOut = (Receive-Job $originJob 2>&1 | Out-String).Trim()
@@ -93,10 +93,10 @@ for ($fmt = 0; $fmt -le 5; $fmt++) {
     
     $msgCount = ([regex]::Matches($originOut, '#\d+')).Count
     
-    Write-Host "[RESULT] Format $fmt: $result (${msgCount} messages)" -ForegroundColor $(if($result -match "AUTH"){"Green"}elseif($result -match "PROFILE|SETTING"){"Yellow"}else{"Red"})
+    Write-Host "[RESULT] Format ${fmt} - $result (${msgCount} messages)" -ForegroundColor $(if($result -match "AUTH"){"Green"}elseif($result -match "PROFILE|SETTING"){"Yellow"}else{"Red"})
     
     $or1 = if($originOut.Length -gt 1000){$originOut.Substring($originOut.Length-1000)}else{$originOut}
-    $allResults += "Format $fmt: $result (${msgCount} msgs)`n  Origin: $or1`n`n"
+    $allResults += "Format ${fmt} - $result (${msgCount} msgs)`n  Origin: $or1`n`n"
     
     # Cleanup
     Stop-Process -Name FIFA17 -Force -EA SilentlyContinue
