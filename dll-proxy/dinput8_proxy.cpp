@@ -361,38 +361,9 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
-        // Reset loginSM+0x18 to 0 and re-call FUN_146e19720 to re-trigger Login.
-        // loginSM = g_preAuthParam1 + 0x1DB0
-        // FUN_146e19720 checks loginSM+0x18 != 0 → returns if already called.
-        // We reset +0x18 to 0 so it runs again.
-        cave[o++] = 0x50; // PUSH RAX (save)
-        cave[o++] = 0x51; // PUSH RCX (save)
-        // Load g_preAuthParam1
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
-        memcpy(cave + o, &preAuthAddr, 8); o += 8;
-        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x00; // MOV RAX, [RAX]
-        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC0; // TEST RAX, RAX
-        cave[o++] = 0x74; // JZ skip
-        int jzOff = o; cave[o++] = 0x00; // placeholder
-        
-        // RAX = preAuthParam1, add 0x1DB0 to get loginSM
-        cave[o++] = 0x48; cave[o++] = 0x05;
-        cave[o++] = 0xB0; cave[o++] = 0x1D; cave[o++] = 0x00; cave[o++] = 0x00;
-        // Reset loginSM+0x18 = 0
-        cave[o++] = 0x48; cave[o++] = 0xC7; cave[o++] = 0x40; cave[o++] = 0x18;
-        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
-        // Call FUN_146e19720(loginSM)
-        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC1; // MOV RCX, RAX
-        cave[o++] = 0x48; cave[o++] = 0xB8;
-        uint64_t loginFnAddr = 0x146e19720;
-        memcpy(cave + o, &loginFnAddr, 8); o += 8;
-        cave[o++] = 0xFF; cave[o++] = 0xD0; // CALL RAX
-        
-        // JZ target:
-        cave[jzOff] = (BYTE)(o - jzOff - 1);
-        cave[o++] = 0x59; // POP RCX
-        cave[o++] = 0x58; // POP RAX
+        // Don't call FUN_146e19720 or state transitions.
+        // The Logout is prevented by patching FUN_1472d62a0 (OSDK Logout) to NOP.
+        // Without Logout, the game should fall through to the Login path.
         
         // Epilogue
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28;
@@ -787,6 +758,23 @@ done:
                     Log("PATCHED: %s -> return 0 (post-load)", osdkNames[i]);
                 }
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        }
+        
+        // Patch 17: NOP the OSDK Logout function (FUN_1472d62a0)
+        // This prevents the game from sending Logout after CreateAccount.
+        // Without Logout, the queued Login RPC should fire.
+        __try {
+            BYTE* logoutFn = (BYTE*)0x1472d62a0;
+            Log("LOGOUT_NOP: addr=%p bytes=%02X %02X %02X %02X", logoutFn, logoutFn[0], logoutFn[1], logoutFn[2], logoutFn[3]);
+            DWORD op;
+            if (VirtualProtect(logoutFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                logoutFn[0] = 0xC3; // RET (immediate return, don't logout)
+                for (int k=1; k<8; k++) logoutFn[k] = 0x90;
+                VirtualProtect(logoutFn, 8, op, &op);
+                Log("PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET (NOP)");
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {
+            Log("LOGOUT_NOP: Exception");
         }
     }
     
