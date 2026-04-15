@@ -1,82 +1,82 @@
-# FIFA 17 Private Server — Context Transfer (End of Day 6)
+# FIFA 17 Private Server — Context Transfer (End of Day 6, Late)
 
-## CURRENT STATUS
+## CURRENT STATUS — SIGNIFICANT PROGRESS
 
 ### What works:
-- Full connection pipeline: DNS → TLS → Redirector → Main Server → PreAuth ✅
-- TDF encoding: PreAuth (325/376 bytes), CreateAccount (3 fields), FetchClientConfig (4 fields) ✅
-- All 16 DLL patches applied successfully ✅
-- OSDK screen can be shown (0x8c6=1) or hidden (0x8c6=0) at will ✅
-- PreAuth handler runs, calls FUN_146e1c3f0 which initializes loginSM ✅
-- FUN_146e19720 (Login start) called during PreAuth, returns OK ✅
+- Full connection: DNS → TLS → Redirector → Main Server → PreAuth → FetchClientConfig ✅
+- CreateAccount SKIPPED entirely (Patch 3 returns error, no auth code) ✅
+- Age check BYPASSED (Patch 18: FUN_14717d5d0 → RET) ✅
+- OSDK screen eliminated ✅
+- No crashes ✅
 
-### The blocker:
-After CreateAccount, the game sends **Logout** instead of **Login**.
-The Login RPC was queued during PreAuth by FUN_146e19720, but the game
-cancels it and sends Logout before it fires.
+### Current flow:
+```
+PreAuth → Ping → FetchClientConfig ×6 → Ping → Logout → disconnect
+```
 
-### What we tried to trigger Login (all failed):
-1. State transition (1,3) from cave → triggers OSDK screen (wrong transition)
-2. FUN_146e19720 from background thread → too late, game already sent Logout
-3. FUN_146e19720 from cave (offset 0x3b6) → crash (wrong offset, all zeros)
-4. FUN_146e19720 from cave (offset 0x1DB0) → no crash but no effect (one-shot, already called)
-5. Trampoline with fake response object → crash (handler accesses response vtable)
-6. OSDK web view approach → no HTTP requests made (screen stuck on TOS loading)
+### The remaining blocker:
+Game sends Logout after FetchClientConfig. Login RPC never fires.
+FUN_146e19720 (Login start) was called during PreAuth (confirmed by Frida v35)
+but the Login RPC job never sends the actual Login command.
 
-### Key Ghidra findings:
-- CreateAccount handler (FUN_146e151d0) reads response[0x10-0x13]:
-  - +0x10 = UID byte (non-zero = account exists)
-  - +0x13 = persona creation flag (non-zero = show OSDK screen)
-- State transition (1,3) = OSDK screen trigger (persona creation path)
-- FUN_146e1c3f0 = Login type processor (called by PreAuth, initializes loginSM)
-- FUN_146e19720 = Login start (one-shot, checks loginSM+0x18 != 0)
-- loginSM = preAuthParam1 + 0x1DB0 (NOT 0x3b6 — pointer arithmetic on longlong*)
-- OSDK screen is a Nucleus web view (UIWebViewWidget) but it doesn't load
-  until TOS responses are processed
-- The web view loads from nucleusConnect URL (http://127.0.0.1:8080)
-  but no HTTP requests were observed — TOS processing blocks it
+### Key theory to investigate:
+The PreAuth handler's success path reads config values from the decoded
+PreAuth response (pingPeriod, defaultRequestTimeout, connIdleTimeout, etc.)
+using vtable+0x58 and vtable+0x50 calls. If these fail (because the TDF
+decoder doesn't populate the response correctly), the handler might exit
+before reaching FUN_146e1c3f0 (Login type processor).
 
-### OSDK screen flow:
-1. CreateAccount → cave sets 0x8c6=1, calls transition (1,3)
-2. Game sends GetLegalDocsInfo (0xF2), GetTOS (0xF6), GetPrivacy (0x2F)
-3. Server responds with TOS content
-4. Screen stays in loading state (TOS responses not processed correctly?)
-5. Web view never loads (no HTTP requests to port 8080)
+Need to verify: does FUN_146e1c3f0 actually get called? Frida v35 showed
+it does, but that was with the old Patch 3 (fake auth code). With the new
+Patch 3 (error return), the flow might be different.
 
-## NEXT STEPS (Priority order)
+## PATCHES (Current State)
 
-### Option A: Fix TOS response decoding
-The OSDK screen is stuck because TOS responses aren't decoded.
-If we fix the TOS TDF format, the screen would process them,
-load the web view, and we could serve an auto-completing HTML page.
-Need to investigate what fields the TOS decoder expects.
-
-### Option B: Find the correct state transition to Login
-We know (1,3) = OSDK screen. There might be other values that
-advance to Login directly. Need to reverse-engineer the state
-machine's transition table in Ghidra.
-
-### Option C: Patch the Logout sender
-Instead of preventing Logout, intercept the Logout RPC and
-convert it to a Login RPC. Or patch the function that sends
-Logout to send Login instead.
-
-### Option D: Re-examine why Login RPC doesn't fire
-FUN_146e19720 was called during PreAuth and queued a Login job.
-But the job never fires. Maybe it's waiting for a condition
-that's never met, or it's canceled by the Logout.
+| # | Target | Status | What |
+|---|--------|--------|------|
+| 1 | Cert verification | ✅ Active | JNZ→JMP |
+| 2 | Origin SDK check | ✅ Active | Always true |
+| 3 | FUN_1470db3c0 | ✅ MODIFIED | Returns ERROR (no auth code) — prevents CreateAccount |
+| 4 | Auth flag | ✅ Active | [RBX+0x2061]=1 |
+| 5+6 | IsLoggedIn | ✅ Active | Always true |
+| 7 | SDK gate + vtable | ✅ Active | Return 1 |
+| 8 | PreAuth handler | ✅ Active | XOR R8D trampoline (success path) |
+| 9 | PreAuth completion | ✅ Active | Immediate RET |
+| 10 | OriginCheckOnline | ✅ Active | Always online |
+| 11 | GetGameVersion | ✅ Active | Return 0 |
+| 12 | Version compare | ✅ Active | Always match |
+| 13 | OSDK functions | ✅ Active | Return 0 (delayed) |
+| 14 | connState | ✅ Active | Force 0 continuously |
+| 15 | BlazeHub+0x53f | ✅ Active | Force 1 continuously |
+| 16 | CreateAccount handler | ❌ DISABLED | Not needed (CreateAccount skipped) |
+| 17 | OSDK Logout | ✅ Active | FUN_1472d62a0 → RET |
+| 18 | Age check | ✅ Active | FUN_14717d5d0 → RET |
 
 ## KEY FILES
 - `dll-proxy/dinput8_proxy.cpp` — DLL with all patches
 - `server-standalone/server.mjs` — Node.js Blaze server
-- `frida_force_login.js` — Frida script (v35: Login init check)
-- `batch_test_lsx.ps1` — Automated test (builds DLL, starts server, launches game)
-- `frida_test.ps1` — Automated Frida test
-- `batch-results.log` — Auto-logged server + DLL output
+- `frida_force_login.js` — Frida script
+- `batch_test_lsx.ps1` — Automated test
+- `batch-results.log` — Auto-logged output
+
+## NEXT SESSION PRIORITIES
+
+1. **Verify FUN_146e1c3f0 is called** with new Patch 3 (error return)
+   - Use Frida to hook FUN_146e1c3f0 and FUN_146e19720
+   - If not called, the PreAuth handler is exiting early
+
+2. **If FUN_146e1c3f0 IS called but Login doesn't fire:**
+   - The Login job might be waiting for a condition
+   - Check if the QoS/Login job callback (LAB_146e1d730) fires
+   - The job has a 7000ms timeout — check if it times out
+
+3. **If FUN_146e1c3f0 is NOT called:**
+   - The PreAuth handler exits early due to config read failures
+   - Need to fix the PreAuth response TDF to include all required fields
+   - Or patch the handler to skip the config reads
 
 ## BUILD & TEST
 ```
-# Pull first, then test:
 git pull
 .\batch_test_lsx.ps1       # No Frida
 .\frida_test.ps1           # With Frida tracing
