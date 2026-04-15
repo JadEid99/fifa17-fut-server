@@ -1,0 +1,488 @@
+
+Page 1 of 3	1	2	3	>	
+Show 20 post(s) from this thread on one page
+
+UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats (https://www.unknowncheats.me/forum/index.php)
+-   Battlefield 3 (https://www.unknowncheats.me/forum/battlefield-3-a/)
+-   -   [Question] Blaze Backend Relations (https://www.unknowncheats.me/forum/battlefield-3-a/114580-blaze-backend-relations.html)
+
+wwwc	20th May 2014 01:40 PM
+Blaze Backend Relations
+ 
+hi there,
+
+I know this subsection is for battlefield 3 but its also the section I found most information about the blaze backend. referring to this:
+
+http://www.unknowncheats.me/forum/ba...er-server.html
+
+I understand that this might be outdated, also that there is some kind of "competion" between groups to release stable emus, so I dont expect to get much answers. looking at the files I see 3, maybe 4 binarys (backend, master, slaver, monitor) But still id like to try my luck and ask, even if ill eventually find it out when I continue reversing the binarys and the packets, maybe someone can already enlighten me on how the relation between them are.
+
+http://www.unknowncheats.me/forum/876197-post31.html
+http://www.unknowncheats.me/forum/877883-post45.html
+
+from this I get that some game (my game is mass effect 3, but nvm) connects to the "blaze" server from which it gets somehow redirected to actual game server, so they can connect from multiple platforms(xbox,ps,pc,etc) to the same dedicated server. also I get that I can reverse the packet formats with ida and the typeinformation in the binarys
+
+so this is how I imagine the inner working sofar (id like to know if this is correct or how the correct way would look like, partwise for RE, partwise because id like to know how "professionals" do it, as I play with the idea to go into real game dev)
+
+http://s14.directupload.net/images/140519/ddpw275q.jpg
+
+also got the binarys loaded into ida64 and it looks good :D can someone maybe tell me how to find packet defs (tldfs?! dunno), before I have to analyze each interesting sounding function?^^
+
+http://s7.directupload.net/images/140519/76aelvrx.jpg
+
+TL;DR:
+1)How do Master/Slave/Backend "server" relate to each other, in what order are the called? (or in what order should I RE them?)
+2)I heard about packet definitions (tldfs) for blaze, is there a nice way to find them, or do I have to analyze my way through all functions that might use them?
+
+thanks for any input and time reading this
+
+greetz wwwc
+
+wwwc	24th May 2014 03:11 PM
+yay, some progress^^ @Admins, im not sure, if im allowed to post links here, if not, I can repost the content here again too
+
+http://me3explorer.freeforums.org/post10170.html#p10170
+
+the first thing I always see is the accessing of the redirector, well now I found the function chain, that produces it, at least it makes more sense now for me :D
+
+greetz wwwc
+
+wwwc	25th May 2014 10:25 PM
+as byproduct I made a tool to clone ssl certificates from wireshark dumps (automating it), so you can easier make MITM attacks (if you have the client emulated to ignore signing), and still have the correct informations like algorithm and such used, should I upload it here? is that useful to you guys?
+
+(here a demo vid)
+
+greetz WV
+
+zlofenix	26th May 2014 07:34 AM
+1. Just use 1 binary for all, its obvious.
+2. -Blaze.LogLevel 3 in server config
+
+Also can you send source of binkw32 crack and me3dbg?
+
+wwwc	26th May 2014 10:26 AM
+here you go :D binkw32 source me3dbg source but beware of my ugly code :P btw different binaries have different parts of the blaze sdk used, so I dunno if I should stick to just one. "Blaze.LogLevel 3" only helps if I can run something, I cant as this is for mass effect, so all I can do is static RE
+
+greetz wwwc
+
+zlofenix	26th May 2014 06:42 PM
+I need this just for remove ssl check and change redirector server in bf3/4 clear exe.
+
+wwwc	26th May 2014 10:42 PM
+http://s14.directupload.net/images/140527/66xf5vzi.jpg
+
+found this in:
+
+VoipUserT *__cdecl dynamic_initializer_for__Blaze__Redirector__ServerInstanceRequest__SERVERINSTANCEREQUEST_TDF_MEMBER_INFO__()
+
+this is a typical redirector request and how its mapped into the exe. that 4th byte seems to determine the type of the field, which can be determined by looking at Blaze::Tdf::Visit(...)
+
+greetz WV
+
+zlofenix	27th May 2014 06:14 AM
+Nope, looks like blaze v3, so:
+First 3 bytes - encoded string(96ed80 = ENV, as i remember).
+Next one - field type(0-int,1-string,6-union,etc), next field value: int - some [removed]-encoded if > 7F, string - int(string length) + string.
+Look in my bf3 emu threads.
+
+wwwc	27th May 2014 07:32 AM
+in none of your post I found anything about packet defs, you wrote one about battlelog and all other posts are in the topic I linked at the beginning, sooooo.... where?
+
+EDIT: did you mean this and this?
+
+greetz wwwc
+
+zlofenix	27th May 2014 10:56 AM
+Oh, maybe removed/on another forum.
+
+Well, packet defs - madness, 1 byte more in some string - fail, int can be 1 byte or 8 byte long, so you cant use just offsets.
+Use dynamic packet structure, like in http://www.unknowncheats.me/forum/880790-post85.html just magic of pointers, maps, and vectors.
+
+wwwc	27th May 2014 11:17 AM
+well, yeah, magic^^
+I dunno where I should start asking there...
+-how do I define what you coded there in C/C++ anyway? (im still learning how highlevel code relates to the generated assembly, even if the decompiler helps alot already)
+-how do you know f.e. 96ed80 = ENV?
+-how can I make a reader first?
+-I mean, do I really need to figure out for any 3 byte combo, what it actually represents or is there some pattern/map/table that I can use?
+-why to some packets have something like headers that are 12 byte long and others are as short as 5 bytes? (17 03 XX XX XX f.e. is freaking me out, as my MITM server doesnt seem to work if attached after redirector, I can easily see packets transmitted and can read them, but after a while it simply pings out with server/client sending only these 5 byte packets like this)
+
+EDIT: well according to this the "type" table looks alot different than what you said and what I see in the packets, so I guess this version is really TOO old?
+
+
+well I send you a PM, so if you like, we can chat :D
+
+greetz wwwc
+
+wwwc	30th May 2014 11:25 AM
+well I got the MITM work now, turns out the 5 byte packets are leftovers from the ([removed]) underlying ssl implementation of C#. so now I can finally focus on just the content, thanks for the help so far. +1 rep
+
+
+
+
+greetz wwwc
+
+wwwc	4th June 2014 09:29 PM
+now decoded... :D
+
+
+
+
+greetz wwwc
+
+wwwc	8th June 2014 05:38 PM
+takes ages, but my game accepts my server, even without inet, lol. and this is just a cheap replay attack^^
+
+
+
+greetz wwwc
+
+the1domo	17th June 2014 04:43 AM
+this includes everything you need for doing blaze emulation
+http://www.unknowncheats.me/forum/do...=file&id=11880
+@wwwc by the way this is really nice work I can really use someone like you on my team
+
+wwwc	17th June 2014 02:00 PM
+wow, you?^^ I tried to contact you before :D well, thanks for the code, that makes looking things up alot easier, but unfortunately I already wrote my own class (here its c#, as im lazy when prototyping^^) so it wont be much use anymore.
+Zlo explained me abit how the packets are madeup, the de/compression algos I figured out with IDA and some bit banging, and now I can already create packets/tdfs on the fly and expose all content to config files, so I can play around with it later.
+Then I already try to write some kind of player manager, so when my game looks for hosted games, I can supply the infos of other connected players (and hopefully have LAN^^ it already works that my game connects to my server on another pc)
+
+greetz WV
+
+PS: if you check your pms, I send you my IM before, but will do again now :D
+
+zlofenix	17th June 2014 03:47 PM
+Quote:
+Originally Posted by the1domo (Post 983867)
+this includes everything you need for doing blaze emulation
+http://www.unknowncheats.me/forum/do...=file&id=11880
+@wwwc by the way this is really nice work I can really use someone like you on my team
+And now i name you: world biggest [removed]et. Why you show something AFTER someone already done it?
+Also why such shitcode?
+1. Boost
+2. Cryptopp
+3. Strings as buffers in bf3
+4. BlazeStrategy::GetHeaderSize - top lel, header size not const.
+
+krakman	18th June 2014 08:54 AM
+Quote:
+Originally Posted by zlofenix (Post 984089)
+And now i name you: world biggest [removed]et. Why you show something AFTER someone already done it? Also why such shitcode? 1. Boost 2. Cryptopp 3. Strings as buffers in bf3 4. BlazeStrategy::GetHeaderSize - top lel, header size not const.
+the1domo disgraced?:devious:
+
+wwwc	18th June 2014 09:13 PM
+dunno if you guys are still interested, but I made some more progress:
+it doesnt login correct yet (working on that) but boots fine into mainmenu, just this time, everything is created on the fly (!) from config files, also I have a basic playerlist :D
+
+
+
+
+if you wanna have a big laugh at my [removed] code, here it is :D
+source&bin
+
+greetz wwwc
+
+wwwc	20th June 2014 12:10 PM
+seems im on the right track here, finally I can enter MP mode OFFLINE, yay!
+
+
+
+greetz WV
+
+
+All times are GMT. The time now is 05:13 PM.	
+Page 1 of 3	1	2	3	>	
+Show 20 post(s) from this thread on one page
+
+
+
+UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats (https://www.unknowncheats.me/forum/index.php)
+-   Battlefield 3 (https://www.unknowncheats.me/forum/battlefield-3-a/)
+-   -   [Question] Battlefield 3 blaze server connection (https://www.unknowncheats.me/forum/battlefield-3-a/122379-battlefield-3-blaze-server-connection.html)
+
+SniperViper	4th September 2014 03:41 PM
+Battlefield 3 blaze server connection
+ 
+Good day all
+
+I am trying to modify the code from wwwc's Mass Effect 3 emulator which i must say is astounding work!
+
+Everyting i connect a server to his modified emulator i get this error
+
+Avoiding RPC since we can not update the game
+
+I am guessing that because the gamestate is offline and a gameID has to be assigned to the server but having small issues with it
+
+majinmartin93	9th September 2014 11:58 PM
+do you know how to send requests directly to blaze?
+
+SniperViper	10th September 2014 08:43 AM
+Yes i do but struggling with the dedicated server login packet
+
+moha4pc	14th September 2014 10:15 AM
+hi all and hi sniperviper wwwc made his bf3 emulator (good man)
+this is the link (sory unknowncheats i cant upload my internet stop when i need to upload)
+~~~
+
+
+and chek my post on this link
+http://www.unknowncheats.me/forum/1043506-post43.html
+
+but i stoped when i want to connect to the server i get timed out
+
+steve612	14th September 2014 10:25 AM
+Why to use zlo bf3 and not bf3 final?
+
+moha4pc	14th September 2014 11:49 AM
+listen to me i am just try to get the server working fine
+
+
+please i cant upload my internet is too slow
+
+just answer
+how did bf3 login system work
+
+zlofenix thanks but can i change your bf3.exe links to my blaze emu server
+
+
+All times are GMT. The time now is 05:13 PM.	
+
+
+
+
+UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats (https://www.unknowncheats.me/forum/index.php)
+-   Battlefield 3 (https://www.unknowncheats.me/forum/battlefield-3-a/)
+-   -   [Question] BF3 Server (https://www.unknowncheats.me/forum/battlefield-3-a/107333-bf3-server.html)
+
+lxndrskv	2nd February 2014 03:25 AM
+BF3 Server
+ 
+At this time, several people have posted files required to run a BF3 server, including Blaze and the R38 server files. My question is if anyone has come even close to be able to join a private server without the use of Battlelog or EA's backend using their own backend or a modified version of the Blaze Master server, previously posted by billyolak7. I've scattered almost every single forum trying to find some answers, but all I've found is just a bunch of mixed up info and screaming babies. I in no intent wish to turn this thread into a screeching cat-fight. Also, don't even try to advertise your [removed] 'emulator' software here, I just want to know if it has been done, how it was done, and what methods were used to get to that point of operation if possible. Thanks! Happy hacking! :)
+
+TheLugiazSoul	2nd February 2014 08:11 PM
+Yes, the Russians have had a public beta running for over a week. Google zlofenix bf3 emu. I managed to put in over 20 hours into it.
+
+Rikkie	2nd February 2014 09:03 PM
+Some guy on triadaua posted a video in which you can see him playing (alone) on a server running on his PC. He is not part of an emulator-team out there. No idea how he was able to join though.
+
+lxndrskv	2nd February 2014 10:42 PM
+Thanks. I just wanted to make sense of what is available. VU is taking forever, Zlofenix's emulator seems very interesting, and there are several others who really aren't sharing what they've got. It's nice to know that more than a single group is trying to develop some kind of solution to private server hosting.
+
+
+All times are GMT. The time now is 05:13 PM.	
+
+
+
+Page 1 of 99	1	2	3	4	5	11	51	>	Last »	
+Show 20 post(s) from this thread on one page
+
+UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats (https://www.unknowncheats.me/forum/index.php)
+-   Battlefield 4 (https://www.unknowncheats.me/forum/battlefield-4-a/)
+-   -   [Release] Battlefield 4 Blaze Emulator (https://www.unknowncheats.me/forum/battlefield-4-a/169865-battlefield-4-blaze-emulator.html)
+
+Noperd010xx	16th February 2016 07:28 AM
+Battlefield 4 Blaze Emulator
+ 
+Beta: R1
+
+!!!!!!!!!!!!!!!!!!!!!!!! DISCLAIMER !!!!!!!!!!!!!!!!!!!!!!!!
+All care has been taken to allow people to play this emulator in
+conjunction with the retail Battlefield 4 copy in online multiplayer.
+Therefore in saying that; I WILL NOT BE HELD RESPONSIBLE IF YOUR
+ACCOUNT IS BANNED WHILE USING THIS!!!
+
+Please read the included Readme.txt in the download for further information about setup and usage. Please use this thread for help and to report bugs so they can be fixed, check this thread and the "Known Issues" file before posting.
+
+The dll should work with any update client or server version.
+Please use the R56 server files :)
+
+The download has example files on how to run the client, server and how to manage the emulator files. If you're familiar with my BF3 Emulator, it's much the same. I've released without the compiled python files this time, so enjoy.
+
+Again, code is [removed], I know, I don't care.
+DLL needs Visual C++ 2015 redist.
+
+DLL V4: dinput8.dll
+Latest Link: BF4_Emulator R2
+
+ Moderator note (NotAdam)
+External download link approved
+
+Latest BF4 Server files (R57): BF4_PC_Server_R57_177035_Binaries.zip
+
+Adam	16th February 2016 07:43 AM
+you're [removed]ing magical
+
+
+Rikkie	16th February 2016 09:45 AM
+Get all those internet-points.
+Quote:
+You must spread some Reputation around before giving it to [removed]010xx again.
+
+Adam	16th February 2016 10:00 AM
+noice stuff, will try this out at some point
+
+Please note though that this release does have network connectivity (obviously).
+
+File Approved
+
+SHA256: dinput8.dll - f75fed33935b87e22f44665df91fa01e3bcf5c87c1bba0fbcf8af092f54bb3bf
+Interested in how we analyze files? Click here to find out.
+
+HoVerFlopZ	16th February 2016 10:25 AM
+Thanks for sharing :)
+
+kilaguco	16th February 2016 10:48 AM
+You said we can use this to play on the lastest ver of bf4 , so i guess there's a way to modify stats ?
+
+sTo0z	16th February 2016 12:36 PM
+Quote:
+Originally Posted by [removed]010xx (Post 1405868)
+Beta: R1
+
+!!!!!!!!!!!!!!!!!!!!!!!! DISCLAIMER !!!!!!!!!!!!!!!!!!!!!!!!
+All care has been taken to allow people to play this emulator in
+conjunction with the retail Battlefield 4 copy in online multiplayer.
+Therefore in saying that; I WILL NOT BE HELD RESPONSIBLE IF YOUR
+ACCOUNT IS BANNED WHILE USING THIS!!!
+
+Please read the included Readme.txt in the download for further information about setup and usage. Please use this thread for help and to report bugs so they can be fixed, check this thread and the "Known Issues" file before posting.
+
+The dll should work with any update client or server version.
+Please use the R56 server files :)
+
+The download has example files on how to run the client, server and how to manage the emulator files. If you're familiar with my BF3 Emulator, it's much the same. I've released without the compiled python files this time, so enjoy.
+
+Again, code is [removed], I know, I don't care.
+
+Latest Link: BF4_Emulator
+Hello sir, thank you so much for server files and this blaze emulator.
+
+I just have a quick question, purely for curiosity's sake, I am definitely not complaining about your epic work here. :)
+
+What was the difference between the BF3 files and these files that allowed BF3 to run with no Origin, and completely offline (LAN) setup?
+
+Just curious which piece is different, that's all.
+
+Thanks again for everything!!
+
+Rikkie	16th February 2016 12:47 PM
+Quote:
+Originally Posted by sTo0z (Post 1405968)
+Hello sir, thank you so much for server files and this blaze emulator.
+
+I just have a quick question, purely for curiosity's sake, I am definitely not complaining about your epic work here. :)
+
+What was the difference between the BF3 files and these files that allowed BF3 to run with no Origin, and completely offline (LAN) setup?
+
+Just curious which piece is different, that's all.
+
+Thanks again for everything!!
+BF3 was more or less standalone where bf4 had some parts outsourced into origin.
+
+Andersson799	16th February 2016 01:38 PM
+Great Release, thanks!
+Ok so i got some issues here. The bf4 game takes too much cpu load, so it running very slow and the loading is so laggy.
+I wonder why? Because this is not happening in normal ea server.
+
+GotZe	16th February 2016 02:13 PM
+OMG! THANKS! LOL
+
+Rikkie	16th February 2016 06:47 PM
+Somehow the server will stay in GameState: OFFLINE forever.
+service_identity required?
+
+huangfengye	17th February 2016 02:34 AM
+http://puu.sh/naPwJ/8e734fcabb.png
+ImportError: DLL load failed？？？
+
+Andersson799	17th February 2016 04:06 AM
+Ok, so i often got this error
+
+http://i.imgur.com/KL7PzlY.png
+
+I added some numbers to line "No account..." at Accounts.py so i can recognize where the error come from. And now i can see from which line the error comes up.
+
+So, what does "if not os.path.exists(path):" line mean?
+A bug maybe?
+
+Noperd010xx	17th February 2016 04:34 AM
+Quote:
+Originally Posted by huangfengye (Post 1406483)
+Snip
+ImportError: DLL load failed？？？
+Looks like pyOpenSSL isn't installed correctly.
+
+Quote:
+Originally Posted by Andersson799 (Post 1406505)
+Ok, so i often got this error
+
+Snip
+
+I added some numbers to line "No account..." at Accounts.py so i can recognize where the error come from. And now i can see from which line the error comes up.
+
+So, what does "if not os.path.exists(path):" line mean?
+A bug maybe?
+It's a bug with the DLL, it's [removed], I know.
+That's your Auth code from the Origin client, BF4 Starts -> Talks to Origin to get your Auth Code(s) and sends it to Blaze, I try to over write them but it doesn't always work. keep retrying for now.
+
+Andersson799	17th February 2016 04:48 AM
+Quote:
+Originally Posted by [removed]010xx (Post 1406521)
+It's a bug with the DLL, it's [removed], I know.
+That's your Auth code from the Origin client, BF4 Starts -> Talks to Origin to get your Auth Code(s) and sends it to Blaze, I try to over write them but it doesn't always work. keep retrying for now.
+You mean, my Origin username?
+But sometimes using "Default" as authCode is working. But while the game is loading, the loading screen is laggy and slow. Is it normal?
+
+huangfengye	17th February 2016 04:58 AM
+but .it;s already installed..
+http://puu.sh/naWUI/2cfbdedd6b.png
+
+flashpec3ooo	17th February 2016 05:25 AM
+thanks a lot for the emu! please make the emu without origin, i know you dont want support pirates, BUT if someone get banned - it will be the legit players.
+
+Rikkie	17th February 2016 08:22 AM
+Quote:
+Originally Posted by huangfengye (Post 1406527)
+but .it;s already installed..
+http://puu.sh/naWUI/2cfbdedd6b.png
+Read the error message, it already tells you what's wrong. Install the 64bit version or use the MSI-installer of pypiwin.
+
+Quote:
+Originally Posted by Andersson799 (Post 1406505)
+So, what does "if not os.path.exists(path):" line mean?
+A bug maybe?
+path = cwd+"\\Users"+name+""
+so your path should be "C:\\Users\\Username" and this line checks if this path actually exists. Maybe your windows-username does not match your home-folder?
+
+btw. did you get your server-state IN_GAME or does it show offline?
+
+huangfengye	17th February 2016 08:34 AM
+Quote:
+Originally Posted by Rikkie (Post 1406590)
+Read the error message, it already tells you what's wrong. Install the 64bit version or use the MSI-installer of pypiwin.
+
+
+path = cwd+"\\Users"+name+""
+so your path should be "C:\\Users\\Username" and this line checks if this path actually exists. Maybe your windows-username does not match your home-folder?
+
+btw. did you get your server-state IN_GAME or does it show offline?
+i installed 64 version of pypiwin...
+maybe be you didn't seem this,http://www.unknowncheats.me/forum/1406483-post12.html
+《《《《--------fixed,i reinstall python..
+but new error, xD,any thing i do wrong??
+http://puu.sh/nbeNR/758d32cdc9.png
+
+Andersson799	17th February 2016 09:17 AM
+Quote:
+Originally Posted by Rikkie (Post 1406590)
+path = cwd+"\\Users"+name+""
+so your path should be "C:\\Users\\Username" and this line checks if this path actually exists. Maybe your windows-username does not match your home-folder?
+
+btw. did you get your server-state IN_GAME or does it show offline?
+No, the users folder is from BF4_BlazeServer folder.
+My server state is IN_GAME. Check the ip configuration inside init.py file.
+
+
+All times are GMT. The time now is 05:13 PM.	
+Page 1 of 99	1	2	3	4	5	11	51	>	Last »	
+Show 20 post(s) from this thread on one page
