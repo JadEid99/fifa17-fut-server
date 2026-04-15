@@ -16,6 +16,7 @@
 import net from 'net';
 
 const PORT = 3216; // We'll patch the SDK object to use this port
+const ALT_PORT = 4216; // The default Origin SDK port — listen here too
 
 const server = net.createServer((socket) => {
   const addr = `${socket.remoteAddress}:${socket.remotePort}`;
@@ -63,6 +64,15 @@ function handleLSXMessage(socket, xml) {
     console.log('[Origin-IPC] *** AUTH CODE REQUEST — sending fake auth code ***');
     response = `<LSX><Response id="${id}"><AuthCode Code="FAKEAUTHCODE1234567890" Type="0" CreatedTimestamp="${Math.floor(Date.now()/1000)}"/></Response></LSX>`;
   }
+  else if (requestType === 'ChallengeResponse') {
+    // Crypto challenge from the game — accept it unconditionally
+    console.log('[Origin-IPC] *** CHALLENGE RESPONSE — accepting ***');
+    response = `<LSX><Response id="${id}"><ChallengeResult Result="0" version="3"/></Response></LSX>`;
+  }
+  else if (requestType === 'GetConfig') {
+    console.log('[Origin-IPC] GetConfig request');
+    response = `<LSX><Response id="${id}"><Config version="3"/></Response></LSX>`;
+  }
   else if (requestType === 'GetSetting') {
     // Setting request — check which setting
     const settingMatch = xml.match(/SettingId="([^"]+)"/);
@@ -82,7 +92,10 @@ function handleLSXMessage(socket, xml) {
     response = `<LSX><Response id="${id}"><Online Status="1"/></Response></LSX>`;
   }
   else if (requestType === 'GetProfile') {
-    response = `<LSX><Response id="${id}"><Profile PersonaId="1000000001" UserId="2000000001" DisplayName="Player1" Email="player@local.com"/></Response></LSX>`;
+    response = `<LSX><Response id="${id}"><Profile PersonaId="1000000001" UserId="2000000001" DisplayName="Player1" Email="player@local.com" index="0" version="3"/></Response></LSX>`;
+  }
+  else if (requestType === 'SetDownloaderUtilization') {
+    response = `<LSX><Response id="${id}"><Result Status="0" version="3"/></Response></LSX>`;
   }
   else if (requestType === 'Initialize') {
     response = `<LSX><Response id="${id}"><Initialized Status="1"/></Response></LSX>`;
@@ -100,4 +113,31 @@ function handleLSXMessage(socket, xml) {
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`[Origin-IPC] Fake Origin server listening on 127.0.0.1:${PORT}`);
   console.log(`[Origin-IPC] DLL must set originSDK+0x35c = ${PORT}`);
+});
+
+// Also listen on the default Origin SDK port (4216) to catch the first connection
+const altServer = net.createServer((socket) => {
+  const addr = `${socket.remoteAddress}:${socket.remotePort}`;
+  console.log(`[Origin-IPC:${ALT_PORT}] Client connected: ${addr}`);
+  
+  let buffer = '';
+  
+  socket.on('data', (data) => {
+    buffer += data.toString('utf-8');
+    console.log(`[Origin-IPC:${ALT_PORT}] Received: ${data.toString('utf-8').substring(0, 500)}`);
+    
+    while (buffer.includes('</LSX>')) {
+      const endIdx = buffer.indexOf('</LSX>') + 6;
+      const msg = buffer.substring(0, endIdx);
+      buffer = buffer.substring(endIdx);
+      handleLSXMessage(socket, msg);
+    }
+  });
+  
+  socket.on('close', () => console.log(`[Origin-IPC:${ALT_PORT}] Disconnected: ${addr}`));
+  socket.on('error', (e) => console.log(`[Origin-IPC:${ALT_PORT}] Error: ${e.message}`));
+});
+
+altServer.listen(ALT_PORT, '127.0.0.1', () => {
+  console.log(`[Origin-IPC] Also listening on 127.0.0.1:${ALT_PORT} (default Origin port)`);
 });
