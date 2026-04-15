@@ -93,7 +93,7 @@ Write-Host "=== RESULT: $r1 ===" -ForegroundColor $(if($r1 -match "LOGIN|POSTAUT
 # Save results
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
 $bs1 = if($blazeOut.Length -gt 15000){$blazeOut.Substring($blazeOut.Length-15000)}else{$blazeOut}
-$dl1 = if($dllLog.Length -gt 3000){$dllLog.Substring($dllLog.Length-3000)}else{$dllLog}
+$dl1 = if($dllLog.Length -gt 8000){$dllLog.Substring($dllLog.Length-8000)}else{$dllLog}
 
 $results = @"
 === Batch Test ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===
@@ -102,7 +102,7 @@ RESULT: $r1
 --- BLAZE SERVER LOG (last 5000 chars) ---
 $bs1
 
---- DLL LOG (last 3000 chars) ---
+--- DLL LOG (last 8000 chars) ---
 $dl1
 "@
 Set-Content $resultsFile $results -Encoding UTF8
