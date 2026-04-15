@@ -247,6 +247,18 @@ static void PatchPreAuthHandler() {
         if (!cave) { Log("PREAUTH_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
+        // Save param_1 (RCX) to g_preAuthParam1 for the Login flow later
+        // PUSH RAX
+        cave[o++] = 0x50;
+        // MOV RAX, &g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t saveAddr = (uint64_t)&g_preAuthParam1;
+        memcpy(cave + o, &saveAddr, 8); o += 8;
+        // MOV [RAX], RCX
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0x08;
+        // POP RAX
+        cave[o++] = 0x58;
+        
         // XOR R8D, R8D — force param_3 = 0 (success path)
         cave[o++] = 0x45; cave[o++] = 0x31; cave[o++] = 0xC0;
         
