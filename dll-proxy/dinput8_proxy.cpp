@@ -808,11 +808,29 @@ done:
                 
                 // CreateAccount handled by sync cave (state bytes set, no OSDK screen)
                 // The game sends Logout after this — we can't prevent it from the DLL.
-                // The server will need to handle the reconnection flow.
                 if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
                     Log("CA-DETECT: CreateAccount done (sync cave). handler=0x%llX preAuth=0x%llX", 
                         g_createAcctParam1, g_preAuthParam1);
+                    
+                    // Diagnostic: check if loginSM was initialized by PreAuth
+                    if (g_preAuthParam1 != 0) {
+                        uint64_t loginSM = g_preAuthParam1 + 0x3b6;
+                        uint64_t blazeHubInSM = *(uint64_t*)(loginSM + 0x08);
+                        Log("CA-DETECT: loginSM=0x%llX, loginSM+0x08(BlazeHub)=0x%llX", loginSM, blazeHubInSM);
+                        // Also check the PreAuth handler object itself
+                        uint64_t handlerByte3be = *(uint64_t*)(g_preAuthParam1 + 0x3be);
+                        Log("CA-DETECT: preAuth+0x3be=0x%llX (loginSM+0x08 alias)", handlerByte3be);
+                        // Check if FUN_146e1c3f0 was called by checking loginSM+0x1b0
+                        uint8_t sm1b0 = *(uint8_t*)(loginSM + 0x1b0);
+                        uint32_t sm20 = *(uint32_t*)(loginSM + 0x20);
+                        Log("CA-DETECT: loginSM+0x1b0=%d, loginSM+0x20=%d", sm1b0, sm20);
+                        // Dump first 0x30 bytes of loginSM
+                        Log("CA-DETECT: loginSM dump:");
+                        for (int d = 0; d < 0x30; d += 8) {
+                            Log("  +0x%02X = 0x%llX", d, *(uint64_t*)(loginSM + d));
+                        }
+                    }
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
