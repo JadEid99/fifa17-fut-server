@@ -10,79 +10,22 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v44: PreAuth Response Object Dump ===
-=== Frida v44 Ready ===
-[Local::PID::82552 ]-> [PA-HANDLER] param1=0x3ea97ff0 param2=0x3eda5ee0 param3=0x0
-[PA-RESP] PreAuth response object dump:
-  +0x0 = 0x143894470 (vtable)
-  +0x8 = 0x1
-  +0x10 = 0x144bd76b0 (INST string?)
-  +0x18 = 0x3ea95368
-  +0x20 = 0x100000000
-  +0x28 = 0x144bd76b0 (NASP string?)
-  +0x30 = 0x3ea95368
-  +0x40 = 0x144bd76b0 (PLAT string?)
-  +0x48 = 0x3ea95368
-  +0x58 = 0x144bd76b0 (RSRC string?)
-  +0x60 = 0x3ea95368
-  +0x70 = 0x1438943e8 (QOSS struct?)
-  +0x78 = 0x180000000
-  +0x80 = 0x80000001
-  +0xa0 = 0x3ea95368
-  +0xb0 = 0x14354b5f0
-  +0xb8 = 0x143893cc0 *** LOGIN TYPE LIST ***
-  +0xc0 = 0x180000000
-  +0xc8 = 0x143893c18
-  +0xd0 = 0x80000000
-  +0xf8 = 0x3ea95368
-  +0x100 = 0x100000000
-  +0x108 = 0x14354b5f0
-  +0x110 = 0x143882d18
-  +0x118 = 0x3eda5fa8
-  +0x120 = 0x143889d10 (param_2+0x120 passed to FUN_146e1c3f0)
-  +0x128 = 0x80000000
-  +0x130 = 0xa
-  +0x138 = 0x143889ba0
-  +0x140 = 0x80000000
-  +0x148 = 0x144bd76b0
-  +0x150 = 0x3ea95368
-  +0x158 = 0x100000000
-  +0x160 = 0x80000000
-  +0x168 = 0x143889c48
-  +0x170 = 0x80000000
-  +0x198 = 0x3ea95368
-  +0x1a0 = 0x100000000
-  +0x1a8 = 0x14354b5f0
-  +0x1b8 = 0x4c4b40
-  +0x1c0 = 0x144bd76b0 (PTAG string?)
-  +0x1c8 = 0x3ea95368
-  +0x1d0 = 0x100000000
-  +0x1d8 = 0x9957650 (PTVR string?)
-  +0x1e0 = 0x3ea95368
-  +0x1e8 = 0xd
-  +0x1f0 = 0x144bd76b0 (SVER string?)
-  +0x1f8 = 0x3ea95368
-  +0x200 = 0x100000000
-  +0x208 = 0x144bd76b0
-  +0x210 = 0x3ea95368
-  +0x228 = 0x144bd76b0
-  +0x230 = 0x3ea95368
-  +0x248 = 0x10e9ec1
-[PA-RESP] Login type list area (+0xb8):
-  +0xb8+0x0 = 0x143893cc0
-  +0xb8+0x8 = 0x180000000
-  +0xb8+0x10 = 0x143893c18
-  +0xb8+0x18 = 0x80000000
-  +0xb8+0x20 = 0x0
-  +0xb8+0x28 = 0x0
-  +0xb8+0x30 = 0x0
-  +0xb8+0x38 = 0x0
-[PA-RESP] +0x120 area (login config):
-  +0x120+0x0 = 0x143889d10
-  +0x120+0x8 = 0x80000000
-  +0x120+0x10 = 0xa
-  +0x120+0x18 = 0x143889ba0
-  +0x120+0x20 = 0x80000000
-  +0x120+0x28 = 0x144bd76b0
-  +0x120+0x30 = 0x3ea95368
-  +0x120+0x38 = 0x100000000
+=== Frida v45: Dump FUN_146e15070 ===
+[DUMP] FUN_146e15070 first 200 bytes:
+  +00: 48 89 e0 56 57 41 56 48 81 ec 80 00 00 00 48 c7  H..VWAVH......H.
+  +10: 40 a8 fe ff ff ff 48 89 58 18 48 89 68 20 4d 89  @.....H.X.H.h M.
+  +20: ce 4c 89 c5 48 89 d6 48 89 cf 0f b6 0d 99 8f a6  .L..H..H........
+  +30: fd 84 0d 7f e8 50 fd bb 00 00 00 00 0f 94 d3 89  .....P..........
+  +40: 58 10 e8 29 fb f9 ff 48 89 44 24 48 31 c9 89 8c  X..)...H.D$H1...
+  +50: 24 a0 00 00 00 48 8d 8c 24 a0 00 00 00 48 89 4c  $....H..$....H.L
+  +60: 24 50 4c 8b 10 41 89 d9 4c 8d 05 31 df a6 fc ba  $PL..A..L..1....
+  +70: 0f a2 ff e7 48 89 c1 8d 92 91 5e 00 18 41 ff 52  ....H.....^..A.R
+  +80: 10 48 89 c3 48 89 44 24 58 48 85 c0 74 6d 41 0f  .H..H.D$XH..tmA.
+  +90: 10 06 0f 29 44 24 60 41 0f 10 46 10 0f 29 44 24  ...)D$`A..F..)D$
+  +a0: 70 48 8b 47 08 41 b8 0f 05 c3 90 48 89 44 24 20  pH.G.A.....H.D$ 
+  +b0: 4c 8b 8c 24 d0 00 00 00 45 8d 80 fb fa 3c 6f 0f  L..$....E....<o.
+  +c0: b7 57 10 48 89 d9 e8 25  .W.H...%
+
+[SEARCH] Looking for value 10 (0x0A) in instructions:
+=== Done ===
+[Local::PID::102876 ]-> 
