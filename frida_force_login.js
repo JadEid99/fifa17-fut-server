@@ -68,25 +68,17 @@ try {
     console.log('[S3] Could not patch FUN_146e00f40: ' + e);
 }
 
-// Hook the state transition function at 0x146E126B0
-// Change params from (sm, 1, 3) to (sm, 2, 1) — same as PreAuth uses
-var stateTransitionHooked = false;
+// Hook the state transition function — log but DON'T change params
+// (2,1) crashes. Let (1,3) happen — it advances the state machine.
 try {
     Interceptor.attach(addr(0x6e126b0), {
         onEnter: function(args) {
             var p2 = args[1].toInt32();
             var p3 = args[2].toInt32();
-            if (p2 === 1 && p3 === 3) {
-                console.log('[S3] *** State transition (1,3) intercepted -> changing to (2,1) ***');
-                args[1] = ptr(2);
-                args[2] = ptr(1);
-                stateTransitionHooked = true;
-            } else {
-                console.log('[S3] State transition (' + p2 + ',' + p3 + ')');
-            }
+            console.log('[S3] State transition (' + p2 + ',' + p3 + ')');
         }
     });
-    console.log('[S3] Hooked state transition at 0x146E126B0');
+    console.log('[S3] Hooked state transition at 0x146E126B0 (logging only)');
 } catch(e) {
     console.log('[S3] Could not hook state transition: ' + e);
 }
