@@ -15,7 +15,7 @@
 
 import net from 'net';
 
-const PORT = 3216; // DLL patches the SDK port to this
+const PORT = 4216; // The Origin SDK always connects here
 
 const server = net.createServer((socket) => {
   const addr = `${socket.remoteAddress}:${socket.remotePort}`;
@@ -64,9 +64,10 @@ function handleLSXMessage(socket, xml) {
     response = `<LSX><Response id="${id}"><AuthCode Code="FAKEAUTHCODE1234567890" Type="0" CreatedTimestamp="${Math.floor(Date.now()/1000)}"/></Response></LSX>`;
   }
   else if (requestType === 'ChallengeResponse') {
-    // Crypto challenge from the game — accept it unconditionally
-    console.log('[Origin-IPC] *** CHALLENGE RESPONSE — accepting ***');
-    response = `<LSX><Response id="${id}"><ChallengeResult Result="0" version="3"/></Response></LSX>`;
+    // Crypto challenge from the game — respond with ChallengeAccepted
+    // The game checks for "ChallengeAccepted" element (from Ghidra: s_ChallengeAccepted_143937b18)
+    console.log('[Origin-IPC] *** CHALLENGE RESPONSE — sending ChallengeAccepted ***');
+    response = `<LSX><Response id="${id}"><ChallengeAccepted version="3"/></Response></LSX>`;
   }
   else if (requestType === 'GetConfig') {
     console.log('[Origin-IPC] GetConfig request');
