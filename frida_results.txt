@@ -10,30 +10,55 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v52: Direct PostAuth Call ===
-=== Frida v52 Ready ===
-[Local::PID::93028 ]-> [POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[RPC] comp=5 cmd=17 (0x11)
-[RPC] comp=9 cmd=7 (0x7)
-[PREAUTH] Handler called, param1=0x3eab7ff0
-[RPC] comp=9 cmd=2 (0x2)
-[POSTAUTH] FUN_146e213e0 called, param1=0x3eab7330
-[PREAUTH] Handler returned. Attempting direct PostAuth...
-[POSTAUTH-DIRECT] BlazeHub = 0x3eab7330
-[POSTAUTH-DIRECT] Calling FUN_146e213e0(blazeHub, 0)...
-[POSTAUTH-DIRECT] *** PostAuth returned! ***
-[RPC] comp=9 cmd=1 (0x1)
-[RPC] comp=9 cmd=1 (0x1)
-[RPC] comp=9 cmd=1 (0x1)
-[RPC] comp=9 cmd=1 (0x1)
-[RPC] comp=9 cmd=1 (0x1)
-[RPC] comp=9 cmd=1 (0x1)
-[S1] Redirecting CreateAccount -> OriginLogin
-[RPC] comp=1 cmd=152 (0x98)
-[RPC] comp=1 cmd=70 (0x46)
-[TRANSITION] (0,-1)
+=== Frida v54: OSDK Completion Bypass ===
+[INIT] NOPed FUN_146e00f40 (OSDK screen loader)
+[INIT] Hooked state transition function
+[INIT] Hooked Login RPC sender
+[INIT] Hooked PostAuth setup
+[INIT] Hooked login check
+=== Frida v54 Ready ===
+[Local::PID::94744 ]-> [POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[RPC] comp=0x5 cmd=0x11 (17)
+[RPC] comp=0x9 cmd=PreAuth (7)
+[RPC] comp=0x9 cmd=Ping (2)
+[POSTAUTH] *** FUN_146e213e0 called! PostAuth setup! ***
+[LOGIN-CHECK] FUN_146e1dae0 called, array count=0
+[LOGIN-CHECK] returned 0x0
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[RPC] comp=0x9 cmd=FetchClientConfig (1)
+[WIRE] CreateAccount(0x0A) -> OriginLogin(0x98)
+[RPC] comp=0x1 cmd=OriginLogin (152)
+[HANDLER #1] CreateAccount handler entered
+[HANDLER] Wrote +0x10=1, +0x11=0, +0x12=0, +0x13=1, R8=0
+[HANDLER] State machine = 0x3ea9d2f0
+[HANDLER] SM vtable = 0x14389fcf8
+[HANDLER] SM[1] = 0x3ea9d328
+[HANDLER] SM[2] = 0x3ea9d800
+[HANDLER] SM[3] = 0x0
+[HANDLER] SM[4] = 0x3ea9d850
+[HANDLER] SM[5] = 0x3ea9d328
+[STATE #1] transition(1, 3) sm=0x3ea9d2f0
+[STATE]   sm[1]=0x3ea9d328 sm[2]=0x3ea9d800 sm[3]=0x0 sm[5]=0x3ea9d328
+[RPC] comp=0x1 cmd=GetLegalDocsInfo (242)
+[HANDLER] CreateAccount handler returned
+[HANDLER] State transition (1,3) should have fired (OSDK path)
+[HANDLER] Now simulating OSDK completion with transition (0, -1)...
+[COMPLETION] Transition function = 0x146e126b0
+[COMPLETION] Cleanup function (vtable+0xa8) = 0x146e12860
+[COMPLETION] Cleanup called
+[COMPLETION] Calling transition(0, -1)...
+[COMPLETION] *** State transition (0, -1) called! ***
+[RPC] comp=0x1 cmd=GetTOS (246)
+[RPC] comp=0x1 cmd=GetPrivacyPolicy (47)
+[RPC] comp=0x1 cmd=Logout (70)
+[STATE #2] transition(0, -1) sm=0x3ea9d2f0
+[STATE]   sm[1]=0x3ea9d328 sm[2]=0x3ea9d800 sm[3]=0x0 sm[5]=0x3ea9d328
 
