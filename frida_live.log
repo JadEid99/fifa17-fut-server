@@ -10,19 +10,31 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v41: Login Job Callback Trace ===
-Hooked Login callback at 0x146e1d730
-Hooked Login send at 0x146e1e0f0
-=== Frida v41 Ready ===
-Watching: Login callback, Login send, job scheduler, login check
-[Local::PID::106084 ]-> [LOGIN-SEND] FUN_146e1e0f0 CALLED! (builds Login RPC)
-[RPC-SEND] FUN_146e1d4c0 CALLED!
-[LOGIN-SEND] returned
-[PA-HANDLER] Called
-[LOGIN-INIT] Called
-[LOGIN-START] Called
-[LOGIN-CHECK] FUN_146e1dae0 called param1=0x3ead9da0
-[LOGIN-CHECK] returned 0x0
-[LOGIN-ALT] FUN_146e19b30 called (dae0 returned false)
-[JOB-RUN] FUN_1478abf10 called
-[JOB-RUN] FUN_1478abf10 called
+=== Frida v42: Force Login RPC ===
+[Local::PID::106128 ]-> [LOGIN-INIT] loginSM=0x3eaf9da0
+[LOGIN-INIT] Array: start=0x0 end=0x0 count=0
+[LOGIN-INIT] +0x1b8 dump:
+  +0x1b8 = 0x143889d10
+  +0x1c0 = 0x80000000
+  +0x1c8 = 0xa
+  +0x1d0 = 0x143889ba0
+  +0x1d8 = 0x80000000
+  +0x1e0 = 0x144bd76b0
+  +0x1e8 = 0x3eaf5368
+  +0x200 = 0x143889c48
+  +0x208 = 0x80000000
+  +0x210 = 0x1
+[LOGIN-INIT] Login type manager at +0xb8:
+  mgr+0x0 = 0x1438891f0
+  mgr+0x8 = 0x80000000
+  mgr+0x10 = 0x14486b590
+  mgr+0x18 = 0x143882d60
+  mgr+0x20 = 0x14486db60
+  mgr+0x28 = 0x3eaf9ec0
+  mgr+0x30 = 0x1
+  mgr+0x38 = 0x3eaf5368
+[LOGIN-INIT] +0xC8 = 0x14486b590
+[LOGIN-INIT] +0xE0 = 0x3eaf9ec0
+[LOGIN-INIT] +0x18 (job) = 0x2a7d26d0
+[LOGIN-INIT] +0x08 (BlazeHub) = 0x3eaf7330
+[LOGIN-INIT] BlazeHub+0x788 = 0x3eb066e0

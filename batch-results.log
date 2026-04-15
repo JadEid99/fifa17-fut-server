@@ -1,202 +1,50 @@
-﻿=== Batch Test (2026-04-15 15:58:38) ===
-RESULT: FETCH_CONFIG
+﻿=== Frida Deep RPC Trace v2 (2026-04-15 16:11:44) ===
 
---- BLAZE SERVER LOG (last 5000 chars) ---
-=== FIFA 17 FUT Private Server ===
+--- FRIDA OUTPUT (last 5000 chars) ---
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+=== Frida v42: Force Login RPC ===
+[Local::PID::106128 ]-> [LOGIN-INIT] loginSM=0x3eaf9da0
+[LOGIN-INIT] Array: start=0x0 end=0x0 count=0
+[LOGIN-INIT] +0x1b8 dump:
+  +0x1b8 = 0x143889d10
+  +0x1c0 = 0x80000000
+  +0x1c8 = 0xa
+  +0x1d0 = 0x143889ba0
+  +0x1d8 = 0x80000000
+  +0x1e0 = 0x144bd76b0
+  +0x1e8 = 0x3eaf5368
+  +0x200 = 0x143889c48
+  +0x208 = 0x80000000
+  +0x210 = 0x1
+[LOGIN-INIT] Login type manager at +0xb8:
+  mgr+0x0 = 0x1438891f0
+  mgr+0x8 = 0x80000000
+  mgr+0x10 = 0x14486b590
+  mgr+0x18 = 0x143882d60
+  mgr+0x20 = 0x14486db60
+  mgr+0x28 = 0x3eaf9ec0
+  mgr+0x30 = 0x1
+  mgr+0x38 = 0x3eaf5368
+[LOGIN-INIT] +0xC8 = 0x14486b590
+[LOGIN-INIT] +0xE0 = 0x3eaf9ec0
+[LOGIN-INIT] +0x18 (job) = 0x2a7d26d0
+[LOGIN-INIT] +0x08 (BlazeHub) = 0x3eaf7330
+[LOGIN-INIT] BlazeHub+0x788 = 0x3eb066e0
 
 
-Waiting for FIFA 17...
-hosts: 127.0.0.1 winter15.gosredirector.ea.com
-
-[QOS-UDP] Listening on UDP port 17502
-[Redirector-Raw] Listening on port 42230
-[Main] Blaze server on port 10041
-[HTTP] on port 8080
-[Catch] Listening on port 443
-[Catch] Listening on port 9988
-[Catch] Listening on port 80
-[Catch] Listening on port 9946
-[Redirector-Raw] Client connected: 127.0.0.1:61285
-[Redirector-Raw] Received 116 bytes
-[Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 df 99 51 e1  ....o...k..i..Q.
-  0010: dd be 39 55 24 4a 65 04 c8 b5 71 36 cc 12 c6 b6  ..9U$Je...q6....
-  0020: 19 18 67 81 6d e7 0a a2 d8 cf 31 00 00 10 00 9d  ..g.m.....1.....
-  0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
-  0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
-  0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
-  0060: 72 2e 65 61 2e 63 6f 6d 00 0d 00 08 00 06 04 01  r.ea.com........
-  0070: 02 01 01 01                                      ....
-[Redirector-Raw] Detected SSLv3 ClientHello!
-[Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69df9951e1ddbe39...
-[SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
-[SSL] Selected cipher: 0x0005
-[SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
-[SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
-[SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 69 b3 17 56 80
-  0010: 7a b4 c2 21 3e b1 85 88 b1 6c 8b 6b 16 c5 56 8d
-  0020: 0b b8 fd 2d 53 91 9a 58 8b 3e 9f 28 41 3b e7 4c
-  0030: 1c bd ff d7 df 39 d5 11 7d 2f 6b 23 7d d6 5c 54
-  0040: 55 ca 2b 9d 00 66 d0 e9 b2 ad c0 4c f4 94 a7 c1
-  0050: 6c 80 48 69 5a 65 c2 b7 09 b0 e5 61 89 90 27 4d
-  0060: 9c f2 fe d3 a2 74 49 1d 42 09 1e 41 bb 78 8c 1c
-  0070: 95 9e 70 4b fa d3 07 47 f8 a4 f6 50 ae e3 b0 fd
-  0080: e9 80 a8 0c c6 0e e5 c8 a8 e6 b9
-[SSL] Record: type=0x16 ver=0x303 len=134
-[SSL] Handshake type: 0x10 (ClientKeyExchange)
-[SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
-[SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 374a2a83096731c14d2bf27d048e05a3...
-[SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
-[SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 d9 5e 69 96 10
-  0010: 43 06 1d df b6 19 9d a3 c6 58 f3 68 97 7a 09 ce
-  0020: 6a 71 df 63 d0 a5 2d 1b 07 fe f7 f1 fa 5b d8
-[SSL] Record: type=0x14 ver=0x303 len=1
-[SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 74487f897125cd62f9e0f23c59d7f875
-[SSL] Record: type=0x16 ver=0x303 len=36
-[SSL] Encrypted handshake record (client Finished): 36 bytes
-[SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c2250f3cd4a2a6ec4c51bcf5da111565d0b3386006819398382a7cb7fb50889ca
-[SSL] Client Finished plaintext (16 bytes): 1400000c2250f3cd4a2a6ec4c51bcf5d
-[SSL] Client Finished MAC: a111565d0b3386006819398382a7cb7fb50889ca
-[SSL] Client verify_data:   2250f3cd4a2a6ec4c51bcf5d
-[SSL] Expected verify_data:  2250f3cd4a2a6ec4c51bcf5d
-[SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: a111565d0b3386006819398382a7cb7fb50889ca
-[SSL] Actual client MAC:   a111565d0b3386006819398382a7cb7fb50889ca
-[SSL] Ô£ô Client Finished MAC MATCHES!
-[SSL] Sent server ChangeCipherSpec
-[SSL] Server Finished hash input: 6 messages, total 1038 bytes
-[SSL]   msg[0]: 111 bytes, starts=0x1
-[SSL]   msg[1]: 74 bytes, starts=0x2
-[SSL]   msg[2]: 699 bytes, starts=0xb
-[SSL]   msg[3]: 4 bytes, starts=0xe
-[SSL]   msg[4]: 134 bytes, starts=0x10
-[SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 6c8575211e05fe779b8e9225
-[SSL] Sent encrypted server Finished
-[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
-[SSL-DATA] Received 908 bytes on socket (total pending: 908)
-[SSL] TLS record: type=0x17 ver=0x303 len=903 (pending: 908)
-[SSL] Decrypted 883 bytes of application data
-[SSL] Raw app data (883b): 50 4f 53 54 20 2f 72 65 64 69 72 65 63 74 6f 72 2f 67 65 74 53 65 72 76 65 72 49 6e 73 74 61 6e
-[HTTP-Blaze] Request:
-POST /redirector/getServerInstance HTTP/1.1
-Host: winter15.gosredirector.ea.com:42230
-Content-Length: 671
-Connection: Close
-User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
-Content-Type: application/xml
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstancerequest>
-  <blazesdkversion>15.1.1.3.0</blazesdkversion>
-  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
-  <clientname>FIFA17</clientname>
-  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
-  <clientplatform>pc</client
-[HTTP-Blaze] POST /redirector/getServerInstance (body: 671 bytes)
-[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
-[HTTP-Blaze] secure=0
-[HTTP-Blaze] Response (417 bytes):
-HTTP/1.1 200 OK
-Content-Type: application/xml
-Content-Length: 322
-Connection: keep-alive
-
-<?xml version="1.0" encoding="UTF-8"?>
-<serverinstanceinfo>
-  <address member="0">
-    <valu>
-      <hostname>127.0.0.1</hostname>
-      <ip>2130706433</ip>
-      <port>10041</port>
-    </valu>
-  </address
-[HTTP-Blaze] Sent encrypted HTTP response
-[SSL-DATA] Received 27 bytes on socket (total pending: 27)
-[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): cc 79 f4 9b 1e 98 69 3e ad 2a 2c 9e f6 a1 16 1c 7a cb 56 7e 21 a2
-[SSL] Alert decrypted: 01 00
-[SSL] Alert MAC match: true
-[SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:61285
-[SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:61286
-[Main] S1: received 225 bytes (total: 225)
-[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
-[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
-[Main]   0020: d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
-[Main]   0030: 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00  -pc-trial...%...
-[Main] S1: Raw Blaze binary detected
-[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=0
-[Main] S1: -> PreAuth
-[PreAuth] Variant: full
-[PreAuth] Request TDF:
-[PreAuth]   CDAT (struct) {
-[PreAuth]     IITO (int) = 0
-[PreAuth]     LANG (int) = 1701729619
-[PreAuth]     SVCN (str) = "fifa-2017-pc-trial"
-[PreAuth]     TYPE (int) = 0
-[PreAuth]   }
-[PreAuth]   CINF (struct) {
-[PreAuth]     BSDK (str) = "15.1.1.3.0"
-[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
-[PreAuth]     CLNT (str) = "FIFA17"
-[PreAuth]     CPFT (int) = 4
-[PreAuth]     CSKU (str) = "FIFAPC"
-[PreAuth]     CVER (str) = "3175939"
-[PreAuth]     DSDK (str) = "15.1.2.1.0"
-[PreAuth]     ENV  (str) = "prod"
-[PreAuth]     LOC  (int) = 1701729619
-[PreAuth]     PTVR (str) = "1.1"
-[PreAuth]   }
-[PreAuth]   FCCR (struct) {
-[PreAuth]     CFID (str) = "BlazeSDK"
-[PreAuth]   }
-[PreAuth]   LADD (int) = 380807360
-[PreAuth] Sending FIFA17 PreAuth response (628 bytes)
-[Main] S1: Sending response (644 bytes)
-[Main] S1: header: 00 00 02 74 00 00 00 09 00 07 00 00 00 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=1
-[Main] S1: Sending response (26 bytes)
-[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 01 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=2
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
-[FetchClientConfig] CFID="OSDK_CORE"
-[FetchClientConfig] Responding with 5 config entries
-[Main] S1: Sending response (151 bytes)
-[Main] S1: header: 00 00 00 87 00 00 00 09 00 01 00 00 02 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=3
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
-[FetchClientConfig] CFID="OSDK_CLIENT"
-[FetchClientConfig] Responding with 4 config entries
-[Main] S1: Sending response (101 bytes)
-[Main] S1: header: 00 00 00 55 00 00 00 09 00 01 00 00 03 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=4
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
-[FetchClientConfig] CFID="OSDK_NUCLEUS"
-[FetchClientConfig] Responding with 3 config entries
-[Main] S1: Sending response (137 bytes)
-[Main] S1: header: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=5
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
-[FetchClientConfig] CFID="OSDK_WEBOFFER"
-[FetchClientConfig] Responding with 1 config entries
-[Main] S1: Sending response (62 bytes)
-[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=6
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
-[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
-[FetchClientConfig] Responding with 1 config entries
-[Main] S1: Sending response (35 bytes)
-[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=7
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
+--- BLAZE SERVER LOG (last 3000 chars) ---
+n] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
 [FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
 [FetchClientConfig] Responding with 1 config entries
 [Main] S1: Sending response (35 bytes)
@@ -211,7 +59,7 @@ Connection: keep-alive
 [Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 09 20 00 00
 [Main] S1 disconnected
 [LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:61290
+[Main] Session 2 connected: 127.0.0.1:61329
 [Main] S2: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00  ................
 [Main] S2: Raw Blaze binary detected
@@ -221,7 +69,7 @@ Connection: keep-alive
 [Main] S2: -> Ignoring null/error packet (msgId=10 type=5)
 [Main] S2 disconnected
 [LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:61291
+[Main] Session 3 connected: 127.0.0.1:61330
 [Main] S3: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
 [Main] S3: Raw Blaze binary detected
@@ -231,7 +79,7 @@ Connection: keep-alive
 [Main] S3: -> Ignoring null/error packet (msgId=11 type=5)
 [Main] S3 disconnected
 [LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:61292
+[Main] Session 4 connected: 127.0.0.1:61331
 [Main] S4: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
 [Main] S4: Raw Blaze binary detected
@@ -241,90 +89,7 @@ Connection: keep-alive
 [Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:61293
-[Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
-[Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ping (msgId=13), sending pong
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
-
---- DLL LOG (last 8000 chars) ---
-[15:57:10.303] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[15:57:10.303] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[15:57:10.304] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[15:57:10.304] PID: 96944
-[15:57:10.469] PATCHED: cert bypass at 000000014613244B
-[15:57:10.641] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[15:57:10.642] PATCHED: FUN_1470db3c0 body -> fake auth code
-[15:57:10.694] PATCHED: auth flag at 00000001473CE785
-[15:57:10.740] PATCHED: IsLoggedIntoEA -> true
-[15:57:10.740] PATCHED: IsLoggedIntoNetwork -> true
-[15:57:10.846] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[15:57:10.846] PATCHED: SDK gate -> always 1
-[15:57:10.857] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[15:57:10.857] PATCHED: Login vtable check -> return 1
-[15:57:10.857] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[15:57:10.857] LOGIN SilentLogin: already patched
-[15:57:10.857] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[15:57:10.857] LOGIN ExpressLogin: already patched
-[15:57:10.857] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[15:57:10.857] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[15:57:10.857] PREAUTH_HANDLER: first 128 bytes:
-[15:57:10.857]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[15:57:10.857]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[15:57:10.857]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[15:57:10.857]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[15:57:10.857]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[15:57:10.857]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[15:57:10.857]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[15:57:10.857]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[15:57:10.857] PREAUTH_HANDLER: Cave at 00000000004F0000, 44 bytes (XOR R8D + trampoline)
-[15:57:10.857] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[15:57:10.857] PATCHED: FUN_146e1dae0 (login check) -> return 1 (EARLY)
-[15:57:10.857] PATCHED: FUN_14717d5d0 (age check) -> RET (EARLY)
-[15:57:10.857] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[15:57:10.857] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[15:57:10.857] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[15:57:10.857] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[15:57:10.857] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[15:57:10.857] PATCHED: FUN_145e280b0 (version compare) -> always match
-[15:57:11.004] PATCHED: Origin SDK check at 00000001470A8430
-[15:57:11.004] All patches in 687 ms
-[15:57:11.004] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[15:57:11.004] AUTH: Checking login gate globals...
-[15:57:11.004] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[15:57:11.004] AUTH: DAT_144b86bdf = 0 (error flag)
-[15:57:11.004] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[15:57:16.743] AUTH: Slot cleared at 5700 ms
-[15:57:16.743] AUTH: OnlineMgr=0x3EBD3E70
-[15:57:16.743] AUTH: slot=0x0 cave=0
-[15:57:16.743] AUTH: Using fake vtable (real not captured)
-[15:57:16.743] AUTH: Injected fake request 000000005D390000 into slot
-[15:57:21.743] AUTH: cave=1 slot=0x0
-[15:57:21.743] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[15:57:21.743] AUTH: req[+0xd8]=0x0 req[+0xe8]=1
-[15:57:21.743] AUTH: state=2. Auth ready.
-[15:57:21.743] AUTH: OnlineMgr+0xb10 = 0x3EBDA6E0
-[15:57:21.743] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBDA960
-[15:57:21.743] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[15:57:21.743] AUTH: Found 0 objects with vtables in BlazeHub
-[15:57:21.743] AUTH: BlazeHub(000000003EBDA960)+0x53f = 1
-[15:57:21.743] AUTH: Applying OSDK patches (post-load)...
-[15:57:21.743] PATCHED: GetProfileSync -> return 0 (post-load)
-[15:57:21.743] PATCHED: GetSettingSync -> return 0 (post-load)
-[15:57:21.743] PATCHED: SetPresence -> return 0 (post-load)
-[15:57:21.743] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[15:57:21.743] AGE_CHECK: addr=000000014717D5D0 bytes=C3 90 90 90
-[15:57:21.743] PATCHED: FUN_14717d5d0 (age check) -> RET (skip age restriction)
-[15:57:21.743] LOGIN_CHECK: addr=0000000146E1DAE0 bytes=B0 01 C3 90
-[15:57:21.743] PATCHED: FUN_146e1dae0 (login check) -> return 1 (always proceed)
-[15:57:21.743] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-
-=== S5 disconnect (2026-04-15 13:58:40) ===
-
-[Main] Session 5 connected: 127.0.0.1:61293
+[Main] Session 5 connected: 127.0.0.1:61332
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -333,3 +98,62 @@ Connection: keep-alive
 [Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
 [Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S5 disconnected
+[LOG] Saved: S5 disconnect
+[Main] Session 6 connected: 127.0.0.1:61333
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ping (msgId=14), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
+
+--- DLL LOG (last 3000 chars) ---
+C0 74 4A 48 8B 41 10 48 83 C1 10
+[16:10:13.545]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[16:10:13.545]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[16:10:13.545]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[16:10:13.545]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[16:10:13.545]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[16:10:13.545] PREAUTH_HANDLER: Cave at 0000000003320000, 44 bytes (XOR R8D + trampoline)
+[16:10:13.545] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[16:10:13.545] PATCHED: FUN_146e1dae0 (login check) -> return 1 (EARLY)
+[16:10:13.545] PATCHED: FUN_14717d5d0 (age check) -> RET (EARLY)
+[16:10:13.545] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[16:10:13.545] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[16:10:13.545] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[16:10:13.545] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[16:10:13.545] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[16:10:13.545] PATCHED: FUN_145e280b0 (version compare) -> always match
+[16:10:13.697] PATCHED: Origin SDK check at 00000001470A8430
+[16:10:13.697] All patches in 672 ms
+[16:10:13.697] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:10:13.697] AUTH: Checking login gate globals...
+[16:10:13.697] AUTH: DAT_144b86bf8 = 0x1E0000 (Origin SDK manager)
+[16:10:13.697] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:10:13.697] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:10:19.332] AUTH: Slot cleared at 5600 ms
+[16:10:19.332] AUTH: OnlineMgr=0x3EC73E70
+[16:10:19.332] AUTH: slot=0x0 cave=0
+[16:10:19.332] AUTH: Using fake vtable (real not captured)
+[16:10:19.332] AUTH: Injected fake request 000000005D390000 into slot
+[16:10:24.332] AUTH: cave=1 slot=0x0
+[16:10:24.332] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:10:24.332] AUTH: req[+0xd8]=0x0 req[+0xe8]=1
+[16:10:24.332] AUTH: state=2. Auth ready.
+[16:10:24.332] AUTH: OnlineMgr+0xb10 = 0x3EC7A6E0
+[16:10:24.332] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC7A960
+[16:10:24.332] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[16:10:24.332] AUTH: Found 0 objects with vtables in BlazeHub
+[16:10:24.332] AUTH: BlazeHub(000000003EC7A960)+0x53f = 1
+[16:10:24.332] AUTH: Applying OSDK patches (post-load)...
+[16:10:24.332] PATCHED: GetProfileSync -> return 0 (post-load)
+[16:10:24.332] PATCHED: GetSettingSync -> return 0 (post-load)
+[16:10:24.332] PATCHED: SetPresence -> return 0 (post-load)
+[16:10:24.332] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[16:10:24.332] AGE_CHECK: addr=000000014717D5D0 bytes=C3 90 90 90
+[16:10:24.332] PATCHED: FUN_14717d5d0 (age check) -> RET (skip age restriction)
+[16:10:24.332] LOGIN_CHECK: addr=0000000146E1DAE0 bytes=B0 01 C3 90
+[16:10:24.332] PATCHED: FUN_146e1dae0 (login check) -> return 1 (always proceed)
+[16:10:24.332] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+

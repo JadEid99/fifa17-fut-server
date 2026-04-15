@@ -1,0 +1,3 @@
+Error: unable to intercept function at 0000000146E1DAE0; please file a bug
+    at value (/frida/runtime/core.js:354)
+    at <eval> (C:\Users\Jad\fifa17-fut-server\frida_force_login.js:74)
