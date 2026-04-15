@@ -105,8 +105,9 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 6: Hook SendXml (FUN_1470e67f0) — fix user ID mismatch
-// Error 0xa2000003 = param_2 != SDK+0x3a0 (user ID mismatch)
+// Step 6: Hook SendXml (FUN_1470e67f0) — bypass user ID check
+// Error 0xa2000003 = param_2==0 or param_2 != SDK+0x3a0
+// Both userId and SDK+0x3a0 are 0. We need to set both to non-zero.
 // ============================================================
 try {
     Interceptor.attach(addr(0x70e67f0), {
@@ -115,15 +116,18 @@ try {
             try {
                 var sdkObj = args[0];
                 var userId = args[1];
-                var storedId = sdkObj.add(0x3a0).readPointer();
-                console.log('[SENDXML] userId=' + userId + ' SDK+0x3a0=' + storedId);
-                // Fix mismatch
-                if (!userId.isNull() && !userId.equals(storedId)) {
-                    console.log('[SENDXML] *** FIXING user ID mismatch ***');
-                    sdkObj.add(0x3a0).writePointer(userId);
+                console.log('[SENDXML] userId=' + userId + ' SDK+0x3a0=' + sdkObj.add(0x3a0).readPointer());
+                
+                // Both are 0 — set both to a fake non-zero value
+                if (userId.isNull()) {
+                    var fakeId = ptr(33068179); // 0x1F8B4B3
+                    args[1] = fakeId;
+                    sdkObj.add(0x3a0).writePointer(fakeId);
+                    console.log('[SENDXML] *** FIXED: set userId and SDK+0x3a0 to ' + fakeId + ' ***');
                 }
+                
                 if (!args[2].isNull()) {
-                    console.log('[SENDXML] type="' + args[2].readUtf8String() + '"');
+                    try { console.log('[SENDXML] type="' + args[2].readUtf8String() + '"'); } catch(e) {}
                 }
             } catch(e) { console.log('[SENDXML] error: ' + e); }
         },
@@ -131,7 +135,7 @@ try {
             console.log('[SENDXML] returned ' + retval);
         }
     });
-    console.log('[INIT] Hooked SendXml with ID fix');
+    console.log('[INIT] Hooked SendXml with ID bypass');
 } catch(e) {}
 
 // ============================================================
