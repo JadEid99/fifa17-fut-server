@@ -22,7 +22,8 @@ Copy-Item "$repoRoot\commandline.txt" "$gameDir\commandline.txt" -Force
 
 $allResults = ""
 
-for ($fmt = 0; $fmt -le 5; $fmt++) {
+$formats = @(2, 0, 1, 3, 4, 5)  # Test silent first, then others
+foreach ($fmt in $formats) {
     Write-Host "`n=== Testing Challenge Format $fmt ===" -ForegroundColor Cyan
     
     # Kill everything
@@ -59,12 +60,16 @@ for ($fmt = 0; $fmt -le 5; $fmt++) {
     }
     
     if (-not $gameStarted) {
-        Write-Host "[RESULT] Format ${fmt} - GAME DID NOT START" -ForegroundColor Red
+        Write-Host "[RESULT] Format ${fmt} - GAME DID NOT START (hung?)" -ForegroundColor Red
         $allResults += "Format ${fmt} - GAME_NOT_STARTED`n"
+        
+        # Force kill hung game
+        Stop-Process -Name FIFA17 -Force -EA SilentlyContinue
         
         # Collect Origin output
         $originOut = (Receive-Job $originJob 2>&1 | Out-String).Trim()
-        $allResults += "  Origin: $($originOut.Substring(0, [Math]::Min(500, $originOut.Length)))`n"
+        $or1 = if($originOut.Length -gt 500){$originOut.Substring($originOut.Length-500)}else{$originOut}
+        $allResults += "  Origin: $or1`n`n"
         
         Stop-Job $blazeJob,$originJob -EA SilentlyContinue
         Remove-Job $blazeJob,$originJob -EA SilentlyContinue
