@@ -283,22 +283,19 @@ static void PatchPreAuthHandler() {
 }
 
 // Patch 16: FUN_146e151d0 (CreateAccount response handler)
-// The TDF decoder doesn't populate the response object, so we can't let
-// the original handler run (it reads zeros and does nothing useful).
+// The cave must set state bytes SYNCHRONOUSLY (not in background thread)
+// because the game processes the handler return immediately.
 //
-// From Ghidra analysis of the handler:
-//   state->0x8bc = param_3 (error code)
-//   if (param_3 == 0) {
-//     state->0x8c0 = response[0x10]  // UID byte
-//     state->0x8c1 = response[0x11]
-//     state->0x8c5 = response[0x12]
-//     if (response[0x13] != 0) → set 0x8c6=1, show OSDK screen
-//     else → just return (state machine advances based on 0x8c0 etc.)
-//   }
+// From the DLL log, the handler's vtable+0xb8 IS valid:
+//   handler vtable=0x14389F938, [0xb8]=0x146E140A0 (valid function)
+//   Returns a state object where we set 0x8bc, 0x8c0, 0x8c6
 //
-// Our cave: get state via vtable+0xb8, set 0x8bc=0 (success),
-// 0x8c0=1 (UID non-zero), 0x8c6=0 (no persona creation), then return.
-// The state machine should see "account exists, no persona needed" and advance.
+// Cave does:
+//   1. Call vtable+0xb8(RCX) to get state object
+//   2. Set state[0x8bc] = 0 (success)
+//   3. Set state[0x8c0] = 1 (UID non-zero)
+//   4. Set state[0x8c6] = 0 (NO persona creation)
+//   5. Return (fall-through path, no OSDK screen)
 static int g_createAcctPatchDone = 0;
 static volatile int g_createAcctCalled = 0;
 static volatile uint64_t g_createAcctParam1 = 0;
@@ -310,33 +307,20 @@ static void PatchCreateAccountHandler() {
         Log("CA_HANDLER: addr=%p bytes=%02X %02X %02X %02X %02X %02X",
             func, func[0], func[1], func[2], func[3], func[4], func[5]);
         
-        // We need to replicate what the original handler does on the success path
-        // but with fake response data. The handler does:
-        //   state = vtable+0xb8(param_1)
-        //   state[0x8bc] = 0 (success)
-        //   state[0x8c0] = response[0x10] (we set to 1 = UID non-zero)
-        //   state[0x8c1] = response[0x11] (we set to 0)
-        //   state[0x8c5] = response[0x12] (we set to 0)
-        //   // skip persona creation check (response[0x13] = 0)
-        //   // fall through to return
-        //
-        // BUT: vtable+0xb8 on the handler returns garbage (session plan says
-        // handler.vtable+0xb8 = ASCII "ERE_AUTH"). So we can't call it.
-        //
-        // ALTERNATIVE: The handler's param_1 is the RPC handler object.
-        // The state object is accessible via param_1's internal pointers.
-        // From the Ghidra code: (**(code **)(*param_1 + 0xb8))(param_1)
-        // This calls vtable[0xb8/8 = 23] on param_1.
-        //
-        // Since we can't safely call vtable+0xb8, we'll just save param_1,
-        // set the flag, and let the background thread handle it.
-        
-        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 128, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        BYTE* cave = (BYTE*)VirtualAlloc(NULL, 256, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         if (!cave) { Log("CA_HANDLER: cave alloc failed"); return; }
         
         int o = 0;
         
-        // Save param_1 (RCX) for the background thread
+        // Prologue: save non-volatile registers we'll use
+        cave[o++] = 0x53;                                     // PUSH RBX
+        cave[o++] = 0x56;                                     // PUSH RSI
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xEC; cave[o++] = 0x28; // SUB RSP, 0x28
+        
+        // Save param_1 (RCX = handler) in RBX
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xCB; // MOV RBX, RCX
+        
+        // Also save to global for logging
         cave[o++] = 0x48; cave[o++] = 0xB8;
         uint64_t p1Addr = (uint64_t)&g_createAcctParam1;
         memcpy(cave + o, &p1Addr, 8); o += 8;
@@ -349,11 +333,51 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC7; cave[o++] = 0x00;
         cave[o++] = 0x01; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
         
-        // RET — don't set any state bytes, don't call state transition
-        // The background thread will detect the flag and handle advancement
-        cave[o++] = 0xC3;
+        // Call vtable+0xb8(param_1) to get state object
+        // MOV RAX, [RBX]          ; RAX = vtable
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x03;
+        // MOV RCX, RBX            ; RCX = param_1 (this)
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xD9;
+        // CALL [RAX + 0xb8]       ; call vtable+0xb8
+        cave[o++] = 0xFF; cave[o++] = 0x90;
+        cave[o++] = 0xB8; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        // RAX = state object, save in RSI
+        cave[o++] = 0x48; cave[o++] = 0x89; cave[o++] = 0xC6; // MOV RSI, RAX
         
-        Log("CA_HANDLER: Cave at %p, %d bytes (save param1 + flag + RET)", cave, o);
+        // Set state[0x8bc] = 0 (success / error code)
+        // MOV DWORD [RSI + 0x8bc], 0
+        cave[o++] = 0xC7; cave[o++] = 0x86;
+        cave[o++] = 0xBC; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // Set state[0x8c0] = 1 (UID non-zero — account exists)
+        // MOV BYTE [RSI + 0x8c0], 1
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC0; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x01;
+        
+        // Set state[0x8c1] = 0
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC1; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00;
+        
+        // Set state[0x8c5] = 0
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC5; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00;
+        
+        // Set state[0x8c6] = 0 (NO persona creation — skip OSDK screen)
+        cave[o++] = 0xC6; cave[o++] = 0x86;
+        cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
+        cave[o++] = 0x00;
+        
+        // Epilogue: restore and return
+        cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
+        cave[o++] = 0x5E;                                     // POP RSI
+        cave[o++] = 0x5B;                                     // POP RBX
+        cave[o++] = 0xC3;                                     // RET
+        
+        Log("CA_HANDLER: Cave at %p, %d bytes (sync state setup)", cave, o);
         
         DWORD op;
         if (VirtualProtect(func, 16, PAGE_EXECUTE_READWRITE, &op)) {
@@ -364,7 +388,7 @@ static void PatchCreateAccountHandler() {
             func[p++] = 0xFF; func[p++] = 0xE0;
             while (p < 16) func[p++] = 0x90;
             VirtualProtect(func, 16, op, &op);
-            Log("PATCHED: FUN_146e151d0 -> save param1 + flag + RET");
+            Log("PATCHED: FUN_146e151d0 -> sync state setup cave");
             g_createAcctPatchDone = 1;
             g_patched++;
         }
@@ -767,74 +791,11 @@ done:
                     }
                 }
                 
-                // Detect CreateAccount completion and trigger state advance
-                if (g_createAcctCalled == 1 && g_createAcctParam1 != 0) {
+                // CreateAccount is now handled synchronously in the cave
+                // Just log if it was called
+                if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
-                    uint64_t handler = g_createAcctParam1;
-                    Log("CA-DETECT: CreateAccount done! handler=0x%llX", handler);
-                    
-                    // From Ghidra: the handler does:
-                    //   state = (*vtable+0xb8)(param_1)  → get state object
-                    //   state[0x8bc] = 0 (success)
-                    //   state[0x8c0] = 1 (UID non-zero)
-                    //   // skip persona creation (0x8c6 stays 0)
-                    //   // fall through → return
-                    //
-                    // Then the state transition is called by:
-                    //   sm = param_1[1]  (handler+0x08)
-                    //   (*vtable+0x08)(sm, 1, 3)
-                    //
-                    // Let's try calling vtable+0xb8 to get the state object,
-                    // set the bytes, then call the state transition.
-                    __try {
-                        uint64_t* handlerVtable = *(uint64_t**)handler;
-                        uint64_t vt0xb8 = handlerVtable[0xb8/8]; // vtable[23]
-                        Log("CA-DETECT: handler vtable=0x%llX, [0xb8]=0x%llX", (uint64_t)handlerVtable, vt0xb8);
-                        
-                        // Check if vtable+0xb8 looks like a valid function pointer
-                        if (vt0xb8 > 0x140000000ULL && vt0xb8 < 0x150000000ULL) {
-                            Log("CA-DETECT: Calling vtable+0xb8 to get state object...");
-                            typedef uint64_t (*GetStateFn)(uint64_t);
-                            GetStateFn getState = (GetStateFn)vt0xb8;
-                            uint64_t state = getState(handler);
-                            Log("CA-DETECT: state=0x%llX", state);
-                            
-                            if (state != 0) {
-                                // Set state bytes
-                                *(int*)(state + 0x8bc) = 0;     // success
-                                *(uint8_t*)(state + 0x8c0) = 1; // UID non-zero
-                                *(uint8_t*)(state + 0x8c1) = 0;
-                                *(uint8_t*)(state + 0x8c5) = 0;
-                                *(uint8_t*)(state + 0x8c6) = 0; // NO persona creation
-                                Log("CA-DETECT: State bytes set (0x8bc=0, 0x8c0=1, 0x8c6=0)");
-                            }
-                        } else {
-                            Log("CA-DETECT: vtable+0xb8 is NOT a valid function (0x%llX)", vt0xb8);
-                        }
-                        
-                        // Now call the state transition: param_1[1] → vtable+0x08
-                        uint64_t sm = *(uint64_t*)(handler + 0x08);
-                        Log("CA-DETECT: handler+0x08 (state machine) = 0x%llX", sm);
-                        if (sm != 0) {
-                            uint64_t* smVtable = *(uint64_t**)sm;
-                            uint64_t transitionFn = smVtable[1]; // vtable+0x08 = index 1
-                            Log("CA-DETECT: sm vtable=0x%llX, [0x08]=0x%llX", (uint64_t)smVtable, transitionFn);
-                            
-                            if (transitionFn > 0x140000000ULL && transitionFn < 0x150000000ULL) {
-                                Log("CA-DETECT: Calling state transition (sm, 1, 3)...");
-                                typedef void (*TransitionFn)(uint64_t, int, int);
-                                TransitionFn transition = (TransitionFn)transitionFn;
-                                transition(sm, 1, 3);
-                                Log("CA-DETECT: State transition returned OK!");
-                            } else {
-                                Log("CA-DETECT: transition fn is NOT valid (0x%llX)", transitionFn);
-                            }
-                        } else {
-                            Log("CA-DETECT: handler+0x08 is NULL");
-                        }
-                    } __except(EXCEPTION_EXECUTE_HANDLER) {
-                        Log("CA-DETECT: CRASHED during state setup");
-                    }
+                    Log("CA-DETECT: CreateAccount handler ran (sync cave). handler=0x%llX", g_createAcctParam1);
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
