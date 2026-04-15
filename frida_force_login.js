@@ -1,28 +1,21 @@
 /*
- * Frida v55: INTERCEPT STATE TRANSITION
+ * Frida v56: BLOCK LOGOUT + INTERCEPT STATE
  *
- * v54 findings:
- * - State (1,3) fires successfully
- * - SM[3]=0x0 confirms state 2 doesn't exist (why 2,1 crashed)
- * - Our (0,-1) call executed but TOO LATE — Logout already sent
- * - The OSDK screen's network thread sends GetLegalDocsInfo/GetTOS/Logout
- *   before our onLeave handler runs
+ * v55 findings:
+ * - (1,3)→(0,-1) intercept WORKS — no more OSDK requests
+ * - BUT Logout still fires after handler returns
+ * - Logout is NOT from the OSDK state — it's from the handler's caller
+ * - The RPC dispatcher sends Logout regardless of state transition
  *
- * v55 strategy:
- * - Hook the state transition function FUN_146e126b0
- * - When we see transition (1,3) from the CreateAccount handler,
- *   CHANGE IT to (0,-1) in-place
- * - This prevents the OSDK state from ever being entered
- * - The state machine goes directly to the completion state
- *
- * Additionally:
- * - Still NOP FUN_146e00f40 (OSDK screen) as safety net
- * - Still write +0x10=1, +0x13=1 in CreateAccount handler
- * - Still redirect CreateAccount→OriginLogin at wire level
+ * v56 strategy:
+ * - Same (1,3)→(0,-1) intercept
+ * - BLOCK the Logout RPC by changing it to a harmless Ping
+ * - This should keep the connection alive after CreateAccount
+ * - Then the state machine should be in state 0 and may trigger Login
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v55: Intercept State Transition ===');
+console.log('=== Frida v56: Block Logout + Intercept State ===');
 
 // ============================================================
 // Step 1: NOP the OSDK screen loader (safety net)
@@ -73,8 +66,10 @@ try {
 } catch(e) { console.log('[INIT] State hook error: ' + e); }
 
 // ============================================================
-// Step 3: Redirect CreateAccount→OriginLogin at wire level
+// Step 3: Redirect CreateAccount→OriginLogin AND block Logout
 // ============================================================
+var blockLogout = false;
+
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
         var comp = this.context.r8.toInt32();
@@ -82,6 +77,13 @@ Interceptor.attach(addr(0x6df0e80), {
         if (comp === 1 && cmd === 10) {
             console.log('[WIRE] CreateAccount(0x0A) -> OriginLogin(0x98)');
             this.context.r9 = ptr(0x98);
+        }
+        // Block Logout (cmd=0x46=70) after CreateAccount
+        if (comp === 1 && cmd === 0x46 && blockLogout) {
+            console.log('[WIRE] *** BLOCKING Logout! Changing to Ping (harmless) ***');
+            // Change to comp=0x9 cmd=0x2 (Ping) — harmless, server will just echo
+            this.context.r8 = ptr(0x9);
+            this.context.r9 = ptr(0x2);
         }
     }
 });
@@ -117,6 +119,8 @@ Interceptor.attach(addr(0x6e151d0), {
         
         // Set flag so state transition hook knows to intercept (1,3)
         createAccountHandlerActive = true;
+        // Block any Logout that follows
+        blockLogout = true;
         
         // Force param_3 (R8) = 0 (success path)
         this.context.r8 = ptr(0);
@@ -199,4 +203,4 @@ try {
     });
 } catch(e) {}
 
-console.log('=== Frida v55 Ready ===');
+console.log('=== Frida v56 Ready ===');

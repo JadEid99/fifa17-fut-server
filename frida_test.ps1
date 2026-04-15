@@ -79,13 +79,13 @@ Write-Host "[MENU] Navigating menus..." -ForegroundColor Yellow
 FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 
 # Wait for first connection + auth injection
-Write-Host "[WAIT] Waiting for first connection attempt (60s)..." -ForegroundColor Yellow
-Start-Sleep 60; FEnter; Start-Sleep 2
+Write-Host "[WAIT] Waiting for first connection attempt (30s)..." -ForegroundColor Yellow
+Start-Sleep 30; FEnter; Start-Sleep 2
 
 # Connection happens automatically at launch — no Q press needed
 # Wait for the flow to complete
-Write-Host "[WAIT] Waiting 60s for connection flow..." -ForegroundColor Yellow
-Start-Sleep 60
+Write-Host "[WAIT] Waiting 30s for connection flow..." -ForegroundColor Yellow
+Start-Sleep 30
 
 # Collect Frida output
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow
