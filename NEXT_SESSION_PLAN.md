@@ -1,83 +1,86 @@
-# FIFA 17 Private Server — Context Transfer (End of Day 6, Late)
+# FIFA 17 Private Server — Context Transfer (End of Day 6, Final)
 
-## CURRENT STATUS — SIGNIFICANT PROGRESS
+## CURRENT STATUS
+
+### Pipeline:
+```
+DNS ✅ → TLS ✅ → Redirector ✅ → Main Server ✅ → PreAuth ✅ → FetchClientConfig ✅ → [Login ❌] → Logout → disconnect
+```
 
 ### What works:
-- Full connection: DNS → TLS → Redirector → Main Server → PreAuth → FetchClientConfig ✅
-- CreateAccount SKIPPED entirely (Patch 3 returns error, no auth code) ✅
-- Age check BYPASSED (Patch 18: FUN_14717d5d0 → RET) ✅
-- OSDK screen eliminated ✅
-- No crashes ✅
+- Full connection pipeline through FetchClientConfig ✅
+- CreateAccount SKIPPED (Patch 3 returns error) ✅
+- Age check BYPASSED (Patch 18) ✅
+- Login job CREATED during PreAuth (confirmed by Frida v40/v41) ✅
+- Login init chain: FUN_146e1c3f0 → FUN_146e19720 → FUN_1478aa0f0 all fire ✅
 
-### Current flow:
-```
-PreAuth → Ping → FetchClientConfig ×6 → Ping → Logout → disconnect
-```
+### THE EXACT BLOCKER (identified by Frida v40/v41):
+The Login job is created but `FUN_146e1dae0` returns false because the
+**login type array** at `loginSM + 0x218` to `loginSM + 0x220` is empty.
 
-### The remaining blocker:
-Game sends Logout after FetchClientConfig. Login RPC never fires.
-FUN_146e19720 (Login start) was called during PreAuth (confirmed by Frida v35)
-but the Login RPC job never sends the actual Login command.
+`FUN_146e1dae0` iterates over this array and calls `FUN_146e1eb70` for each
+entry. `FUN_146e1eb70` is what actually sends the Login RPC (calls
+`FUN_1478aa320` with the auth token). But with an empty array, the loop
+never executes and no Login is sent.
 
-### Key theory to investigate:
-The PreAuth handler's success path reads config values from the decoded
-PreAuth response (pingPeriod, defaultRequestTimeout, connIdleTimeout, etc.)
-using vtable+0x58 and vtable+0x50 calls. If these fail (because the TDF
-decoder doesn't populate the response correctly), the handler might exit
-before reaching FUN_146e1c3f0 (Login type processor).
+The array is populated by `FUN_146e1c3f0` from the PreAuth response at
+`param_2 + 0x120`. The PreAuth TDF decoder reads 325 of 376 bytes but
+doesn't populate the login type list.
 
-Need to verify: does FUN_146e1c3f0 actually get called? Frida v35 showed
-it does, but that was with the old Patch 3 (fake auth code). With the new
-Patch 3 (error return), the flow might be different.
+### ROOT CAUSE:
+The PreAuth response TDF doesn't include the login type data that populates
+the `loginSM + 0x218` array. This array should contain entries with auth
+tokens for each supported login type (Login, SilentLogin, ExpressLogin).
 
-## PATCHES (Current State)
+### NEXT STEPS (Priority order):
 
-| # | Target | Status | What |
-|---|--------|--------|------|
-| 1 | Cert verification | ✅ Active | JNZ→JMP |
-| 2 | Origin SDK check | ✅ Active | Always true |
-| 3 | FUN_1470db3c0 | ✅ MODIFIED | Returns ERROR (no auth code) — prevents CreateAccount |
-| 4 | Auth flag | ✅ Active | [RBX+0x2061]=1 |
-| 5+6 | IsLoggedIn | ✅ Active | Always true |
-| 7 | SDK gate + vtable | ✅ Active | Return 1 |
-| 8 | PreAuth handler | ✅ Active | XOR R8D trampoline (success path) |
-| 9 | PreAuth completion | ✅ Active | Immediate RET |
-| 10 | OriginCheckOnline | ✅ Active | Always online |
-| 11 | GetGameVersion | ✅ Active | Return 0 |
-| 12 | Version compare | ✅ Active | Always match |
-| 13 | OSDK functions | ✅ Active | Return 0 (delayed) |
-| 14 | connState | ✅ Active | Force 0 continuously |
-| 15 | BlazeHub+0x53f | ✅ Active | Force 1 continuously |
-| 16 | CreateAccount handler | ❌ DISABLED | Not needed (CreateAccount skipped) |
-| 17 | OSDK Logout | ✅ Active | FUN_1472d62a0 → RET |
-| 18 | Age check | ✅ Active | FUN_14717d5d0 → RET |
+1. **Find what TDF fields populate the login type array**
+   - The array is filled by `(**(code **)(*param_2 + 0x18))(param_2, param_1 + 0x1b8, &local_res8)`
+     inside FUN_146e1c3f0. `param_2` is the decoded PreAuth response at offset +0x120.
+   - Need to find what TDF field in the PreAuth response maps to this list.
+   - Use Frida to hook the vtable+0x18 call and see what it reads.
+
+2. **Alternatively: populate the array manually from the DLL**
+   - Write a fake login type entry at loginSM + 0x218
+   - Each entry is 0x20 bytes, need to reverse-engineer the structure
+   - The entry needs an auth token string and a login type identifier
+
+3. **Alternatively: call FUN_146e1eb70 directly from the DLL**
+   - Skip the array iteration and call the Login sender directly
+   - Need: loginSM, a fake param_2 entry, param_3 (auth token), param_4=1
 
 ## KEY FILES
-- `dll-proxy/dinput8_proxy.cpp` — DLL with all patches
+- `dll-proxy/dinput8_proxy.cpp` — DLL with all patches (19 patches)
 - `server-standalone/server.mjs` — Node.js Blaze server
-- `frida_force_login.js` — Frida script
+- `frida_force_login.js` — Frida script (v41)
 - `batch_test_lsx.ps1` — Automated test
 - `batch-results.log` — Auto-logged output
 
-## NEXT SESSION PRIORITIES
-
-1. **Verify FUN_146e1c3f0 is called** with new Patch 3 (error return)
-   - Use Frida to hook FUN_146e1c3f0 and FUN_146e19720
-   - If not called, the PreAuth handler is exiting early
-
-2. **If FUN_146e1c3f0 IS called but Login doesn't fire:**
-   - The Login job might be waiting for a condition
-   - Check if the QoS/Login job callback (LAB_146e1d730) fires
-   - The job has a 7000ms timeout — check if it times out
-
-3. **If FUN_146e1c3f0 is NOT called:**
-   - The PreAuth handler exits early due to config read failures
-   - Need to fix the PreAuth response TDF to include all required fields
-   - Or patch the handler to skip the config reads
+## PATCHES (20 total, 18 active)
+| # | What | Status |
+|---|------|--------|
+| 1 | Cert bypass | ✅ |
+| 2 | Origin SDK check | ✅ |
+| 3 | Auth code → ERROR (skip CreateAccount) | ✅ MODIFIED |
+| 4 | Auth flag | ✅ |
+| 5+6 | IsLoggedIn | ✅ |
+| 7 | SDK gate + vtable | ✅ |
+| 8 | PreAuth handler (XOR R8D) | ✅ |
+| 9 | PreAuth completion (RET) | ✅ |
+| 10 | OriginCheckOnline | ✅ |
+| 11 | GetGameVersion | ✅ |
+| 12 | Version compare | ✅ |
+| 13 | OSDK functions | ✅ |
+| 14 | connState force | ✅ |
+| 15 | BlazeHub+0x53f force | ✅ |
+| 16 | CreateAccount handler | ❌ DISABLED |
+| 17 | OSDK Logout NOP | ✅ |
+| 18 | Age check (EARLY) | ✅ |
+| 19 | Login check return 1 (EARLY) | ✅ |
 
 ## BUILD & TEST
 ```
 git pull
 .\batch_test_lsx.ps1       # No Frida
-.\frida_test.ps1           # With Frida tracing
+.\frida_test.ps1           # With Frida
 ```
