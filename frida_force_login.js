@@ -38,38 +38,36 @@ Interceptor.attach(addr(0x6e151d0), {
         var param2 = args[1];
         try {
             param2.add(0x10).writeU8(1);  // UID non-zero
-            param2.add(0x13).writeU8(1);  // Persona creation (triggers state transition)
-            console.log('[S2] Wrote +0x10=1, +0x13=1, forced R8=0');
+            param2.add(0x11).writeU8(0);
+            param2.add(0x12).writeU8(0);
+            param2.add(0x13).writeU8(0);  // NO persona creation — handler just returns
+            console.log('[S2] Wrote +0x10=1, +0x13=0, forced R8=0');
         } catch(e) {}
     },
     onLeave: function(retval) {
-        console.log('[S2] Handler returned. Now simulating TOS acceptance...');
+        console.log('[S2] Handler returned. Now calling transition (0,1)...');
         
-        // The handler called state transition (1,3) which shows OSDK screen.
-        // Now we need to simulate TOS acceptance by calling more transitions.
-        // The state machine object is at param_1[1] (handler+0x08).
         try {
             var handler = this._param1;
             var sm = handler.add(0x08).readPointer();
-            console.log('[S2] State machine = ' + sm);
             
             if (!sm.isNull()) {
                 var smVtable = sm.readPointer();
-                var transitionFn38 = smVtable.add(0x38).readPointer();
                 var transitionFn08 = smVtable.add(0x08).readPointer();
-                console.log('[S2] vtable+0x38 = ' + transitionFn38 + ', vtable+0x08 = ' + transitionFn08);
                 
-                // Use vtable+0x08 (same as the (1,3) transition uses)
+                // Call (1,3) first to advance state machine (same as persona creation path)
                 var callTransition = new NativeFunction(transitionFn08, 'void', ['pointer', 'int', 'int']);
+                console.log('[S2] Calling (1,3) to advance state machine...');
+                callTransition(sm, 1, 3);
                 
-                // Try transition (0,1) — might mean "complete/proceed"
-                console.log('[S2] Calling transition (0,1) via vtable+0x08...');
-                try { callTransition(sm, 0, 1); } catch(e) { console.log('[S2] (0,1) error: ' + e); }
+                // Then immediately call (0,1) to skip OSDK screen
+                console.log('[S2] Calling (0,1) to skip OSDK screen...');
+                callTransition(sm, 0, 1);
                 
-                console.log('[S2] *** Transitions called! ***');
+                console.log('[S2] *** Done! ***');
             }
         } catch(e) {
-            console.log('[S2] Transition error: ' + e);
+            console.log('[S2] Error: ' + e);
         }
     }
 });
