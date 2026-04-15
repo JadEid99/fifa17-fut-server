@@ -12,19 +12,24 @@
 Attaching...
 === Frida v50: AGGRESSIVE Multi-Strategy ===
 [S3] Patched FUN_146e00f40 -> RET (OSDK screen NOP)
+[S3] Hooked state transition at 0x146E126B0
 === Frida v50 Ready ===
 S1: CreateAccount\u2192OriginLogin redirect
 S2: Write response data directly into response object
 S3: Track PostAuth call
-[Local::PID::109144 ]-> [S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
+[Local::PID::87048 ]-> [S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
+[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
+[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
+[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
+[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
 [FLOW] PreAuth handler
-[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eaf7330 ***
+[S4] *** FUN_146e213e0 (PostAuth) CALLED! param1=0x3eb37330 ***
 [FLOW] All 6 FetchClientConfig sent
 [S1] Redirecting CreateAccount -> OriginLogin
-[S2] Handler called, param1=0x3eb1d328 param2=0x98f2710 R8=0x0
-[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=1 (persona=YES for state transition) ***
+[S2] Handler called, param1=0x3eb5d328 param2=0x98f2710 R8=0x0
+[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=1 ***
+[S3] *** State transition (1,3) intercepted -> changing to (2,1) ***
 [S2] Handler returned — checking if state advanced...
+Process terminated
+
+Thank you for using Frida!
