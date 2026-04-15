@@ -13,7 +13,7 @@ Attaching...
 === Frida v51: Simulate TOS Acceptance ===
 [INIT] NOPed FUN_146e00f40
 === Frida v51 Ready ===
-[Local::PID::95244 ]-> [POSTAUTH] *** FUN_146e213e0 CALLED! ***
+[Local::PID::104540 ]-> [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
 [POSTAUTH] *** FUN_146e213e0 CALLED! ***
@@ -30,14 +30,11 @@ Attaching...
 [RPC] comp=9 cmd=1 (0x1)
 [S1] Redirecting CreateAccount -> OriginLogin
 [RPC] comp=1 cmd=152 (0x98)
-[S2] Wrote +0x10=1, +0x13=1, forced R8=0
-[TRANSITION] (1,3)
-[RPC] comp=1 cmd=242 (0xf2)
-[S2] Handler returned. Now simulating TOS acceptance...
-[S2] State machine = 0x3eb3d2f0
-[S2] vtable+0x38 = 0x146e16dc0, vtable+0x08 = 0x146e126b0
-[S2] Calling transition (0,1) via vtable+0x08...
-[S2] *** Transitions called! ***
+[S2] Wrote +0x10=1, +0x13=0, forced R8=0
+[S2] Handler returned. Now calling transition (0,1)...
+[S2] Calling (1,3) to advance state machine...
+[S2] Calling (0,1) to skip OSDK screen...
+[S2] *** Done! ***
 [RPC] comp=1 cmd=246 (0xf6)
 [RPC] comp=1 cmd=47 (0x2f)
 [RPC] comp=1 cmd=70 (0x46)
