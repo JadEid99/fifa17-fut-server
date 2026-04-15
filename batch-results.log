@@ -1,154 +1,27 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-15 11:07:29) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-15 13:43:54) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
-
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
-[NET-LOAD] FUN_147572550 called!
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+=== Frida v36: Web View + HTTP Trace ===
+Hooked LoadURL at 0x1472d5cf0
+Hooked nucleusConnect reader at 0x147237850
+Hooked FUN_146e00f40 (persona creation)
+=== Frida v36 Ready ===
+Watching for: LoadURL, WinHTTP, TCP connect, nucleusConnect, persona creation
+[Local::PID::84388 ]-> [PA-HANDLER] PreAuth handler called R8=0x0
+[CA-HANDLER] CreateAccount handler called R8=0x0
+[PERSONA-CREATE] FUN_146e00f40 called! param1=0x3eb966e0 param2=0x0 param3=0x1
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
@@ -159,7 +32,7 @@ cted
 [Main] S4: -> Ignoring null/error packet (msgId=15 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:52822
+[Main] Session 5 connected: 127.0.0.1:59086
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -169,7 +42,7 @@ cted
 [Main] S5: -> Ignoring null/error packet (msgId=16 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:52823
+[Main] Session 6 connected: 127.0.0.1:59087
 [Main] S6: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
@@ -179,7 +52,7 @@ cted
 [Main] S6: -> Ignoring null/error packet (msgId=17 type=5)
 [Main] S6 disconnected
 [LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:52824
+[Main] Session 7 connected: 127.0.0.1:59088
 [Main] S7: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
 [Main] S7: Raw Blaze binary detected
@@ -189,7 +62,7 @@ cted
 [Main] S7: -> Ignoring null/error packet (msgId=18 type=5)
 [Main] S7 disconnected
 [LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:52825
+[Main] Session 8 connected: 127.0.0.1:59092
 [Main] S8: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 13 80 00 00  ................
 [Main] S8: Raw Blaze binary detected
@@ -199,7 +72,7 @@ cted
 [Main] S8: -> Ignoring null/error packet (msgId=19 type=5)
 [Main] S8 disconnected
 [LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:52826
+[Main] Session 9 connected: 127.0.0.1:59093
 [Main] S9: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 14 80 00 00  ................
 [Main] S9: Raw Blaze binary detected
@@ -209,7 +82,7 @@ cted
 [Main] S9: -> Ignoring null/error packet (msgId=20 type=5)
 [Main] S9 disconnected
 [LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:52827
+[Main] Session 10 connected: 127.0.0.1:59094
 [Main] S10: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 15 80 00 00  ................
 [Main] S10: Raw Blaze binary detected
@@ -219,50 +92,50 @@ cted
 [Main] S10: -> Ignoring null/error packet (msgId=21 type=5)
 
 --- DLL LOG (last 3000 chars) ---
- 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[11:05:58.461]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[11:05:58.461]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[11:05:58.461]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[11:05:58.461]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[11:05:58.461]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[11:05:58.461] PREAUTH_HANDLER: Cave at 0000000000A00000, 44 bytes (XOR R8D + trampoline)
-[11:05:58.461] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[11:05:58.461] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
-[11:05:58.461] CA_HANDLER: Cave at 0000000000A10000, 105 bytes (OSDK screen + state transition)
-[11:05:58.461] PATCHED: FUN_146e151d0 -> OSDK screen path (0x8c6=1, transition 1,3)
-[11:05:58.461] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[11:05:58.461] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[11:05:58.461] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[11:05:58.461] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[11:05:58.461] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[11:05:58.461] PATCHED: FUN_145e280b0 (version compare) -> always match
-[11:05:58.609] PATCHED: cert bypass at 000000014613244B
-[11:05:58.656] PATCHED: Origin SDK check at 00000001470A8430
-[11:05:58.656] All patches in 781 ms
-[11:05:58.656] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
-[11:05:58.656] AUTH: Checking login gate globals...
-[11:05:58.656] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[11:05:58.656] AUTH: DAT_144b86bdf = 0 (error flag)
-[11:05:58.656] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[11:06:04.393] AUTH: Slot cleared at 5700 ms
-[11:06:04.393] AUTH: OnlineMgr=0x3ECB3E70
-[11:06:04.393] AUTH: slot=0x0 cave=0
-[11:06:04.393] AUTH: Using fake vtable (real not captured)
-[11:06:04.393] AUTH: Injected fake request 000000005D400000 into slot
-[11:06:09.394] AUTH: cave=1 slot=0x0
-[11:06:09.394] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[11:06:09.394] AUTH: req[+0xd8]=0x9A09900 req[+0xe8]=1
-[11:06:09.394] AUTH: state=2. Auth ready.
-[11:06:09.394] AUTH: OnlineMgr+0xb10 = 0x3ECBA6E0
-[11:06:09.394] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ECBA960
-[11:06:09.394] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[11:06:09.394] AUTH: Found 0 objects with vtables in BlazeHub
-[11:06:09.394] AUTH: BlazeHub(000000003ECBA960)+0x53f = 1
-[11:06:09.394] AUTH: Applying OSDK patches (post-load)...
-[11:06:09.394] PATCHED: GetProfileSync -> return 0 (post-load)
-[11:06:09.394] PATCHED: GetSettingSync -> return 0 (post-load)
-[11:06:09.394] PATCHED: SetPresence -> return 0 (post-load)
-[11:06:09.394] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-[11:06:23.376] CA-DETECT: CreateAccount done (trampoline). handler=0x3EB5D328 preAuth=0x3EB37FF0
-[11:06:23.376] CA-DETECT: loginSM=0x3EB39DA0 +0x08=0x3EB37330 +0x18=0x0
+0 00 00 44 89 C6 49 89 D6
+[13:42:23.528]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[13:42:23.528]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[13:42:23.528]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[13:42:23.528]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[13:42:23.528]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[13:42:23.528]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[13:42:23.528] PREAUTH_HANDLER: Cave at 0000000000B10000, 44 bytes (XOR R8D + trampoline)
+[13:42:23.528] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[13:42:23.528] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
+[13:42:23.528] CA_HANDLER: Cave at 0000000003C50000, 105 bytes (OSDK screen + state transition)
+[13:42:23.528] PATCHED: FUN_146e151d0 -> OSDK screen path (0x8c6=1, transition 1,3)
+[13:42:23.528] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[13:42:23.528] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[13:42:23.528] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[13:42:23.528] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[13:42:23.528] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[13:42:23.528] PATCHED: FUN_145e280b0 (version compare) -> always match
+[13:42:23.700] PATCHED: Origin SDK check at 00000001470A8430
+[13:42:23.700] All patches in 765 ms
+[13:42:23.700] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
+[13:42:23.700] AUTH: Checking login gate globals...
+[13:42:23.700] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[13:42:23.700] AUTH: DAT_144b86bdf = 0 (error flag)
+[13:42:23.700] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[13:42:29.747] AUTH: Slot cleared at 6000 ms
+[13:42:29.747] AUTH: OnlineMgr=0x3ED03E70
+[13:42:29.747] AUTH: slot=0x0 cave=0
+[13:42:29.747] AUTH: Using fake vtable (real not captured)
+[13:42:29.747] AUTH: Injected fake request 000000005D420000 into slot
+[13:42:34.748] AUTH: cave=1 slot=0x0
+[13:42:34.748] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[13:42:34.748] AUTH: req[+0xd8]=0x9C39D38 req[+0xe8]=1
+[13:42:34.748] AUTH: state=2. Auth ready.
+[13:42:34.748] AUTH: OnlineMgr+0xb10 = 0x3ED0A6E0
+[13:42:34.748] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ED0A960
+[13:42:34.748] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[13:42:34.748] AUTH: Found 0 objects with vtables in BlazeHub
+[13:42:34.748] AUTH: BlazeHub(000000003ED0A960)+0x53f = 1
+[13:42:34.748] AUTH: Applying OSDK patches (post-load)...
+[13:42:34.748] PATCHED: GetProfileSync -> return 0 (post-load)
+[13:42:34.748] PATCHED: GetSettingSync -> return 0 (post-load)
+[13:42:34.748] PATCHED: SetPresence -> return 0 (post-load)
+[13:42:34.748] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[13:42:48.524] CA-DETECT: CreateAccount done (trampoline). handler=0x3EBAD328 preAuth=0x3EB87FF0
+[13:42:48.524] CA-DETECT: loginSM=0x3EB89DA0 +0x08=0x3EB87330 +0x18=0x0
 
