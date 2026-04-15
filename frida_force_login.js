@@ -1,99 +1,96 @@
 /*
- * Frida v40: Verify Login init functions are called with new Patch 3 (error return).
- * Also trace the Login job to see why it doesn't fire.
+ * Frida v41: Trace the Login job callback and the actual Login RPC send.
+ * The job is created but Login never fires. Need to see if the callback runs.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v40: Login Flow Trace ===');
+console.log('=== Frida v41: Login Job Callback Trace ===');
 
-// 1. FUN_146e1c3f0 — Login type processor (called by PreAuth handler)
+// 1. Login job callback at LAB_146e1d730
 try {
-    Interceptor.attach(addr(0x6e1c3f0), {
+    Interceptor.attach(addr(0x6e1d730), {
         onEnter: function(args) {
-            console.log('[LOGIN-INIT] FUN_146e1c3f0 CALLED! loginSM=' + args[0] + ' param2=' + args[1]);
-            try {
-                var bh = args[0].add(0x08).readPointer();
-                console.log('[LOGIN-INIT] loginSM+0x08 (BlazeHub) = ' + bh);
-                if (!bh.isNull()) {
-                    var flag = bh.add(0x53f).readU8();
-                    console.log('[LOGIN-INIT] BlazeHub+0x53f = ' + flag);
-                }
-            } catch(e) {}
+            console.log('[LOGIN-CALLBACK] LAB_146e1d730 CALLED! arg0=' + args[0] + ' arg1=' + args[1]);
         },
         onLeave: function(retval) {
-            console.log('[LOGIN-INIT] FUN_146e1c3f0 returned');
+            console.log('[LOGIN-CALLBACK] returned');
         }
     });
-} catch(e) { console.log('Could not hook FUN_146e1c3f0: ' + e); }
+    console.log('Hooked Login callback at 0x146e1d730');
+} catch(e) { console.log('Could not hook Login callback: ' + e); }
 
-// 2. FUN_146e19720 — Login start (queues the Login job)
+// 2. FUN_146e1e0f0 — the actual Login/Connect function that builds the Login RPC
 try {
-    Interceptor.attach(addr(0x6e19720), {
+    Interceptor.attach(addr(0x6e1e0f0), {
         onEnter: function(args) {
-            var sm = args[0];
-            console.log('[LOGIN-START] FUN_146e19720 CALLED! param1=' + sm);
-            try {
-                var guard = sm.add(0x18).readPointer();
-                console.log('[LOGIN-START] loginSM+0x18 (guard) = ' + guard);
-                var loginType = sm.add(0x1f8).readU16();
-                console.log('[LOGIN-START] loginSM+0x1f8 (login type) = ' + loginType);
-            } catch(e) {}
+            console.log('[LOGIN-SEND] FUN_146e1e0f0 CALLED! (builds Login RPC)');
         },
         onLeave: function(retval) {
-            console.log('[LOGIN-START] FUN_146e19720 returned');
+            console.log('[LOGIN-SEND] returned');
         }
     });
-} catch(e) { console.log('Could not hook FUN_146e19720: ' + e); }
+    console.log('Hooked Login send at 0x146e1e0f0');
+} catch(e) { console.log('Could not hook Login send: ' + e); }
 
-// 3. FUN_1478aa0f0 — RPC job creator (creates the Login job)
+// 3. FUN_146e1d4c0 — RPC dispatch (called by Login send)
 try {
-    Interceptor.attach(addr(0x78aa0f0), {
+    Interceptor.attach(addr(0x6e1d4c0), {
         onEnter: function(args) {
-            console.log('[JOB-CREATE] FUN_1478aa0f0 CALLED! callback=' + args[0] + ' context=' + args[1] + ' param3=' + args[2]);
+            console.log('[RPC-SEND] FUN_146e1d4c0 CALLED!');
+        }
+    });
+} catch(e) {}
+
+// 4. FUN_1478abf10 — job scheduler (runs queued jobs)
+try {
+    Interceptor.attach(addr(0x78abf10), {
+        onEnter: function(args) {
+            console.log('[JOB-RUN] FUN_1478abf10 called');
+        }
+    });
+} catch(e) {}
+
+// 5. FUN_146e1dae0 — called by FUN_146e19720 to check if login should proceed
+try {
+    Interceptor.attach(addr(0x6e1dae0), {
+        onEnter: function(args) {
+            console.log('[LOGIN-CHECK] FUN_146e1dae0 called param1=' + args[0]);
         },
         onLeave: function(retval) {
-            console.log('[JOB-CREATE] returned job=' + retval);
+            console.log('[LOGIN-CHECK] returned ' + retval);
         }
     });
-} catch(e) { console.log('Could not hook FUN_1478aa0f0: ' + e); }
+} catch(e) {}
 
-// 4. PreAuth handler
+// 6. FUN_146e19b30 — called when FUN_146e1dae0 returns false
+try {
+    Interceptor.attach(addr(0x6e19b30), {
+        onEnter: function(args) {
+            console.log('[LOGIN-ALT] FUN_146e19b30 called (dae0 returned false)');
+        }
+    });
+} catch(e) {}
+
+// 7. PreAuth handler
 try {
     Interceptor.attach(addr(0x6e1cf10), {
-        onEnter: function(args) {
-            console.log('[PA-HANDLER] Called R8=' + args[2]);
-        },
-        onLeave: function(retval) {
-            console.log('[PA-HANDLER] Returned');
-        }
+        onEnter: function(args) { console.log('[PA-HANDLER] Called'); }
     });
 } catch(e) {}
 
-// 5. FUN_146e1e460 — post_PreAuth (sends Ping, called before FUN_146e1c3f0)
+// 8. Login init
 try {
-    Interceptor.attach(addr(0x6e1e460), {
-        onEnter: function(args) {
-            console.log('[POST-PREAUTH] FUN_146e1e460 CALLED');
-        }
+    Interceptor.attach(addr(0x6e1c3f0), {
+        onEnter: function(args) { console.log('[LOGIN-INIT] Called'); }
     });
 } catch(e) {}
 
-// 6. FUN_14717d5d0 — age check (should be patched to RET)
+// 9. Login start
 try {
-    Interceptor.attach(addr(0x717d5d0), {
-        onEnter: function(args) {
-            console.log('[AGE-CHECK] FUN_14717d5d0 CALLED (should be NOPed!)');
-        }
+    Interceptor.attach(addr(0x6e19720), {
+        onEnter: function(args) { console.log('[LOGIN-START] Called'); }
     });
 } catch(e) {}
 
-// 7. Track all Blaze RPC sends to see if Login is sent
-try {
-    Interceptor.attach(addr(0x6db5a60), {
-        onEnter: function(args) {
-            console.log('[RPC-DISPATCH] FUN_146db5a60 called');
-        }
-    });
-} catch(e) {}
-
-console.log('=== Frida v40 Ready ===');
+console.log('=== Frida v41 Ready ===');
+console.log('Watching: Login callback, Login send, job scheduler, login check');
