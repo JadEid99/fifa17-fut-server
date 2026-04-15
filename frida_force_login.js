@@ -1,166 +1,132 @@
 /*
- * Frida v36: Trace web view URL loading and Nucleus HTTP requests.
- * The OSDK screen should load a web page from nucleusConnect URL.
- * We need to see what URLs the game tries to load.
+ * Frida v37: Read the CreateAccountResponse field descriptor table
+ * to find the exact TDF tags the decoder expects.
+ *
+ * The response struct is registered at 0x14487cba0 with:
+ *   - Decoder at LAB_146e023e0
+ *   - Field descriptor at PTR_DAT_144878060
+ *   - Field count = 2
+ *
+ * The field descriptor table contains the TDF tag (3 bytes), type,
+ * and offset for each field in the response struct.
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v36: Web View + HTTP Trace ===');
+console.log('=== Frida v37: Read TDF Field Descriptors ===');
 
-// Hook the LoadURL function at 0x1472d5cf0 (referenced by s_LoadURL)
+// Read the CreateAccountResponse field descriptor
 try {
-    Interceptor.attach(addr(0x72d5cf0), {
-        onEnter: function(args) {
-            console.log('[LOAD-URL] FUN_1472d5cf0 called!');
-            // Try to read string args
-            for (var i = 0; i < 4; i++) {
-                try {
-                    var s = args[i].readUtf8String(200);
-                    if (s && s.length > 3 && s.length < 200) {
-                        console.log('[LOAD-URL]   arg' + i + ' = "' + s + '"');
-                    }
-                } catch(e) {}
-                try {
-                    var p = args[i].readPointer();
-                    var s2 = p.readUtf8String(200);
-                    if (s2 && s2.length > 3 && s2.length < 200) {
-                        console.log('[LOAD-URL]   arg' + i + ' -> "' + s2 + '"');
-                    }
-                } catch(e) {}
+    var fieldDescPtr = addr(0x4878060); // PTR_DAT_144878060
+    var fieldDesc = fieldDescPtr.readPointer();
+    console.log('[CA-RESP] Field descriptor pointer at 0x144878060 = ' + fieldDesc);
+    
+    // Each field descriptor is typically 0x20-0x30 bytes containing:
+    // - 3-byte encoded tag
+    // - 1-byte type
+    // - offset in struct
+    // - other metadata
+    // Let's dump the raw bytes
+    if (!fieldDesc.isNull()) {
+        console.log('[CA-RESP] Field descriptor raw dump (first 0x80 bytes):');
+        var bytes = fieldDesc.readByteArray(0x80);
+        var arr = new Uint8Array(bytes);
+        for (var row = 0; row < 0x80; row += 16) {
+            var hex = '';
+            var ascii = '';
+            for (var col = 0; col < 16 && row + col < 0x80; col++) {
+                hex += ('0' + arr[row + col].toString(16)).slice(-2) + ' ';
+                ascii += (arr[row + col] >= 32 && arr[row + col] < 127) ? String.fromCharCode(arr[row + col]) : '.';
             }
+            console.log('  ' + ('0' + row.toString(16)).slice(-2) + ': ' + hex + ' ' + ascii);
         }
-    });
-    console.log('Hooked LoadURL at 0x1472d5cf0');
-} catch(e) {
-    console.log('Could not hook LoadURL: ' + e);
-}
-
-// Hook FUN_147572550 (NetResourceAdaptor LoadURL wrapper)
-// DISABLED — fires thousands of times for game asset loading, floods output
-/*
-try {
-    Interceptor.attach(addr(0x7572550), {
-        onEnter: function(args) {
-            console.log('[NET-LOAD] FUN_147572550 called!');
-        }
-    });
-} catch(e) {}
-*/
-
-// Hook the nucleusConnect config reader at 0x147237850
-// This function reads the nucleusConnect URL from the config
-try {
-    Interceptor.attach(addr(0x7237850), {
-        onEnter: function(args) {
-            console.log('[NUCLEUS-URL] FUN_147237850 called (nucleusConnect reader)');
-        },
-        onLeave: function(retval) {
-            try {
-                if (!retval.isNull()) {
-                    var url = retval.readUtf8String(200);
-                    console.log('[NUCLEUS-URL] Returned: "' + url + '"');
-                } else {
-                    console.log('[NUCLEUS-URL] Returned NULL');
+        
+        // Try to decode TDF tags from the descriptor
+        // TDF tags are 3 bytes encoded as: ((c0-0x20)<<2)|((c1-0x20)>>4), etc.
+        // Let's look for patterns
+        for (var i = 0; i < 0x60; i++) {
+            // Check if bytes at i look like a TDF tag (3 bytes where decoded chars are A-Z0-9 )
+            var b0 = arr[i], b1 = arr[i+1], b2 = arr[i+2];
+            var c0 = (b0 >> 2) + 0x20;
+            var c1 = ((b0 & 0x03) << 4 | (b1 >> 4)) + 0x20;
+            var c2 = ((b1 & 0x0F) << 2 | (b2 >> 6)) + 0x20;
+            var c3 = (b2 & 0x3F) + 0x20;
+            if (c0 >= 0x20 && c0 <= 0x7E && c1 >= 0x20 && c1 <= 0x7E && 
+                c2 >= 0x20 && c2 <= 0x7E && c3 >= 0x20 && c3 <= 0x7E) {
+                var tag = String.fromCharCode(c0) + String.fromCharCode(c1) + String.fromCharCode(c2) + String.fromCharCode(c3);
+                // Only show if it looks like a real tag (uppercase letters/digits/space)
+                if (tag.match(/^[A-Z0-9 ]{4}$/)) {
+                    console.log('[CA-RESP] Possible TDF tag at offset ' + i + ': "' + tag + '"');
                 }
-            } catch(e) {
-                console.log('[NUCLEUS-URL] Return value: ' + retval);
             }
         }
-    });
-    console.log('Hooked nucleusConnect reader at 0x147237850');
+    }
 } catch(e) {
-    console.log('Could not hook nucleusConnect reader: ' + e);
+    console.log('[CA-RESP] Error reading field descriptor: ' + e);
 }
 
-// Hook FUN_146e00f40 — called during persona creation path
+// Also read the CheckLegalDocResponse field descriptor (for comparison)
 try {
-    Interceptor.attach(addr(0x6e00f40), {
-        onEnter: function(args) {
-            console.log('[PERSONA-CREATE] FUN_146e00f40 called! param1=' + args[0] + ' param2=' + args[1] + ' param3=' + args[2]);
+    var legalFieldDescPtr = addr(0x487a100); // PTR_DAT_14487a100
+    var legalFieldDesc = legalFieldDescPtr.readPointer();
+    console.log('\n[LEGAL-RESP] Field descriptor pointer at 0x14487a100 = ' + legalFieldDesc);
+    if (!legalFieldDesc.isNull()) {
+        console.log('[LEGAL-RESP] Raw dump (first 0x40 bytes):');
+        var bytes2 = legalFieldDesc.readByteArray(0x40);
+        var arr2 = new Uint8Array(bytes2);
+        for (var row = 0; row < 0x40; row += 16) {
+            var hex = '';
+            for (var col = 0; col < 16 && row + col < 0x40; col++) {
+                hex += ('0' + arr2[row + col].toString(16)).slice(-2) + ' ';
+            }
+            console.log('  ' + ('0' + row.toString(16)).slice(-2) + ': ' + hex);
         }
-    });
-    console.log('Hooked FUN_146e00f40 (persona creation)');
+    }
+} catch(e) {
+    console.log('[LEGAL-RESP] Error: ' + e);
+}
+
+// Also read the GetLegalDocContentResponse field descriptor
+try {
+    var tosFieldDescPtr = addr(0x48787e0); // PTR_DAT_1448787e0
+    var tosFieldDesc = tosFieldDescPtr.readPointer();
+    console.log('\n[TOS-RESP] Field descriptor pointer at 0x1448787e0 = ' + tosFieldDesc);
+    if (!tosFieldDesc.isNull()) {
+        console.log('[TOS-RESP] Raw dump (first 0x80 bytes):');
+        var bytes3 = tosFieldDesc.readByteArray(0x80);
+        var arr3 = new Uint8Array(bytes3);
+        for (var row = 0; row < 0x80; row += 16) {
+            var hex = '';
+            for (var col = 0; col < 16 && row + col < 0x80; col++) {
+                hex += ('0' + arr3[row + col].toString(16)).slice(-2) + ' ';
+            }
+            console.log('  ' + ('0' + row.toString(16)).slice(-2) + ': ' + hex);
+        }
+    }
+} catch(e) {
+    console.log('[TOS-RESP] Error: ' + e);
+}
+
+// Read the PreAuth response field descriptor for comparison (we know this works)
+try {
+    // PreAuth response registration is near the other auth responses
+    // From Ghidra: PreAuth decoder at 0x146e19840, field count varies
+    // Let's find it by looking at the PreAuth response struct
+    // The PreAuth response vtable is at 0x14389f938 (from Frida v35)
+    // Actually, let's just read the response object during the RPC decode
+    console.log('\n[INFO] Field descriptors read. Check the hex dumps for TDF tag patterns.');
+    console.log('[INFO] TDF tags are 3-byte encoded: b0=(c0-0x20)<<2|(c1-0x20)>>4, etc.');
 } catch(e) {}
 
-// Hook FUN_146e00d50 — called by FUN_146e00f40
-try {
-    Interceptor.attach(addr(0x6e00d50), {
-        onEnter: function(args) {
-            console.log('[PERSONA-D50] FUN_146e00d50 called! param1=' + args[0] + ' param2=' + args[1]);
-        }
-    });
-} catch(e) {}
-
-// Hook the TOS response handlers to see if they fire
+// Also hook the handlers to confirm they fire
 try {
     Interceptor.attach(addr(0x6e1cf10), {
-        onEnter: function(args) {
-            console.log('[PA-HANDLER] PreAuth handler called R8=' + args[2]);
-        }
+        onEnter: function(args) { console.log('[PA-HANDLER] Called R8=' + args[2]); }
     });
 } catch(e) {}
-
 try {
     Interceptor.attach(addr(0x6e151d0), {
-        onEnter: function(args) {
-            console.log('[CA-HANDLER] CreateAccount handler called R8=' + args[2]);
-        }
+        onEnter: function(args) { console.log('[CA-HANDLER] Called R8=' + args[2]); }
     });
 } catch(e) {}
 
-// Monitor all WinHTTP/WinInet calls for HTTP requests
-try {
-    var winhttp = Module.findExportByName('winhttp.dll', 'WinHttpOpenRequest');
-    if (winhttp) {
-        Interceptor.attach(winhttp, {
-            onEnter: function(args) {
-                try {
-                    var verb = args[1].readUtf16String();
-                    var path = args[2].readUtf16String();
-                    console.log('[WINHTTP] OpenRequest: ' + verb + ' ' + path);
-                } catch(e) {}
-            }
-        });
-        console.log('Hooked WinHttpOpenRequest');
-    }
-} catch(e) {}
-
-try {
-    var winhttp2 = Module.findExportByName('winhttp.dll', 'WinHttpConnect');
-    if (winhttp2) {
-        Interceptor.attach(winhttp2, {
-            onEnter: function(args) {
-                try {
-                    var server = args[1].readUtf16String();
-                    var port = args[2].toInt32();
-                    console.log('[WINHTTP] Connect: ' + server + ':' + port);
-                } catch(e) {}
-            }
-        });
-        console.log('Hooked WinHttpConnect');
-    }
-} catch(e) {}
-
-// Also hook Winsock connect to catch any TCP connections
-try {
-    var wsConnect = Module.findExportByName('ws2_32.dll', 'connect');
-    if (wsConnect) {
-        Interceptor.attach(wsConnect, {
-            onEnter: function(args) {
-                try {
-                    var addr_struct = args[1];
-                    var family = addr_struct.readU16();
-                    if (family === 2) { // AF_INET
-                        var port = (addr_struct.add(2).readU8() << 8) | addr_struct.add(3).readU8();
-                        var ip = addr_struct.add(4).readU8() + '.' + addr_struct.add(5).readU8() + '.' + addr_struct.add(6).readU8() + '.' + addr_struct.add(7).readU8();
-                        console.log('[CONNECT] TCP connect to ' + ip + ':' + port);
-                    }
-                } catch(e) {}
-            }
-        });
-        console.log('Hooked ws2_32.connect');
-    }
-} catch(e) {}
-
-console.log('=== Frida v36 Ready ===');
-console.log('Watching for: LoadURL, WinHTTP, TCP connect, nucleusConnect, persona creation');
+console.log('=== Frida v37 Ready ===');
