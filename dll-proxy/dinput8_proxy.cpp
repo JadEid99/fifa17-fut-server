@@ -482,6 +482,40 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
+            // Patch 19: Login check must be patched BEFORE PreAuth runs
+            {
+                static int loginCheckPatched = 0;
+                if (!loginCheckPatched) {
+                    __try {
+                        BYTE* f = (BYTE*)0x146e1dae0;
+                        DWORD op;
+                        if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                            f[0] = 0xB0; f[1] = 0x01; f[2] = 0xC3;
+                            for (int k=3; k<8; k++) f[k] = 0x90;
+                            VirtualProtect(f, 8, op, &op);
+                            Log("PATCHED: FUN_146e1dae0 (login check) -> return 1 (EARLY)");
+                            loginCheckPatched = 1;
+                        }
+                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+                }
+            }
+            // Patch 18: Age check must also be patched early
+            {
+                static int ageCheckPatched = 0;
+                if (!ageCheckPatched) {
+                    __try {
+                        BYTE* f = (BYTE*)0x14717d5d0;
+                        DWORD op;
+                        if (VirtualProtect(f, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                            f[0] = 0xC3;
+                            for (int k=1; k<8; k++) f[k] = 0x90;
+                            VirtualProtect(f, 8, op, &op);
+                            Log("PATCHED: FUN_14717d5d0 (age check) -> RET (EARLY)");
+                            ageCheckPatched = 1;
+                        }
+                    } __except(EXCEPTION_EXECUTE_HANDLER) {}
+                }
+            }
             // Patch 16 REMOVED — let the RPC framework handle CreateAccount naturally
             // if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
