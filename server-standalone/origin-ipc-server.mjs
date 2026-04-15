@@ -15,7 +15,7 @@
 
 import net from 'net';
 
-const PORT = 4216; // The Origin SDK always connects here
+const PORT = 3216; // DLL patches the SDK port to this after first connection fails
 
 const server = net.createServer((socket) => {
   const addr = `${socket.remoteAddress}:${socket.remotePort}`;

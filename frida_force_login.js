@@ -105,23 +105,33 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 6: Hook SendXml (FUN_1470e67f0) for auth
+// Step 6: Hook SendXml (FUN_1470e67f0) — fix user ID mismatch
+// Error 0xa2000003 = param_2 != SDK+0x3a0 (user ID mismatch)
 // ============================================================
 try {
     Interceptor.attach(addr(0x70e67f0), {
         onEnter: function(args) {
             console.log('[SENDXML] Auth SendXml called');
             try {
-                if (!args[2].isNull()) {
-                    console.log('[SENDXML] type = "' + args[2].readUtf8String() + '"');
+                var sdkObj = args[0];
+                var userId = args[1];
+                var storedId = sdkObj.add(0x3a0).readPointer();
+                console.log('[SENDXML] userId=' + userId + ' SDK+0x3a0=' + storedId);
+                // Fix mismatch
+                if (!userId.isNull() && !userId.equals(storedId)) {
+                    console.log('[SENDXML] *** FIXING user ID mismatch ***');
+                    sdkObj.add(0x3a0).writePointer(userId);
                 }
-            } catch(e) {}
+                if (!args[2].isNull()) {
+                    console.log('[SENDXML] type="' + args[2].readUtf8String() + '"');
+                }
+            } catch(e) { console.log('[SENDXML] error: ' + e); }
         },
         onLeave: function(retval) {
             console.log('[SENDXML] returned ' + retval);
         }
     });
-    console.log('[INIT] Hooked SendXml');
+    console.log('[INIT] Hooked SendXml with ID fix');
 } catch(e) {}
 
 // ============================================================
