@@ -1,76 +1,44 @@
 /*
- * Frida v44: Dump the PreAuth response object after decoding to see
- * which fields are populated and which are empty.
- * Focus on offset +0xb8 (login type list) and nearby fields.
+ * Frida v45: Dump FUN_146e15070 bytes to find the CreateAccount command (0x0A)
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v44: PreAuth Response Object Dump ===');
+console.log('=== Frida v45: Dump FUN_146e15070 ===');
 
-// Hook the PreAuth handler to dump param_2 (decoded response)
-Interceptor.attach(addr(0x6e1cf10), {
-    onEnter: function(args) {
-        var param1 = args[0];
-        var param2 = args[1]; // decoded PreAuth response
-        var param3 = args[2];
-        
-        console.log('[PA-HANDLER] param1=' + param1 + ' param2=' + param2 + ' param3=' + param3);
-        
-        // Dump the decoded PreAuth response object
-        // Focus on the fields the handler reads
-        try {
-            console.log('[PA-RESP] PreAuth response object dump:');
-            for (var off = 0; off < 0x250; off += 8) {
-                var val = param2.add(off).readPointer();
-                if (!val.isNull() && !val.equals(ptr(0))) {
-                    var label = '';
-                    if (off === 0x00) label = ' (vtable)';
-                    if (off === 0x10) label = ' (INST string?)';
-                    if (off === 0x28) label = ' (NASP string?)';
-                    if (off === 0x40) label = ' (PLAT string?)';
-                    if (off === 0x58) label = ' (RSRC string?)';
-                    if (off === 0x70) label = ' (QOSS struct?)';
-                    if (off === 0xb8) label = ' *** LOGIN TYPE LIST ***';
-                    if (off === 0x120) label = ' (param_2+0x120 passed to FUN_146e1c3f0)';
-                    if (off === 0x1f0) label = ' (SVER string?)';
-                    if (off === 0x1d8) label = ' (PTVR string?)';
-                    if (off === 0x1c0) label = ' (PTAG string?)';
-                    if (off === 0x220) label = ' (ANON?)';
-                    if (off === 0x240) label = ' (used by FUN_146124610)';
-                    
-                    // Try to read as string
-                    var str = '';
-                    try {
-                        var s = val.readUtf8String(30);
-                        if (s && s.length > 1 && s.length < 30 && /^[\x20-\x7e]+$/.test(s)) {
-                            str = ' "' + s + '"';
-                        }
-                    } catch(e) {}
-                    
-                    console.log('  +0x' + off.toString(16) + ' = ' + val + label + str);
-                }
-            }
-            
-            // Specifically dump the +0xb8 area (login type list)
-            console.log('[PA-RESP] Login type list area (+0xb8):');
-            var listObj = param2.add(0xb8);
-            for (var off = 0; off < 0x40; off += 8) {
-                var val = listObj.add(off).readPointer();
-                console.log('  +0xb8+0x' + off.toString(16) + ' = ' + val);
-            }
-            
-            // Dump +0x120 area (passed to FUN_146e1c3f0 as param_2)
-            console.log('[PA-RESP] +0x120 area (login config):');
-            var configObj = param2.add(0x120);
-            for (var off = 0; off < 0x40; off += 8) {
-                var val = configObj.add(off).readPointer();
-                console.log('  +0x120+0x' + off.toString(16) + ' = ' + val);
-            }
-            
-        } catch(e) {
-            console.log('[PA-RESP] Error: ' + e);
-        }
+// Dump first 200 bytes of FUN_146e15070
+var fn = addr(0x6e15070);
+var bytes = new Uint8Array(fn.readByteArray(200));
+console.log('[DUMP] FUN_146e15070 first 200 bytes:');
+for (var row = 0; row < 200; row += 16) {
+    var hex = '';
+    var ascii = '';
+    for (var col = 0; col < 16 && row + col < 200; col++) {
+        hex += ('0' + bytes[row + col].toString(16)).slice(-2) + ' ';
+        ascii += (bytes[row + col] >= 32 && bytes[row + col] < 127) ? String.fromCharCode(bytes[row + col]) : '.';
     }
-});
+    console.log('  +' + ('0' + row.toString(16)).slice(-2) + ': ' + hex + ' ' + ascii);
+}
 
-console.log('=== Frida v44 Ready ===');
+// Search for value 0x0A in various instruction encodings
+console.log('\n[SEARCH] Looking for value 10 (0x0A) in instructions:');
+for (var i = 0; i < 190; i++) {
+    // MOV R8D, imm32: 41 B8 0A 00 00 00
+    if (bytes[i] === 0x41 && bytes[i+1] === 0xB8 && bytes[i+2] === 0x0A) {
+        console.log('  +' + i.toString(16) + ': MOV R8D, 0x0A (41 B8 0A ...)');
+    }
+    // MOV R8D, imm8 via different encoding
+    if (bytes[i] === 0x41 && bytes[i+1] === 0xB0 && bytes[i+2] === 0x0A) {
+        console.log('  +' + i.toString(16) + ': MOV R8B, 0x0A (41 B0 0A)');
+    }
+    // PUSH 0x0A / MOV ECX,0x0A etc
+    if (bytes[i] === 0x6A && bytes[i+1] === 0x0A) {
+        console.log('  +' + i.toString(16) + ': PUSH 0x0A (6A 0A)');
+    }
+    // MOV reg, 0x0A (various)
+    if (bytes[i+1] === 0x0A && bytes[i+2] === 0x00 && bytes[i+3] === 0x00 && bytes[i+4] === 0x00) {
+        console.log('  +' + i.toString(16) + ': possible imm32=0x0A: ' + 
+            ('0'+bytes[i].toString(16)).slice(-2) + ' 0A 00 00 00');
+    }
+}
+
+console.log('=== Done ===');
