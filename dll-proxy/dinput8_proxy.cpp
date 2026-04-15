@@ -773,6 +773,26 @@ done:
         } __except(EXCEPTION_EXECUTE_HANDLER) {
             Log("AGE_CHECK: Exception");
         }
+        
+        // Patch 19: Make FUN_146e1dae0 always return true (1)
+        // Frida v41 showed: Login job is created but FUN_146e1dae0 returns false
+        // because the login type array (loginSM+0x218 to +0x220) is empty.
+        // The array is empty because the PreAuth TDF decoder doesn't populate it.
+        // Returning true makes the Login flow proceed to send the actual Login RPC.
+        __try {
+            BYTE* loginCheckFn = (BYTE*)0x146e1dae0;
+            Log("LOGIN_CHECK: addr=%p bytes=%02X %02X %02X %02X", loginCheckFn, loginCheckFn[0], loginCheckFn[1], loginCheckFn[2], loginCheckFn[3]);
+            DWORD op;
+            if (VirtualProtect(loginCheckFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                loginCheckFn[0] = 0xB0; loginCheckFn[1] = 0x01; // MOV AL, 1
+                loginCheckFn[2] = 0xC3; // RET
+                for (int k=3; k<8; k++) loginCheckFn[k] = 0x90;
+                VirtualProtect(loginCheckFn, 8, op, &op);
+                Log("PATCHED: FUN_146e1dae0 (login check) -> return 1 (always proceed)");
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {
+            Log("LOGIN_CHECK: Exception");
+        }
     }
     
     // Keep forcing +0x53f flag continuously in background
