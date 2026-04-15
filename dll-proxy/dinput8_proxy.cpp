@@ -497,8 +497,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 ...
             }
             */
-            // Patch 16: CreateAccount bypass cave (re-enabled)
-            if(!g_createAcctPatchDone) PatchCreateAccountHandler();
+            // Patch 16: DISABLED — Frida v50 handles the response data directly
+            // if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             
             // Patch 20: DISABLED — using Frida runtime redirect instead
             // Frida v46 hooks FUN_146dab760 to change cmd 10→0x98 at runtime
@@ -515,7 +515,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_createAcctPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     

@@ -22,38 +22,31 @@ Interceptor.attach(addr(0x6df0e80), {
     }
 });
 
-// Strategy 2: Intercept the CreateAccount handler and write response data directly
+// Strategy 2: Intercept the CreateAccount handler — force success AND write response data
 Interceptor.attach(addr(0x6e151d0), {
     onEnter: function(args) {
         var param1 = args[0]; // handler
         var param2 = args[1]; // response object
         var param3 = args[2]; // error code
         
-        console.log('[S2] Handler called, param2=' + param2 + ' R8=' + param3);
+        console.log('[S2] Handler called, param1=' + param1 + ' param2=' + param2 + ' R8=' + param3);
+        
+        // Force R8 = 0 (success path) — same as DLL's Patch 8 does for PreAuth
+        this.context.r8 = ptr(0);
         
         // Write non-zero values into the response object
-        // The handler reads: +0x10 (UID byte), +0x11, +0x12, +0x13 (persona flag)
         try {
-            // Set +0x10 = 1 (UID non-zero = account exists)
-            param2.add(0x10).writeU8(1);
-            // Set +0x11 = 0
+            param2.add(0x10).writeU8(1);  // UID non-zero
             param2.add(0x11).writeU8(0);
-            // Set +0x12 = 0
             param2.add(0x12).writeU8(0);
-            // Set +0x13 = 0 (NO persona creation)
-            param2.add(0x13).writeU8(0);
-            console.log('[S2] *** Wrote response data: +0x10=1, +0x13=0 ***');
-            
-            // Verify
-            var b10 = param2.add(0x10).readU8();
-            var b13 = param2.add(0x13).readU8();
-            console.log('[S2] Verify: +0x10=' + b10 + ' +0x13=' + b13);
+            param2.add(0x13).writeU8(0);  // NO persona creation
+            console.log('[S2] *** Forced R8=0 + wrote +0x10=1, +0x13=0 ***');
         } catch(e) {
             console.log('[S2] Write error: ' + e);
         }
     },
     onLeave: function(retval) {
-        console.log('[S2] Handler returned');
+        console.log('[S2] Handler returned — checking if state advanced...');
     }
 });
 
