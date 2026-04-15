@@ -869,8 +869,11 @@ done:
                         if (fakeEntry) {
                             memset(fakeEntry, 0, 0x40);
                             
-                            // entry[0] must be non-zero (checked by FUN_146e1eb70)
-                            fakeEntry[0] = 1; // login type flag
+                            // entry[0] must point to a non-empty string (checked by FUN_146e1eb70)
+                            // FUN_146e1eb70 does: *(char *)*param_2 != '\0'
+                            // So *param_2 is a char* pointer, and the first char must be non-zero
+                            static char loginFlag[] = "\x01"; // non-empty string
+                            *(uint64_t*)(fakeEntry + 0) = (uint64_t)loginFlag;
                             
                             // entry+0x18 must point to a config object
                             // The config object needs +0x10 to be a string pointer (auth token)
