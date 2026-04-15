@@ -312,10 +312,20 @@
 - Result: **NO LOGOUT for the first time!** OSDK screen appeared but no disconnect.
 - Why: State transition (1,3) advances state machine. OSDK screen shows because (1,3) is the persona creation transition.
 
-**Attempt 6.4: Hook state transition (1,3)→(2,1) [CURRENT TEST]**
+**Attempt 6.4: Hook state transition (1,3)→(2,1)**
 - Change transition parameters to match PreAuth's (2,1)
-- Result: PENDING
-- Theory: (2,1) advances to Login instead of OSDK screen.
+- Result: CRASHED — state 2 handler (sm[3]) may not be initialized
+- Theory was wrong: (2,1) is not the correct transition
+
+**Attempt 6.5: OSDK Completion Bypass — transition (0, -1) [CURRENT TEST]**
+- KEY DISCOVERY from Ghidra: FUN_146e15320 (OSDK completion handler) calls
+  state transition (0, 0xFFFFFFFF) when account creation finishes
+- This is what normally fires when the user completes the OSDK screen
+- Strategy: Let (1,3) fire, NOP OSDK screen, then immediately call (0, -1)
+  to simulate OSDK completion
+- This should advance the state machine back to state 0, which should
+  trigger the Login flow
+- Frida v54 implements this approach
 
 ## KEY GHIDRA FUNCTIONS
 

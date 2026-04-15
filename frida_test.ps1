@@ -43,6 +43,7 @@ Write-Host "[BUILD] Compiling DLL..." -ForegroundColor Yellow
 cmd /c "`"$vcvars`" && cd /d `"$repoRoot\dll-proxy`" && cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib ws2_32.lib 2>&1" | Out-Null
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
+Copy-Item "$repoRoot\commandline.txt" "$gameDir\commandline.txt" -Force
 
 # Start Blaze server
 Write-Host "[BLAZE] Starting Blaze server..." -ForegroundColor Yellow

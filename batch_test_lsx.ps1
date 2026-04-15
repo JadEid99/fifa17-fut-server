@@ -42,6 +42,7 @@ cmd /c "`"$vcvars`" && cd /d `"$repoRoot\dll-proxy`" && cl /LD /O2 /EHsc dinput8
 Kill-All
 Remove-Item $logFile -Force -EA SilentlyContinue
 Copy-Item "$repoRoot\dll-proxy\dinput8.dll" "$gameDir\dinput8.dll" -Force
+Copy-Item "$repoRoot\commandline.txt" "$gameDir\commandline.txt" -Force
 
 # Start Blaze server (plaintext main server)
 Write-Host "[SERVER] Starting Blaze server..." -ForegroundColor Yellow
