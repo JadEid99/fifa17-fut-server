@@ -1,107 +1,80 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-15 14:00:43) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-15 14:10:10) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
-00 00 00 00 00 00  ................
-  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  .v.D............
-  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-[CA-RESP] Possible TDF tag at offset 1: "    "
-[CA-RESP] Possible TDF tag at offset 3: "  8 "
-[CA-RESP] Possible TDF tag at offset 5: "    "
-[CA-RESP] Possible TDF tag at offset 12: " 0  "
-[CA-RESP] Possible TDF tag at offset 13: "    "
-[CA-RESP] Possible TDF tag at offset 20: " 0  "
-[CA-RESP] Possible TDF tag at offset 21: "    "
-[CA-RESP] Possible TDF tag at offset 28: " 0  "
-[CA-RESP] Possible TDF tag at offset 29: "    "
-[CA-RESP] Possible TDF tag at offset 32: " P  "
-[CA-RESP] Possible TDF tag at offset 33: "    "
-[CA-RESP] Possible TDF tag at offset 34: "    "
-[CA-RESP] Possible TDF tag at offset 35: "    "
-[CA-RESP] Possible TDF tag at offset 36: "    "
-[CA-RESP] Possible TDF tag at offset 37: "    "
-[CA-RESP] Possible TDF tag at offset 38: "    "
-[CA-RESP] Possible TDF tag at offset 39: "    "
-[CA-RESP] Possible TDF tag at offset 40: "    "
-[CA-RESP] Possible TDF tag at offset 41: "    "
-[CA-RESP] Possible TDF tag at offset 42: "    "
-[CA-RESP] Possible TDF tag at offset 43: "    "
-[CA-RESP] Possible TDF tag at offset 44: "    "
-[CA-RESP] Possible TDF tag at offset 45: "    "
-[CA-RESP] Possible TDF tag at offset 46: "    "
-[CA-RESP] Possible TDF tag at offset 47: "    "
-[CA-RESP] Possible TDF tag at offset 48: "    "
-[CA-RESP] Possible TDF tag at offset 49: "    "
-[CA-RESP] Possible TDF tag at offset 50: "    "
-[CA-RESP] Possible TDF tag at offset 51: "    "
-[CA-RESP] Possible TDF tag at offset 52: "    "
-[CA-RESP] Possible TDF tag at offset 53: "    "
-[CA-RESP] Possible TDF tag at offset 54: "    "
-[CA-RESP] Possible TDF tag at offset 55: "    "
-[CA-RESP] Possible TDF tag at offset 56: "    "
-[CA-RESP] Possible TDF tag at offset 57: "    "
-[CA-RESP] Possible TDF tag at offset 58: "    "
-[CA-RESP] Possible TDF tag at offset 59: "    "
-[CA-RESP] Possible TDF tag at offset 60: "    "
-[CA-RESP] Possible TDF tag at offset 61: "    "
-[CA-RESP] Possible TDF tag at offset 62: "    "
-[CA-RESP] Possible TDF tag at offset 63: "    "
-[CA-RESP] Possible TDF tag at offset 64: "    "
-[CA-RESP] Possible TDF tag at offset 65: "    "
-[CA-RESP] Possible TDF tag at offset 66: "    "
-[CA-RESP] Possible TDF tag at offset 67: "    "
-[CA-RESP] Possible TDF tag at offset 68: "    "
-[CA-RESP] Possible TDF tag at offset 69: "    "
-[CA-RESP] Possible TDF tag at offset 70: "    "
-[CA-RESP] Possible TDF tag at offset 71: "    "
-[CA-RESP] Possible TDF tag at offset 72: "    "
-[CA-RESP] Possible TDF tag at offset 73: "    "
-[CA-RESP] Possible TDF tag at offset 74: "    "
-[CA-RESP] Possible TDF tag at offset 75: "    "
-[CA-RESP] Possible TDF tag at offset 76: "    "
-[CA-RESP] Possible TDF tag at offset 77: "    "
-[CA-RESP] Possible TDF tag at offset 78: "    "
-[CA-RESP] Possible TDF tag at offset 79: "    "
-[CA-RESP] Possible TDF tag at offset 80: "    "
-[CA-RESP] Possible TDF tag at offset 81: "    "
-[CA-RESP] Possible TDF tag at offset 82: "    "
-[CA-RESP] Possible TDF tag at offset 83: "    "
-[CA-RESP] Possible TDF tag at offset 84: "    "
-[CA-RESP] Possible TDF tag at offset 85: "    "
-[CA-RESP] Possible TDF tag at offset 86: "    "
-[CA-RESP] Possible TDF tag at offset 87: "    "
-[CA-RESP] Possible TDF tag at offset 88: "    "
-[CA-RESP] Possible TDF tag at offset 89: "    "
-[CA-RESP] Possible TDF tag at offset 90: "    "
-[CA-RESP] Possible TDF tag at offset 91: "    "
-[CA-RESP] Possible TDF tag at offset 92: "    "
-[CA-RESP] Possible TDF tag at offset 93: "    "
-[CA-RESP] Possible TDF tag at offset 94: "    "
+76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcef38
+[TDF-READ] [bodyLen=322] desc=0x97b6c60 vals: +0=99b2640 +8=480f1cb0 +C=1 +10=0 +14=0 +18=0
+[TDF-READ] [bodyLen=322] desc=0x13ffcee28 vals: +0=3ffceee0 +8=1 +C=0 +10=10 +14=1 +18=3ed66000
+[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=3ea58218 +8=3ea55368 +C=0 +10=3ffcee28 +14=1 +18=3ffcee28
+[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcee28
+[RPC] LEAVE [bodyLen=322]
 
-[LEGAL-RESP] Field descriptor pointer at 0x14487a100 = 0x14486d6f0
-[LEGAL-RESP] Raw dump (first 0x40 bytes):
-  00: 0f 00 00 00 0f 00 00 00 ac 12 55 43 01 00 00 00 
-  10: ac 12 55 43 01 00 00 00 a0 07 87 44 01 00 00 00 
-  20: 03 00 00 00 00 00 00 00 13 00 00 00 13 00 00 00 
-  30: 60 85 88 43 01 00 00 00 60 85 88 43 01 00 00 00 
+[RPC] ENTER [PreAuth]
+[TDF-READ] [PreAuth] desc=0x3ed65f00 vals: +0=43882d18 +8=80000000 +C=0 +10=448717f0 +14=1 +18=43b80380
+[TDF-READ] [PreAuth] desc=0x3ed65f18 vals: +0=43b80380 +8=44bd77f0 +C=1 +10=0 +14=0 +18=1
+[TDF-READ] [PreAuth] desc=0x3ed65f30 vals: +0=1 +8=3ea55368 +C=0 +10=0 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed65f48 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed66038 vals: +0=0 +8=4354b5f0 +C=1 +10=43882d18 +14=1 +18=80000000
+[TDF-READ] [PreAuth] desc=0x3ed660b0 vals: +0=3ed660a0 +8=3ed660a0 +C=0 +10=43882d18 +14=1 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660c8 vals: +0=0 +8=43882d18 +C=1 +10=80000000 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660e0 vals: +0=0 +8=43b80380 +C=1 +10=44bd77f0 +14=1 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660f8 vals: +0=0 +8=1 +C=0 +10=3ea55368 +14=0 +18=0
+[PA-HANDLER] Called
+[RPC] LEAVE [PreAuth]
 
-[TOS-RESP] Field descriptor pointer at 0x1448787e0 = 0x144867628
-[TOS-RESP] Raw dump (first 0x80 bytes):
-  00: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00 
-  10: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00 
-  20: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00 
-  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[RPC] ENTER [bodyLen=10]
+[RPC] LEAVE [bodyLen=10]
 
-[INFO] Field descriptors read. Check the hex dumps for TDF tag patterns.
-[INFO] TDF tags are 3-byte encoded: b0=(c0-0x20)<<2|(c1-0x20)>>4, etc.
-=== Frida v37 Ready ===
-[Local::PID::96684 ]-> [PA-HANDLER] Called R8=0x0
-[CA-HANDLER] Called R8=0x0
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=87 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=55 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=79 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=2e +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [CreateAccount]
+[TDF-READ] [CreateAccount] desc=0x9902738 vals: +0=3e19999a +8=3f000000 +C=3f266666 +10=3f800000 +14=3ea66666 +18=40800000
+[TDF-READ] [CreateAccount] desc=0x9902760 vals: +0=3de66666 +8=3de66666 +C=2d322d34 +10=312d33 +14=0 +18=0
+[TDF-READ] [CreateAccount] desc=0x99027a0 vals: +0=20022000 +8=1407a +C=20080200 +10=40dba9f0 +14=c6000000 +18=45
+[CA-HANDLER] Called
+[RPC] LEAVE [CreateAccount]
+
+[RPC] ENTER [bodyLen=148]
+[RPC] LEAVE [bodyLen=148]
 
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
@@ -123,7 +96,7 @@
 [Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 0a 20 00 00
 [Main] S1 disconnected
 [LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:59487
+[Main] Session 2 connected: 127.0.0.1:59619
 [Main] S2: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
 [Main] S2: Raw Blaze binary detected
@@ -133,7 +106,7 @@
 [Main] S2: -> Ignoring null/error packet (msgId=11 type=5)
 [Main] S2 disconnected
 [LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:59488
+[Main] Session 3 connected: 127.0.0.1:59620
 [Main] S3: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
 [Main] S3: Raw Blaze binary detected
@@ -143,7 +116,7 @@
 [Main] S3: -> Ignoring null/error packet (msgId=12 type=5)
 [Main] S3 disconnected
 [LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:59489
+[Main] Session 4 connected: 127.0.0.1:59621
 [Main] S4: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
 [Main] S4: Raw Blaze binary detected
@@ -153,7 +126,7 @@
 [Main] S4: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:59490
+[Main] Session 5 connected: 127.0.0.1:59622
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -163,7 +136,7 @@
 [Main] S5: -> Ignoring null/error packet (msgId=14 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:59491
+[Main] Session 6 connected: 127.0.0.1:59623
 [Main] S6: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
@@ -174,49 +147,49 @@
 
 --- DLL LOG (last 3000 chars) ---
 9 C6 49 89 D6
-[13:59:12.105]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[13:59:12.105]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[13:59:12.105]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[13:59:12.105]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[13:59:12.105]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[13:59:12.105]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[13:59:12.105] PREAUTH_HANDLER: Cave at 0000000000560000, 44 bytes (XOR R8D + trampoline)
-[13:59:12.105] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[13:59:12.105] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
-[13:59:12.105] CA_HANDLER: Cave at 0000000000AE0000, 135 bytes (skip OSDK + reset loginSM + re-call FUN_146e19720)
-[13:59:12.105] PATCHED: FUN_146e151d0 -> skip OSDK + re-trigger Login
-[13:59:12.105] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[13:59:12.105] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[13:59:12.105] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[13:59:12.105] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[13:59:12.105] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[13:59:12.105] PATCHED: FUN_145e280b0 (version compare) -> always match
-[13:59:12.255] PATCHED: Origin SDK check at 00000001470A8430
-[13:59:12.255] All patches in 703 ms
-[13:59:12.255] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
-[13:59:12.255] AUTH: Checking login gate globals...
-[13:59:12.255] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[13:59:12.255] AUTH: DAT_144b86bdf = 0 (error flag)
-[13:59:12.255] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[13:59:17.990] AUTH: Slot cleared at 5700 ms
-[13:59:17.990] AUTH: OnlineMgr=0x3ECB3E70
-[13:59:17.990] AUTH: slot=0x0 cave=0
-[13:59:17.990] AUTH: Using fake vtable (real not captured)
-[13:59:17.990] AUTH: Injected fake request 000000005D390000 into slot
-[13:59:22.991] AUTH: cave=1 slot=0x0
-[13:59:22.991] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[13:59:22.991] AUTH: req[+0xd8]=0x99D9930 req[+0xe8]=1
-[13:59:22.991] AUTH: state=2. Auth ready.
-[13:59:22.991] AUTH: OnlineMgr+0xb10 = 0x3ECBA6E0
-[13:59:22.991] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ECBA960
-[13:59:22.991] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[13:59:22.991] AUTH: Found 0 objects with vtables in BlazeHub
-[13:59:22.991] AUTH: BlazeHub(000000003ECBA960)+0x53f = 1
-[13:59:22.991] AUTH: Applying OSDK patches (post-load)...
-[13:59:22.991] PATCHED: GetProfileSync -> return 0 (post-load)
-[13:59:22.991] PATCHED: GetSettingSync -> return 0 (post-load)
-[13:59:22.991] PATCHED: SetPresence -> return 0 (post-load)
-[13:59:22.991] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-[13:59:37.173] CA-DETECT: CreateAccount done (trampoline). handler=0x3EB5D328 preAuth=0x3EB37FF0
-[13:59:37.173] CA-DETECT: loginSM=0x3EB39DA0 +0x08=0x3EB37330 +0x18=0x2A7E2D00
+[14:08:39.600]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[14:08:39.600]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[14:08:39.600]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[14:08:39.600]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[14:08:39.600]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[14:08:39.600]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[14:08:39.600] PREAUTH_HANDLER: Cave at 0000000000420000, 44 bytes (XOR R8D + trampoline)
+[14:08:39.600] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[14:08:39.600] CA_HANDLER: addr=0000000146E151D0 bytes=48 89 5C 24 08 48
+[14:08:39.600] CA_HANDLER: Cave at 0000000000430000, 135 bytes (skip OSDK + reset loginSM + re-call FUN_146e19720)
+[14:08:39.600] PATCHED: FUN_146e151d0 -> skip OSDK + re-trigger Login
+[14:08:39.600] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[14:08:39.600] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[14:08:39.600] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[14:08:39.600] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[14:08:39.600] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[14:08:39.600] PATCHED: FUN_145e280b0 (version compare) -> always match
+[14:08:39.745] PATCHED: Origin SDK check at 00000001470A8430
+[14:08:39.745] All patches in 719 ms
+[14:08:39.745] patches: 10 (cert=1 orig=1 auth=1 flag=1 login=2)
+[14:08:39.745] AUTH: Checking login gate globals...
+[14:08:39.745] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[14:08:39.745] AUTH: DAT_144b86bdf = 0 (error flag)
+[14:08:39.745] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[14:08:45.474] AUTH: Slot cleared at 5700 ms
+[14:08:45.474] AUTH: OnlineMgr=0x3EBD3E70
+[14:08:45.474] AUTH: slot=0x0 cave=0
+[14:08:45.474] AUTH: Using fake vtable (real not captured)
+[14:08:45.474] AUTH: Injected fake request 000000005D400000 into slot
+[14:08:50.475] AUTH: cave=1 slot=0x0
+[14:08:50.475] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[14:08:50.475] AUTH: req[+0xd8]=0x99D9930 req[+0xe8]=1
+[14:08:50.475] AUTH: state=2. Auth ready.
+[14:08:50.475] AUTH: OnlineMgr+0xb10 = 0x3EBDA6E0
+[14:08:50.475] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBDA960
+[14:08:50.475] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[14:08:50.475] AUTH: Found 0 objects with vtables in BlazeHub
+[14:08:50.475] AUTH: BlazeHub(000000003EBDA960)+0x53f = 1
+[14:08:50.475] AUTH: Applying OSDK patches (post-load)...
+[14:08:50.475] PATCHED: GetProfileSync -> return 0 (post-load)
+[14:08:50.475] PATCHED: GetSettingSync -> return 0 (post-load)
+[14:08:50.475] PATCHED: SetPresence -> return 0 (post-load)
+[14:08:50.475] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[14:09:04.656] CA-DETECT: CreateAccount done (trampoline). handler=0x3EA7D328 preAuth=0x3EA57FF0
+[14:09:04.656] CA-DETECT: loginSM=0x3EA59DA0 +0x08=0x3EA57330 +0x18=0x2A7E1E60
 

@@ -10,111 +10,87 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v37: Read TDF Field Descriptors ===
-[CA-RESP] Field descriptor pointer at 0x144878060 = 0x144867628
-[CA-RESP] Field descriptor raw dump (first 0x80 bytes):
-  00: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00  ..........UC....
-  10: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00  ..UC.....v.D....
-  20: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  .v.D............
-  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-[CA-RESP] Possible TDF tag at offset 1: "    "
-[CA-RESP] Possible TDF tag at offset 3: "  8 "
-[CA-RESP] Possible TDF tag at offset 5: "    "
-[CA-RESP] Possible TDF tag at offset 12: " 0  "
-[CA-RESP] Possible TDF tag at offset 13: "    "
-[CA-RESP] Possible TDF tag at offset 20: " 0  "
-[CA-RESP] Possible TDF tag at offset 21: "    "
-[CA-RESP] Possible TDF tag at offset 28: " 0  "
-[CA-RESP] Possible TDF tag at offset 29: "    "
-[CA-RESP] Possible TDF tag at offset 32: " P  "
-[CA-RESP] Possible TDF tag at offset 33: "    "
-[CA-RESP] Possible TDF tag at offset 34: "    "
-[CA-RESP] Possible TDF tag at offset 35: "    "
-[CA-RESP] Possible TDF tag at offset 36: "    "
-[CA-RESP] Possible TDF tag at offset 37: "    "
-[CA-RESP] Possible TDF tag at offset 38: "    "
-[CA-RESP] Possible TDF tag at offset 39: "    "
-[CA-RESP] Possible TDF tag at offset 40: "    "
-[CA-RESP] Possible TDF tag at offset 41: "    "
-[CA-RESP] Possible TDF tag at offset 42: "    "
-[CA-RESP] Possible TDF tag at offset 43: "    "
-[CA-RESP] Possible TDF tag at offset 44: "    "
-[CA-RESP] Possible TDF tag at offset 45: "    "
-[CA-RESP] Possible TDF tag at offset 46: "    "
-[CA-RESP] Possible TDF tag at offset 47: "    "
-[CA-RESP] Possible TDF tag at offset 48: "    "
-[CA-RESP] Possible TDF tag at offset 49: "    "
-[CA-RESP] Possible TDF tag at offset 50: "    "
-[CA-RESP] Possible TDF tag at offset 51: "    "
-[CA-RESP] Possible TDF tag at offset 52: "    "
-[CA-RESP] Possible TDF tag at offset 53: "    "
-[CA-RESP] Possible TDF tag at offset 54: "    "
-[CA-RESP] Possible TDF tag at offset 55: "    "
-[CA-RESP] Possible TDF tag at offset 56: "    "
-[CA-RESP] Possible TDF tag at offset 57: "    "
-[CA-RESP] Possible TDF tag at offset 58: "    "
-[CA-RESP] Possible TDF tag at offset 59: "    "
-[CA-RESP] Possible TDF tag at offset 60: "    "
-[CA-RESP] Possible TDF tag at offset 61: "    "
-[CA-RESP] Possible TDF tag at offset 62: "    "
-[CA-RESP] Possible TDF tag at offset 63: "    "
-[CA-RESP] Possible TDF tag at offset 64: "    "
-[CA-RESP] Possible TDF tag at offset 65: "    "
-[CA-RESP] Possible TDF tag at offset 66: "    "
-[CA-RESP] Possible TDF tag at offset 67: "    "
-[CA-RESP] Possible TDF tag at offset 68: "    "
-[CA-RESP] Possible TDF tag at offset 69: "    "
-[CA-RESP] Possible TDF tag at offset 70: "    "
-[CA-RESP] Possible TDF tag at offset 71: "    "
-[CA-RESP] Possible TDF tag at offset 72: "    "
-[CA-RESP] Possible TDF tag at offset 73: "    "
-[CA-RESP] Possible TDF tag at offset 74: "    "
-[CA-RESP] Possible TDF tag at offset 75: "    "
-[CA-RESP] Possible TDF tag at offset 76: "    "
-[CA-RESP] Possible TDF tag at offset 77: "    "
-[CA-RESP] Possible TDF tag at offset 78: "    "
-[CA-RESP] Possible TDF tag at offset 79: "    "
-[CA-RESP] Possible TDF tag at offset 80: "    "
-[CA-RESP] Possible TDF tag at offset 81: "    "
-[CA-RESP] Possible TDF tag at offset 82: "    "
-[CA-RESP] Possible TDF tag at offset 83: "    "
-[CA-RESP] Possible TDF tag at offset 84: "    "
-[CA-RESP] Possible TDF tag at offset 85: "    "
-[CA-RESP] Possible TDF tag at offset 86: "    "
-[CA-RESP] Possible TDF tag at offset 87: "    "
-[CA-RESP] Possible TDF tag at offset 88: "    "
-[CA-RESP] Possible TDF tag at offset 89: "    "
-[CA-RESP] Possible TDF tag at offset 90: "    "
-[CA-RESP] Possible TDF tag at offset 91: "    "
-[CA-RESP] Possible TDF tag at offset 92: "    "
-[CA-RESP] Possible TDF tag at offset 93: "    "
-[CA-RESP] Possible TDF tag at offset 94: "    "
+=== Frida v38: TDF Tag Reader Trace ===
+=== Frida v38 Ready ===
+Tracing TDF field reads during RPC decode
+[Local::PID::45764 ]-> 
+[RPC] ENTER [bodyLen=322]
+[TDF-READ] [bodyLen=322] desc=0x3ed66090 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=10e9f41
+[TDF-READ] [bodyLen=322] desc=0x3ed66260 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=10e9d71
+[TDF-READ] [bodyLen=322] desc=0x13ffcef38 vals: +0=aaaaaaab +8=448717c0 +C=1 +10=3ed660d0 +14=0 +18=3ed66000
+[TDF-READ] [bodyLen=322] desc=0x13ffceeb0 vals: +0=3ed661d0 +8=3ea55368 +C=0 +10=3ffcef38 +14=1 +18=3ffcef38
+[TDF-READ] [bodyLen=322] desc=0x13ffceeb0 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcef38
+[TDF-READ] [bodyLen=322] desc=0x97b6c60 vals: +0=99b2640 +8=480f1cb0 +C=1 +10=0 +14=0 +18=0
+[TDF-READ] [bodyLen=322] desc=0x13ffcee28 vals: +0=3ffceee0 +8=1 +C=0 +10=10 +14=1 +18=3ed66000
+[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=3ea58218 +8=3ea55368 +C=0 +10=3ffcee28 +14=1 +18=3ffcee28
+[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcee28
+[RPC] LEAVE [bodyLen=322]
 
-[LEGAL-RESP] Field descriptor pointer at 0x14487a100 = 0x14486d6f0
-[LEGAL-RESP] Raw dump (first 0x40 bytes):
-  00: 0f 00 00 00 0f 00 00 00 ac 12 55 43 01 00 00 00 
-  10: ac 12 55 43 01 00 00 00 a0 07 87 44 01 00 00 00 
-  20: 03 00 00 00 00 00 00 00 13 00 00 00 13 00 00 00 
-  30: 60 85 88 43 01 00 00 00 60 85 88 43 01 00 00 00 
+[RPC] ENTER [PreAuth]
+[TDF-READ] [PreAuth] desc=0x3ed65f00 vals: +0=43882d18 +8=80000000 +C=0 +10=448717f0 +14=1 +18=43b80380
+[TDF-READ] [PreAuth] desc=0x3ed65f18 vals: +0=43b80380 +8=44bd77f0 +C=1 +10=0 +14=0 +18=1
+[TDF-READ] [PreAuth] desc=0x3ed65f30 vals: +0=1 +8=3ea55368 +C=0 +10=0 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed65f48 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed66038 vals: +0=0 +8=4354b5f0 +C=1 +10=43882d18 +14=1 +18=80000000
+[TDF-READ] [PreAuth] desc=0x3ed660b0 vals: +0=3ed660a0 +8=3ed660a0 +C=0 +10=43882d18 +14=1 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660c8 vals: +0=0 +8=43882d18 +C=1 +10=80000000 +14=0 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660e0 vals: +0=0 +8=43b80380 +C=1 +10=44bd77f0 +14=1 +18=0
+[TDF-READ] [PreAuth] desc=0x3ed660f8 vals: +0=0 +8=1 +C=0 +10=3ea55368 +14=0 +18=0
+[PA-HANDLER] Called
+[RPC] LEAVE [PreAuth]
 
-[TOS-RESP] Field descriptor pointer at 0x1448787e0 = 0x144867628
-[TOS-RESP] Raw dump (first 0x80 bytes):
-  00: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00 
-  10: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00 
-  20: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  60: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00 
-  70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[RPC] ENTER [bodyLen=10]
+[RPC] LEAVE [bodyLen=10]
 
-[INFO] Field descriptors read. Check the hex dumps for TDF tag patterns.
-[INFO] TDF tags are 3-byte encoded: b0=(c0-0x20)<<2|(c1-0x20)>>4, etc.
-=== Frida v37 Ready ===
-[Local::PID::96684 ]-> [PA-HANDLER] Called R8=0x0
-[CA-HANDLER] Called R8=0x0
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=87 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=55 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=79 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=2e +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [FetchClientConfig]
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
+[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
+[RPC] LEAVE [FetchClientConfig]
+
+[RPC] ENTER [CreateAccount]
+[TDF-READ] [CreateAccount] desc=0x9902738 vals: +0=3e19999a +8=3f000000 +C=3f266666 +10=3f800000 +14=3ea66666 +18=40800000
+[TDF-READ] [CreateAccount] desc=0x9902760 vals: +0=3de66666 +8=3de66666 +C=2d322d34 +10=312d33 +14=0 +18=0
+[TDF-READ] [CreateAccount] desc=0x99027a0 vals: +0=20022000 +8=1407a +C=20080200 +10=40dba9f0 +14=c6000000 +18=45
+[CA-HANDLER] Called
+[RPC] LEAVE [CreateAccount]
+
+[RPC] ENTER [bodyLen=148]
+[RPC] LEAVE [bodyLen=148]
 
