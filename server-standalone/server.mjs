@@ -1318,13 +1318,7 @@ function setupMainBlazeHandler(socket, session) {
         if (cmd === 0x000A) { 
           resp = handleCreateAccount(session, pkt);
         }
-        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
-        else if (cmd === 0x0046) {
-          // Logout — DON'T respond. Keep the connection alive.
-          // The Login RPC queued during PreAuth might fire if we don't tear down.
-          console.log(`[Main] S${sid}: -> Logout IGNORED (not responding, keeping connection alive)`);
-          resp = null; // don't send any response
-        }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
@@ -1585,10 +1579,13 @@ function handleCreateAccount(session, pkt) {
   
   console.log('[CreateAccount] Auth token: ' + authToken);
   
-  console.log('[CreateAccount] Responding with ERROR 0x0F (account already exists)');
-  // Error 0x0F = "Exists" — tells the game the account already exists
-  // The game should then try Login instead of creating a new account
-  return buildReply(pkt, Buffer.alloc(0), 0x000F);
+  const enc = new TdfEncoder();
+  enc.writeInteger('BUID', session.nucleusId);
+  enc.writeString('PNAM', session.displayName);
+  
+  const body = enc.build();
+  console.log('[CreateAccount] Response: ' + body.length + ' bytes');
+  return buildReply(pkt, body);
 }
 
 function handleFetchClientConfig(pkt) {
@@ -1876,8 +1873,31 @@ startRedirector();
 startMainServer();
 startHttpServer();
 
+// UDP QoS server on port 17502
+// The game sends QoS bandwidth probes via UDP after PreAuth.
+// The Login RPC is queued behind a QoS job (7000ms timeout).
+// If QoS fails, the timeout handler triggers Logout instead of Login.
+// We need to respond to QoS probes so the job completes successfully.
+import dgram from 'dgram';
+const qosServer = dgram.createSocket('udp4');
+qosServer.on('message', (msg, rinfo) => {
+  console.log(`[QOS-UDP] Received ${msg.length} bytes from ${rinfo.address}:${rinfo.port}`);
+  const hex = Array.from(msg.subarray(0, Math.min(32, msg.length))).map(b => b.toString(16).padStart(2,'0')).join(' ');
+  console.log(`[QOS-UDP] Data: ${hex}`);
+  // Echo the probe back — QoS measurement just needs a response
+  qosServer.send(msg, rinfo.port, rinfo.address, (err) => {
+    if (err) console.log(`[QOS-UDP] Send error: ${err.message}`);
+    else console.log(`[QOS-UDP] Echoed ${msg.length} bytes back`);
+  });
+});
+qosServer.on('error', (err) => console.log(`[QOS-UDP] Error: ${err.message}`));
+qosServer.bind(17502, '0.0.0.0', () => console.log('[QOS-UDP] Listening on UDP port 17502'));
+
+// Also revert CreateAccount to success response (error 0x0F didn't help)
+// and restore Logout response (ignoring didn't help — game disconnects anyway)
+
 // Catch-all listeners on common ports to detect where the game connects next
-[443, 9988, 17502, 80, 9946].forEach(port => {
+[443, 9988, 80, 9946].forEach(port => {
   if (port === HTTP_PORT || port === MAIN_BLAZE_PORT || port === REDIRECTOR_PORT) return;
   net.createServer((socket) => {
     console.log(`[PORT-${port}] Connection from ${socket.remoteAddress}:${socket.remotePort}`);
