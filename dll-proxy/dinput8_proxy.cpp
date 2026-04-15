@@ -744,21 +744,34 @@ done:
             } __except(EXCEPTION_EXECUTE_HANDLER) {}
         }
         
-        // Patch 17: NOP the OSDK Logout function (FUN_1472d62a0)
-        // This prevents the game from sending Logout after CreateAccount.
-        // Without Logout, the queued Login RPC should fire.
+        // Patch 17: NOP the OSDK Logout function
         __try {
             BYTE* logoutFn = (BYTE*)0x1472d62a0;
-            Log("LOGOUT_NOP: addr=%p bytes=%02X %02X %02X %02X", logoutFn, logoutFn[0], logoutFn[1], logoutFn[2], logoutFn[3]);
             DWORD op;
             if (VirtualProtect(logoutFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
-                logoutFn[0] = 0xC3; // RET (immediate return, don't logout)
+                logoutFn[0] = 0xC3;
                 for (int k=1; k<8; k++) logoutFn[k] = 0x90;
                 VirtualProtect(logoutFn, 8, op, &op);
-                Log("PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET (NOP)");
+                Log("PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET");
+            }
+        } __except(EXCEPTION_EXECUTE_HANDLER) {}
+        
+        // Patch 18: Skip age check in FUN_14717d5d0
+        // This function checks the user's age and shows "OSDK_UNDERAGE_ERROR"
+        // if the DOB is missing or the user is too young.
+        // We patch it to return immediately — skip the entire age check.
+        __try {
+            BYTE* ageCheckFn = (BYTE*)0x14717d5d0;
+            Log("AGE_CHECK: addr=%p bytes=%02X %02X %02X %02X", ageCheckFn, ageCheckFn[0], ageCheckFn[1], ageCheckFn[2], ageCheckFn[3]);
+            DWORD op;
+            if (VirtualProtect(ageCheckFn, 8, PAGE_EXECUTE_READWRITE, &op)) {
+                ageCheckFn[0] = 0xC3; // RET
+                for (int k=1; k<8; k++) ageCheckFn[k] = 0x90;
+                VirtualProtect(ageCheckFn, 8, op, &op);
+                Log("PATCHED: FUN_14717d5d0 (age check) -> RET (skip age restriction)");
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {
-            Log("LOGOUT_NOP: Exception");
+            Log("AGE_CHECK: Exception");
         }
     }
     
