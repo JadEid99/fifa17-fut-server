@@ -54,6 +54,14 @@ $blazeJob = Start-Job -ScriptBlock {
 } -ArgumentList $repoRoot
 Start-Sleep 3
 
+# Start Origin IPC server
+Write-Host "[ORIGIN] Starting fake Origin IPC server..." -ForegroundColor Yellow
+$originJob = Start-Job -ScriptBlock { 
+    param($r)
+    node "$r\server-standalone\origin-ipc-server.mjs" 2>&1 
+} -ArgumentList $repoRoot
+Start-Sleep 2
+
 # Launch game
 Write-Host "[GAME] Launching FIFA 17..." -ForegroundColor Yellow
 Start-Process $gameExe

@@ -475,16 +475,31 @@ static DWORD WINAPI PatchThread(LPVOID) {
     
     DWORD st = GetTickCount();
     uint64_t realVtable = 0;
+    static int originPortPatchedEarly = 0;
     for (int i=0; i<3000; i++) {
         Sleep(100);
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: DISABLED — using Origin IPC server instead
+            // The Origin IPC server on port 3216 provides auth codes via XML
+            // if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
+            
+            // Patch Origin SDK port to 3216 (our fake Origin IPC server) ASAP
+            if (!originPortPatchedEarly) {
+                uint64_t* pOriginSDK = (uint64_t*)0x144b7c7a0;
+                if (*pOriginSDK != 0) {
+                    uint16_t* pPort = (uint16_t*)(*pOriginSDK + 0x35c);
+                    Log("ORIGIN-PORT-EARLY: SDK=0x%llX port=%d at %lu ms", *pOriginSDK, *pPort, GetTickCount()-st);
+                    *pPort = 3216;
+                    originPortPatchedEarly = 1;
+                    Log("ORIGIN-PORT-EARLY: Patched to 3216");
+                }
+            }
             // Patch 19: Login check — DISABLED (interferes with CreateAccount flow)
             // Patch 18: Age check — DISABLED (interferes with CreateAccount flow)
             /*
@@ -850,7 +865,9 @@ done:
     }
     
     // Keep forcing +0x53f flag continuously in background
-    Log("AUTH: Starting continuous flag enforcer (+0x53f + connState)...");
+    // Also patch Origin SDK port to point to our fake Origin IPC server
+    Log("AUTH: Starting continuous flag enforcer (+0x53f + connState + Origin port)...");
+    static int originPortPatched = 0;
     for (int i = 0; i < 6000; i++) { // 10 minutes
         __try {
             uint64_t* pOM = (uint64_t*)0x1448a3b20;
@@ -860,6 +877,22 @@ done:
                 // Force connState to 0 (idle/ready) — prevent OSDK errors from setting it to 2
                 uint32_t* pState = (uint32_t*)(om + 0x13b8);
                 if (*pState == 2) { *pState = 0; }
+                
+                // Patch Origin SDK port to point to our fake Origin IPC server (port 3216)
+                if (!originPortPatched) {
+                    uint64_t* pOriginSDK = (uint64_t*)0x144b7c7a0;
+                    if (*pOriginSDK != 0) {
+                        uint16_t* pPort = (uint16_t*)(*pOriginSDK + 0x35c);
+                        if (*pPort != 3216) {
+                            Log("ORIGIN-PORT: SDK=0x%llX, old port=%d, patching to 3216", *pOriginSDK, *pPort);
+                            *pPort = 3216;
+                            originPortPatched = 1;
+                            Log("ORIGIN-PORT: Patched to 3216");
+                        } else {
+                            originPortPatched = 1;
+                        }
+                    }
+                }
                 
                 uint64_t cm = *(uint64_t*)(om + 0xb10);
                 if (cm != 0) {
