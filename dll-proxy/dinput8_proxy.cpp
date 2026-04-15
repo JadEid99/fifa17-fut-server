@@ -539,7 +539,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
     uint64_t realVtable = 0;
     static int originPortPatchedEarly = 0;
     for (int i=0; i<3000; i++) {
-        Sleep(100);
+        Sleep(i < 200 ? 10 : 100); // Poll fast initially to catch Origin SDK port early
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();

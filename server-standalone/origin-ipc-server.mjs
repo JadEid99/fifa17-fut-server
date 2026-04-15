@@ -16,7 +16,6 @@
 import net from 'net';
 
 const PORT = 3216; // We'll patch the SDK object to use this port
-const ALT_PORT = 4216; // The default Origin SDK port — listen here too
 
 const server = net.createServer((socket) => {
   const addr = `${socket.remoteAddress}:${socket.remotePort}`;
@@ -112,32 +111,4 @@ function handleLSXMessage(socket, xml) {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`[Origin-IPC] Fake Origin server listening on 127.0.0.1:${PORT}`);
-  console.log(`[Origin-IPC] DLL must set originSDK+0x35c = ${PORT}`);
-});
-
-// Also listen on the default Origin SDK port (4216) to catch the first connection
-const altServer = net.createServer((socket) => {
-  const addr = `${socket.remoteAddress}:${socket.remotePort}`;
-  console.log(`[Origin-IPC:${ALT_PORT}] Client connected: ${addr}`);
-  
-  let buffer = '';
-  
-  socket.on('data', (data) => {
-    buffer += data.toString('utf-8');
-    console.log(`[Origin-IPC:${ALT_PORT}] Received: ${data.toString('utf-8').substring(0, 500)}`);
-    
-    while (buffer.includes('</LSX>')) {
-      const endIdx = buffer.indexOf('</LSX>') + 6;
-      const msg = buffer.substring(0, endIdx);
-      buffer = buffer.substring(endIdx);
-      handleLSXMessage(socket, msg);
-    }
-  });
-  
-  socket.on('close', () => console.log(`[Origin-IPC:${ALT_PORT}] Disconnected: ${addr}`));
-  socket.on('error', (e) => console.log(`[Origin-IPC:${ALT_PORT}] Error: ${e.message}`));
-});
-
-altServer.listen(ALT_PORT, '127.0.0.1', () => {
-  console.log(`[Origin-IPC] Also listening on 127.0.0.1:${ALT_PORT} (default Origin port)`);
 });
