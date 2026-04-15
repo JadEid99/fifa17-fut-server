@@ -510,20 +510,20 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 if (!originLoginPatched) {
                     __try {
                         BYTE* fn = (BYTE*)0x146e15070;
-                        // Verify the expected bytes at +0xBA
-                        if (fn[0xBA] == 0xFB && fn[0xBB] == 0xFA && fn[0xBC] == 0x3C && fn[0xBD] == 0x6F) {
+                        // Verify the expected bytes at +0xBB (offset was off by 1)
+                        if (fn[0xBB] == 0xFB && fn[0xBC] == 0xFA && fn[0xBD] == 0x3C && fn[0xBE] == 0x6F) {
                             DWORD op;
-                            if (VirtualProtect(fn + 0xBA, 4, PAGE_EXECUTE_READWRITE, &op)) {
-                                fn[0xBA] = 0x89;
-                                fn[0xBB] = 0xFB;
-                                // fn[0xBC] and fn[0xBD] stay the same (3C 6F)
-                                VirtualProtect(fn + 0xBA, 4, op, &op);
-                                Log("PATCHED: FUN_146e15070+0xBA: CreateAccount(0x0A) -> OriginLogin(0x98)");
+                            if (VirtualProtect(fn + 0xBB, 4, PAGE_EXECUTE_READWRITE, &op)) {
+                                fn[0xBB] = 0x89;
+                                fn[0xBC] = 0xFB;
+                                // fn[0xBD] and fn[0xBE] stay the same (3C 6F)
+                                VirtualProtect(fn + 0xBB, 4, op, &op);
+                                Log("PATCHED: FUN_146e15070+0xBB: CreateAccount(0x0A) -> OriginLogin(0x98)");
                                 originLoginPatched = 1;
                             }
                         } else {
-                            Log("PATCH20: Bytes at +0xBA don't match: %02X %02X %02X %02X (expected FB FA 3C 6F)",
-                                fn[0xBA], fn[0xBB], fn[0xBC], fn[0xBD]);
+                            Log("PATCH20: Bytes at +0xBB don't match: %02X %02X %02X %02X (expected FB FA 3C 6F)",
+                                fn[0xBB], fn[0xBC], fn[0xBD], fn[0xBE]);
                         }
                     } __except(EXCEPTION_EXECUTE_HANDLER) {
                         Log("PATCH20: Exception");
