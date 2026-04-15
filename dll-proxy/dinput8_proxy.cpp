@@ -501,33 +501,29 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             
             // Patch 20: Change CreateAccount (cmd=0x0A) to OriginLogin (cmd=0x98)
-            // FUN_146e15070 sends CreateAccount. It calls FUN_146dab760 with cmd=10.
-            // We patch FUN_146e15070 to send OriginLogin (0x98) instead.
-            // The OriginLogin handler might have a working TDF decoder.
+            // The command is computed as: MOV R8D, 0x90C3050F; LEA R8D, [R8D + 0x6F3CFAFB]
+            // Result: 0x90C3050F + 0x6F3CFAFB = 0x0A (CreateAccount)
+            // To get 0x98 (OriginLogin): change offset to 0x6F3CFB89
+            // Bytes at FUN_146e15070+0xBA: FB FA 3C 6F -> 89 FB 3C 6F
             {
                 static int originLoginPatched = 0;
                 if (!originLoginPatched) {
                     __try {
-                        // Search for the byte pattern in FUN_146e15070 that sets cmd=10
-                        // FUN_146dab760(puVar8, loginType, 10, param_7, connection)
-                        // The 3rd arg (R8) = 10 = 0x0A
-                        // Look for: 41 B8 0A 00 00 00 (MOV R8D, 0x0A) near 0x146e15070
                         BYTE* fn = (BYTE*)0x146e15070;
-                        for (int scan = 0; scan < 200; scan++) {
-                            if (fn[scan] == 0x41 && fn[scan+1] == 0xB8 && fn[scan+2] == 0x0A && 
-                                fn[scan+3] == 0x00 && fn[scan+4] == 0x00 && fn[scan+5] == 0x00) {
-                                DWORD op;
-                                if (VirtualProtect(fn + scan, 6, PAGE_EXECUTE_READWRITE, &op)) {
-                                    fn[scan+2] = 0x98; // Change 0x0A to 0x98 (OriginLogin)
-                                    VirtualProtect(fn + scan, 6, op, &op);
-                                    Log("PATCHED: FUN_146e15070+0x%X: CreateAccount(0x0A) -> OriginLogin(0x98)", scan);
-                                    originLoginPatched = 1;
-                                }
-                                break;
+                        // Verify the expected bytes at +0xBA
+                        if (fn[0xBA] == 0xFB && fn[0xBB] == 0xFA && fn[0xBC] == 0x3C && fn[0xBD] == 0x6F) {
+                            DWORD op;
+                            if (VirtualProtect(fn + 0xBA, 4, PAGE_EXECUTE_READWRITE, &op)) {
+                                fn[0xBA] = 0x89;
+                                fn[0xBB] = 0xFB;
+                                // fn[0xBC] and fn[0xBD] stay the same (3C 6F)
+                                VirtualProtect(fn + 0xBA, 4, op, &op);
+                                Log("PATCHED: FUN_146e15070+0xBA: CreateAccount(0x0A) -> OriginLogin(0x98)");
+                                originLoginPatched = 1;
                             }
-                        }
-                        if (!originLoginPatched) {
-                            Log("PATCH20: Could not find MOV R8D,0x0A in FUN_146e15070");
+                        } else {
+                            Log("PATCH20: Bytes at +0xBA don't match: %02X %02X %02X %02X (expected FB FA 3C 6F)",
+                                fn[0xBA], fn[0xBB], fn[0xBC], fn[0xBD]);
                         }
                     } __except(EXCEPTION_EXECUTE_HANDLER) {
                         Log("PATCH20: Exception");
