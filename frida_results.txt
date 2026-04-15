@@ -10,87 +10,21 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v38: TDF Tag Reader Trace ===
-=== Frida v38 Ready ===
-Tracing TDF field reads during RPC decode
-[Local::PID::45764 ]-> 
-[RPC] ENTER [bodyLen=322]
-[TDF-READ] [bodyLen=322] desc=0x3ed66090 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=10e9f41
-[TDF-READ] [bodyLen=322] desc=0x3ed66260 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=10e9d71
-[TDF-READ] [bodyLen=322] desc=0x13ffcef38 vals: +0=aaaaaaab +8=448717c0 +C=1 +10=3ed660d0 +14=0 +18=3ed66000
-[TDF-READ] [bodyLen=322] desc=0x13ffceeb0 vals: +0=3ed661d0 +8=3ea55368 +C=0 +10=3ffcef38 +14=1 +18=3ffcef38
-[TDF-READ] [bodyLen=322] desc=0x13ffceeb0 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcef38
-[TDF-READ] [bodyLen=322] desc=0x97b6c60 vals: +0=99b2640 +8=480f1cb0 +C=1 +10=0 +14=0 +18=0
-[TDF-READ] [bodyLen=322] desc=0x13ffcee28 vals: +0=3ffceee0 +8=1 +C=0 +10=10 +14=1 +18=3ed66000
-[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=3ea58218 +8=3ea55368 +C=0 +10=3ffcee28 +14=1 +18=3ffcee28
-[TDF-READ] [bodyLen=322] desc=0x13ffceda0 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcee28
-[RPC] LEAVE [bodyLen=322]
+=== Frida v39: Dump CreateAccount Response Object ===
+=== Frida v39 Ready ===
+Will dump CreateAccount response object bytes at +0x10-0x13
+[Local::PID::94932 ]-> [PA-HANDLER] Called R8=0x0
+[RPC] CreateAccount response entering decoder (bodyLen=169)
 
-[RPC] ENTER [PreAuth]
-[TDF-READ] [PreAuth] desc=0x3ed65f00 vals: +0=43882d18 +8=80000000 +C=0 +10=448717f0 +14=1 +18=43b80380
-[TDF-READ] [PreAuth] desc=0x3ed65f18 vals: +0=43b80380 +8=44bd77f0 +C=1 +10=0 +14=0 +18=1
-[TDF-READ] [PreAuth] desc=0x3ed65f30 vals: +0=1 +8=3ea55368 +C=0 +10=0 +14=0 +18=0
-[TDF-READ] [PreAuth] desc=0x3ed65f48 vals: +0=0 +8=0 +C=0 +10=0 +14=0 +18=0
-[TDF-READ] [PreAuth] desc=0x3ed66038 vals: +0=0 +8=4354b5f0 +C=1 +10=43882d18 +14=1 +18=80000000
-[TDF-READ] [PreAuth] desc=0x3ed660b0 vals: +0=3ed660a0 +8=3ed660a0 +C=0 +10=43882d18 +14=1 +18=0
-[TDF-READ] [PreAuth] desc=0x3ed660c8 vals: +0=0 +8=43882d18 +C=1 +10=80000000 +14=0 +18=0
-[TDF-READ] [PreAuth] desc=0x3ed660e0 vals: +0=0 +8=43b80380 +C=1 +10=44bd77f0 +14=1 +18=0
-[TDF-READ] [PreAuth] desc=0x3ed660f8 vals: +0=0 +8=1 +C=0 +10=3ea55368 +14=0 +18=0
-[PA-HANDLER] Called
-[RPC] LEAVE [PreAuth]
-
-[RPC] ENTER [bodyLen=10]
-[RPC] LEAVE [bodyLen=10]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=87 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=55 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=79 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=2e +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [FetchClientConfig]
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf138 vals: +0=13 +8=3ffcf370 +C=1 +10=d9ce0080 +14=0 +18=3781c40
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf0d0 vals: +0=8efba600 +8=3ffcf108 +C=1 +10=9703fa0 +14=0 +18=3ea55368
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=9703fa0 +8=3ea55368 +C=0 +10=3ffcf0d0 +14=1 +18=3ffcf0d0
-[TDF-READ] [FetchClientConfig] desc=0x13ffcf040 vals: +0=44bd76b0 +8=3ea55368 +C=0 +10=0 +14=1 +18=3ffcf0d0
-[RPC] LEAVE [FetchClientConfig]
-
-[RPC] ENTER [CreateAccount]
-[TDF-READ] [CreateAccount] desc=0x9902738 vals: +0=3e19999a +8=3f000000 +C=3f266666 +10=3f800000 +14=3ea66666 +18=40800000
-[TDF-READ] [CreateAccount] desc=0x9902760 vals: +0=3de66666 +8=3de66666 +C=2d322d34 +10=312d33 +14=0 +18=0
-[TDF-READ] [CreateAccount] desc=0x99027a0 vals: +0=20022000 +8=1407a +C=20080200 +10=40dba9f0 +14=c6000000 +18=45
-[CA-HANDLER] Called
-[RPC] LEAVE [CreateAccount]
-
-[RPC] ENTER [bodyLen=148]
-[RPC] LEAVE [bodyLen=148]
+[CA-HANDLER] Called! param1=0x3ea7d328 param2=0x9902710 param3=0x0
+[CA-HANDLER] Response object (param_2) dump:
+  +0x0 = 0x14389ac68
+  +0x8 = 0x3dcccccd00000001
+  +0x10 = 0x3f2ccccd00000000
+  +0x18 = 0x14389a0a8
+[CA-HANDLER] Critical bytes: +0x10=0 +0x11=0 +0x12=0 +0x13=0
+[CA-HANDLER] +0x10 is ZERO — UID not set by TDF decoder
+[CA-HANDLER] +0x13 is ZERO — no persona creation
+[CA-HANDLER] Handler vtable: 0x14389f938
+[RPC] CreateAccount response decoder returned
 
