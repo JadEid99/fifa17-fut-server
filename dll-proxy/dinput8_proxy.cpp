@@ -485,7 +485,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
-            if(!g_createAcctPatchDone) PatchCreateAccountHandler();
+            // Patch 16 REMOVED — let the RPC framework handle CreateAccount naturally
+            // if(!g_createAcctPatchDone) PatchCreateAccountHandler();
             if(!g_originCheckOnlineDone) PatchOriginCheckOnline();
             // Try to capture the real vtable from the auth request object
             if (realVtable == 0) {
