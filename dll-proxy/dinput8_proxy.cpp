@@ -383,8 +383,37 @@ static void PatchCreateAccountHandler() {
         cave[o++] = 0xC6; cave[o++] = 0x08; cave[o++] = 0x00; cave[o++] = 0x00;
         cave[o++] = 0x00;
         
-        // Don't call FUN_146e19720 — it crashes because loginSM isn't fully initialized.
-        // The game will send Logout after this. The server will handle it.
+        // Call FUN_146e19720(loginSM) to start the Login flow.
+        // loginSM = g_preAuthParam1 + 0x1DB0 (Ghidra shows param_1 + 0x3b6
+        // but param_1 is longlong*, so byte offset = 0x3b6 * 8 = 0x1DB0).
+        // Frida v35 confirmed: loginSM+0x08 = BlazeHub (non-zero), 0x53f = 1.
+        
+        // Load g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t preAuthAddr = (uint64_t)&g_preAuthParam1;
+        memcpy(cave + o, &preAuthAddr, 8); o += 8;
+        // MOV RCX, [RAX]          ; RCX = g_preAuthParam1
+        cave[o++] = 0x48; cave[o++] = 0x8B; cave[o++] = 0x08;
+        // TEST RCX, RCX
+        cave[o++] = 0x48; cave[o++] = 0x85; cave[o++] = 0xC9;
+        // JZ skip
+        cave[o++] = 0x74;
+        int jzPatchOffset = o;
+        cave[o++] = 0x00; // placeholder
+        
+        // ADD RCX, 0x1DB0         ; RCX = loginSM = preAuthParam1 + 0x1DB0
+        cave[o++] = 0x48; cave[o++] = 0x81; cave[o++] = 0xC1;
+        cave[o++] = 0xB0; cave[o++] = 0x1D; cave[o++] = 0x00; cave[o++] = 0x00;
+        
+        // MOV RAX, FUN_146e19720
+        cave[o++] = 0x48; cave[o++] = 0xB8;
+        uint64_t loginFnAddr = 0x146e19720;
+        memcpy(cave + o, &loginFnAddr, 8); o += 8;
+        // CALL RAX
+        cave[o++] = 0xFF; cave[o++] = 0xD0;
+        
+        // Patch JZ offset
+        cave[jzPatchOffset] = (BYTE)(o - jzPatchOffset - 1);
         
         // Epilogue: restore and return
         cave[o++] = 0x48; cave[o++] = 0x83; cave[o++] = 0xC4; cave[o++] = 0x28; // ADD RSP, 0x28
