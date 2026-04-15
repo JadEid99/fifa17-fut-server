@@ -12,8 +12,8 @@
 Attaching...
 === Frida v59: Origin IPC Simulator ===
 [INIT] NOPed FUN_146e00f40
-[SDK] Origin SDK object = 0x27a68f10
-[SDK] Old port: 4216
+[SDK] Origin SDK object = 0x27a48f10
+[SDK] Old port: 3216
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
 [INIT] Hooked TCP connect
@@ -21,9 +21,8 @@ Attaching...
 [INIT] Hooked SendXml
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::105996 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
-[AUTH-REQ] FUN_1470db3c0 called
-[AUTH-REQ] First byte of function: 0xe9
+[Local::PID::85504 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 [RPC] comp=0x5 cmd=0x11
 [RPC] comp=0x9 cmd=PreAuth
 [RPC] comp=0x9 cmd=Ping
@@ -37,6 +36,7 @@ Attaching...
 [RPC] comp=0x9 cmd=FetchClientConfig
 [AUTH-REQ] FUN_1470db3c0 called
 [AUTH-REQ] First byte of function: 0xe9
-[RPC] comp=0x1 cmd=CreateAccount
+[SENDXML] Auth SendXml called
+[SENDXML] returned 0xa2000003
 [RPC] comp=0x1 cmd=Logout
 [STATE] transition(0, -1)
