@@ -13,17 +13,12 @@ Attaching...
 === Frida v39: Dump CreateAccount Response Object ===
 === Frida v39 Ready ===
 Will dump CreateAccount response object bytes at +0x10-0x13
-[Local::PID::94932 ]-> [PA-HANDLER] Called R8=0x0
-[RPC] CreateAccount response entering decoder (bodyLen=169)
+[Local::PID::87188 ]-> [PA-HANDLER] Called R8=0x0
 
 [CA-HANDLER] Called! param1=0x3ea7d328 param2=0x9902710 param3=0x0
 [CA-HANDLER] Response object (param_2) dump:
   +0x0 = 0x14389ac68
   +0x8 = 0x3dcccccd00000001
-  +0x10 = 0x3f2ccccd00000000
-  +0x18 = 0x14389a0a8
-[CA-HANDLER] Critical bytes: +0x10=0 +0x11=0 +0x12=0 +0x13=0
-[CA-HANDLER] +0x10 is ZERO — UID not set by TDF decoder
-[CA-HANDLER] +0x13 is ZERO — no persona creation
-[CA-HANDLER] Handler vtable: 0x14389f938
-[RPC] CreateAccount response decoder returned
+Process terminated
+
+Thank you for using Frida!
