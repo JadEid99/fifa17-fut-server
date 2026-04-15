@@ -10,31 +10,12 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v48: Full OriginLogin Redirect ===
-=== Frida v48 Ready ===
-[Local::PID::86896 ]-> [RPC-SEND] comp=5 cmd=17
-[RPC-RESP] bodyLen=322
-[RPC-SEND] comp=9 cmd=7
-[RPC-RESP] bodyLen=628
-[RPC-SEND] comp=9 cmd=2
-[RPC-RESP] bodyLen=10
-[RPC-SEND] comp=9 cmd=1
-[RPC-SEND] comp=9 cmd=1
-[RPC-SEND] comp=9 cmd=1
-[RPC-SEND] comp=9 cmd=1
-[RPC-SEND] comp=9 cmd=1
-[RPC-SEND] comp=9 cmd=1
-[RPC-RESP] bodyLen=135
-[RPC-RESP] bodyLen=85
-[RPC-RESP] bodyLen=121
-[RPC-RESP] bodyLen=46
-[RPC-RESP] bodyLen=19
-[RPC-RESP] bodyLen=19
-[RPC-BUILD] CreateAccount detected, changing R8 to 0x98
-[RPC-BUILD] Post-build: scanning RPC structure for cmd value...
-[RPC-SEND] Changing cmd 10->0x98 at send time
-[RPC-RESP] bodyLen=148
-[HANDLER] Called R8=0x0
+=== Frida v49: Full OriginLogin + LoginResponse Redirect ===
+=== Frida v49 Ready ===
+[Local::PID::106764 ]-> [HANDLER] PreAuth
+[CA-SENDER] FUN_146e15070 called
+[RPC-SEND] Redirecting CreateAccount(10) -> OriginLogin(0x98)
+[CA-SENDER] returned
+[RPC-RESP] 148-byte response — likely OriginLogin/Login response
 [HANDLER] vtable=0x14389ac68 +0x10=0 +0x13=0
-[RPC-SEND] comp=1 cmd=70
-[RPC-RESP] bodyLen=148
+[RPC-RESP] 148-byte response — likely OriginLogin/Login response
