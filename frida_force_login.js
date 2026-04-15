@@ -55,25 +55,18 @@ Interceptor.attach(addr(0x6e151d0), {
             
             if (!sm.isNull()) {
                 var smVtable = sm.readPointer();
-                var transitionFn = smVtable.add(0x38).readPointer();
-                console.log('[S2] Transition function = ' + transitionFn);
+                var transitionFn38 = smVtable.add(0x38).readPointer();
+                var transitionFn08 = smVtable.add(0x08).readPointer();
+                console.log('[S2] vtable+0x38 = ' + transitionFn38 + ', vtable+0x08 = ' + transitionFn08);
                 
-                // Call transitions to simulate TOS acceptance
-                var callTransition = new NativeFunction(transitionFn, 'void', ['pointer', 'int', 'int']);
+                // Use vtable+0x08 (same as the (1,3) transition uses)
+                var callTransition = new NativeFunction(transitionFn08, 'void', ['pointer', 'int', 'int']);
                 
-                // Transition (4,1) — TOS loaded
-                console.log('[S2] Calling transition (4,1)...');
-                callTransition(sm, 4, 1);
+                // Try transition (0,1) — might mean "complete/proceed"
+                console.log('[S2] Calling transition (0,1) via vtable+0x08...');
+                try { callTransition(sm, 0, 1); } catch(e) { console.log('[S2] (0,1) error: ' + e); }
                 
-                // Transition (5,1) — TOS accepted  
-                console.log('[S2] Calling transition (5,1)...');
-                callTransition(sm, 5, 1);
-                
-                // Transition (3,1) — proceed to next step
-                console.log('[S2] Calling transition (3,1)...');
-                callTransition(sm, 3, 1);
-                
-                console.log('[S2] *** All TOS transitions called! ***');
+                console.log('[S2] *** Transitions called! ***');
             }
         } catch(e) {
             console.log('[S2] Transition error: ' + e);
