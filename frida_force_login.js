@@ -1,39 +1,30 @@
 /*
- * Frida v57: INJECT LOGIN TYPE INTO ARRAY
+ * Frida v58: ORIGIN IPC INTERCEPT
  *
- * v54-v56 findings:
- * - State machine manipulation works but game disconnects anyway
- * - The disconnect is NOT from the state machine — it's from the auth layer
- * - The ROOT CAUSE is: login type array at loginSM+0x218 is EMPTY
- * - FUN_146e1dae0 returns 0 → no Login RPC ever sent → game disconnects
+ * Strategy: Instead of manipulating the game's internal state,
+ * intercept the Origin SDK's XML communication and respond directly.
  *
- * v57 strategy — attack the root cause:
- * - Hook FUN_146e1c3f0 (login type processor, called during PreAuth)
- * - AFTER it copies data from PreAuth response (step 1)
- * - INJECT a fake login type entry into the array at param_1+0x218/+0x220
- * - This makes the game think PreAuth contained a login type
- * - FUN_146e1dae0 will iterate the array and call FUN_146e1eb70
- * - FUN_146e1eb70 sends the actual Login RPC with our fake auth code
- * - This happens on the game's main thread — correct context
+ * The Origin SDK uses TCP sockets on localhost to talk to Origin.
+ * We hook the XML send/receive functions to:
+ * 1. Dump the XML the game sends (to understand the protocol)
+ * 2. Intercept the auth code request and provide a fake response
  *
- * The login type entry structure (0x20 bytes per entry):
- *   +0x00: pointer to string (non-empty = valid entry)
- *   +0x18: pointer to config object
- *     config+0x10: pointer to auth token string
- *     config+0x28: u16 transport type (0=Login)
+ * Key functions:
+ * - FUN_1470e6ee0: Sends XML string to Origin via TCP
+ * - FUN_1470e0f30: DispatchIncoming - receives and parses XML from Origin
+ * - FUN_1470e67f0: RequestAuthCode wrapper (SendXml for auth)
+ * - FUN_1470e1ed0: Send-and-wait (sends XML, waits for response with timeout)
+ * - FUN_14712ca40: TCP connect to Origin (socket + connect)
  *
- * FUN_146e1eb70 checks:
- *   - param_3 != 0 (config object non-null)
- *   - *(char*)*param_2 != '\0' (entry string non-empty)
- *   - *(longlong*)(param_1 + 0x18) != 0 (job handle exists)
- *   - *(char**)(param_3 + 0x10) non-null and non-empty (auth token)
+ * Also: DAT_144b7c7a0 = Origin SDK object pointer
+ *        originSDK+0x35c = TCP port to connect to
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v57: Inject Login Type ===');
+console.log('=== Frida v58: Origin IPC Intercept ===');
 
 // ============================================================
-// Step 1: NOP the OSDK screen loader (safety net)
+// Step 1: NOP OSDK screen (safety net)
 // ============================================================
 try {
     Memory.patchCode(addr(0x6e00f40), 4, function(code) {
@@ -42,152 +33,137 @@ try {
         w.flush();
     });
     console.log('[INIT] NOPed FUN_146e00f40');
-} catch(e) { console.log('[INIT] NOP error: ' + e); }
+} catch(e) {}
 
 // ============================================================
-// Step 2: Allocate persistent fake login type entry
+// Step 2: Read Origin SDK state
 // ============================================================
-// These must survive beyond the hook — allocate once globally
-var fakeEntryStr = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
-var fakeAuthToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
-
-// Login type entry (0x20 bytes)
-var fakeEntry = Memory.alloc(0x40);
-// entry+0x00 = pointer to non-empty string (checked by FUN_146e1eb70)
-fakeEntry.writePointer(fakeEntryStr);
-// entry+0x08 through +0x17 = zero padding
-fakeEntry.add(0x08).writeU64(0);
-fakeEntry.add(0x10).writeU64(0);
-
-// Config object (at fakeEntry+0x20)
-var fakeConfig = fakeEntry.add(0x20);
-// config+0x00 through +0x0F = zero
-fakeConfig.writeU64(0);
-fakeConfig.add(0x08).writeU64(0);
-// config+0x10 = pointer to auth token string
-fakeConfig.add(0x10).writePointer(fakeAuthToken);
-// config+0x18 through +0x27 = zero
-fakeConfig.add(0x18).writeU64(0);
-fakeConfig.add(0x20).writeU64(0);
-// config+0x28 = u16 transport type (0 = Login)
-fakeConfig.add(0x28).writeU16(0);
-
-// entry+0x18 = pointer to config object
-fakeEntry.add(0x18).writePointer(fakeConfig);
-
-// End of array = fakeEntry + 0x20 (one entry of 0x20 bytes)
-var fakeEntryEnd = fakeEntry.add(0x20);
-
-console.log('[INIT] Fake login entry at ' + fakeEntry + ', config at ' + fakeConfig);
-console.log('[INIT] Auth token at ' + fakeAuthToken + ' = "FAKEAUTHCODE1234567890"');
-
-// ============================================================
-// Step 3: Hook FUN_146e1c3f0 — inject login type after PreAuth copy
-// ============================================================
-var loginTypeInjected = false;
-
-Interceptor.attach(addr(0x6e1c3f0), {
-    onEnter: function(args) {
-        this._param1 = args[0]; // loginSM
-        console.log('[LOGIN-TYPES] FUN_146e1c3f0 entered, loginSM=' + args[0]);
-    },
-    onLeave: function(retval) {
-        // This function has already:
-        // 1. Copied login type data from PreAuth response
-        // 2. Checked BlazeHub+0x53f
-        // 3. Counted entries (0)
-        // 4. Called FUN_146e19720 (login job creator)
-        // 5. Called FUN_146e1dae0 (returned 0 — empty array)
-        // 6. Called FUN_146e19b30 (error handler — but patched to NOP?)
-        //
-        // We can't inject INSIDE this function easily with onEnter/onLeave.
-        // We need a different approach — hook FUN_146e1dae0 instead.
-        console.log('[LOGIN-TYPES] FUN_146e1c3f0 returned');
-    }
-});
-
-// ============================================================
-// Step 4: Hook FUN_146e1dae0 — inject array BEFORE it checks
-// ============================================================
-// This is the function that iterates the login type array.
-// If we inject our fake entry into the array BEFORE it runs,
-// it will find our entry and call FUN_146e1eb70.
-
-Interceptor.attach(addr(0x6e1dae0), {
-    onEnter: function(args) {
-        var loginSM = args[0];
-        this._loginSM = loginSM;
-        
+try {
+    var sdkPtr = addr(0x4b7c7a0).readPointer();
+    console.log('[SDK] DAT_144b7c7a0 (Origin SDK) = ' + sdkPtr);
+    if (!sdkPtr.isNull()) {
+        var port = sdkPtr.add(0x35c).readU16();
+        console.log('[SDK] Origin TCP port (SDK+0x35c) = ' + port);
+        // Read the SDK object's name/type
         try {
-            var arrStart = loginSM.add(0x218).readPointer();
-            var arrEnd = loginSM.add(0x220).readPointer();
-            var count = arrEnd.sub(arrStart).toInt32() / 0x20;
-            console.log('[LOGIN-CHECK] FUN_146e1dae0 entered, array count=' + count);
-            
-            // Check if job handle exists at +0x18
-            var jobHandle = loginSM.add(0x18).readPointer();
-            console.log('[LOGIN-CHECK] Job handle (loginSM+0x18) = ' + jobHandle);
-            
-            if (count === 0 && !loginTypeInjected) {
-                loginTypeInjected = true;
-                console.log('[LOGIN-CHECK] *** INJECTING fake login type entry! ***');
-                
-                // Write our fake entry pointers into the array
-                loginSM.add(0x218).writePointer(fakeEntry);
-                loginSM.add(0x220).writePointer(fakeEntryEnd);
-                
-                // Verify
-                var newStart = loginSM.add(0x218).readPointer();
-                var newEnd = loginSM.add(0x220).readPointer();
-                var newCount = newEnd.sub(newStart).toInt32() / 0x20;
-                console.log('[LOGIN-CHECK] Array now: start=' + newStart + ' end=' + newEnd + ' count=' + newCount);
-                
-                // Also verify the entry data
-                var entryPtr = newStart.readPointer();
-                console.log('[LOGIN-CHECK] entry[0] string ptr = ' + entryPtr);
-                var entryStr = entryPtr.readUtf8String();
-                console.log('[LOGIN-CHECK] entry[0] string = "' + entryStr + '"');
-                var configPtr = newStart.add(0x18).readPointer();
-                console.log('[LOGIN-CHECK] entry[0] config ptr = ' + configPtr);
-                var tokenPtr = configPtr.add(0x10).readPointer();
-                console.log('[LOGIN-CHECK] config+0x10 (token) = ' + tokenPtr);
-                var tokenStr = tokenPtr.readUtf8String();
-                console.log('[LOGIN-CHECK] token = "' + tokenStr + '"');
-                var transport = configPtr.add(0x28).readU16();
-                console.log('[LOGIN-CHECK] config+0x28 (transport) = ' + transport);
+            var namePtr = sdkPtr.add(0x3b0).readPointer();
+            if (!namePtr.isNull()) {
+                var nameStr = namePtr.add(0x120).readPointer();
+                console.log('[SDK] SDK+0x3b0+0x120 = ' + nameStr);
             }
-        } catch(e) {
-            console.log('[LOGIN-CHECK] Error: ' + e);
-        }
-    },
-    onLeave: function(retval) {
-        console.log('[LOGIN-CHECK] FUN_146e1dae0 returned ' + retval);
+        } catch(e) {}
     }
-});
+} catch(e) { console.log('[SDK] Read error: ' + e); }
 
 // ============================================================
-// Step 5: Redirect CreateAccount→OriginLogin + block Logout
+// Step 3: Hook XML send function (FUN_1470e6ee0)
+// This is where the game sends XML to Origin via TCP
 // ============================================================
-var blockLogout = false;
-
-Interceptor.attach(addr(0x6df0e80), {
-    onEnter: function(args) {
-        var comp = this.context.r8.toInt32();
-        var cmd = this.context.r9.toInt32();
-        if (comp === 1 && cmd === 10) {
-            console.log('[WIRE] CreateAccount(0x0A) -> OriginLogin(0x98)');
-            this.context.r9 = ptr(0x98);
+try {
+    Interceptor.attach(addr(0x70e6ee0), {
+        onEnter: function(args) {
+            try {
+                var xmlStr = args[1].readUtf8String();
+                console.log('[XML-SEND] === Outgoing XML ===');
+                console.log(xmlStr);
+                console.log('[XML-SEND] === End XML ===');
+            } catch(e) {
+                console.log('[XML-SEND] Could not read XML: ' + e);
+            }
         }
-        if (comp === 1 && cmd === 0x46 && blockLogout) {
-            console.log('[WIRE] *** BLOCKING Logout → Ping ***');
-            this.context.r8 = ptr(0x9);
-            this.context.r9 = ptr(0x2);
-        }
-    }
-});
+    });
+    console.log('[INIT] Hooked XML send (FUN_1470e6ee0)');
+} catch(e) { console.log('[INIT] XML send hook error: ' + e); }
 
 // ============================================================
-// Step 6: Track ALL RPC sends
+// Step 4: Hook TCP connect (FUN_14712ca40)
+// This is where the game connects to Origin's TCP port
+// ============================================================
+try {
+    Interceptor.attach(addr(0x712ca40), {
+        onEnter: function(args) {
+            // param_4 is the port (u16)
+            var port = args[3].toInt32() & 0xFFFF;
+            console.log('[TCP] Connecting to Origin on port ' + port);
+            this._port = port;
+        },
+        onLeave: function(retval) {
+            console.log('[TCP] Connect result: ' + retval);
+        }
+    });
+    console.log('[INIT] Hooked TCP connect');
+} catch(e) { console.log('[INIT] TCP connect hook error: ' + e); }
+
+// ============================================================
+// Step 5: Hook FUN_1470db3c0 (RequestAuthCode) 
+// This is the auth code provider that our DLL patches
+// ============================================================
+try {
+    Interceptor.attach(addr(0x70db3c0), {
+        onEnter: function(args) {
+            console.log('[AUTH-REQ] FUN_1470db3c0 called (RequestAuthCode)');
+            console.log('[AUTH-REQ] param1=' + args[0] + ' param2=' + args[1]);
+            // Check if Origin SDK is available
+            var sdkAvail = addr(0x4b7c7a0).readPointer();
+            console.log('[AUTH-REQ] Origin SDK ptr = ' + sdkAvail);
+        }
+    });
+    console.log('[INIT] Hooked RequestAuthCode');
+} catch(e) { console.log('[INIT] Auth hook error: ' + e); }
+
+// ============================================================
+// Step 6: Hook FUN_1470e2840 (Origin SDK availability check)
+// ============================================================
+try {
+    Interceptor.attach(addr(0x70e2840), {
+        onEnter: function(args) {},
+        onLeave: function(retval) {
+            console.log('[SDK-CHECK] FUN_1470e2840 returned ' + retval + ' (Origin available: ' + (retval.toInt32() !== 0) + ')');
+        }
+    });
+    console.log('[INIT] Hooked SDK availability check');
+} catch(e) {}
+
+// ============================================================
+// Step 7: Hook the DispatchIncoming XML parser
+// ============================================================
+try {
+    // FUN_1470e0f30 is the main dispatch loop
+    Interceptor.attach(addr(0x70e0f30), {
+        onEnter: function(args) {
+            console.log('[XML-RECV] DispatchIncoming called');
+        }
+    });
+    console.log('[INIT] Hooked DispatchIncoming');
+} catch(e) { console.log('[INIT] Dispatch hook error: ' + e); }
+
+// ============================================================
+// Step 8: Hook FUN_1470e67f0 (SendXml for auth code)
+// ============================================================
+try {
+    Interceptor.attach(addr(0x70e67f0), {
+        onEnter: function(args) {
+            console.log('[SENDXML] FUN_1470e67f0 called (auth SendXml)');
+            try {
+                var param3 = args[2]; // request type string
+                var param4 = args[3]; // additional data
+                if (!param3.isNull()) {
+                    console.log('[SENDXML] param3 (type) = "' + param3.readUtf8String() + '"');
+                }
+                if (!param4.isNull()) {
+                    try { console.log('[SENDXML] param4 = "' + param4.readUtf8String() + '"'); } catch(e) {}
+                }
+            } catch(e) { console.log('[SENDXML] read error: ' + e); }
+        },
+        onLeave: function(retval) {
+            console.log('[SENDXML] returned ' + retval);
+        }
+    });
+    console.log('[INIT] Hooked SendXml');
+} catch(e) { console.log('[INIT] SendXml hook error: ' + e); }
+
+// ============================================================
+// Step 9: Track RPC sends (keep for reference)
 // ============================================================
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
@@ -198,98 +174,23 @@ Interceptor.attach(addr(0x6df0e80), {
                 0x0A: 'CreateAccount', 0x28: 'Login', 0x32: 'SilentLogin',
                 0x3C: 'ExpressLogin', 0x46: 'Logout', 0x98: 'OriginLogin',
                 0x07: 'PreAuth', 0x08: 'PostAuth', 0x01: 'FetchClientConfig',
-                0x02: 'Ping', 0xF2: 'GetLegalDocsInfo', 0xF6: 'GetTOS',
-                0x2F: 'GetPrivacyPolicy', 0x1D: 'ListEntitlements2',
-                0x64: 'ListPersonas'
+                0x02: 'Ping'
             };
             var name = cmdNames[cmd] || ('0x' + cmd.toString(16));
-            console.log('[RPC] comp=0x' + comp.toString(16) + ' cmd=' + name + ' (' + cmd + ')');
+            console.log('[RPC] comp=0x' + comp.toString(16) + ' cmd=' + name);
         }
     }
 });
 
 // ============================================================
-// Step 7: CreateAccount handler — still write +0x10/+0x13 + block Logout
+// Step 10: Monitor state transitions
 // ============================================================
-Interceptor.attach(addr(0x6e151d0), {
-    onEnter: function(args) {
-        console.log('[HANDLER] CreateAccount handler entered');
-        blockLogout = true;
-        this.context.r8 = ptr(0);
-        try {
-            var resp = args[1];
-            resp.add(0x10).writeU8(1);
-            resp.add(0x11).writeU8(0);
-            resp.add(0x12).writeU8(0);
-            resp.add(0x13).writeU8(0); // 0 = don't trigger state (1,3) — just return cleanly
-            console.log('[HANDLER] Wrote +0x10=1, +0x13=0 (no OSDK), R8=0');
-        } catch(e) { console.log('[HANDLER] Write error: ' + e); }
-    },
-    onLeave: function(retval) {
-        console.log('[HANDLER] CreateAccount handler returned (no state transition)');
-    }
-});
-
-// ============================================================
-// Step 8: Monitor Login RPC sender
-// ============================================================
-try {
-    Interceptor.attach(addr(0x6e1eb70), {
-        onEnter: function(args) {
-            console.log('[LOGIN-SEND] *** FUN_146e1eb70 called! ***');
-            console.log('[LOGIN-SEND] loginSM=' + args[0] + ' entry=' + args[1] + ' config=' + args[2] + ' param4=' + args[3]);
-            try {
-                var entry = args[1];
-                var config = ptr(args[2]);
-                var strPtr = entry.readPointer();
-                console.log('[LOGIN-SEND] entry string: "' + strPtr.readUtf8String() + '"');
-                var tokenPtr = config.add(0x10).readPointer();
-                console.log('[LOGIN-SEND] auth token: "' + tokenPtr.readUtf8String() + '"');
-                var transport = config.add(0x28).readU16();
-                console.log('[LOGIN-SEND] transport type: ' + transport);
-            } catch(e) { console.log('[LOGIN-SEND] read error: ' + e); }
-        },
-        onLeave: function(retval) {
-            console.log('[LOGIN-SEND] returned ' + retval);
-        }
-    });
-} catch(e) {}
-
-// Monitor PostAuth
-try {
-    Interceptor.attach(addr(0x6e213e0), {
-        onEnter: function(args) {
-            console.log('[POSTAUTH] *** FUN_146e213e0 called! ***');
-        }
-    });
-} catch(e) {}
-
-// Monitor state transitions
 try {
     Interceptor.attach(addr(0x6e126b0), {
         onEnter: function(args) {
-            var state = args[1].toInt32();
-            var p3 = args[2].toInt32();
-            console.log('[STATE] transition(' + state + ', ' + p3 + ')');
+            console.log('[STATE] transition(' + args[1].toInt32() + ', ' + args[2].toInt32() + ')');
         }
     });
 } catch(e) {}
 
-// Monitor FUN_146e19720 (login job creator)
-try {
-    Interceptor.attach(addr(0x6e19720), {
-        onEnter: function(args) {
-            console.log('[LOGIN-START] FUN_146e19720 called');
-            // Check +0x18 (job handle) after this returns
-            this._loginSM = args[0];
-        },
-        onLeave: function(retval) {
-            try {
-                var jh = this._loginSM.add(0x18).readPointer();
-                console.log('[LOGIN-START] After: job handle = ' + jh);
-            } catch(e) {}
-        }
-    });
-} catch(e) {}
-
-console.log('=== Frida v57 Ready ===');
+console.log('=== Frida v58 Ready ===');
