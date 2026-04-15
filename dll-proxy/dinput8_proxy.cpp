@@ -497,7 +497,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
-        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_createAcctPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
+        if(g_codePatchDone&&g_originPatchDone&&g_authBypassDone&&g_authFlagDone&&g_loginPatchCount>=2&&g_sdkGateDone&&g_preAuthPatchDone&&g_originCheckOnlineDone) { Log("All patches in %lu ms",GetTickCount()-st); break; }
     }
     Log("patches: %d (cert=%d orig=%d auth=%d flag=%d login=%d)", g_patched, g_codePatchDone, g_originPatchDone, g_authBypassDone, g_authFlagDone, g_loginPatchCount);
     
