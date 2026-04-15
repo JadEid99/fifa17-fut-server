@@ -94,57 +94,33 @@ static void HookWinsockConnect() {
     if (!g_realConnect) { Log("CONNECT-HOOK: connect() not found"); return; }
     
     // Scan the game's IAT for the connect() import
-    BYTE* base = (BYTE*)gameModule;
-    IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
-    IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
-    IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + nt->OptionalHeader.DataDirectory[1].VirtualAddress);
-    
-    for (; imports->Name; imports++) {
-        char* dllName = (char*)(base + imports->Name);
-        // Check if this is ws2_32.dll (case-insensitive)
-        if (_stricmp(dllName, "ws2_32.dll") == 0 || _stricmp(dllName, "WS2_32.dll") == 0 || _stricmp(dllName, "WS2_32.DLL") == 0) {
-            IMAGE_THUNK_DATA* thunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
-            IMAGE_THUNK_DATA* origThunk = (IMAGE_THUNK_DATA*)(base + imports->OriginalFirstThunk);
-            for (; thunk->u1.Function; thunk++, origThunk++) {
-                if ((void*)thunk->u1.Function == (void*)g_realConnect) {
-                    DWORD oldProtect;
-                    if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
-                        thunk->u1.Function = (ULONGLONG)HookedConnect;
-                        VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
-                        Log("CONNECT-HOOK: Hooked connect() in IAT (ws2_32.dll)");
-                        return;
+    __try {
+        BYTE* base = (BYTE*)gameModule;
+        IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)base;
+        IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
+        IMAGE_IMPORT_DESCRIPTOR* imports = (IMAGE_IMPORT_DESCRIPTOR*)(base + nt->OptionalHeader.DataDirectory[1].VirtualAddress);
+        
+        for (; imports->Name; imports++) {
+            char* dllName = (char*)(base + imports->Name);
+            if (_stricmp(dllName, "ws2_32.dll") == 0 || _stricmp(dllName, "WS2_32.dll") == 0 || _stricmp(dllName, "WS2_32.DLL") == 0) {
+                IMAGE_THUNK_DATA* thunk = (IMAGE_THUNK_DATA*)(base + imports->FirstThunk);
+                for (; thunk->u1.Function; thunk++) {
+                    if ((void*)thunk->u1.Function == (void*)g_realConnect) {
+                        DWORD oldProtect;
+                        if (VirtualProtect(&thunk->u1.Function, sizeof(void*), PAGE_READWRITE, &oldProtect)) {
+                            thunk->u1.Function = (ULONGLONG)HookedConnect;
+                            VirtualProtect(&thunk->u1.Function, sizeof(void*), oldProtect, &oldProtect);
+                            Log("CONNECT-HOOK: Hooked connect() in IAT");
+                            return;
+                        }
                     }
                 }
             }
         }
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        Log("CONNECT-HOOK: Exception scanning IAT");
     }
-    Log("CONNECT-HOOK: connect() not found in IAT, trying inline hook...");
-    // Fallback: patch connect() directly with a JMP to our hook
-    // This is more aggressive but catches all callers
-    BYTE* connectAddr = (BYTE*)g_realConnect;
-    BYTE* cave = (BYTE*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    if (cave) {
-        // Save original bytes and create trampoline
-        memcpy(cave, connectAddr, 16);
-        // JMP back to connect+16
-        cave[16] = 0x48; cave[17] = 0xB8;
-        uint64_t retAddr = (uint64_t)(connectAddr + 16);
-        memcpy(cave + 18, &retAddr, 8);
-        cave[26] = 0xFF; cave[27] = 0xE0;
-        g_realConnect = (connect_t)cave;
-        
-        // Patch connect() entry to JMP to HookedConnect
-        DWORD op;
-        if (VirtualProtect(connectAddr, 16, PAGE_EXECUTE_READWRITE, &op)) {
-            connectAddr[0] = 0x48; connectAddr[1] = 0xB8;
-            uint64_t hookAddr = (uint64_t)HookedConnect;
-            memcpy(connectAddr + 2, &hookAddr, 8);
-            connectAddr[10] = 0xFF; connectAddr[11] = 0xE0;
-            for (int k = 12; k < 16; k++) connectAddr[k] = 0x90;
-            VirtualProtect(connectAddr, 16, op, &op);
-            Log("CONNECT-HOOK: Inline hooked connect() at %p", connectAddr);
-        }
-    }
+    Log("CONNECT-HOOK: connect() not found in IAT");
 }
 
 // Patch 1: Cert bypass
@@ -561,6 +537,9 @@ static void PatchIsLoggedInFunctions() {
 static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===");
     Log("PID: %lu", GetCurrentProcessId());
+    
+    // Hook connect() ASAP to redirect Origin SDK TCP connections
+    HookWinsockConnect();
     
     DWORD st = GetTickCount();
     uint64_t realVtable = 0;
@@ -1139,8 +1118,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
             // If the address isn't mapped yet, we'll set it in the background thread
         }
         
-        // Hook Winsock connect() to redirect Origin SDK TCP connections
-        HookWinsockConnect();
+        // Hook connect() moved to PatchThread (DllMain is too early — ws2_32 may not be loaded)
         
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
