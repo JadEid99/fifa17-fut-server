@@ -139,7 +139,7 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 7: Track RPC sends
+// Step 7: Track RPC sends + BLOCK CreateAccount + BLOCK Logout
 // ============================================================
 Interceptor.attach(addr(0x6df0e80), {
     onEnter: function(args) {
@@ -154,6 +154,19 @@ Interceptor.attach(addr(0x6df0e80), {
             };
             var name = cmdNames[cmd] || ('0x' + cmd.toString(16));
             console.log('[RPC] comp=0x' + comp.toString(16) + ' cmd=' + name);
+            
+            // BLOCK CreateAccount — it triggers the broken TDF decoder + Logout
+            if (comp === 1 && cmd === 0x0A) {
+                console.log('[RPC] *** BLOCKING CreateAccount → converting to Ping ***');
+                this.context.r8 = ptr(0x9);
+                this.context.r9 = ptr(0x2);
+            }
+            // BLOCK Logout — keep connection alive for queued Login job
+            if (comp === 1 && cmd === 0x46) {
+                console.log('[RPC] *** BLOCKING Logout → converting to Ping ***');
+                this.context.r8 = ptr(0x9);
+                this.context.r9 = ptr(0x2);
+            }
         }
     }
 });
