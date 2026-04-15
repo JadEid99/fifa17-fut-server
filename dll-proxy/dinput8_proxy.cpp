@@ -851,11 +851,94 @@ done:
                     }
                 }
                 
-                // CreateAccount handled by sync cave (state bytes set, no OSDK screen)
-                // CreateAccount handled by trampoline (original handler runs)
+                // After CreateAccount detection, try to send a raw Login RPC
+                // through the existing Blaze connection
                 if (g_createAcctCalled == 1) {
                     g_createAcctCalled = 2;
                     Log("CA-DETECT: CreateAccount handler ran (original code with R8D=0)");
+                }
+                
+                // After PreAuth completes and connection is established,
+                // send a raw SilentLogin packet through the TCP socket
+                static int loginSent = 0;
+                if (!loginSent && om != 0) {
+                    uint64_t cm = *(uint64_t*)(om + 0xb10);
+                    if (cm != 0) {
+                        uint64_t bh = *(uint64_t*)(cm + 0xf8);
+                        if (bh != 0 && *(uint8_t*)(bh + 0x53f) == 1) {
+                            // BlazeHub is active. Send a raw SilentLogin packet.
+                            // We'll use Winsock to connect to our own server and send Login.
+                            loginSent = 1;
+                            Log("LOGIN-INJECT: Sending raw SilentLogin to 127.0.0.1:10041...");
+                            
+                            SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+                            if (s != INVALID_SOCKET) {
+                                struct sockaddr_in addr;
+                                addr.sin_family = AF_INET;
+                                addr.sin_port = htons(10041);
+                                addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+                                
+                                if (connect(s, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+                                    // Build a SilentLogin Blaze packet
+                                    // Header: 16 bytes
+                                    // Body: TDF with AUTH token and PID
+                                    
+                                    // TDF body: AUTH (string) + PID (integer) + TYPE (integer)
+                                    BYTE body[64];
+                                    int bo = 0;
+                                    // AUTH tag (86 d4 34) type 01 (string)
+                                    body[bo++]=0x86; body[bo++]=0xd4; body[bo++]=0x34; body[bo++]=0x01;
+                                    // String: "FAKEAUTHCODE1234567890\0" = 23 bytes
+                                    body[bo++]=23; // length varint
+                                    memcpy(body+bo, "FAKEAUTHCODE1234567890", 22); bo+=22;
+                                    body[bo++]=0; // null terminator
+                                    // PID tag (c2 99 00) type 00 (integer)
+                                    body[bo++]=0xc2; body[bo++]=0x99; body[bo++]=0x00; body[bo++]=0x00;
+                                    // Value: 1000000001 as varint
+                                    body[bo++]=0x81; body[bo++]=0xa8; body[bo++]=0xd6; body[bo++]=0xb9; body[bo++]=0x07;
+                                    // TYPE tag (d3 5e 60) type 00 (integer)
+                                    body[bo++]=0xd3; body[bo++]=0x5e; body[bo++]=0x60; body[bo++]=0x00;
+                                    body[bo++]=0x02; // value 2 (SilentLogin type)
+                                    
+                                    // Build header
+                                    BYTE pkt[80];
+                                    // [0-3] payload length (big-endian)
+                                    pkt[0] = 0; pkt[1] = 0; pkt[2] = 0; pkt[3] = (BYTE)bo;
+                                    // [4-5] extended length
+                                    pkt[4] = 0; pkt[5] = 0;
+                                    // [6-7] component = 0x0001 (Authentication)
+                                    pkt[6] = 0x00; pkt[7] = 0x01;
+                                    // [8-9] command = 0x0032 (SilentLogin)
+                                    pkt[8] = 0x00; pkt[9] = 0x32;
+                                    // [10-12] msgId = 100
+                                    pkt[10] = 0x00; pkt[11] = 0x00; pkt[12] = 0x64;
+                                    // [13] type=0 (request), flags=0
+                                    pkt[13] = 0x00;
+                                    // [14-15] error = 0
+                                    pkt[14] = 0x00; pkt[15] = 0x00;
+                                    
+                                    memcpy(pkt + 16, body, bo);
+                                    
+                                    int sent = send(s, (char*)pkt, 16 + bo, 0);
+                                    Log("LOGIN-INJECT: Sent %d bytes (header+body)", sent);
+                                    
+                                    // Wait for response
+                                    BYTE resp[1024];
+                                    int recvd = recv(s, (char*)resp, sizeof(resp), 0);
+                                    Log("LOGIN-INJECT: Received %d bytes", recvd);
+                                    if (recvd > 16) {
+                                        Log("LOGIN-INJECT: Response header: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                                            resp[0],resp[1],resp[2],resp[3],resp[4],resp[5],resp[6],resp[7],
+                                            resp[8],resp[9],resp[10],resp[11],resp[12],resp[13],resp[14],resp[15]);
+                                    }
+                                    closesocket(s);
+                                } else {
+                                    Log("LOGIN-INJECT: Connect failed: %d", WSAGetLastError());
+                                    closesocket(s);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
