@@ -12,8 +12,8 @@
 Attaching...
 === Frida v59: Origin IPC Simulator ===
 [INIT] NOPed FUN_146e00f40
-[SDK] Origin SDK object = 0x27a48f10
-[SDK] Old port: 3216
+[SDK] Origin SDK object = 0x27a68f10
+[SDK] Old port: 4216
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
 [INIT] Hooked TCP connect
@@ -21,19 +21,9 @@ Attaching...
 [INIT] Hooked SendXml with ID bypass
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::90540 ]-> [TCP] Connecting to Origin on port 4216
-[TCP] Connect result: 0x1
-[XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="00b9c8afef744cbc1dd1b1e8aca6a2ed5fb0f43c5e287f833ea2750983772e0f954f64f2e4e86e9eee82d20216684899" key="3a4f5fe87fafc0c6da1924c77ace2ba0" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
-[XML-SEND] <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="4"><GetSetting SettingId="IS_IGO_ENABLED" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="5"><GetGameInfo GameInfoId="FREETRIAL" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="6"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="7"><GetProfile index="0" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="8"><GetSetting SettingId="LANGUAGE" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="9"><SetDownloaderUtilization Utilization="1" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
+[Local::PID::102640 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[AUTH-REQ] FUN_1470db3c0 called
+[AUTH-REQ] First byte of function: 0xe9
 [RPC] comp=0x5 cmd=0x11
 [RPC] comp=0x9 cmd=PreAuth
 [RPC] comp=0x9 cmd=Ping
@@ -45,14 +35,5 @@ Attaching...
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
-[AUTH-REQ] FUN_1470db3c0 called
-[AUTH-REQ] First byte of function: 0xe9
-[SENDXML] Auth SendXml called
-[SENDXML] userId=0x0 SDK+0x3a0=0x0
-[SENDXML] *** FIXED: set userId and SDK+0x3a0 to 0x1f89493 ***
-[SENDXML] returned 0xa2000004
 [RPC] comp=0x1 cmd=Logout
 [STATE] transition(0, -1)
-[XML-SEND] <LSX><Request recipient="" id="12"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="13"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="14"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>

@@ -1,4 +1,4 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-15 21:50:00) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-15 21:53:43) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
      ____
@@ -15,8 +15,8 @@
 Attaching...
 === Frida v59: Origin IPC Simulator ===
 [INIT] NOPed FUN_146e00f40
-[SDK] Origin SDK object = 0x27a48f10
-[SDK] Old port: 3216
+[SDK] Origin SDK object = 0x27a68f10
+[SDK] Old port: 4216
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
 [INIT] Hooked TCP connect
@@ -24,19 +24,9 @@ Attaching...
 [INIT] Hooked SendXml with ID bypass
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::90540 ]-> [TCP] Connecting to Origin on port 4216
-[TCP] Connect result: 0x1
-[XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="00b9c8afef744cbc1dd1b1e8aca6a2ed5fb0f43c5e287f833ea2750983772e0f954f64f2e4e86e9eee82d20216684899" key="3a4f5fe87fafc0c6da1924c77ace2ba0" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
-[XML-SEND] <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="4"><GetSetting SettingId="IS_IGO_ENABLED" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="5"><GetGameInfo GameInfoId="FREETRIAL" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="6"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="7"><GetProfile index="0" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="8"><GetSetting SettingId="LANGUAGE" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="9"><SetDownloaderUtilization Utilization="1" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
+[Local::PID::102640 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[AUTH-REQ] FUN_1470db3c0 called
+[AUTH-REQ] First byte of function: 0xe9
 [RPC] comp=0x5 cmd=0x11
 [RPC] comp=0x9 cmd=PreAuth
 [RPC] comp=0x9 cmd=Ping
@@ -48,59 +38,22 @@ Attaching...
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
-[AUTH-REQ] FUN_1470db3c0 called
-[AUTH-REQ] First byte of function: 0xe9
-[SENDXML] Auth SendXml called
-[SENDXML] userId=0x0 SDK+0x3a0=0x0
-[SENDXML] *** FIXED: set userId and SDK+0x3a0 to 0x1f89493 ***
-[SENDXML] returned 0xa2000004
 [RPC] comp=0x1 cmd=Logout
 [STATE] transition(0, -1)
-[XML-SEND] <LSX><Request recipient="" id="12"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="13"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="14"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
 [Origin-IPC] Fake Origin server listening on 127.0.0.1:3216
-[Origin-IPC] Client connected: 127.0.0.1:50811
-[Origin-IPC] Disconnected: 127.0.0.1:50811
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-tr) = "OSDK_NUCLEUS"
-[FetchClientConfig] CFID="OSDK_NUCLEUS"
-[FetchClientConfig] Responding with 3 config entries
-[Main] S1: Sending response (137 bytes)
-[Main] S1: header: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=5
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
-[FetchClientConfig] CFID="OSDK_WEBOFFER"
-[FetchClientConfig] Responding with 1 config entries
-[Main] S1: Sending response (62 bytes)
-[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=6
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
-[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
-[FetchClientConfig] Responding with 1 config entries
-[Main] S1: Sending response (35 bytes)
-[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00
-[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=7
-[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
-[FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
-[FetchClientConfig] Responding with 1 config entries
-[Main] S1: Sending response (35 bytes)
-[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00
-[Main] S1: comp=0x0001 cmd=0x0046 len=0 msgId=8
+ket (msgId=8 type=5)
+[Main] S1: comp=0x0001 cmd=0x0046 len=0 msgId=9
 [Main] S1: -> Auth cmd=0x46 (Logout)
 [Main] S1: Sending response (164 bytes)
-[Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
-[Main] S1: -> Ping (msgId=9), sending pong
-[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
-[Main] S1: -> Ignoring null/error packet (msgId=9 type=5)
+[Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 09 20 00 00
 [Main] S1 disconnected
 [LOG] Saved: S1 disconnect
-[Main] Session 2 connected: 127.0.0.1:50836
+[Main] Session 2 connected: 127.0.0.1:50997
 [Main] S2: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00  ................
 [Main] S2: Raw Blaze binary detected
@@ -110,7 +63,7 @@ tr) = "OSDK_NUCLEUS"
 [Main] S2: -> Ignoring null/error packet (msgId=10 type=5)
 [Main] S2 disconnected
 [LOG] Saved: S2 disconnect
-[Main] Session 3 connected: 127.0.0.1:50837
+[Main] Session 3 connected: 127.0.0.1:50999
 [Main] S3: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
 [Main] S3: Raw Blaze binary detected
@@ -120,7 +73,7 @@ tr) = "OSDK_NUCLEUS"
 [Main] S3: -> Ignoring null/error packet (msgId=11 type=5)
 [Main] S3 disconnected
 [LOG] Saved: S3 disconnect
-[Main] Session 4 connected: 127.0.0.1:50839
+[Main] Session 4 connected: 127.0.0.1:51000
 [Main] S4: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
 [Main] S4: Raw Blaze binary detected
@@ -128,46 +81,83 @@ tr) = "OSDK_NUCLEUS"
 [Main] S4: -> Ping (msgId=12), sending pong
 [Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
 [Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
+[Main] S4 disconnected
+[LOG] Saved: S4 disconnect
+[Main] Session 5 connected: 127.0.0.1:51001
+[Main] S5: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main] S5: Raw Blaze binary detected
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ping (msgId=13), sending pong
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
+[Main] S5 disconnected
+[LOG] Saved: S5 disconnect
+[Main] Session 6 connected: 127.0.0.1:51002
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ping (msgId=14), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
+[Main] S6 disconnected
+[LOG] Saved: S6 disconnect
+[Main] Session 7 connected: 127.0.0.1:51004
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ping (msgId=15), sending pong
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-[21:48:19.169] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[21:48:19.170] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[21:48:19.170] CONNECT-HOOK: Exception accessing DAT_148e223d8
-[21:48:19.170] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[21:48:19.170] PID: 90540
-[21:48:19.170] CONNECT-HOOK: Exception accessing DAT_148e223d8
-[21:48:19.495] PATCHED: auth flag at 00000001473CE785
-[21:48:19.543] PATCHED: IsLoggedIntoEA -> true
-[21:48:19.543] PATCHED: IsLoggedIntoNetwork -> true
-[21:48:19.654] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[21:48:19.654] PATCHED: SDK gate -> always 1
-[21:48:19.654] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[21:48:19.666] PATCHED: Login vtable check -> return 1
-[21:48:19.666] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:48:19.666] LOGIN SilentLogin: already patched
-[21:48:19.666] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:48:19.666] LOGIN ExpressLogin: already patched
-[21:48:19.666] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[21:48:19.666] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[21:48:19.666] PREAUTH_HANDLER: first 128 bytes:
-[21:48:19.666]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[21:48:19.666]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[21:48:19.666]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[21:48:19.666]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[21:48:19.666]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[21:48:19.666]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[21:48:19.666]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[21:48:19.666]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[21:48:19.666] PREAUTH_HANDLER: Cave at 00000000009D0000, 44 bytes (XOR R8D + trampoline)
-[21:48:19.666] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[21:48:19.666] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[21:48:19.666] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[21:48:19.666] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[21:48:19.666] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[21:48:19.666] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[21:48:19.666] PATCHED: FUN_145e280b0 (version compare) -> always match
-[21:48:19.711] PATCHED: cert bypass at 000000014613244B
-[21:48:19.768] PATCHED: Origin SDK check at 00000001470A8430
-[21:48:20.116] ORIGIN-PORT-EARLY: SDK=0x27A48F10 port=4216 at 953 ms
-[21:48:20.116] ORIGIN-PORT-EARLY: Patched to 3216
+ PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[21:52:02.085] PREAUTH_HANDLER: first 128 bytes:
+[21:52:02.085]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[21:52:02.085]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[21:52:02.085]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[21:52:02.085]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[21:52:02.085]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[21:52:02.085]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[21:52:02.085]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[21:52:02.085]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[21:52:02.085] PREAUTH_HANDLER: Cave at 0000000000470000, 44 bytes (XOR R8D + trampoline)
+[21:52:02.085] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[21:52:02.085] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[21:52:02.085] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[21:52:02.085] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[21:52:02.085] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[21:52:02.085] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[21:52:02.085] PATCHED: FUN_145e280b0 (version compare) -> always match
+[21:52:02.152] PATCHED: cert bypass at 000000014613244B
+[21:52:02.200] PATCHED: Origin SDK check at 00000001470A8430
+[21:52:02.200] All patches in 609 ms
+[21:52:02.200] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[21:52:02.200] AUTH: Checking login gate globals...
+[21:52:02.200] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[21:52:02.200] AUTH: DAT_144b86bdf = 0 (error flag)
+[21:52:02.200] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[21:52:08.124] AUTH: Slot cleared at 5900 ms
+[21:52:08.124] AUTH: OnlineMgr=0x3EBE3E70
+[21:52:08.124] AUTH: slot=0x0 cave=0
+[21:52:08.124] AUTH: Using fake vtable (real not captured)
+[21:52:08.124] AUTH: Injected fake request 000000005D3F0000 into slot
+[21:52:08.225] AUTH: cave=1 slot=0x0
+[21:52:08.225] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[21:52:08.225] AUTH: req[+0xd8]=0x99E9930 req[+0xe8]=1
+[21:52:08.225] AUTH: state=2. Auth ready.
+[21:52:08.225] AUTH: OnlineMgr+0xb10 = 0x3EBEA6E0
+[21:52:08.225] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBEA960
+[21:52:08.225] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[21:52:08.225] AUTH: Found 0 objects with vtables in BlazeHub
+[21:52:08.225] AUTH: BlazeHub(000000003EBEA960)+0x53f = 1
+[21:52:08.225] AUTH: Applying OSDK patches (post-load)...
+[21:52:08.225] PATCHED: GetProfileSync -> return 0 (post-load)
+[21:52:08.225] PATCHED: GetSettingSync -> return 0 (post-load)
+[21:52:08.225] PATCHED: SetPresence -> return 0 (post-load)
+[21:52:08.225] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[21:52:08.225] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[21:52:08.225] AUTH: Starting continuous flag enforcer (+0x53f + connState + Origin port)...
 
