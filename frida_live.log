@@ -10,11 +10,12 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v56: Block Logout + Intercept State ===
-[INIT] NOPed FUN_146e00f40 (OSDK screen loader)
-[INIT] Hooked state transition with (1,3)\u2192(0,-1) intercept
-=== Frida v56 Ready ===
-[Local::PID::109452 ]-> [POSTAUTH] *** FUN_146e213e0 called! ***
+=== Frida v57: Inject Login Type ===
+[INIT] NOPed FUN_146e00f40
+[INIT] Fake login entry at 0x10714eaf0, config at 0x10714eb10
+[INIT] Auth token at 0x107153610 = "FAKEAUTHCODE1234567890"
+=== Frida v57 Ready ===
+[Local::PID::77132 ]-> [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
 [POSTAUTH] *** FUN_146e213e0 called! ***
@@ -22,12 +23,30 @@ Attaching...
 [RPC] comp=0x5 cmd=0x11 (17)
 [RPC] comp=0x9 cmd=PreAuth (7)
 [RPC] comp=0x9 cmd=Ping (2)
-[LOGIN-TYPES] FUN_146e1c3f0 called (login type processor)
-[LOGIN-TYPES] loginData ptr = 0x3ed56010
-[LOGIN-START] FUN_146e19720 called (login job creator)
+[LOGIN-TYPES] FUN_146e1c3f0 entered, loginSM=0x3eae9da0
+[LOGIN-START] FUN_146e19720 called
 [POSTAUTH] *** FUN_146e213e0 called! ***
-[LOGIN-CHECK] FUN_146e1dae0, array count=0
-[LOGIN-CHECK] returned 0x0
+[LOGIN-START] After: job handle = 0x2a7d3180
+[LOGIN-CHECK] FUN_146e1dae0 entered, array count=0
+[LOGIN-CHECK] Job handle (loginSM+0x18) = 0x2a7d3180
+[LOGIN-CHECK] *** INJECTING fake login type entry! ***
+[LOGIN-CHECK] Array now: start=0x10714eaf0 end=0x10714eb10 count=1
+[LOGIN-CHECK] entry[0] string ptr = 0x10714f680
+[LOGIN-CHECK] entry[0] string = "FAKEAUTHCODE1234567890"
+[LOGIN-CHECK] entry[0] config ptr = 0x10714eb10
+[LOGIN-CHECK] config+0x10 (token) = 0x107153610
+[LOGIN-CHECK] token = "FAKEAUTHCODE1234567890"
+[LOGIN-CHECK] config+0x28 (transport) = 0
+[LOGIN-START] FUN_146e19720 called
+[LOGIN-START] After: job handle = 0x2a7d3180
+[LOGIN-SEND] *** FUN_146e1eb70 called! ***
+[LOGIN-SEND] loginSM=0x3eae9da0 entry=0x10714eaf0 config=0x10714eb10 param4=0x1
+[LOGIN-SEND] entry string: "FAKEAUTHCODE1234567890"
+[LOGIN-SEND] auth token: "FAKEAUTHCODE1234567890"
+[LOGIN-SEND] transport type: 0
+[LOGIN-SEND] returned 0x99cd801
+[LOGIN-CHECK] FUN_146e1dae0 returned 0x1
+[LOGIN-TYPES] FUN_146e1c3f0 returned
 [RPC] comp=0x9 cmd=FetchClientConfig (1)
 [RPC] comp=0x9 cmd=FetchClientConfig (1)
 [RPC] comp=0x9 cmd=FetchClientConfig (1)
@@ -37,13 +56,20 @@ Attaching...
 [WIRE] CreateAccount(0x0A) -> OriginLogin(0x98)
 [RPC] comp=0x1 cmd=OriginLogin (152)
 [HANDLER] CreateAccount handler entered
-[HANDLER] Wrote +0x10=1, +0x13=1, R8=0
-[STATE #1] transition(1, 3) sm=0x3ea6d2f0
-[STATE]   current_state(sm[5])=0x3ea6d328
-[STATE] *** INTERCEPTING (1,3) \u2192 changing to (0, -1) ***
-[STATE] *** Transition changed to (0, -1) ***
-[HANDLER] CreateAccount handler returned
-[WIRE] *** BLOCKING Logout! Changing to Ping (harmless) ***
+[HANDLER] Wrote +0x10=1, +0x13=0 (no OSDK), R8=0
+[HANDLER] CreateAccount handler returned (no state transition)
+[LOGIN-SEND] *** FUN_146e1eb70 called! ***
+[LOGIN-SEND] loginSM=0x3eae9da0 entry=0x12dd4fa48 config=0x10714eb10 param4=0x2
+[LOGIN-SEND] entry string: ""
+[LOGIN-SEND] auth token: "FAKEAUTHCODE1234567890"
+[LOGIN-SEND] transport type: 0
+[LOGIN-SEND] returned 0x96b1d01
+[LOGIN-SEND] *** FUN_146e1eb70 called! ***
+[LOGIN-SEND] loginSM=0x3eae9da0 entry=0x12dd4fa98 config=0x10714eb10 param4=0x3
+[LOGIN-SEND] entry string: ""
+[LOGIN-SEND] auth token: "FAKEAUTHCODE1234567890"
+[LOGIN-SEND] transport type: 0
+[LOGIN-SEND] returned 0x96b1d01
+[WIRE] *** BLOCKING Logout \u2192 Ping ***
 [RPC] comp=0x9 cmd=Ping (2)
-[STATE #2] transition(0, -1) sm=0x3ea6d2f0
-[STATE]   current_state(sm[5])=0x3ea6d328
+[STATE] transition(0, -1)
