@@ -532,8 +532,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
     Log("=== FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===");
     Log("PID: %lu", GetCurrentProcessId());
     
-    // Re-try connect hook in case DllMain was too early
-    HookWinsockConnect();
+    // Connect hook removed — using Origin IPC server on port 4216 directly
     
     DWORD st = GetTickCount();
     uint64_t realVtable = 0;
@@ -1121,8 +1120,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved) {
             // If the address isn't mapped yet, we'll set it in the background thread
         }
         
-        // Hook connect() — try in DllMain first (just a pointer write, safe)
-        HookWinsockConnect();
+        // Connect hook removed — Origin IPC server listens on 4216 directly
         
         CreateThread(NULL, 0, PatchThread, NULL, 0, NULL);
     } else if (reason == DLL_PROCESS_DETACH) {
