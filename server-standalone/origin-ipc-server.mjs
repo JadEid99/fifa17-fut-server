@@ -21,11 +21,10 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // Close the connection immediately — let the game handle it gracefully
-  // The game freezes if we keep the connection open (blocks in recv)
-  // By closing immediately, the SDK gets a "connection reset" and continues
-  console.log('[Origin] Closing connection immediately (anti-freeze)');
-  socket.end();
+  // Accept connection and wait for game to send data
+  // The connect hook only redirects after 15s, so these connections
+  // come from the game's later auth code requests, not startup
+  console.log('[Origin] Waiting for data...');
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings

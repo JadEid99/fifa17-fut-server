@@ -67,17 +67,25 @@ static const uint16_t ORIGIN_IPC_PORT = 3216;
 typedef int (WSAAPI *connect_t)(SOCKET s, const struct sockaddr* name, int namelen);
 static connect_t g_realConnect = NULL;
 
+static DWORD g_hookStartTime = 0;
+
 static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namelen) {
     if (name && name->sa_family == AF_INET && namelen >= sizeof(struct sockaddr_in)) {
         struct sockaddr_in* sin = (struct sockaddr_in*)name;
         uint16_t port = ntohs(sin->sin_port);
         uint32_t addr = ntohl(sin->sin_addr.s_addr);
-        // Redirect localhost connections on Origin's dynamic port range (3000-65535, not our known ports)
+        // Only redirect AFTER 15 seconds — let startup connections fail normally
+        // This prevents the game from freezing during Origin SDK init
+        DWORD elapsed = GetTickCount() - g_hookStartTime;
         if (addr == 0x7F000001 && port != ORIGIN_IPC_PORT && port != 10041 && port != 42230 && port != 8080 && port != 17502 && port > 3000) {
-            Log("CONNECT-HOOK: Redirecting 127.0.0.1:%d -> 127.0.0.1:%d", port, ORIGIN_IPC_PORT);
-            struct sockaddr_in redirected = *sin;
-            redirected.sin_port = htons(ORIGIN_IPC_PORT);
-            return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
+            if (elapsed > 15000) {
+                Log("CONNECT-HOOK: Redirecting 127.0.0.1:%d -> 127.0.0.1:%d (at %lu ms)", port, ORIGIN_IPC_PORT, elapsed);
+                struct sockaddr_in redirected = *sin;
+                redirected.sin_port = htons(ORIGIN_IPC_PORT);
+                return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
+            } else {
+                Log("CONNECT-HOOK: SKIPPING redirect (too early: %lu ms < 15000 ms)", elapsed);
+            }
         }
     }
     return g_realConnect(s, name, namelen);
@@ -568,6 +576,7 @@ static DWORD WINAPI PatchThread(LPVOID) {
                     uint64_t val = *pConnectPtr;
                     if (val != 0 && val != (uint64_t)HookedConnect) {
                         g_realConnect = (connect_t)val;
+                        g_hookStartTime = GetTickCount();
                         *pConnectPtr = (uint64_t)HookedConnect;
                         Log("CONNECT-HOOK: Patched DAT_148e223d8 at %lu ms (real=%p)", GetTickCount()-st, g_realConnect);
                     }
