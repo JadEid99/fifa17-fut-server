@@ -17,4 +17,243 @@ Attaching...
 [INIT] Hooked raw send
 [INIT] Hooked raw recv
 === Frida v61 Ready ===
-[Local::PID::77816 ]-> 
+[Local::PID::101696 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 2
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: O
+[RAW-RECV] len=1: K
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-SEND] len=592: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 280..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress"..Cache-Control: 
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 2
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: O
+[RAW-RECV] len=1: K
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:52:00 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=527: Connection: close..Content-Length: 437..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=938: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 632..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
+[RPC] comp=0x5 cmd=0x11
+[RAW-SEND] len=116: ....o...k..i./.....o....g_..E}W].....-.............=.<.5./.......2...". ...winter15.gosredirector.ea.com............
+[RAW-RECV] len=5: ....J
+[RAW-RECV] len=74: ...F..i./....<..E....UP..#........!.=o .]....U.OU......oj.$rsE..@..P......
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=4: ....
+[RAW-SEND] len=139: ...........H..\..~9.r4..b..>Wd.7..m.......r>.3.rQ.B..R<.u...W...f. .....J..Ve.....&lwY'....D..+0K.....]E+..1.yj.).).......Wi..*z.a....RY.3.
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=1: .
+[RAW-RECV] len=5: ....$
+[RAW-RECV] len=36: N&...D..I+e.o..6.g.*..\..cy.X.....0.
+[RAW-SEND] len=908: .......U....W.T.&OCH....'.....x.........!..x>....t...:.....a5.ni....-......(s.V=G....^oVc0.....P.......B0.......<..U.W.9.HE#.v...6...b.....T....Y(3p........P...SZ.iS.FB.5........k<J.l.h.dQ....++.[.F..\.........2 D.O#.nt..L~..#M.g...t...4...CH).+v.9.&^...T.'.Q.Ja.v.G/.Y).@q......mH....!...c....r..L.2
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=437: ?.62.P..DC 6X.f=.R....o@^.'..G..A.I.=...7.L.......;`...^ES..B......&.L..'.(s;........Fo......x@.!.....(u..a_......._cW<....:.r.1..g@F........?.t.e..j............^.........R4o.]= ../L'.......c$..p......("....H..E.,^|....L.^Ph.K..Q.^.h.."=...c. .Z.Qf.>...c0SR}f.1*?nb6w....o#..p.b.n..1......4.......=..
+[RPC] comp=0x9 cmd=PreAuth
+[RAW-RECV] len=16: ...t......... ..
+[RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
+[RPC] comp=0x9 cmd=Ping
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=10: .Jm......g
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=16: ...U......... ..
+[RAW-RECV] len=16: ...y......... ..
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=46: ........offerUrl..http://127.0.0.1:8080/offer.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
+[RPC] comp=0x1 cmd=Logout
+[RAW-RECV] len=16: .........F... ..
+[STATE] transition(0, -1)
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
