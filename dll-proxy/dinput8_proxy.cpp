@@ -74,16 +74,11 @@ static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
         struct sockaddr_in* sin = (struct sockaddr_in*)name;
         uint16_t port = ntohs(sin->sin_port);
         uint32_t addr = ntohl(sin->sin_addr.s_addr);
-        // Only redirect AFTER 15 seconds — let startup connections fail normally
-        // This prevents the game from freezing during Origin SDK init
-        DWORD elapsed = GetTickCount() - g_hookStartTime;
         if (addr == 0x7F000001 && port == 4216) {
-            // Always redirect port 4216 — no grace period
-            Log("CONNECT-HOOK: Redirecting 127.0.0.1:%d -> 127.0.0.1:%d (at %lu ms)", port, ORIGIN_IPC_PORT, elapsed);
-                struct sockaddr_in redirected = *sin;
-                redirected.sin_port = htons(ORIGIN_IPC_PORT);
-                return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
-            }
+            Log("CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:%d", ORIGIN_IPC_PORT);
+            struct sockaddr_in redirected = *sin;
+            redirected.sin_port = htons(ORIGIN_IPC_PORT);
+            return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
         }
     }
     return g_realConnect(s, name, namelen);
