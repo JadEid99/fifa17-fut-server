@@ -22,27 +22,30 @@ function createHandler(socket) {
   let msgCount = 0;
   
   // Send Challenge immediately on connection
+  // IMPORTANT: Protocol uses null-terminated strings
   const challengeKey = crypto.randomBytes(16).toString('hex');
   const challenge = `<LSX><Challenge key="${challengeKey}" version="3"/></LSX>`;
   console.log(`[Origin] Sending initial Challenge: ${challenge}`);
-  socket.write(challenge);
+  socket.write(challenge + '\0');
   
   socket.on('data', (data) => {
-    const text = data.toString('utf-8');
-    buffer += text;
+    // Protocol uses null-terminated strings
+    buffer += data.toString('utf-8');
     
     // Log raw hex for debugging
     const hexDump = Array.from(data.subarray(0, Math.min(64, data.length)))
       .map(b => b.toString(16).padStart(2, '0')).join(' ');
     console.log(`[Origin] Recv ${data.length}b: ${hexDump}`);
-    console.log(`[Origin] Text: ${text.substring(0, 300)}`);
     
-    // Process complete LSX messages
-    while (buffer.includes('</LSX>')) {
-      const endIdx = buffer.indexOf('</LSX>') + 6;
-      const msg = buffer.substring(0, endIdx);
-      buffer = buffer.substring(endIdx);
+    // Split on null bytes (protocol delimiter)
+    let parts = buffer.split('\0');
+    // Last part is incomplete (no null terminator yet)
+    buffer = parts.pop();
+    
+    for (const msg of parts) {
+      if (msg.trim().length === 0) continue;
       msgCount++;
+      console.log(`[Origin] Msg: ${msg.substring(0, 300)}`);
       handleMessage(socket, msg, msgCount);
     }
   });
@@ -115,7 +118,7 @@ function handleMessage(socket, xml, msgNum) {
   
   if (response) {
     console.log(`[Origin] Send: ${response.substring(0, 200)}`);
-    socket.write(response);
+    socket.write(response + '\0');
   }
 }
 
