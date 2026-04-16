@@ -21,18 +21,11 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // Don't send anything initially — wait for game to send first
-  // If game sends nothing for 3 seconds, try sending a challenge
-  var sentChallenge = false;
-  var challengeTimer = setTimeout(function() {
-    if (!socket.destroyed && !sentChallenge && msgCount === 0) {
-      sentChallenge = true;
-      var challengeKey = crypto.randomBytes(16).toString('hex');
-      var challenge = '<LSX><Challenge key="' + challengeKey + '" version="3"/></LSX>';
-      console.log('[Origin] No data from game after 3s, sending challenge: ' + challenge);
-      socket.write(challenge + '\0');
-    }
-  }, 3000);
+  // Close the connection immediately — let the game handle it gracefully
+  // The game freezes if we keep the connection open (blocks in recv)
+  // By closing immediately, the SDK gets a "connection reset" and continues
+  console.log('[Origin] Closing connection immediately (anti-freeze)');
+  socket.end();
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings
@@ -56,7 +49,7 @@ function createHandler(socket) {
     }
   });
   
-  socket.on('close', function() { clearTimeout(challengeTimer); console.log('[Origin] Disconnected: ' + addr + ' (' + msgCount + ' msgs)'); });
+  socket.on('close', function() { console.log('[Origin] Disconnected: ' + addr + ' (' + msgCount + ' msgs)'); });
   socket.on('error', function(e) { console.log('[Origin] Error: ' + e.message); });
 }
 
