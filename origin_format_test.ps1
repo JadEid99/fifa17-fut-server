@@ -69,12 +69,12 @@ Write-Host "[MENU] Waiting for game window + navigating menus..." -ForegroundCol
 Start-Sleep 15; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter; Start-Sleep 5; FEnter
 
 # Wait for DLL patches + auth injection
-Write-Host "[WAIT] Waiting 30s for DLL patches + connection..." -ForegroundColor Yellow
-Start-Sleep 30; FEnter; Start-Sleep 2
+Write-Host "[WAIT] Waiting 45s for DLL patches + connection..." -ForegroundColor Yellow
+Start-Sleep 45; FEnter; Start-Sleep 2
 
 # Wait for connection flow
-Write-Host "[WAIT] Waiting 30s for connection flow..." -ForegroundColor Yellow
-Start-Sleep 30
+Write-Host "[WAIT] Waiting 45s for connection flow..." -ForegroundColor Yellow
+Start-Sleep 45
 
 # Collect results
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow
