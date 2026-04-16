@@ -1,0 +1,31 @@
+﻿Format 2 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 2 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: (silent)
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+Format 0 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 0 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: <LSX><Response id="1"><ChallengeAccepted version="3"/></Response></LSX>
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+Format 1 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 1 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: <LSX><ChallengeAccepted id="1" version="3"/></LSX>
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+Format 3 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 3 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: <LSX><Response id="1" sender="EALS"><ChallengeAccepted version="3"/></Response></LSX>
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+Format 4 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 4 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: <LSX><Response id="1"/></LSX>
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+Format 5 - UNKNOWN (0 msgs)
+  Origin: [Origin-IPC] Challenge format: 5 (set CHALLENGE_FORMAT=N to change)
+[Origin-IPC] Format preview: <LSX><Response id="1"><Result Status="0" version="3"/></Response></LSX>
+[Origin-IPC] Listening on 127.0.0.1:4216
+
+
