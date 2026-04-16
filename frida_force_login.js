@@ -1,8 +1,5 @@
 /*
- * Frida v62: REAL ORIGIN PROTOCOL CAPTURE
- * 
- * Origin is running on the PC. We let the game talk to the REAL Origin
- * and capture every byte sent/received to learn the exact protocol.
+ * Frida v62b: Hook ws2_32.dll directly using known base address
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
@@ -16,61 +13,80 @@ function hexDump(bytes, max) {
 }
 function textDump(bytes, max) {
     var t = '';
-    for (var i = 0; i < Math.min(bytes.length, max || 300); i++) {
+    for (var i = 0; i < Math.min(bytes.length, max || 500); i++) {
         t += (bytes[i] >= 32 && bytes[i] < 127) ? String.fromCharCode(bytes[i]) : '.';
     }
     return t;
 }
 
-console.log('=== Frida v62: Real Origin Protocol Capture ===');
+console.log('=== Frida v62b: WS2_32 Direct Hook ===');
 
-// Hook game's own send/recv function pointers
-try {
-    var gameSend = addr(0x8e22400).readPointer();
-    var gameRecv = addr(0x8e223f8).readPointer();
-    var gameConnect = addr(0x8e223d8).readPointer();
-    console.log('[PTRS] send=' + gameSend + ' recv=' + gameRecv + ' connect=' + gameConnect);
+// Find ws2_32 module
+var ws2 = null;
+Process.enumerateModules().forEach(function(m) {
+    if (m.name.toLowerCase() === 'ws2_32.dll') {
+        ws2 = m;
+        console.log('[WS2] Found: ' + m.name + ' at ' + m.base + ' size=' + m.size);
+    }
+});
+
+if (ws2) {
+    // Find exports by enumerating
+    var sendAddr = null, recvAddr = null, connectAddr = null;
+    ws2.enumerateExports().forEach(function(exp) {
+        if (exp.name === 'send') sendAddr = exp.address;
+        if (exp.name === 'recv') recvAddr = exp.address;
+        if (exp.name === 'connect') connectAddr = exp.address;
+    });
     
-    if (!gameSend.isNull()) {
-        Interceptor.attach(gameSend, {
+    console.log('[WS2] send=' + sendAddr + ' recv=' + recvAddr + ' connect=' + connectAddr);
+    
+    if (sendAddr) {
+        Interceptor.attach(sendAddr, {
             onEnter: function(args) {
                 this._s = args[0].toInt32();
                 this._len = args[2].toInt32();
                 if (this._len > 0 && this._len < 5000) {
                     var data = args[1].readByteArray(this._len);
                     var bytes = new Uint8Array(data);
-                    console.log('[SEND] s=' + this._s + ' len=' + this._len);
-                    console.log('[SEND] hex: ' + hexDump(bytes));
-                    console.log('[SEND] txt: ' + textDump(bytes));
+                    var txt = textDump(bytes);
+                    // Only log if it contains XML or interesting data
+                    if (txt.indexOf('<') !== -1 || txt.indexOf('LSX') !== -1 || this._len < 50) {
+                        console.log('[WS2-SEND] s=' + this._s + ' len=' + this._len);
+                        console.log('[WS2-SEND] hex: ' + hexDump(bytes, 64));
+                        console.log('[WS2-SEND] txt: ' + txt);
+                    }
                 }
             }
         });
-        console.log('[INIT] Hooked send');
+        console.log('[INIT] Hooked ws2_32!send');
     }
     
-    if (!gameRecv.isNull()) {
-        Interceptor.attach(gameRecv, {
+    if (recvAddr) {
+        Interceptor.attach(recvAddr, {
             onEnter: function(args) {
                 this._s = args[0].toInt32();
                 this._buf = args[1];
-                this._maxLen = args[2].toInt32();
             },
             onLeave: function(retval) {
                 var n = retval.toInt32();
                 if (n > 0 && n < 5000) {
                     var data = this._buf.readByteArray(n);
                     var bytes = new Uint8Array(data);
-                    console.log('[RECV] s=' + this._s + ' len=' + n);
-                    console.log('[RECV] hex: ' + hexDump(bytes));
-                    console.log('[RECV] txt: ' + textDump(bytes));
+                    var txt = textDump(bytes);
+                    if (txt.indexOf('<') !== -1 || txt.indexOf('LSX') !== -1 || n < 50) {
+                        console.log('[WS2-RECV] s=' + this._s + ' len=' + n);
+                        console.log('[WS2-RECV] hex: ' + hexDump(bytes, 64));
+                        console.log('[WS2-RECV] txt: ' + txt);
+                    }
                 }
             }
         });
-        console.log('[INIT] Hooked recv');
+        console.log('[INIT] Hooked ws2_32!recv');
     }
     
-    if (!gameConnect.isNull()) {
-        Interceptor.attach(gameConnect, {
+    if (connectAddr) {
+        Interceptor.attach(connectAddr, {
             onEnter: function(args) {
                 this._s = args[0].toInt32();
                 try {
@@ -79,16 +95,18 @@ try {
                     if (family === 2) {
                         var port = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
                         var ip = sa.add(4).readU8()+'.'+sa.add(5).readU8()+'.'+sa.add(6).readU8()+'.'+sa.add(7).readU8();
-                        console.log('[CONNECT] s=' + this._s + ' -> ' + ip + ':' + port);
+                        console.log('[WS2-CONNECT] s=' + this._s + ' -> ' + ip + ':' + port);
                     }
                 } catch(e) {}
             },
             onLeave: function(retval) {
-                console.log('[CONNECT] result=' + retval);
+                console.log('[WS2-CONNECT] result=' + retval);
             }
         });
-        console.log('[INIT] Hooked connect');
+        console.log('[INIT] Hooked ws2_32!connect');
     }
-} catch(e) { console.log('[PTRS] Error: ' + e); }
+} else {
+    console.log('[WS2] ws2_32.dll NOT FOUND');
+}
 
-console.log('=== Frida v62 Ready — keep Origin open! ===');
+console.log('=== Frida v62b Ready — keep Origin open! ===');
