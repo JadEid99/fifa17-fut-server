@@ -17,7 +17,7 @@ Attaching...
 [INIT] Hooked raw send
 [INIT] Hooked raw recv
 === Frida v61 Ready ===
-[Local::PID::105600 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Local::PID::65228 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
 [RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -54,7 +54,7 @@ Attaching...
 [RAW-RECV] len=1: K
 [RAW-RECV] len=1: .
 [RAW-RECV] len=1: .
-[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:55:25 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:59:24 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
 [RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -209,18 +209,17 @@ Attaching...
 [RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
 [XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 [RPC] comp=0x5 cmd=0x11
-[RAW-SEND] len=116: ....o...k..i.0.g..'.....{....q.... ....YH..........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
+[RAW-SEND] len=116: ....o...k..i.1.%.G.....X.Qn......>.k...............=.<.5./.......2...". ...winter15.gosredirector.ea.com............
 [RAW-RECV] len=5: ....J
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=4: ....
-[RAW-SEND] len=139: ...........f...............b.WZ......`....>P..{.%.\......<....s.a.*P}....^Mp...&.).;..|$.).-.....m..8h......N.Kc....&_..e.....}...4.E.`.nZv
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=1: .
 [RAW-RECV] len=5: ....$
-[RAW-RECV] len=36: O.joX....Q.0.lKu....u`.%...z8U8V....
+[RAW-RECV] len=36: ..&H|4.~..%>.....}..R..x^.......S..9
 [RAW-RECV] len=5: .....
-[RAW-RECV] len=437: ]..qQ|V.0....w..f..tM.]~.....jnk.'...9..U....U..*.....2....7...k.]..LA...3.2oq.Tp..<5#.)..}.i.........cjq...Y|.0.B.....!c..&....k.G..E.;.[.D.oN`......v.v....b....4../...9..c..F`...d.7.z.:........ ...n...sI....;f.H.t4(.q........Y-.#....7...2.........-...=...M.....NX.V^..h...'..\..r.......d.d..!...[..
+[RAW-RECV] len=437: .O..{.Q.[H...#.Q>.jI.......6)....W.R..jM .Nge../......,.^^D\..Ron..*| .@.K...i...Q.....8.AL..w.W..(.....b`.h^).9..+p.. c1...A.....r.v..~..?..........s....kF#...o.....,.e....t....au...t..n:.../.......r<..hS*e...Q..de/...\D....&[.!N7V.-......"v...6f..>.4'&..m^.......:....D....m.......e....$+6.U...4;.j
 [RPC] comp=0x9 cmd=PreAuth
 [RAW-RECV] len=16: ...t......... ..
 [RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
