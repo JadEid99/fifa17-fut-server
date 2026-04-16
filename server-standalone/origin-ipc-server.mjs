@@ -21,10 +21,11 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // Accept connection and wait for game to send data
-  // The connect hook only redirects after 15s, so these connections
-  // come from the game's later auth code requests, not startup
-  console.log('[Origin] Waiting for data...');
+  // Send a minimal initial message to unblock the game's recv()
+  // The game blocks in recv() waiting for server to send first
+  // Try just a null byte — the protocol delimiter
+  console.log('[Origin] Sending initial null byte to unblock recv');
+  socket.write(Buffer.from([0x00]));
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings
