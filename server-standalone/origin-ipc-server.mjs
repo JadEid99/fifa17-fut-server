@@ -21,9 +21,12 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // DON'T send anything on connect — wait for the game to send first
-  // The game may send ChallengeResponse immediately without waiting for a Challenge
-  console.log(`[Origin] Waiting for game to send first...`);
+  // Send Challenge on connect — game waits for server to send first
+  // Protocol uses null-terminated strings!
+  var challengeKey = crypto.randomBytes(16).toString('hex');
+  var challenge = '<LSX><Challenge key="' + challengeKey + '" version="3"/></LSX>';
+  console.log('[Origin] Sending challenge: ' + challenge);
+  socket.write(challenge + '\0');
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings
