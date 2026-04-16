@@ -17,7 +17,7 @@ Attaching...
 [INIT] Hooked raw send
 [INIT] Hooked raw recv
 === Frida v61 Ready ===
-[Local::PID::65228 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Local::PID::94504 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
 [RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -54,7 +54,7 @@ Attaching...
 [RAW-RECV] len=1: K
 [RAW-RECV] len=1: .
 [RAW-RECV] len=1: .
-[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:59:24 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 19:05:21 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
 [RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -209,17 +209,19 @@ Attaching...
 [RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
 [XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 [RPC] comp=0x5 cmd=0x11
-[RAW-SEND] len=116: ....o...k..i.1.%.G.....X.Qn......>.k...............=.<.5./.......2...". ...winter15.gosredirector.ea.com............
+[RAW-SEND] len=116: ....o...k..i.3.=.5.7.".O.G.qF.m.0..~......u........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
 [RAW-RECV] len=5: ....J
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=4: ....
+[RAW-SEND] len=139: ..............Z.Vo.q.0.6..AL......#..Q/k;V..F..'.k<5k.-.)..tL...........R..y)...g7Q.&J...[C..]66{.4M.|B..Tm}...S..I..u.........lX..(..[k3Z'
 [RAW-RECV] len=5: .....
 [RAW-RECV] len=1: .
 [RAW-RECV] len=5: ....$
-[RAW-RECV] len=36: ..&H|4.~..%>.....}..R..x^.......S..9
+[RAW-RECV] len=36: P...^""._..L.*.......e,.O.....:.0'U_
+[RAW-SEND] len=908: .....7_.As...a..G.(!...*6'.2....38..d.h..4.N..f.,T.Vdy+...b.p[..qz....2....y.n.r...9.B6.\...Pc...D.....G..QD.J..9P.|T..(.#.I.-.@G.m.Ae(.U..3.]...0.VH._...Wt.....k............"........AgN.t..<....M|M....'.}c6BT...6;....hvk.|.........~tb4..4...c..._mm<oq.................Aj...K....m...n..s.1.G......@u.
 [RAW-RECV] len=5: .....
-[RAW-RECV] len=437: .O..{.Q.[H...#.Q>.jI.......6)....W.R..jM .Nge../......,.^^D\..Ron..*| .@.K...i...Q.....8.AL..w.W..(.....b`.h^).9..+p.. c1...A.....r.v..~..?..........s....kF#...o.....,.e....t....au...t..n:.../.......r<..hS*e...Q..de/...\D....&[.!N7V.-......"v...6f..>.4'&..m^.......:....D....m.......e....$+6.U...4;.j
+[RAW-RECV] len=437: "g.1'.Ur.Y...NF.2.dE|.e......& #..^6..../.d*\..E 8.1...<-..9g0.|.Q.5c.W.#......L.d`Xq/.1.2.H...M.q.....a<J...}. .G...7....}c..Z..a..0}..CQIAv......q.uw.....i(F......C..............2...k.0.A...$<<L7\...2...ky...E.V.Uf....+......F&&.,....d@.8.!....B.lq.&..)w@...6OwDa....I;......99..............xo~...&
 [RPC] comp=0x9 cmd=PreAuth
 [RAW-RECV] len=16: ...t......... ..
 [RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
