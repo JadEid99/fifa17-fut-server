@@ -17,7 +17,15 @@ Attaching...
 [INIT] Hooked raw send
 [INIT] Hooked raw recv
 === Frida v61 Ready ===
-[Local::PID::109344 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Local::PID::81944 ]-> [SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[SDK-CONNECT] result=0x1
+[SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[SDK-CONNECT] result=0x1
+[SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[SDK-CONNECT] result=0x1
 [RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -54,7 +62,7 @@ Attaching...
 [RAW-RECV] len=1: K
 [RAW-RECV] len=1: .
 [RAW-RECV] len=1: .
-[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:28:18 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:35:37 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
 [RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -207,53 +215,10 @@ Attaching...
 [RAW-RECV] len=1: .
 [RAW-RECV] len=1: .
 [RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
-[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
-[RPC] comp=0x5 cmd=0x11
-[RAW-SEND] len=116: ....o...k..i.*R.|.8!a.0;................4F.........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
-[RAW-RECV] len=5: ....J
-[RAW-RECV] len=5: .....
-[RAW-RECV] len=5: .....
-[RAW-RECV] len=4: ....
-[RAW-SEND] len=139: ............y...........y@F7CBd....x1.B|......k........(...l..h..I l..4V.8.......p.w..f........Bl..|...p..e..Yen.F.<(.....M..7..:e..4...j.:
-[RAW-RECV] len=5: .....
-[RAW-RECV] len=1: .
-[RAW-RECV] len=5: ....$
-[RAW-RECV] len=36: d>.|..m...Np..........?A&...z......g
-[RAW-SEND] len=908: .....?.:D.pCQ.!.p..O..{.1...A+..~.l.....`zA....D.".h.......|...}..F..m.....Z..o..Y..27.+........$..<..;..)*.H.X....D&..r..N..+.J`E.Cp..X.~5^..\D...$. .5{...*.E.%....F^..^b.".....I5h...R..`<+%...b^7../....0,........W.r....6C=%l....'=.>..2.."Ce>?...&..tf.*kj......%~%bd#S:..&T.....~d&T;...C.^..}../.?..
-[RAW-RECV] len=5: .....
-[RAW-RECV] len=437: :..po<.7<.....=v{]..../.........(....[.&....gTYY....h........i......R......\...7.....?..#-#..[@........~.&..7.\`........<..B:3...B.../....C.....3#.u...exV.)D....yE....9.........I.._.c..^..<...p.,3.s.t^7`..l._,b.`>..]T..._...:..0...._.(.....id/.1...8..r.D<t.0..RH.1...H\....a._...8.r......Q..E.bZ.....
-[RPC] comp=0x9 cmd=PreAuth
-[RAW-RECV] len=16: ...t......... ..
-[RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
-[RPC] comp=0x9 cmd=Ping
-[RAW-RECV] len=16: ............. ..
-[RAW-RECV] len=10: .Jm......g
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RPC] comp=0x9 cmd=FetchClientConfig
-[RAW-RECV] len=16: ............. ..
-[RAW-RECV] len=16: ...U......... ..
-[RAW-RECV] len=16: ...y......... ..
-[RAW-RECV] len=16: ............. ..
-[RAW-RECV] len=46: ........offerUrl..http://127.0.0.1:8080/offer.
-[RAW-RECV] len=16: ............. ..
-[RAW-RECV] len=19: ........enabled..0.
-[RAW-RECV] len=16: ............. ..
-[RAW-RECV] len=19: ........enabled..0.
-[RPC] comp=0x1 cmd=Logout
-[RAW-RECV] len=16: .........F... ..
-[STATE] transition(0, -1)
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
-[RAW-RECV] len=16: ................
+[SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[SDK-CONNECT] result=0x1
+[SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[SDK-CONNECT] result=0x1
 
