@@ -560,6 +560,19 @@ static DWORD WINAPI PatchThread(LPVOID) {
                     }
                 }
             }
+            
+            // Hook the connect() function pointer to redirect Origin SDK connections
+            if (!g_realConnect) {
+                __try {
+                    uint64_t* pConnectPtr = (uint64_t*)0x148e223d8;
+                    uint64_t val = *pConnectPtr;
+                    if (val != 0 && val != (uint64_t)HookedConnect) {
+                        g_realConnect = (connect_t)val;
+                        *pConnectPtr = (uint64_t)HookedConnect;
+                        Log("CONNECT-HOOK: Patched DAT_148e223d8 at %lu ms (real=%p)", GetTickCount()-st, g_realConnect);
+                    }
+                } __except(EXCEPTION_EXECUTE_HANDLER) {}
+            }
             // Patch 19: Login check — DISABLED (interferes with CreateAccount flow)
             // Patch 18: Age check — DISABLED (interferes with CreateAccount flow)
             /*
