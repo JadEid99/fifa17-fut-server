@@ -17,17 +17,17 @@ Attaching...
 [INIT] Hooked raw send
 [INIT] Hooked raw recv
 === Frida v61 Ready ===
-[Local::PID::99476 ]-> [SDK-CONNECT] Connecting on port 3216
-[SDK-CONNECT] *** REDIRECTING port 3216 -> 3216 ***
-[RAW-RECV] len=1: .
+[Local::PID::51808 ]-> [SDK-CONNECT] Connecting on port 4216
+[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
+[RAW-RECV] len=12: <LSX></LSX>.
 [SDK-CONNECT] result=0x1
 [SDK-CONNECT] Connecting on port 4216
 [SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
-[RAW-RECV] len=1: .
+[RAW-RECV] len=12: <LSX></LSX>.
 [SDK-CONNECT] result=0x1
 [SDK-CONNECT] Connecting on port 4216
 [SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
-[RAW-RECV] len=1: .
+[RAW-RECV] len=12: <LSX></LSX>.
 [SDK-CONNECT] result=0x1
 [RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
 [RAW-RECV] len=1: H
@@ -65,7 +65,7 @@ Attaching...
 [RAW-RECV] len=1: K
 [RAW-RECV] len=1: .
 [RAW-RECV] len=1: .
-[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 19:21:12 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 19:24:08 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
 [RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
 [RAW-RECV] len=1: H
 [RAW-RECV] len=1: T
@@ -220,10 +220,10 @@ Attaching...
 [RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
 [SDK-CONNECT] Connecting on port 4216
 [SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
-[RAW-RECV] len=1: .
+[RAW-RECV] len=12: <LSX></LSX>.
 [SDK-CONNECT] result=0x1
-[SDK-CONNECT] Connecting on port 4216
-[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
-[RAW-RECV] len=1: .
+[SDK-CONNECT] Connecting on port 3216
+[SDK-CONNECT] *** REDIRECTING port 3216 -> 3216 ***
+[RAW-RECV] len=12: <LSX></LSX>.
 [SDK-CONNECT] result=0x1
 
