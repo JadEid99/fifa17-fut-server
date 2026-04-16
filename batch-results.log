@@ -1,4 +1,4 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-16 20:12:44) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-16 20:16:43) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
      ____
@@ -13,8 +13,10 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v60: Raw Winsock Intercept ===
-[Local::PID::95740 ]-> 
+=== Frida v60b: Raw Winsock Intercept ===
+[MODULE] WS2_32.dll at 0x7ffd6eb00000
+[MODULE] mswsock.dll at 0x7ffd6d590000
+[Local::PID::64716 ]-> 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
 [Origin] Listening on 127.0.0.1:3216
@@ -27,7 +29,7 @@ cted
 [Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:50419
+[Main] Session 5 connected: 127.0.0.1:50467
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -37,7 +39,7 @@ cted
 [Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:50420
+[Main] Session 6 connected: 127.0.0.1:50468
 [Main] S6: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
@@ -47,7 +49,7 @@ cted
 [Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
 [Main] S6 disconnected
 [LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:50421
+[Main] Session 7 connected: 127.0.0.1:50469
 [Main] S7: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
 [Main] S7: Raw Blaze binary detected
@@ -57,7 +59,7 @@ cted
 [Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
 [Main] S7 disconnected
 [LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:50422
+[Main] Session 8 connected: 127.0.0.1:50470
 [Main] S8: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
 [Main] S8: Raw Blaze binary detected
@@ -67,7 +69,7 @@ cted
 [Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
 [Main] S8 disconnected
 [LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:50423
+[Main] Session 9 connected: 127.0.0.1:50471
 [Main] S9: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
 [Main] S9: Raw Blaze binary detected
@@ -77,7 +79,7 @@ cted
 [Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
 [Main] S9 disconnected
 [LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:50424
+[Main] Session 10 connected: 127.0.0.1:50472
 [Main] S10: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
 [Main] S10: Raw Blaze binary detected
@@ -87,41 +89,41 @@ cted
 [Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-[20:11:09.037] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[20:11:09.037] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[20:11:09.037] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[20:11:09.037] PID: 95740
-[20:11:09.191] PATCHED: cert bypass at 000000014613244B
-[20:11:09.356] PATCHED: auth flag at 00000001473CE785
-[20:11:09.401] PATCHED: IsLoggedIntoEA -> true
-[20:11:09.401] PATCHED: IsLoggedIntoNetwork -> true
-[20:11:09.478] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[20:11:09.478] PATCHED: SDK gate -> always 1
-[20:11:09.478] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[20:11:09.478] PATCHED: Login vtable check -> return 1
-[20:11:09.490] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[20:11:09.490] LOGIN SilentLogin: already patched
-[20:11:09.490] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[20:11:09.490] LOGIN ExpressLogin: already patched
-[20:11:09.490] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[20:11:09.490] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[20:11:09.490] PREAUTH_HANDLER: first 128 bytes:
-[20:11:09.490]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[20:11:09.490]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[20:11:09.490]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[20:11:09.490]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[20:11:09.490]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[20:11:09.490]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[20:11:09.490]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[20:11:09.490]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[20:11:09.490] PREAUTH_HANDLER: Cave at 0000000003220000, 44 bytes (XOR R8D + trampoline)
-[20:11:09.490] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[20:11:09.490] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[20:11:09.490] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[20:11:09.490] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[20:11:09.490] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[20:11:09.490] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[20:11:09.490] PATCHED: FUN_145e280b0 (version compare) -> always match
-[20:11:09.646] PATCHED: Origin SDK check at 00000001470A8430
-[20:11:09.964] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 922 ms
+[20:15:07.660] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[20:15:07.660] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[20:15:07.660] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[20:15:07.660] PID: 64716
+[20:15:07.816] PATCHED: cert bypass at 000000014613244B
+[20:15:07.984] PATCHED: auth flag at 00000001473CE785
+[20:15:08.030] PATCHED: IsLoggedIntoEA -> true
+[20:15:08.030] PATCHED: IsLoggedIntoNetwork -> true
+[20:15:08.106] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[20:15:08.106] PATCHED: SDK gate -> always 1
+[20:15:08.106] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[20:15:08.106] PATCHED: Login vtable check -> return 1
+[20:15:08.117] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:15:08.117] LOGIN SilentLogin: already patched
+[20:15:08.117] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:15:08.117] LOGIN ExpressLogin: already patched
+[20:15:08.117] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[20:15:08.117] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[20:15:08.117] PREAUTH_HANDLER: first 128 bytes:
+[20:15:08.117]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[20:15:08.117]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[20:15:08.117]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[20:15:08.117]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[20:15:08.117]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[20:15:08.117]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[20:15:08.117]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[20:15:08.117]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[20:15:08.117] PREAUTH_HANDLER: Cave at 00000000004D0000, 44 bytes (XOR R8D + trampoline)
+[20:15:08.117] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[20:15:08.117] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[20:15:08.117] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[20:15:08.117] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[20:15:08.117] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[20:15:08.117] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[20:15:08.117] PATCHED: FUN_145e280b0 (version compare) -> always match
+[20:15:08.262] PATCHED: Origin SDK check at 00000001470A8430
+[20:15:08.584] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 922 ms
 
