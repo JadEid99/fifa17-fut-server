@@ -21,12 +21,12 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // Send a minimal LSX message to unblock recv and satisfy the XML parser
-  // The game's SDK blocks in recv() waiting for a null-terminated XML string
-  // We send a minimal valid LSX that the parser can handle
-  var initMsg = '<LSX></LSX>';
-  console.log('[Origin] Sending init: ' + initMsg);
-  socket.write(initMsg + '\0');
+  // Send Challenge — Origin sends this first, game responds with ChallengeResponse
+  // Previous attempts froze because we didn't have null terminator. Now we do.
+  var challengeKey = crypto.randomBytes(16).toString('hex');
+  var challenge = '<LSX><Challenge key="' + challengeKey + '" version="3"/></LSX>';
+  console.log('[Origin] Sending: ' + challenge);
+  socket.write(challenge + '\0');
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings
