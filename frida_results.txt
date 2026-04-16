@@ -17,811 +17,611 @@ Attaching...
 [INIT] Hooked ws2_32!recv
 [INIT] Hooked ws2_32!connect
 === Frida v62b Ready — keep Origin open! ===
-[Local::PID::100020 ]-> [WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[Local::PID::63540 ]-> [WS2-CONNECT] s=1552 -> 127.0.0.1:3216
+[WS2-CONNECT] result=0x0
+[WS2-RECV] s=1552 len=75
+[WS2-RECV] hex: 3c 4c 53 58 3e 3c 43 68 61 6c 6c 65 6e 67 65 20 6b 65 79 3d 22 65 65 63 34 38 39 39 34 33 36 65 66 32 61 36 37 36 64 63 37 38 36 62 64 64 33 37 61 66 65 36 39 22 20 76 65 72 73 69 6f 6e 3d 22 
+[WS2-RECV] txt: <LSX><Challenge key="eec4899436ef2a676dc786bdd37afe69" version="3"/></LSX>.
+[WS2-CONNECT] s=2504 -> 127.0.0.1:3216
+[WS2-CONNECT] result=0x0
+[WS2-RECV] s=2504 len=75
+[WS2-RECV] hex: 3c 4c 53 58 3e 3c 43 68 61 6c 6c 65 6e 67 65 20 6b 65 79 3d 22 62 35 36 63 34 66 32 31 37 38 30 32 62 35 31 64 64 36 66 38 30 65 38 35 30 38 65 65 36 37 64 37 22 20 76 65 72 73 69 6f 6e 3d 22 
+[WS2-RECV] txt: <LSX><Challenge key="b56c4f217802b51dd6f80e8508ee67d7" version="3"/></LSX>.
+[WS2-CONNECT] s=2488 -> 127.0.0.1:3216
+[WS2-CONNECT] result=0x0
+[WS2-RECV] s=2488 len=75
+[WS2-RECV] hex: 3c 4c 53 58 3e 3c 43 68 61 6c 6c 65 6e 67 65 20 6b 65 79 3d 22 37 63 36 39 64 66 33 64 35 65 34 35 30 65 35 64 38 62 63 61 31 66 66 64 63 36 31 62 66 61 66 66 22 20 76 65 72 73 69 6f 6e 3d 22 
+[WS2-RECV] txt: <LSX><Challenge key="7c69df3d5e450e5d8bca1ffdc61bfaff" version="3"/></LSX>.
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 32 
 [WS2-RECV] txt: 2
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 4f 
 [WS2-RECV] txt: O
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 4b 
 [WS2-RECV] txt: K
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=3719
+[WS2-RECV] s=4144 len=3183
 [WS2-RECV] hex: 43 61 63 68 65 2d 43 6f 6e 74 72 6f 6c 3a 20 6d 61 78 2d 61 67 65 3d 31 32 30 0d 0a 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 33 
-[WS2-RECV] txt: Cache-Control: max-age=120..Connection: close..Content-Length: 3456..Content-Type: text/xml..Date: Thu, 16 Apr 2026 19:45:08 GMT..ETag: "987F5D7957067EF6"..Expires: Thu, 16 Apr 2026 19:47:08 GMT..Last-Modified: Fri, 10 Apr 2026 10:15:42 GMT..Mime-Version: 1.0....<?xml version="1.0"?>.<root xmlns="urn:schemas-upnp-org:device-1-0">.<specVersion>.<major>1</major>.<minor>0</minor>.</specVersion>.<device>.<deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>.<friendlyName>FRITZ
-[WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[WS2-RECV] txt: Cache-Control: max-age=120..Connection: close..Content-Length: 3456..Content-Type: text/xml..Date: Thu, 16 Apr 2026 19:51:29 GMT..ETag: "987F5D7957067EF6"..Expires: Thu, 16 Apr 2026 19:53:29 GMT..Last-Modified: Fri, 10 Apr 2026 10:15:42 GMT..Mime-Version: 1.0....<?xml version="1.0"?>.<root xmlns="urn:schemas-upnp-org:device-1-0">.<specVersion>.<major>1</major>.<minor>0</minor>.</specVersion>.<device>.<deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>.<friendlyName>FRITZ
+[WS2-RECV] s=4144 len=536
+[WS2-RECV] hex: 57 41 4e 49 50 43 6f 6e 6e 31 3c 2f 65 76 65 6e 74 53 75 62 55 52 4c 3e 0a 3c 53 43 50 44 55 52 4c 3e 2f 69 67 64 63 6f 6e 6e 53 43 50 44 2e 78 6d 6c 3c 2f 53 43 50 44 55 52 4c 3e 0a 3c 2f 73 
+[WS2-RECV] txt: WANIPConn1</eventSubURL>.<SCPDURL>/igdconnSCPD.xml</SCPDURL>.</service>.<service>.<serviceType>urn:schemas-upnp-org:service:WANIPv6FirewallControl:1</serviceType>.<serviceId>urn:upnp-org:serviceId:WANIPv6Firewall1</serviceId>.<controlURL>/igd2upnp/control/WANIPv6Firewall1</controlURL>.<eventSubURL>/igd2upnp/control/WANIPv6Firewall1</eventSubURL>.<SCPDURL>/igd2ipv6fwcSCPD.xml</SCPDURL>.</service>.</serviceList>.</device>.</deviceList>.</device>.</deviceList>.<presentationURL>http://192.168.178.1<
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4172 len=592
+[WS2-SEND] s=4144 len=592
 [WS2-SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 
 [WS2-SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 280..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress"..Cache-Control: no-cache....<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">.. <s:Body>..  <u:GetExternalIPAddress xmlns:u="urn:schemas-upnp
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 32 
 [WS2-RECV] txt: 2
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 4f 
 [WS2-RECV] txt: O
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 4b 
 [WS2-RECV] txt: K
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=550
+[WS2-RECV] s=4144 len=550
 [WS2-RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 33 36 31 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 
-[WS2-RECV] txt: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 19:45:08 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<u:GetExternalIPAddressResponse xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">.<NewExternalIPAddress>93.104.9.130</NewExternalIPAddress>.</u:Get
-[WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[WS2-RECV] txt: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 19:51:29 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<u:GetExternalIPAddressResponse xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">.<NewExternalIPAddress>93.104.9.130</NewExternalIPAddress>.</u:Get
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4172 len=728
+[WS2-SEND] s=4144 len=728
 [WS2-SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 
 [WS2-SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Control: no-cache....<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">.. <s:Body>..  <u:GetSpecificPortMappingEntry xmlns:u="ur
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 35 
 [WS2-RECV] txt: 5
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 49 
 [WS2-RECV] txt: I
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 74 
 [WS2-RECV] txt: t
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 61 
 [WS2-RECV] txt: a
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6c 
 [WS2-RECV] txt: l
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 53 
 [WS2-RECV] txt: S
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 76 
 [WS2-RECV] txt: v
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 45 
 [WS2-RECV] txt: E
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6f 
 [WS2-RECV] txt: o
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=527
+[WS2-RECV] s=4144 len=527
 [WS2-RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 37 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 
 [WS2-RECV] txt: Connection: close..Content-Length: 437..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring>UPnPError</faultstring>.<detail>.<UPnPError xmlns="urn:schemas-upnp-org:control-1-0">.<errorCode>714</errorCode>.<errorDescription>NoSuchEntryInArray</errorDescription>.</UPnPError>.</detail>.</s:Fau
-[WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4172 len=938
+[WS2-SEND] s=4144 len=938
 [WS2-SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 
 [WS2-SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 632..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cache....<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">.. <s:Body>..  <u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 35 
 [WS2-RECV] txt: 5
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 49 
 [WS2-RECV] txt: I
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 74 
 [WS2-RECV] txt: t
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 61 
 [WS2-RECV] txt: a
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6c 
 [WS2-RECV] txt: l
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 53 
 [WS2-RECV] txt: S
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 76 
 [WS2-RECV] txt: v
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 45 
 [WS2-RECV] txt: E
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6f 
 [WS2-RECV] txt: o
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=529
+[WS2-RECV] s=4144 len=529
 [WS2-RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 
 [WS2-RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring>UPnPError</faultstring>.<detail>.<UPnPError xmlns="urn:schemas-upnp-org:control-1-0">.<errorCode>403</errorCode>.<errorDescription>Not available Action</errorDescription>.</UPnPError>.</detail>.</s:F
-[WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4172 len=934
+[WS2-SEND] s=4144 len=934
 [WS2-SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 
 [WS2-SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cache....<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">.. <s:Body>..  <u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 35 
 [WS2-RECV] txt: 5
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 49 
 [WS2-RECV] txt: I
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 74 
 [WS2-RECV] txt: t
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 61 
 [WS2-RECV] txt: a
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6c 
 [WS2-RECV] txt: l
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 53 
 [WS2-RECV] txt: S
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 76 
 [WS2-RECV] txt: v
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 45 
 [WS2-RECV] txt: E
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6f 
 [WS2-RECV] txt: o
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=529
+[WS2-RECV] s=4144 len=529
 [WS2-RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 
 [WS2-RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring>UPnPError</faultstring>.<detail>.<UPnPError xmlns="urn:schemas-upnp-org:control-1-0">.<errorCode>403</errorCode>.<errorDescription>Not available Action</errorDescription>.</UPnPError>.</detail>.</s:F
-[WS2-CONNECT] s=4172 -> 192.168.178.1:49000
+[WS2-CONNECT] s=4144 -> 192.168.178.1:49000
 [WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4172 len=934
+[WS2-SEND] s=4144 len=934
 [WS2-SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 
 [WS2-SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cache....<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">.. <s:Body>..  <u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 48 
 [WS2-RECV] txt: H
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 54 
 [WS2-RECV] txt: T
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 50 
 [WS2-RECV] txt: P
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2f 
 [WS2-RECV] txt: /
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 2e 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 31 
 [WS2-RECV] txt: 1
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 35 
 [WS2-RECV] txt: 5
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 30 
 [WS2-RECV] txt: 0
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 49 
 [WS2-RECV] txt: I
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 74 
 [WS2-RECV] txt: t
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6e 
 [WS2-RECV] txt: n
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 61 
 [WS2-RECV] txt: a
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6c 
 [WS2-RECV] txt: l
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 53 
 [WS2-RECV] txt: S
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 76 
 [WS2-RECV] txt: v
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 65 
 [WS2-RECV] txt: e
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 20 
 [WS2-RECV] txt:  
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 45 
 [WS2-RECV] txt: E
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 6f 
 [WS2-RECV] txt: o
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 72 
 [WS2-RECV] txt: r
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0d 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=1
+[WS2-RECV] s=4144 len=1
 [WS2-RECV] hex: 0a 
 [WS2-RECV] txt: .
-[WS2-RECV] s=4172 len=529
+[WS2-RECV] s=4144 len=529
 [WS2-RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 
 [WS2-RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring>UPnPError</faultstring>.<detail>.<UPnPError xmlns="urn:schemas-upnp-org:control-1-0">.<errorCode>403</errorCode>.<errorDescription>Not available Action</errorDescription>.</UPnPError>.</detail>.</s:F
-[WS2-CONNECT] s=4292 -> 127.0.0.1:42230
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4292 len=116
-[WS2-SEND] hex: 16 03 00 00 6f 01 00 00 6b 03 03 69 e1 3c 54 fc d5 c6 a6 de 03 ae c4 52 81 f5 0e af da 8e 34 92 c4 a4 38 e0 5b 0a 28 44 8f 7a 12 00 00 10 00 9d 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00 
-[WS2-SEND] txt: ....o...k..i.<T........R......4...8.[.(D.z.........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 16 03 03 00 4a 
-[WS2-RECV] txt: ....J
-[WS2-RECV] s=4292 len=74
-[WS2-RECV] hex: 02 00 00 46 03 03 69 e1 3c 54 d9 82 ed 32 e2 60 ce e7 3d d5 cc 8a fe 82 23 d1 4b 73 44 17 ed cc a9 8d 2e 3b 49 a2 20 53 c7 33 b1 6c c2 25 f1 73 e2 44 50 72 89 34 fc 72 29 c3 e9 1c 32 bd e8 03 
-[WS2-RECV] txt: ...F..i.<T...2.`..=.....#.KsD......;I. S.3.l.%.s.DPr.4.r)...2.............
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 16 03 03 02 bb 
-[WS2-RECV] txt: .....
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 16 03 03 00 04 
-[WS2-RECV] txt: .....
-[WS2-RECV] s=4292 len=4
-[WS2-RECV] hex: 0e 00 00 00 
-[WS2-RECV] txt: ....
-[WS2-SEND] s=4292 len=139
-[WS2-SEND] hex: 16 03 03 00 86 10 00 00 82 00 80 43 14 96 e3 f1 41 61 78 a0 d1 ac 55 bf 5d 83 cf 15 d5 74 2f 31 9f b6 1a be b0 39 b8 c5 bb 5b 62 fc bc de 91 5c d4 be 0b 13 1a 43 ee 0a 5a a5 c9 3c 72 d9 f6 65 
-[WS2-SEND] txt: ...........C....Aax...U.]....t/1.....9...[b....\.....C..Z..<r..e.....b.......T._?.z...Ub@....o...`.>..BmT4...u..x..W3R6......u.4..1:Sd..../
-[WS2-SEND] s=4292 len=6
-[WS2-SEND] hex: 14 03 03 00 01 01 
-[WS2-SEND] txt: ......
-[WS2-SEND] s=4292 len=41
-[WS2-SEND] hex: 16 03 03 00 24 e0 3d ac 99 ee 7d 65 e3 b1 c9 d9 9d 22 db 1c 4f 7d 52 7b 0f 44 bf 22 28 49 12 a4 47 d1 0e 0e dd 42 76 e8 0f 
-[WS2-SEND] txt: ....$.=...}e....."..O}R{.D."(I..G....Bv..
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 14 03 03 00 01 
-[WS2-RECV] txt: .....
-[WS2-RECV] s=4292 len=1
-[WS2-RECV] hex: 01 
-[WS2-RECV] txt: .
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 16 03 03 00 24 
-[WS2-RECV] txt: ....$
-[WS2-RECV] s=4292 len=36
-[WS2-RECV] hex: 99 09 f6 f1 56 ad 26 bb 81 ee fd 1b 60 4f ae da 78 73 d1 16 15 b0 29 75 79 00 52 83 da 1f 50 8c 0b 22 1c 2b 
-[WS2-RECV] txt: ....V.&.....`O..xs....)uy.R...P..".+
-[WS2-RECV] s=4292 len=5
-[WS2-RECV] hex: 17 03 03 01 b5 
-[WS2-RECV] txt: .....
-[WS2-RECV] s=4292 len=437
-[WS2-RECV] hex: 0e e5 98 53 0b 29 ad f0 a6 2f 26 25 f2 b4 6d 4d 51 12 01 20 a2 55 de 61 d0 ff 82 6c e1 61 63 9c 71 31 d0 9f 2a 7c e6 fe 8c 62 a3 4e a6 a2 d3 c0 77 5a 7b 24 a3 5d f5 4f c9 c4 06 45 f2 a0 26 b2 
-[WS2-RECV] txt: ...S.).../&%..mMQ.. .U.a...l.ac.q1..*|...b.N....wZ{$.].O...E..&.9%I..c.+.l3..6.!. \.I@..N..{...PQ?#....7..4w.W..+..UE:.E...E....,_)6.6K...&..&.....1n...!./j....Xw.h8.=.w/....V..A...-..../.Y.j...W....-....M.d...........-....u.b.W..........@i>.......<...m..k....v2.P......9.?J...h.{.0nh"Q....G..a..9.q..t....U..y........~.....Z.$+I....`E~....7Mj.^.)lf..w..T..-KH..k.o.<.p.xh>...Ea.c..f..bO2..B.....y..F......s..........65}.....,./..Ml.qy.Y
-[WS2-SEND] s=4292 len=27
-[WS2-SEND] hex: 15 03 03 00 16 c0 a0 82 ad d8 23 a0 51 47 23 1f 4d 1e e8 08 10 51 ff 98 74 0c 20 
-[WS2-SEND] txt: ..........#.QG#.M....Q..t. 
-[WS2-CONNECT] s=4356 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 02 74 00 00 00 09 00 07 00 00 00 20 00 00 
-[WS2-RECV] txt: ...t......... ..
-[WS2-RECV] s=4356 len=628
-[WS2-RECV] hex: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 81 e0 03 82 e0 03 83 e0 03 85 e0 03 86 e0 03 90 1f 8e e9 ee 01 01 00 8e fb a6 03 8e fb a6 05 01 
-[WS2-RECV] txt: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0.1:8080..identityDisplayUri..console2/welcome..identityRedirectUri..http://127.0.0.1:8080/success..blazeServerClientId..GOS-BlazeServer-FIFA17-PC.......fifa-2017-pc...........cem_ea_id...$.....t..pc..
-[WS2-SEND] s=4356 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 09 00 02 00 00 01 00 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 0a 00 00 00 09 00 02 00 00 01 20 00 00 
-[WS2-RECV] txt: ............. ..
-[WS2-RECV] s=4356 len=10
-[WS2-RECV] hex: cf 4a 6d 00 9d a6 9d fd b2 67 
-[WS2-RECV] txt: .Jm......g
-[WS2-SEND] s=4356 len=31
-[WS2-SEND] hex: 00 00 00 0f 00 00 00 09 00 01 00 00 02 00 00 00 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 
-[WS2-SEND] txt: .................jd..OSDK_CORE.
-[WS2-SEND] s=4356 len=33
-[WS2-SEND] hex: 00 00 00 11 00 00 00 09 00 01 00 00 03 00 00 00 8e 6a 64 01 0c 4f 53 44 4b 5f 43 4c 49 45 4e 54 00 
-[WS2-SEND] txt: .................jd..OSDK_CLIENT.
-[WS2-SEND] s=4356 len=34
-[WS2-SEND] hex: 00 00 00 12 00 00 00 09 00 01 00 00 04 00 00 00 8e 6a 64 01 0d 4f 53 44 4b 5f 4e 55 43 4c 45 55 53 00 
-[WS2-SEND] txt: .................jd..OSDK_NUCLEUS.
-[WS2-SEND] s=4356 len=35
-[WS2-SEND] hex: 00 00 00 13 00 00 00 09 00 01 00 00 05 00 00 00 8e 6a 64 01 0e 4f 53 44 4b 5f 57 45 42 4f 46 46 45 52 00 
-[WS2-SEND] txt: .................jd..OSDK_WEBOFFER.
-[WS2-SEND] s=4356 len=42
-[WS2-SEND] hex: 00 00 00 1a 00 00 00 09 00 01 00 00 06 00 00 00 8e 6a 64 01 15 4f 53 44 4b 5f 41 42 55 53 45 5f 52 45 50 4f 52 54 49 4e 47 00 
-[WS2-SEND] txt: .................jd..OSDK_ABUSE_REPORTING.
-[WS2-SEND] s=4356 len=46
-[WS2-SEND] hex: 00 00 00 1e 00 00 00 09 00 01 00 00 07 00 00 00 8e 6a 64 01 19 4f 53 44 4b 5f 58 4d 53 5f 41 42 55 53 45 5f 52 45 50 4f 52 54 49 4e 47 00 
-[WS2-SEND] txt: .................jd..OSDK_XMS_ABUSE_REPORTING.
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 87 00 00 00 09 00 01 00 00 02 20 00 00 
-[WS2-RECV] txt: ............. ..
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 55 00 00 00 09 00 01 00 00 03 20 00 00 
-[WS2-RECV] txt: ...U......... ..
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00 
-[WS2-RECV] txt: ...y......... ..
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00 
-[WS2-RECV] txt: ............. ..
-[WS2-RECV] s=4356 len=46
-[WS2-RECV] hex: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00 
-[WS2-RECV] txt: ........offerUrl..http://127.0.0.1:8080/offer.
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00 
-[WS2-RECV] txt: ............. ..
-[WS2-RECV] s=4356 len=19
-[WS2-RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[WS2-RECV] txt: ........enabled..0.
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00 
-[WS2-RECV] txt: ............. ..
-[WS2-RECV] s=4356 len=19
-[WS2-RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[WS2-RECV] txt: ........enabled..0.
-[WS2-SEND] s=4356 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 01 00 46 00 00 08 00 00 00 
-[WS2-SEND] txt: .........F......
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00 
-[WS2-RECV] txt: .........F... ..
-[WS2-SEND] s=4356 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4356 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4356 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4384 -> 127.0.0.1:8000
-[WS2-CONNECT] result=0xffffffff
-[WS2-CONNECT] s=4420 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4420 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4420 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4420 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4420 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4420 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4420 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4420 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4428 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4428 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4428 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4428 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4432 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4432 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4432 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4432 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4416 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4416 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4416 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4416 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4432 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4432 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4432 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4436 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4436 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4436 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4436 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 a0 00 00 
-[WS2-SEND] txt: ................
-[WS2-CONNECT] s=4436 -> 127.0.0.1:10041
-[WS2-CONNECT] result=0xffffffff
-[WS2-SEND] s=4436 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[WS2-SEND] txt: ................
-[WS2-RECV] s=4436 len=16
-[WS2-RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[WS2-RECV] txt: ................
-[WS2-SEND] s=4436 len=16
-[WS2-SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 a0 00 00 
-[WS2-SEND] txt: ................
+[WS2-CONNECT] s=4220 -> 127.0.0.1:3216
+[WS2-CONNECT] result=0x0
+[WS2-RECV] s=4220 len=75
+[WS2-RECV] hex: 3c 4c 53 58 3e 3c 43 68 61 6c 6c 65 6e 67 65 20 6b 65 79 3d 22 30 66 65 34 31 31 32 30 63 65 38 37 64 61 37 64 36 62 34 35 34 62 62 62 62 62 31 37 66 63 36 33 22 20 76 65 72 73 69 6f 6e 3d 22 
+[WS2-RECV] txt: <LSX><Challenge key="0fe41120ce87da7d6b454bbbbb17fc63" version="3"/></LSX>.
+[WS2-CONNECT] s=4252 -> 127.0.0.1:3216
+[WS2-CONNECT] result=0x0
+[WS2-RECV] s=4252 len=75
+[WS2-RECV] hex: 3c 4c 53 58 3e 3c 43 68 61 6c 6c 65 6e 67 65 20 6b 65 79 3d 22 64 38 62 62 64 30 33 34 61 64 63 36 36 39 62 63 66 31 66 62 35 62 32 66 61 39 63 30 62 33 35 63 22 20 76 65 72 73 69 6f 6e 3d 22 
+[WS2-RECV] txt: <LSX><Challenge key="d8bbd034adc669bcf1fb5b2fa9c0b35c" version="3"/></LSX>.
 
