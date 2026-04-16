@@ -68,8 +68,9 @@ try {
 } catch(e) {}
 
 // ============================================================
-// Step 4: Hook TCP connect to log connection attempts
+// Step 4: Hook TCP connect + force reconnect to port 3216
 // ============================================================
+var sdkConnectAttempted = false;
 try {
     Interceptor.attach(addr(0x712ca40), {
         onEnter: function(args) {
@@ -82,6 +83,49 @@ try {
     });
     console.log('[INIT] Hooked TCP connect');
 } catch(e) {}
+
+// Force SDK reconnect after port is patched to 3216
+// Poll until the port is 3216, then call the connect function
+var reconnectInterval = setInterval(function() {
+    if (sdkConnectAttempted) return;
+    try {
+        var sdkPtr = addr(0x4b7c7a0).readPointer();
+        if (!sdkPtr.isNull()) {
+            var port = sdkPtr.add(0x35c).readU16();
+            if (port === 3216) {
+                sdkConnectAttempted = true;
+                clearInterval(reconnectInterval);
+                console.log('[RECONNECT] Port is 3216 — forcing SDK reconnect...');
+                
+                // The SDK transport object is at sdkPtr + 0x168 area
+                // FUN_14712ca40(transport+0x168, eventObj, signalObj, port)
+                // But we need the right parameters. Simpler: just close the old socket
+                // and let the SDK's message thread reconnect naturally.
+                
+                // Read the socket handle at transport+0x168+0x50
+                // FUN_14712cc20 checks *(param_1+0x50) != -1
+                // If we set it to -1, the SDK thinks it's disconnected and may reconnect
+                
+                // Find the transport objects
+                var transports = [0x1b0, 0x258, 0x1b8, 0x178, 0x180, 0x168];
+                for (var i = 0; i < transports.length; i++) {
+                    try {
+                        var tPtr = sdkPtr.add(transports[i]).readPointer();
+                        if (!tPtr.isNull()) {
+                            var sockHandle = tPtr.add(0x168 + 0x50).readS64();
+                            if (sockHandle !== -1) {
+                                console.log('[RECONNECT] Transport+0x' + transports[i].toString(16) + ' socket=' + sockHandle);
+                                // Close the old socket to force reconnect
+                                tPtr.add(0x168 + 0x50).writeS64(-1);
+                                console.log('[RECONNECT] Set socket to -1 (disconnected)');
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+        }
+    } catch(e) {}
+}, 500);
 
 // ============================================================
 // Step 5: Hook RequestAuthCode to see if it reaches SendXml
