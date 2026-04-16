@@ -21,7 +21,12 @@ Attaching...
 [INIT] Hooked SendXml with ID bypass
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::99700 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Local::PID::98068 ]-> [RECONNECT] Port is 3216 — forcing SDK reconnect...
+[RECONNECT] Transport+0x180 socket=6167553680699503000
+[RECONNECT] Set socket to -1 (disconnected)
+[RECONNECT] Transport+0x168 socket=75064422842702
+[RECONNECT] Set socket to -1 (disconnected)
+[XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
 [XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 [RPC] comp=0x5 cmd=0x11
 [RPC] comp=0x9 cmd=PreAuth
