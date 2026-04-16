@@ -17,13 +17,10 @@ Attaching...
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
 [INIT] Hooked TCP connect
-[INIT] Hooked RequestAuthCode
-[INIT] Hooked SendXml with ID bypass
+[INIT] Hooked RequestAuthCode with FULL BYPASS
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::98068 ]-> [RECONNECT] Port is 3216 — forcing SDK reconnect...
-[RECONNECT] Transport+0x180 socket=6167553680699503000
-[RECONNECT] Set socket to -1 (disconnected)
+[Local::PID::107316 ]-> [RECONNECT] Port is 3216 — forcing SDK reconnect...
 [RECONNECT] Transport+0x168 socket=75064422842702
 [RECONNECT] Set socket to -1 (disconnected)
 [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
@@ -40,15 +37,16 @@ Attaching...
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
-[AUTH-REQ] FUN_1470db3c0 called
-[AUTH-REQ] First byte of function: 0xe9
-[SENDXML] Auth SendXml called
-[SENDXML] userId=0x0 SDK+0x3a0=0x0
-[SENDXML] *** FIXED: set userId and SDK+0x3a0 to 0x1f89493 ***
-[SENDXML] returned 0xa2000004
+[AUTH-REQ] FUN_1470db3c0 called — BYPASSING with fake auth code
+[SENDXML] SendXml called (should not happen with bypass!)
+[AUTH-REQ] Wrote auth code ptr to R8 output
+[AUTH-REQ] Wrote length 22 to R9 output
+[AUTH-REQ] *** BYPASSED — returning fake auth code ***
+[RPC] comp=0x1 cmd=CreateAccount
+[RPC] *** BLOCKING CreateAccount \u2192 converting to Ping ***
+[HANDLER] CreateAccount handler entered
+[HANDLER] Wrote +0x10=1, +0x13=0, R8=0
+[HANDLER] returned
 [RPC] comp=0x1 cmd=Logout
 [RPC] *** BLOCKING Logout \u2192 converting to Ping ***
 [STATE] transition(0, -1)
-[XML-SEND] <LSX><Request recipient="" id="12"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="13"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="14"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>

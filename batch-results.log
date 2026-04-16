@@ -1,4 +1,4 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-16 19:56:43) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-16 20:01:23) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
      ____
@@ -20,13 +20,10 @@ Attaching...
 [SDK] New port: 3216 (patched to 3216)
 [INIT] Hooked XML send
 [INIT] Hooked TCP connect
-[INIT] Hooked RequestAuthCode
-[INIT] Hooked SendXml with ID bypass
+[INIT] Hooked RequestAuthCode with FULL BYPASS
 === Frida v59 Ready ===
 [INFO] Make sure origin-ipc-server.mjs is running on port 3216
-[Local::PID::98068 ]-> [RECONNECT] Port is 3216 — forcing SDK reconnect...
-[RECONNECT] Transport+0x180 socket=6167553680699503000
-[RECONNECT] Set socket to -1 (disconnected)
+[Local::PID::107316 ]-> [RECONNECT] Port is 3216 — forcing SDK reconnect...
 [RECONNECT] Transport+0x168 socket=75064422842702
 [RECONNECT] Set socket to -1 (disconnected)
 [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
@@ -43,126 +40,126 @@ Attaching...
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
 [RPC] comp=0x9 cmd=FetchClientConfig
-[AUTH-REQ] FUN_1470db3c0 called
-[AUTH-REQ] First byte of function: 0xe9
-[SENDXML] Auth SendXml called
-[SENDXML] userId=0x0 SDK+0x3a0=0x0
-[SENDXML] *** FIXED: set userId and SDK+0x3a0 to 0x1f89493 ***
-[SENDXML] returned 0xa2000004
+[AUTH-REQ] FUN_1470db3c0 called — BYPASSING with fake auth code
+[SENDXML] SendXml called (should not happen with bypass!)
+[AUTH-REQ] Wrote auth code ptr to R8 output
+[AUTH-REQ] Wrote length 22 to R9 output
+[AUTH-REQ] *** BYPASSED — returning fake auth code ***
+[RPC] comp=0x1 cmd=CreateAccount
+[RPC] *** BLOCKING CreateAccount \u2192 converting to Ping ***
+[HANDLER] CreateAccount handler entered
+[HANDLER] Wrote +0x10=1, +0x13=0, R8=0
+[HANDLER] returned
 [RPC] comp=0x1 cmd=Logout
 [RPC] *** BLOCKING Logout \u2192 converting to Ping ***
 [STATE] transition(0, -1)
-[XML-SEND] <LSX><Request recipient="" id="12"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="13"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
-[XML-SEND] <LSX><Request recipient="" id="14"><SetPresence UserId="33068179" Presence="INGAME" RichPresence="(In Menus)" GamePresence="" SessionId="FIFA" version="3"/></Request></LSX>
 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
 [Origin] Listening on 127.0.0.1:3216
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-cted
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S4: -> Ping (msgId=12), sending pong
-[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
-[Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
+"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (35 bytes)
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0002 len=38 msgId=8
+[Main] S1: Sending response (26 bytes)
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 08 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
+[Main] S1: -> Ping (msgId=9), sending pong
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
+[Main] S1: -> Ignoring null/error packet (msgId=9 type=5)
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=10
+[Main] S1: Sending response (26 bytes)
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 0a 20 00 00
+[Main] S1 disconnected
+[LOG] Saved: S1 disconnect
+[Main] Session 2 connected: 127.0.0.1:50316
+[Main] S2: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
+[Main] S2: Raw Blaze binary detected
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=11
+[Main] S2: -> Ping (msgId=11), sending pong
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=11
+[Main] S2: -> Ignoring null/error packet (msgId=11 type=5)
+[Main] S2 disconnected
+[LOG] Saved: S2 disconnect
+[Main] Session 3 connected: 127.0.0.1:50323
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S3: -> Ping (msgId=12), sending pong
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S3: -> Ignoring null/error packet (msgId=12 type=5)
+[Main] S3 disconnected
+[LOG] Saved: S3 disconnect
+[Main] Session 4 connected: 127.0.0.1:50324
+[Main] S4: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main] S4: Raw Blaze binary detected
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S4: -> Ping (msgId=13), sending pong
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S4: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:50268
+[Main] Session 5 connected: 127.0.0.1:50325
 [Main] S5: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ping (msgId=13), sending pong
-[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
-[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S5: -> Ping (msgId=14), sending pong
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S5: -> Ignoring null/error packet (msgId=14 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:50269
+[Main] Session 6 connected: 127.0.0.1:50334
 [Main] S6: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
-[Main] S6: Raw Blaze binary detected
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S6: -> Ping (msgId=14), sending pong
-[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
-[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
-[Main] S6 disconnected
-[LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:50270
-[Main] S7: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
-[Main] S7: Raw Blaze binary detected
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S7: -> Ping (msgId=15), sending pong
-[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
-[Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
-[Main] S7 disconnected
-[LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:50271
-[Main] S8: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
-[Main] S8: Raw Blaze binary detected
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S8: -> Ping (msgId=16), sending pong
-[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
-[Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
-[Main] S8 disconnected
-[LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:50273
-[Main] S9: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
-[Main] S9: Raw Blaze binary detected
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S9: -> Ping (msgId=17), sending pong
-[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
-[Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
-[Main] S9 disconnected
-[LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:50275
-[Main] S10: received 16 bytes (total: 16)
-[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
-[Main] S10: Raw Blaze binary detected
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S10: -> Ping (msgId=18), sending pong
-[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
-[Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S6: -> Ping (msgId=15), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S6: -> Ignoring null/error packet (msgId=15 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-[19:55:07.450] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[19:55:07.450] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[19:55:07.451] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[19:55:07.451] PID: 98068
-[19:55:07.612] PATCHED: cert bypass at 000000014613244B
-[19:55:07.776] PATCHED: auth flag at 00000001473CE785
-[19:55:07.821] PATCHED: IsLoggedIntoEA -> true
-[19:55:07.821] PATCHED: IsLoggedIntoNetwork -> true
-[19:55:07.895] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[19:55:07.895] PATCHED: SDK gate -> always 1
-[19:55:07.895] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[19:55:07.895] PATCHED: Login vtable check -> return 1
-[19:55:07.906] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[19:55:07.906] LOGIN SilentLogin: already patched
-[19:55:07.906] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[19:55:07.906] LOGIN ExpressLogin: already patched
-[19:55:07.906] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[19:55:07.906] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[19:55:07.906] PREAUTH_HANDLER: first 128 bytes:
-[19:55:07.906]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[19:55:07.906]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[19:55:07.906]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[19:55:07.906]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[19:55:07.906]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[19:55:07.906]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[19:55:07.906]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[19:55:07.906]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[19:55:07.906] PREAUTH_HANDLER: Cave at 00000000004F0000, 44 bytes (XOR R8D + trampoline)
-[19:55:07.906] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[19:55:07.906] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[19:55:07.906] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[19:55:07.906] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[19:55:07.906] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[19:55:07.906] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[19:55:07.906] PATCHED: FUN_145e280b0 (version compare) -> always match
-[19:55:08.061] PATCHED: Origin SDK check at 00000001470A8430
-[19:55:08.392] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 938 ms
+[19:59:48.314] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[19:59:48.314] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[19:59:48.314] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[19:59:48.314] PID: 107316
+[19:59:48.473] PATCHED: cert bypass at 000000014613244B
+[19:59:48.637] PATCHED: auth flag at 00000001473CE785
+[19:59:48.682] PATCHED: IsLoggedIntoEA -> true
+[19:59:48.682] PATCHED: IsLoggedIntoNetwork -> true
+[19:59:48.759] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[19:59:48.759] PATCHED: SDK gate -> always 1
+[19:59:48.759] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[19:59:48.759] PATCHED: Login vtable check -> return 1
+[19:59:48.770] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[19:59:48.770] LOGIN SilentLogin: already patched
+[19:59:48.770] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[19:59:48.770] LOGIN ExpressLogin: already patched
+[19:59:48.770] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[19:59:48.770] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[19:59:48.770] PREAUTH_HANDLER: first 128 bytes:
+[19:59:48.770]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[19:59:48.770]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[19:59:48.770]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[19:59:48.770]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[19:59:48.770]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[19:59:48.770]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[19:59:48.770]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[19:59:48.770]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[19:59:48.770] PREAUTH_HANDLER: Cave at 00000000004D0000, 44 bytes (XOR R8D + trampoline)
+[19:59:48.770] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[19:59:48.770] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[19:59:48.770] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[19:59:48.770] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[19:59:48.770] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[19:59:48.770] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[19:59:48.770] PATCHED: FUN_145e280b0 (version compare) -> always match
+[19:59:48.923] PATCHED: Origin SDK check at 00000001470A8430
+[19:59:49.246] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 937 ms
 
