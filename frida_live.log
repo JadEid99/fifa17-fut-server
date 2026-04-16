@@ -10,7 +10,5 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v60b: Raw Winsock Intercept ===
-[MODULE] WS2_32.dll at 0x7ffd6eb00000
-[MODULE] mswsock.dll at 0x7ffd6d590000
-[Local::PID::64716 ]-> 
+=== Frida v60c: Raw Winsock Intercept ===
+[Local::PID::108216 ]-> 
