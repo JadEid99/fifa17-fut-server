@@ -549,7 +549,17 @@ static DWORD WINAPI PatchThread(LPVOID) {
             if(!g_sdkGateDone) PatchSdkGateCheck();
             if(!g_preAuthPatchDone) PatchPreAuthHandler();
             
-            // Port patching removed — Origin IPC server listens on 4216 directly
+            // Patch Origin SDK port to 3216 (our Origin IPC server)
+            {
+                uint64_t* pOriginSDK = (uint64_t*)0x144b7c7a0;
+                if (*pOriginSDK != 0) {
+                    uint16_t* pPort = (uint16_t*)(*pOriginSDK + 0x35c);
+                    if (*pPort != 3216) {
+                        Log("ORIGIN-PORT: SDK=0x%llX port=%d -> 3216 at %lu ms", *pOriginSDK, *pPort, GetTickCount()-st);
+                        *pPort = 3216;
+                    }
+                }
+            }
             // Patch 19: Login check — DISABLED (interferes with CreateAccount flow)
             // Patch 18: Age check — DISABLED (interferes with CreateAccount flow)
             /*

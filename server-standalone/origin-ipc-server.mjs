@@ -12,7 +12,7 @@
 import net from 'net';
 import crypto from 'crypto';
 
-const PORT = 4216;
+const PORT = 3216;
 
 function createHandler(socket) {
   const addr = `${socket.remoteAddress}:${socket.remotePort}`;
