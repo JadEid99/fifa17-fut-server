@@ -1,1 +1,1 @@
--webMode MP -Origin_NoAppFocus -onlineEnvironment prod -loginToken FAKETOKEN123456789 -AuthToken FAKETOKEN123456789
+-webMode MP -Origin_NoAppFocus -onlineEnvironment prod -authCode FAKEAUTHCODE1234567890 -loginToken FAKETOKEN123456789 -AuthToken FAKETOKEN123456789

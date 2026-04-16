@@ -75,12 +75,10 @@ static int WSAAPI HookedConnect(SOCKET s, const struct sockaddr* name, int namel
         uint16_t port = ntohs(sin->sin_port);
         uint32_t addr = ntohl(sin->sin_addr.s_addr);
         if (addr == 0x7F000001 && port == 4216) {
-            // DISABLED — let game talk to real Origin for protocol capture
-            // Log("CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:%d", ORIGIN_IPC_PORT);
-            // struct sockaddr_in redirected = *sin;
-            // redirected.sin_port = htons(ORIGIN_IPC_PORT);
-            // return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
-            Log("CONNECT-HOOK: PASSTHROUGH 127.0.0.1:%d (real Origin capture mode)", port);
+            Log("CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:%d", ORIGIN_IPC_PORT);
+            struct sockaddr_in redirected = *sin;
+            redirected.sin_port = htons(ORIGIN_IPC_PORT);
+            return g_realConnect(s, (struct sockaddr*)&redirected, namelen);
         }
     }
     return g_realConnect(s, name, namelen);
@@ -545,8 +543,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            // Patch 3: DISABLED — using Origin IPC server for auth
-            // if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: Re-enabled with -authCode in commandline.txt
+            if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
