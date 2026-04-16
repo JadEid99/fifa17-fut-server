@@ -1,213 +1,285 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-16 21:32:01) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-16 21:42:21) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
-n=1: r
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: .
-[RAW-RECV] len=527: Connection: close..Content-Length: 437..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
-[RAW-SEND] len=938: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 632..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
-[RAW-RECV] len=1: H
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: P
-[RAW-RECV] len=1: /
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: 5
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: I
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: t
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: a
-[RAW-RECV] len=1: l
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: S
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: v
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: E
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: o
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: .
-[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
-[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
-[RAW-RECV] len=1: H
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: P
-[RAW-RECV] len=1: /
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: 5
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: I
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: t
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: a
-[RAW-RECV] len=1: l
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: S
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: v
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: E
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: o
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: .
-[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
-[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
-[RAW-RECV] len=1: H
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: T
-[RAW-RECV] len=1: P
-[RAW-RECV] len=1: /
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: 1
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: 5
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1: 0
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: I
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: t
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: n
-[RAW-RECV] len=1: a
-[RAW-RECV] len=1: l
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: S
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: v
-[RAW-RECV] len=1: e
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1:  
-[RAW-RECV] len=1: E
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: o
-[RAW-RECV] len=1: r
-[RAW-RECV] len=1: .
-[RAW-RECV] len=1: .
-[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
-[SDK-CONNECT] Connecting on port 3216
-[SDK-CONNECT] *** REDIRECTING port 3216 -> 3216 ***
-[RAW-RECV] len=75: <LSX><Challenge key="fcac6bfd3252cd1f6408a0ed289371af" version="3"/></LSX>.
-[SDK-CONNECT] result=0x1
-[SDK-CONNECT] Connecting on port 4216
-[SDK-CONNECT] *** REDIRECTING port 4216 -> 3216 ***
-[RAW-RECV] len=75: <LSX><Challenge key="e74185f706cc96cec2338a34ec3d89d5" version="3"/></LSX>.
-[SDK-CONNECT] result=0x1
+n=19
+[RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
+[RECV] txt: ........enabled..0.
+[SEND] s=4292 len=16
+[SEND] hex: 00 00 00 00 00 00 00 01 00 46 00 00 08 00 00 00 
+[SEND] txt: .........F......
+[RECV] s=4292 len=16
+[RECV] hex: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00 
+[RECV] txt: .........F... ..
+[RECV] s=4292 len=148
+[RECV] hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 05 73 6b 5f 31 00 b2 cb e7 00 00 b6 1a 6c 01 0d 70 31 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 08 50 6c 61 79 65 72 31 00 b2 1c f4 00 00 c2 99 00 00 81 a8 d6 b9 07 cf 48 73 00 00 e3 29 66 00 00 e3 4e 70 00 00 00 d6 99 00 00 81 d0 ac f3 0e 00 cf 08 6d 
+[RECV] txt: .K....=+....*v....\...Zd.......,....^@..sk_1........l..p1@fut.local..M,..;...Player1................Hs...)f...Np...............m.........=i....\....
+[SEND] s=4292 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
+[SEND] txt: ................
+[RECV] s=4292 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
+[RECV] txt: ................
+[SEND] s=4292 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4312 -> 127.0.0.1:8000
+[CONNECT] result=0xffffffff
+[CONNECT] s=4312 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4312 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
+[SEND] txt: ................
+[RECV] s=4312 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
+[RECV] txt: ................
+[SEND] s=4312 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4388 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
+[SEND] txt: ................
+[RECV] s=4388 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
+[RECV] txt: ................
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4388 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
+[SEND] txt: ................
+[RECV] s=4388 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
+[RECV] txt: ................
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=1820 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=1820 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
+[SEND] txt: ................
+[RECV] s=1820 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
+[RECV] txt: ................
+[SEND] s=1820 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4388 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
+[SEND] txt: ................
+[RECV] s=4388 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
+[RECV] txt: ................
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4388 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
+[SEND] txt: ................
+[RECV] s=4388 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
+[RECV] txt: ................
+[SEND] s=4388 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4316 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4316 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
+[SEND] txt: ................
+[RECV] s=4316 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
+[RECV] txt: ................
+[SEND] s=4316 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4316 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4316 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
+[SEND] txt: ................
+[RECV] s=4316 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
+[RECV] txt: ................
+[SEND] s=4316 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 a0 00 00 
+[SEND] txt: ................
+[CONNECT] s=4292 -> 127.0.0.1:10041
+[CONNECT] result=0xffffffff
+[SEND] s=4292 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
+[SEND] txt: ................
+[RECV] s=4292 len=16
+[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
+[RECV] txt: ................
+[SEND] s=4292 len=16
+[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 a0 00 00 
+[SEND] txt: ................
 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
-[Origin] Listening on 127.0.0.1:3216
-[Origin] Connected: 127.0.0.1:51482
-[Origin] Sending: <LSX><Challenge key="5d295791ab3bfd99d2d9b7fea2dcdefc" version="3"/></LSX>
-[Origin] Disconnected: 127.0.0.1:51482 (0 msgs)
-[Origin] Connected: 127.0.0.1:51489
-[Origin] Sending: <LSX><Challenge key="48e4354a95d10aaf0528627f2aaa412a" version="3"/></LSX>
-[Origin] Disconnected: 127.0.0.1:51489 (0 msgs)
-[Origin] Connected: 127.0.0.1:51492
-[Origin] Sending: <LSX><Challenge key="15303731c278894ec744545ed85e1560" version="3"/></LSX>
-[Origin] Disconnected: 127.0.0.1:51492 (0 msgs)
-[Origin] Connected: 127.0.0.1:51494
-[Origin] Sending: <LSX><Challenge key="0f1d5aae56afdd29f8f8482759275a82" version="3"/></LSX>
-[Origin] Disconnected: 127.0.0.1:51494 (0 msgs)
-[Origin] Connected: 127.0.0.1:51503
-[Origin] Sending: <LSX><Challenge key="fcac6bfd3252cd1f6408a0ed289371af" version="3"/></LSX>
-[Origin] Disconnected: 127.0.0.1:51503 (0 msgs)
-[Origin] Connected: 127.0.0.1:51504
-[Origin] Sending: <LSX><Challenge key="e74185f706cc96cec2338a34ec3d89d5" version="3"/></LSX>
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
+[Origin] Port 3216 in use, retrying in 2s...
 
 --- BLAZE SERVER LOG (last 3000 chars) ---
-=== FIFA 17 FUT Private Server ===
-
-
-Waiting for FIFA 17...
-hosts: 127.0.0.1 winter15.gosredirector.ea.com
-
-[QOS-UDP] Listening on UDP port 17502
-[Redirector-Raw] Listening on port 42230
-[Main] Blaze server on port 10041
-[HTTP] on port 8080
-[Catch] Listening on port 443
-[Catch] Listening on port 9988
-[Catch] Listening on port 80
-[Catch] Listening on port 9946
+cted
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S4: -> Ping (msgId=12), sending pong
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
+[Main] S4 disconnected
+[LOG] Saved: S4 disconnect
+[Main] Session 5 connected: 127.0.0.1:51868
+[Main] S5: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main] S5: Raw Blaze binary detected
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ping (msgId=13), sending pong
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
+[Main] S5 disconnected
+[LOG] Saved: S5 disconnect
+[Main] Session 6 connected: 127.0.0.1:51869
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ping (msgId=14), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
+[Main] S6 disconnected
+[LOG] Saved: S6 disconnect
+[Main] Session 7 connected: 127.0.0.1:51870
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ping (msgId=15), sending pong
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
+[Main] S7 disconnected
+[LOG] Saved: S7 disconnect
+[Main] Session 8 connected: 127.0.0.1:51871
+[Main] S8: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
+[Main] S8: Raw Blaze binary detected
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S8: -> Ping (msgId=16), sending pong
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
+[Main] S8 disconnected
+[LOG] Saved: S8 disconnect
+[Main] Session 9 connected: 127.0.0.1:51872
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S9: -> Ping (msgId=17), sending pong
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
+[Main] S9 disconnected
+[LOG] Saved: S9 disconnect
+[Main] Session 10 connected: 127.0.0.1:51873
+[Main] S10: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
+[Main] S10: Raw Blaze binary detected
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ping (msgId=18), sending pong
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-D0000
-[21:30:27.249] EARLY: DAT_144b86bf8 = 0x1E0000 (set BEFORE game init)
-[21:30:27.249] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[21:30:27.249] PID: 99940
-[21:30:27.411] PATCHED: cert bypass at 000000014613244B
-[21:30:27.573] PATCHED: auth flag at 00000001473CE785
-[21:30:27.617] PATCHED: IsLoggedIntoEA -> true
-[21:30:27.617] PATCHED: IsLoggedIntoNetwork -> true
-[21:30:27.696] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[21:30:27.696] PATCHED: SDK gate -> always 1
-[21:30:27.696] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[21:30:27.696] PATCHED: Login vtable check -> return 1
-[21:30:27.707] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:30:27.707] LOGIN SilentLogin: already patched
-[21:30:27.707] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[21:30:27.707] LOGIN ExpressLogin: already patched
-[21:30:27.707] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[21:30:27.707] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[21:30:27.707] PREAUTH_HANDLER: first 128 bytes:
-[21:30:27.707]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[21:30:27.707]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[21:30:27.707]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[21:30:27.707]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[21:30:27.707]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[21:30:27.707]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[21:30:27.707]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[21:30:27.707]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[21:30:27.707] PREAUTH_HANDLER: Cave at 00000000004E0000, 44 bytes (XOR R8D + trampoline)
-[21:30:27.707] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[21:30:27.707] CONNECT-HOOK: Patched DAT_148e223d8 at 469 ms (real=00007FFD6EB11A50)
-[21:30:27.707] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[21:30:27.707] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[21:30:27.707] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[21:30:27.707] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[21:30:27.707] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[21:30:27.707] PATCHED: FUN_145e280b0 (version compare) -> always match
-[21:30:27.881] PATCHED: Origin SDK check at 00000001470A8430
-[21:30:28.202] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 953 ms
-[21:30:28.202] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[21:30:43.281] ORIGIN-PORT: SDK=0x27A491A0 port=4216 -> 3216 at 16032 ms
-[21:30:58.554] ORIGIN-PORT: SDK=0x27A600A0 port=4216 -> 3216 at 31313 ms
-[21:31:13.524] ORIGIN-PORT: SDK=0x27A600A0 port=4216 -> 3216 at 46282 ms
-[21:31:35.137] ORIGIN-PORT: SDK=0x27D9FE10 port=4216 -> 3216 at 67891 ms
-[21:31:50.223] ORIGIN-PORT: SDK=0x29DEF5C0 port=4216 -> 3216 at 82985 ms
+[21:40:45.137] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[21:40:45.137] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[21:40:45.137] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[21:40:45.137] PID: 107404
+[21:40:45.296] PATCHED: cert bypass at 000000014613244B
+[21:40:45.456] PATCHED: auth flag at 00000001473CE785
+[21:40:45.501] PATCHED: IsLoggedIntoEA -> true
+[21:40:45.501] PATCHED: IsLoggedIntoNetwork -> true
+[21:40:45.586] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[21:40:45.586] PATCHED: SDK gate -> always 1
+[21:40:45.586] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[21:40:45.586] PATCHED: Login vtable check -> return 1
+[21:40:45.598] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:40:45.598] LOGIN SilentLogin: already patched
+[21:40:45.598] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[21:40:45.598] LOGIN ExpressLogin: already patched
+[21:40:45.598] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[21:40:45.598] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[21:40:45.598] PREAUTH_HANDLER: first 128 bytes:
+[21:40:45.598]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[21:40:45.598]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[21:40:45.598]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[21:40:45.598]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[21:40:45.598]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[21:40:45.598]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[21:40:45.598]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[21:40:45.598]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[21:40:45.598] PREAUTH_HANDLER: Cave at 0000000000420000, 44 bytes (XOR R8D + trampoline)
+[21:40:45.598] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[21:40:45.598] CONNECT-HOOK: Patched DAT_148e223d8 at 469 ms (real=00007FFD6EB11A50)
+[21:40:45.598] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[21:40:45.598] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[21:40:45.598] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[21:40:45.598] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[21:40:45.598] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[21:40:45.598] PATCHED: FUN_145e280b0 (version compare) -> always match
+[21:40:45.741] PATCHED: Origin SDK check at 00000001470A8430
+[21:40:46.052] CONNECT-HOOK: PASSTHROUGH 127.0.0.1:4216 (real Origin capture mode)
+[21:40:46.055] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 922 ms
 
