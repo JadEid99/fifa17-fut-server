@@ -1,112 +1,90 @@
 /*
- * Frida v62b: Hook ws2_32.dll directly using known base address
+ * Frida v63: Monitor Origin IPC + Blaze flow
+ * No injections — just observe what happens with the correct Origin protocol
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
+console.log('=== Frida v63: Origin Protocol Monitor ===');
 
-function hexDump(bytes, max) {
-    var h = '';
-    for (var i = 0; i < Math.min(bytes.length, max || 128); i++) {
-        h += ('0' + bytes[i].toString(16)).slice(-2) + ' ';
-    }
-    return h;
-}
-function textDump(bytes, max) {
-    var t = '';
-    for (var i = 0; i < Math.min(bytes.length, max || 500); i++) {
-        t += (bytes[i] >= 32 && bytes[i] < 127) ? String.fromCharCode(bytes[i]) : '.';
-    }
-    return t;
-}
+// NOP OSDK screen
+try {
+    Memory.patchCode(addr(0x6e00f40), 4, function(code) {
+        var w = new X86Writer(code, { pc: addr(0x6e00f40) });
+        w.putRet();
+        w.flush();
+    });
+} catch(e) {}
 
-console.log('=== Frida v62b: WS2_32 Direct Hook ===');
+// Monitor XML send
+try {
+    Interceptor.attach(addr(0x70e6ee0), {
+        onEnter: function(args) {
+            try { console.log('[XML-SEND] ' + args[1].readUtf8String()); } catch(e) {}
+        }
+    });
+    console.log('[INIT] Hooked XML send');
+} catch(e) {}
 
-// Find ws2_32 module
-var ws2 = null;
-Process.enumerateModules().forEach(function(m) {
-    if (m.name.toLowerCase() === 'ws2_32.dll') {
-        ws2 = m;
-        console.log('[WS2] Found: ' + m.name + ' at ' + m.base + ' size=' + m.size);
+// Monitor Blaze RPCs
+Interceptor.attach(addr(0x6df0e80), {
+    onEnter: function(args) {
+        var comp = this.context.r8.toInt32();
+        var cmd = this.context.r9.toInt32();
+        if (comp > 0 && comp < 0x8000) {
+            var names = {0x0A:'CreateAccount',0x28:'Login',0x32:'SilentLogin',0x46:'Logout',0x98:'OriginLogin',0x07:'PreAuth',0x08:'PostAuth',0x01:'FetchClientConfig',0x02:'Ping'};
+            console.log('[RPC] comp=0x'+comp.toString(16)+' cmd='+(names[cmd]||'0x'+cmd.toString(16)));
+        }
     }
 });
 
-if (ws2) {
-    // Find exports by enumerating
-    var sendAddr = null, recvAddr = null, connectAddr = null;
-    ws2.enumerateExports().forEach(function(exp) {
-        if (exp.name === 'send') sendAddr = exp.address;
-        if (exp.name === 'recv') recvAddr = exp.address;
-        if (exp.name === 'connect') connectAddr = exp.address;
+// Monitor state transitions
+try {
+    Interceptor.attach(addr(0x6e126b0), {
+        onEnter: function(args) {
+            console.log('[STATE] transition(' + args[1].toInt32() + ', ' + args[2].toInt32() + ')');
+        }
     });
-    
-    console.log('[WS2] send=' + sendAddr + ' recv=' + recvAddr + ' connect=' + connectAddr);
-    
-    if (sendAddr) {
-        Interceptor.attach(sendAddr, {
-            onEnter: function(args) {
-                this._s = args[0].toInt32();
-                this._len = args[2].toInt32();
-                if (this._len > 0 && this._len < 5000) {
-                    var data = args[1].readByteArray(this._len);
-                    var bytes = new Uint8Array(data);
-                    var txt = textDump(bytes);
-                    // Only log if it contains XML or interesting data
-                    if (txt.indexOf('<') !== -1 || txt.indexOf('LSX') !== -1 || this._len < 50) {
-                        console.log('[WS2-SEND] s=' + this._s + ' len=' + this._len);
-                        console.log('[WS2-SEND] hex: ' + hexDump(bytes, 64));
-                        console.log('[WS2-SEND] txt: ' + txt);
-                    }
-                }
-            }
-        });
-        console.log('[INIT] Hooked ws2_32!send');
-    }
-    
-    if (recvAddr) {
-        Interceptor.attach(recvAddr, {
-            onEnter: function(args) {
-                this._s = args[0].toInt32();
-                this._buf = args[1];
-            },
-            onLeave: function(retval) {
-                var n = retval.toInt32();
-                if (n > 0 && n < 5000) {
-                    var data = this._buf.readByteArray(n);
-                    var bytes = new Uint8Array(data);
-                    var txt = textDump(bytes);
-                    if (txt.indexOf('<') !== -1 || txt.indexOf('LSX') !== -1 || n < 50) {
-                        console.log('[WS2-RECV] s=' + this._s + ' len=' + n);
-                        console.log('[WS2-RECV] hex: ' + hexDump(bytes, 64));
-                        console.log('[WS2-RECV] txt: ' + txt);
-                    }
-                }
-            }
-        });
-        console.log('[INIT] Hooked ws2_32!recv');
-    }
-    
-    if (connectAddr) {
-        Interceptor.attach(connectAddr, {
-            onEnter: function(args) {
-                this._s = args[0].toInt32();
-                try {
-                    var sa = args[1];
-                    var family = sa.readU16();
-                    if (family === 2) {
-                        var port = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
-                        var ip = sa.add(4).readU8()+'.'+sa.add(5).readU8()+'.'+sa.add(6).readU8()+'.'+sa.add(7).readU8();
-                        console.log('[WS2-CONNECT] s=' + this._s + ' -> ' + ip + ':' + port);
-                    }
-                } catch(e) {}
-            },
-            onLeave: function(retval) {
-                console.log('[WS2-CONNECT] result=' + retval);
-            }
-        });
-        console.log('[INIT] Hooked ws2_32!connect');
-    }
-} else {
-    console.log('[WS2] ws2_32.dll NOT FOUND');
-}
+} catch(e) {}
 
-console.log('=== Frida v62b Ready — keep Origin open! ===');
+// Monitor login check
+try {
+    Interceptor.attach(addr(0x6e1dae0), {
+        onEnter: function(args) {
+            try {
+                var arrStart = args[0].add(0x218).readPointer();
+                var arrEnd = args[0].add(0x220).readPointer();
+                var count = arrEnd.sub(arrStart).toInt32() / 0x20;
+                console.log('[LOGIN-CHECK] array count=' + count);
+            } catch(e) {}
+        },
+        onLeave: function(retval) {
+            console.log('[LOGIN-CHECK] returned ' + retval);
+        }
+    });
+} catch(e) {}
+
+// Monitor auth code request
+try {
+    Interceptor.attach(addr(0x70db3c0), {
+        onEnter: function(args) {
+            console.log('[AUTH-REQ] FUN_1470db3c0 called');
+        }
+    });
+} catch(e) {}
+
+// Monitor SendXml
+try {
+    Interceptor.attach(addr(0x70e67f0), {
+        onEnter: function(args) {
+            console.log('[SENDXML] called');
+            try {
+                if (!args[2].isNull()) console.log('[SENDXML] type="' + args[2].readUtf8String() + '"');
+            } catch(e) {}
+        },
+        onLeave: function(retval) {
+            console.log('[SENDXML] returned ' + retval);
+        }
+    });
+} catch(e) {}
+
+console.log('=== Frida v63 Ready ===');

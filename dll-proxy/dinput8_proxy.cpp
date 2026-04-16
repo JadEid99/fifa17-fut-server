@@ -543,8 +543,8 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            // Patch 3: Re-enabled with -authCode in commandline.txt
-            if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: DISABLED — Origin IPC server provides auth code
+            // if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();
