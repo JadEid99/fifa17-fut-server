@@ -1,67 +1,67 @@
 /*
- * Frida v60b: RAW WINSOCK INTERCEPT — find send/recv across all modules
+ * Frida v60c: RAW WINSOCK INTERCEPT — no arrow functions
  */
 var base = Process.getModuleByName('FIFA17.exe').base;
 function addr(off) { return base.add(off); }
-console.log('=== Frida v60b: Raw Winsock Intercept ===');
+
+function hexDump(bytes, max) {
+    var h = '';
+    for (var i = 0; i < Math.min(bytes.length, max || 80); i++) {
+        h += ('0' + bytes[i].toString(16)).slice(-2) + ' ';
+    }
+    return h;
+}
+function textDump(bytes, max) {
+    var t = '';
+    for (var i = 0; i < Math.min(bytes.length, max || 200); i++) {
+        t += (bytes[i] >= 32 && bytes[i] < 127) ? String.fromCharCode(bytes[i]) : '.';
+    }
+    return t;
+}
+
+console.log('=== Frida v60c: Raw Winsock Intercept ===');
 
 // NOP OSDK screen
-try { Memory.patchCode(addr(0x6e00f40), 4, function(c) { new X86Writer(c, {pc:addr(0x6e00f40)}).putRet(); }); } catch(e) {}
+try {
+    Memory.patchCode(addr(0x6e00f40), 4, function(code) {
+        var w = new X86Writer(code, { pc: addr(0x6e00f40) });
+        w.putRet();
+        w.flush();
+    });
+} catch(e) {}
 
-// List all modules to find ws2_32
-Process.enumerateModules().forEach(function(m) {
-    if (m.name.toLowerCase().indexOf('ws2') !== -1 || m.name.toLowerCase().indexOf('sock') !== -1 || m.name.toLowerCase().indexOf('winsock') !== -1) {
-        console.log('[MODULE] ' + m.name + ' at ' + m.base);
-    }
-});
-
-// Try multiple ways to find send/recv
-var sendAddr = Module.findExportByName('ws2_32.dll', 'send')
-            || Module.findExportByName('WS2_32.dll', 'send')
-            || Module.findExportByName('WS2_32.DLL', 'send')
-            || Module.findExportByName(null, 'send');
-var recvAddr = Module.findExportByName('ws2_32.dll', 'recv')
-            || Module.findExportByName('WS2_32.dll', 'recv')
-            || Module.findExportByName('WS2_32.DLL', 'recv')
-            || Module.findExportByName(null, 'recv');
-var connectAddr = Module.findExportByName('ws2_32.dll', 'connect')
-               || Module.findExportByName(null, 'connect');
-
+// Find Winsock functions
+var sendAddr = Module.findExportByName('WS2_32.dll', 'send');
+var recvAddr = Module.findExportByName('WS2_32.dll', 'recv');
+var connectAddr = Module.findExportByName('WS2_32.dll', 'connect');
 console.log('[WINSOCK] send=' + sendAddr + ' recv=' + recvAddr + ' connect=' + connectAddr);
 
-// Also read the game's function pointers directly
+// Also try game's own function pointers
 try {
-    var gameSend = addr(0x8e22400).readPointer();
-    var gameRecv = addr(0x8e223f8).readPointer();
-    var gameConnect = addr(0x8e223d8).readPointer();
-    console.log('[GAME-PTRS] send=' + gameSend + ' recv=' + gameRecv + ' connect=' + gameConnect);
-    
-    // Use the game's own function pointers — these are guaranteed to be the right ones
-    if (!gameSend.isNull()) sendAddr = gameSend;
-    if (!gameRecv.isNull()) recvAddr = gameRecv;
-    if (!gameConnect.isNull()) connectAddr = gameConnect;
-    console.log('[USING] send=' + sendAddr + ' recv=' + recvAddr + ' connect=' + connectAddr);
-} catch(e) {
-    console.log('[GAME-PTRS] Error: ' + e);
-}
+    var gs = addr(0x8e22400).readPointer();
+    var gr = addr(0x8e223f8).readPointer();
+    var gc = addr(0x8e223d8).readPointer();
+    console.log('[GAME-PTRS] send=' + gs + ' recv=' + gr + ' connect=' + gc);
+    if (!sendAddr && !gs.isNull()) sendAddr = gs;
+    if (!recvAddr && !gr.isNull()) recvAddr = gr;
+    if (!connectAddr && !gc.isNull()) connectAddr = gc;
+} catch(e) { console.log('[GAME-PTRS] ' + e); }
 
 if (sendAddr) {
     Interceptor.attach(sendAddr, {
         onEnter: function(args) {
             this._s = args[0].toInt32();
-            this._buf = args[1];
             this._len = args[2].toInt32();
             if (this._len > 0 && this._len < 2000) {
-                var data = this._buf.readByteArray(this._len);
+                var data = args[1].readByteArray(this._len);
                 var bytes = new Uint8Array(data);
-                var hex = Array.from(bytes).slice(0, 80).map(b => ('0'+b.toString(16)).slice(-2)).join(' ');
-                var txt = Array.from(bytes).slice(0, 200).map(b => b>=32&&b<127?String.fromCharCode(b):'.').join('');
-                console.log('[SEND] s=' + this._s + ' len=' + this._len + ' hex: ' + hex);
-                console.log('[SEND] txt: ' + txt);
+                console.log('[SEND] s=' + this._s + ' len=' + this._len);
+                console.log('[SEND] hex: ' + hexDump(bytes));
+                console.log('[SEND] txt: ' + textDump(bytes));
             }
         }
     });
-    console.log('[INIT] Hooked send at ' + sendAddr);
+    console.log('[INIT] Hooked send');
 }
 
 if (recvAddr) {
@@ -75,22 +75,21 @@ if (recvAddr) {
             if (n > 0 && n < 2000) {
                 var data = this._buf.readByteArray(n);
                 var bytes = new Uint8Array(data);
-                var hex = Array.from(bytes).slice(0, 80).map(b => ('0'+b.toString(16)).slice(-2)).join(' ');
-                var txt = Array.from(bytes).slice(0, 200).map(b => b>=32&&b<127?String.fromCharCode(b):'.').join('');
-                console.log('[RECV] s=' + this._s + ' len=' + n + ' hex: ' + hex);
-                console.log('[RECV] txt: ' + txt);
+                console.log('[RECV] s=' + this._s + ' len=' + n);
+                console.log('[RECV] hex: ' + hexDump(bytes));
+                console.log('[RECV] txt: ' + textDump(bytes));
             }
         }
     });
-    console.log('[INIT] Hooked recv at ' + recvAddr);
+    console.log('[INIT] Hooked recv');
 }
 
 if (connectAddr) {
     Interceptor.attach(connectAddr, {
         onEnter: function(args) {
             this._s = args[0].toInt32();
-            var sa = args[1];
             try {
+                var sa = args[1];
                 var family = sa.readU16();
                 if (family === 2) {
                     var port = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
@@ -103,7 +102,7 @@ if (connectAddr) {
             console.log('[CONNECT] result=' + retval);
         }
     });
-    console.log('[INIT] Hooked connect at ' + connectAddr);
+    console.log('[INIT] Hooked connect');
 }
 
 // Track Blaze RPCs
@@ -118,4 +117,4 @@ Interceptor.attach(addr(0x6df0e80), {
     }
 });
 
-console.log('=== Frida v60b Ready ===');
+console.log('=== Frida v60c Ready ===');
