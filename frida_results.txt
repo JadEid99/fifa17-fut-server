@@ -10,870 +10,250 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== Frida v60c: Raw Winsock Intercept ===
-[WINSOCK] send=null recv=null connect=null
-[GAME-PTRS] send=0x7ffd6eb02320 recv=0x7ffd6eb11d90 connect=0x7ffd6eb11a50
-[INIT] Hooked send
-[INIT] Hooked recv
-[INIT] Hooked connect
-=== Frida v60c Ready ===
-[Local::PID::87276 ]-> [SEND] s=1548 len=225
-[SEND] hex: 35 33 61 38 30 33 66 37 65 36 61 63 32 62 62 63 37 65 65 37 37 34 33 35 38 63 30 62 38 38 34 36 36 37 61 61 38 35 31 63 33 62 64 35 62 37 64 31 61 62 64 38 31 63 39 61 30 31 66 36 65 31 62 38 39 39 65 62 61 66 63 64 64 35 39 38 62 31 63 38 
-[SEND] txt: 53a803f7e6ac2bbc7ee774358c0b884667aa851c3bd5b7d1abd81c9a01f6e1b899ebafcdd598b1c8f0fe7e7c6997f667313fa03e78bfca6ec8a55815d6983b3430f6eb44f108a4dc3951e6f488c2cc84295a197d32e19e9370da2be128cbf52f6bef00ca
-[SEND] s=1552 len=545
-[SEND] hex: 66 34 35 37 30 30 34 62 61 35 34 62 32 32 65 37 66 34 34 36 63 63 32 34 63 32 66 35 61 66 62 62 65 62 64 61 65 32 30 31 30 34 62 39 63 66 32 37 65 66 30 61 34 62 62 66 65 30 64 65 62 39 37 61 39 38 32 38 39 64 30 62 62 63 39 35 66 33 38 35 
-[SEND] txt: f457004ba54b22e7f446cc24c2f5afbbebdae20104b9cf27ef0a4bbfe0deb97a98289d0bbc95f385be3f19c8426bc202af1e011c859b412041473878a22db33880500c89da840ad39040d66b961299c0c877bfa603ea991d557fa88a10ff15265c6bccc9
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=139
-[SEND] hex: 47 45 54 20 2f 69 67 64 64 65 73 63 2e 78 6d 6c 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 43 6c 6f 73 65 0d 0a 55 73 65 72 2d 41 67 
-[SEND] txt: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 32 
-[RECV] txt: 2
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 4f 
-[RECV] txt: O
-[RECV] s=4216 len=1
-[RECV] hex: 4b 
-[RECV] txt: K
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=263
-[RECV] hex: 43 61 63 68 65 2d 43 6f 6e 74 72 6f 6c 3a 20 6d 61 78 2d 61 67 65 3d 31 32 30 0d 0a 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 33 34 35 36 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 
-[RECV] txt: Cache-Control: max-age=120..Connection: close..Content-Length: 3456..Content-Type: text/xml..Date: Thu, 16 Apr 2026 18:22:37 GMT..ETag: "987F5D7957067EF6"..Expires: Thu, 16 Apr 2026 18:24:37 GMT..Last
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=592
-[SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 
-[SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 280..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 32 
-[RECV] txt: 2
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 4f 
-[RECV] txt: O
-[RECV] s=4216 len=1
-[RECV] hex: 4b 
-[RECV] txt: K
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=550
-[RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 33 36 31 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 63 68 61 72 73 65 74 3d 22 75 74 66 2d 38 22 0d 
-[RECV] txt: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:22:37 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml versi
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=728
-[SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 
-[SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 35 
-[RECV] txt: 5
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 49 
-[RECV] txt: I
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 74 
-[RECV] txt: t
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 61 
-[RECV] txt: a
-[RECV] s=4216 len=1
-[RECV] hex: 6c 
-[RECV] txt: l
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 53 
-[RECV] txt: S
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 76 
-[RECV] txt: v
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 45 
-[RECV] txt: E
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6f 
-[RECV] txt: o
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=527
-[RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 37 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 63 68 61 72 73 65 74 3d 22 75 74 66 2d 38 22 0d 
-[RECV] txt: Connection: close..Content-Length: 437..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=938
-[SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 
-[SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 632..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 35 
-[RECV] txt: 5
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 49 
-[RECV] txt: I
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 74 
-[RECV] txt: t
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 61 
-[RECV] txt: a
-[RECV] s=4216 len=1
-[RECV] hex: 6c 
-[RECV] txt: l
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 53 
-[RECV] txt: S
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 76 
-[RECV] txt: v
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 45 
-[RECV] txt: E
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6f 
-[RECV] txt: o
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=529
-[RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 63 68 61 72 73 65 74 3d 22 75 74 66 2d 38 22 0d 
-[RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=934
-[SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 
-[SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 35 
-[RECV] txt: 5
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 49 
-[RECV] txt: I
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 74 
-[RECV] txt: t
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 61 
-[RECV] txt: a
-[RECV] s=4216 len=1
-[RECV] hex: 6c 
-[RECV] txt: l
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 53 
-[RECV] txt: S
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 76 
-[RECV] txt: v
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 45 
-[RECV] txt: E
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6f 
-[RECV] txt: o
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=529
-[RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 63 68 61 72 73 65 74 3d 22 75 74 66 2d 38 22 0d 
-[RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://
-[CONNECT] s=4216 -> 192.168.178.1:49000
-[CONNECT] result=0xffffffff
-[SEND] s=4216 len=934
-[SEND] hex: 50 4f 53 54 20 2f 69 67 64 75 70 6e 70 2f 63 6f 6e 74 72 6f 6c 2f 57 41 4e 49 50 43 6f 6e 6e 31 20 48 54 54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 31 37 38 2e 31 3a 34 39 30 30 30 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 
-[SEND] txt: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"
-[RECV] s=4216 len=1
-[RECV] hex: 48 
-[RECV] txt: H
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 54 
-[RECV] txt: T
-[RECV] s=4216 len=1
-[RECV] hex: 50 
-[RECV] txt: P
-[RECV] s=4216 len=1
-[RECV] hex: 2f 
-[RECV] txt: /
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 2e 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 31 
-[RECV] txt: 1
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 35 
-[RECV] txt: 5
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 30 
-[RECV] txt: 0
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 49 
-[RECV] txt: I
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 74 
-[RECV] txt: t
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6e 
-[RECV] txt: n
-[RECV] s=4216 len=1
-[RECV] hex: 61 
-[RECV] txt: a
-[RECV] s=4216 len=1
-[RECV] hex: 6c 
-[RECV] txt: l
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 53 
-[RECV] txt: S
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 76 
-[RECV] txt: v
-[RECV] s=4216 len=1
-[RECV] hex: 65 
-[RECV] txt: e
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 20 
-[RECV] txt:  
-[RECV] s=4216 len=1
-[RECV] hex: 45 
-[RECV] txt: E
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 6f 
-[RECV] txt: o
-[RECV] s=4216 len=1
-[RECV] hex: 72 
-[RECV] txt: r
-[RECV] s=4216 len=1
-[RECV] hex: 0d 
-[RECV] txt: .
-[RECV] s=4216 len=1
-[RECV] hex: 0a 
-[RECV] txt: .
-[RECV] s=4216 len=529
-[RECV] hex: 43 6f 6e 6e 65 63 74 69 6f 6e 3a 20 63 6c 6f 73 65 0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68 3a 20 34 33 39 0d 0a 43 6f 6e 74 65 6e 74 2d 54 79 70 65 3a 20 74 65 78 74 2f 78 6d 6c 3b 20 63 68 61 72 73 65 74 3d 22 75 74 66 2d 38 22 0d 
-[RECV] txt: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://
-[SEND] s=1548 len=193
-[SEND] hex: 35 33 61 38 30 33 66 37 65 36 61 63 32 62 62 63 37 65 65 37 37 34 33 35 38 63 30 62 38 38 34 36 36 37 61 61 38 35 31 63 33 62 64 35 62 37 64 31 61 62 64 38 31 63 39 61 30 31 66 36 65 31 62 38 30 38 62 32 30 37 34 33 39 32 64 61 62 39 37 61 
-[SEND] txt: 53a803f7e6ac2bbc7ee774358c0b884667aa851c3bd5b7d1abd81c9a01f6e1b808b2074392dab97a52217ba569cb5cf29a50202f51824d882ec5043422603d7f0ba9dfdc2aefc7c9fb87c08a09f9e256778f86db283039eccde500e209cf4704.
-[RECV] s=1552 len=193
-[RECV] hex: 35 33 61 38 30 33 66 37 65 36 61 63 32 62 62 63 37 65 65 37 37 34 33 35 38 63 30 62 38 38 34 36 36 37 61 61 38 35 31 63 33 62 64 35 62 37 64 31 61 62 64 38 31 63 39 61 30 31 66 36 65 31 62 38 30 38 62 32 30 37 34 33 39 32 64 61 62 39 37 61 
-[RECV] txt: 53a803f7e6ac2bbc7ee774358c0b884667aa851c3bd5b7d1abd81c9a01f6e1b808b2074392dab97a52217ba569cb5cf29a50202f51824d882ec5043422603d7f0ba9dfdc2aefc7c9fb87c08a09f9e256778f86db283039eccde500e209cf4704.
-[SEND] s=1552 len=385
-[SEND] hex: 66 34 35 37 30 30 34 62 61 35 34 62 32 32 65 37 66 34 34 36 63 63 32 34 63 32 66 35 61 66 62 62 61 65 35 64 33 31 62 37 64 63 66 65 65 66 31 35 31 33 32 33 65 39 34 35 37 31 33 66 64 63 62 39 35 30 62 30 38 63 30 31 37 61 37 36 61 62 65 61 
-[SEND] txt: f457004ba54b22e7f446cc24c2f5afbbae5d31b7dcfeef151323e945713fdcb950b08c017a76abea998df63f5aab1e14eee93b778a5d455559067431626eef744dcd7aa38d084cec73c0328007534ff98d518f1bdab3e876777650c98045f65c9c84822a
-[RECV] s=1548 len=385
-[RECV] hex: 66 34 35 37 30 30 34 62 61 35 34 62 32 32 65 37 66 34 34 36 63 63 32 34 63 32 66 35 61 66 62 62 61 65 35 64 33 31 62 37 64 63 66 65 65 66 31 35 31 33 32 33 65 39 34 35 37 31 33 66 64 63 62 39 35 30 62 30 38 63 30 31 37 61 37 36 61 62 65 61 
-[RECV] txt: f457004ba54b22e7f446cc24c2f5afbbae5d31b7dcfeef151323e945713fdcb950b08c017a76abea998df63f5aab1e14eee93b778a5d455559067431626eef744dcd7aa38d084cec73c0328007534ff98d518f1bdab3e876777650c98045f65c9c84822a
+=== Frida v61: Hook SDK Connect ===
+[INIT] Hooked SDK connect (FUN_14712ca40)
+[INIT] Hooked XML send
+[PTRS] send=0x7ffd6eb02320 recv=0x7ffd6eb11d90
+[INIT] Hooked raw send
+[INIT] Hooked raw recv
+=== Frida v61 Ready ===
+[Local::PID::109344 ]-> [XML-SEND] <LSX><Request recipient="" id="10"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[RAW-SEND] len=139: GET /igddesc.xml HTTP/1.1..Host: 192.168.178.1:49000..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Accept: */*....
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 2
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: O
+[RAW-RECV] len=1: K
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-SEND] len=592: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 280..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress"..Cache-Control: 
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 2
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: O
+[RAW-RECV] len=1: K
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=550: Connection: close..Content-Length: 361..Content-Type: text/xml; charset="utf-8"..Date: Thu, 16 Apr 2026 18:28:18 GMT..Server: FRITZ!Box 7583 UPnP/1.0 AVM FRITZ!Box 7583 167.08.20..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://s
+[RAW-SEND] len=728: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 409..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#GetSpecificPortMappingEntry"..Cache-Co
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=527: Connection: close..Content-Length: 437..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=938: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 632..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
 [RPC] comp=0x5 cmd=0x11
-[CONNECT] s=4276 -> 127.0.0.1:42230
-[CONNECT] result=0xffffffff
-[SEND] s=4276 len=116
-[SEND] hex: 16 03 00 00 6f 01 00 00 6b 03 03 69 e1 28 fd af b0 04 2c a9 8c 37 be 14 09 e5 e6 45 da 3e 2f 78 6b b9 24 d3 e7 19 85 67 5f 6e 9e 00 00 10 00 9d 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65 
-[SEND] txt: ....o...k..i.(....,..7.....E.>/xk.$....g_n.........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
-[RECV] s=4276 len=5
-[RECV] hex: 16 03 03 00 4a 
-[RECV] txt: ....J
-[RECV] s=4276 len=74
-[RECV] hex: 02 00 00 46 03 03 69 e1 28 fd 44 b9 c2 95 b5 8e e2 31 5b df 23 64 52 2e cf a1 8e 52 05 89 b7 17 ef 89 c1 36 76 4e 20 67 3c e2 79 2b 6f fc f0 56 0f 8e 79 c2 1d 42 46 c1 51 a1 82 cb 9c 52 e8 70 cf ea be 90 76 8c 70 00 05 00 
-[RECV] txt: ...F..i.(.D......1[.#dR....R.......6vN g<.y+o..V..y..BF.Q....R.p....v.p...
-[RECV] s=4276 len=5
-[RECV] hex: 16 03 03 02 bb 
-[RECV] txt: .....
-[RECV] s=4276 len=699
-[RECV] hex: 0b 00 02 b7 00 02 b4 00 02 b1 30 82 02 ad 30 82 02 16 02 14 43 ee 26 4a 09 a8 8b 3e d4 77 3b 09 a4 b2 61 d3 5e 51 80 d3 30 0d 06 09 2a 86 48 86 f7 0d 01 01 05 05 00 30 81 a0 31 20 30 1e 06 03 55 04 0b 0c 17 4f 6e 6c 69 6e 65 20 54 65 63 68 
-[RECV] txt: ..........0...0.....C.&J...>.w;...a.^Q..0...*.H........0..1 0...U....Online Technology Group1.0...U....Electronic Arts, Inc.1.0...U....Redwood City1.0...U....California1.0...U....US1#0!..U....OTG3 Cer
-[RECV] s=4276 len=5
-[RECV] hex: 16 03 03 00 04 
-[RECV] txt: .....
-[RECV] s=4276 len=4
-[RECV] hex: 0e 00 00 00 
-[RECV] txt: ....
-[SEND] s=4276 len=139
-[SEND] hex: 16 03 03 00 86 10 00 00 82 00 80 99 e9 36 1f 37 f3 e5 e9 17 2d ef 40 57 38 52 51 c4 3c 0d 73 d9 ce 10 03 3d b5 3d 52 15 0c 54 ff 5a af 1e d8 1a 27 aa b1 f1 c1 13 24 83 e7 63 c4 ea e0 05 59 37 0f c0 2a 5b 45 9f ea cc 2f 85 5c fb fb 05 a1 9f 
-[SEND] txt: .............6.7....-.@W8RQ.<.s....=.=R..T.Z....'.....$..c....Y7..*[E.../.\.........r.:...ei!.3...Xy...+.f`.}tig&.\..>r9N..-....j...'..z6..
-[SEND] s=4276 len=6
-[SEND] hex: 14 03 03 00 01 01 
-[SEND] txt: ......
-[SEND] s=4276 len=41
-[SEND] hex: 16 03 03 00 24 84 9d af a7 8f 9b 62 1a be 16 c6 5a f8 a9 d5 da 30 a6 49 57 42 82 8d 0c 06 7b 1b c4 f1 81 db 1f e9 06 c9 a8 
-[SEND] txt: ....$......b....Z....0.IWB....{..........
-[RECV] s=4276 len=5
-[RECV] hex: 14 03 03 00 01 
-[RECV] txt: .....
-[RECV] s=4276 len=1
-[RECV] hex: 01 
-[RECV] txt: .
-[RECV] s=4276 len=5
-[RECV] hex: 16 03 03 00 24 
-[RECV] txt: ....$
-[RECV] s=4276 len=36
-[RECV] hex: af e1 d6 33 5b 9d 01 86 57 89 af f4 4b ad 04 70 27 46 95 0c 63 45 6a 38 b9 7f 94 f4 6e c9 a5 21 68 ff a7 68 
-[RECV] txt: ...3[...W...K..p'F..cEj8....n..!h..h
-[SEND] s=4276 len=908
-[SEND] hex: 17 03 03 03 87 bc 09 30 08 17 3c f9 97 b6 d7 28 98 c6 00 0f 21 1f ba 8b 82 a9 48 6f 62 e3 e5 2c 4d ae fd 3e c3 76 e3 f9 1a df 27 57 3a c6 85 fd 78 0b d2 8e 10 37 c6 07 ab 70 3f fb 53 12 ab 92 44 37 70 a6 1d 14 04 bb d3 25 3a 37 d5 7a e8 62 
-[SEND] txt: .......0..<....(....!.....Hob..,M..>.v....'W:...x....7...p?.S...D7p......%:7.z.bC..H9....!.......'...q.%#l.....U....6...g.k.....[...i....?...l..p.k..J]..H....y]4.{o.....~......;%....#../T......|]..[X%
-[RECV] s=4276 len=5
-[RECV] hex: 17 03 03 01 b5 
-[RECV] txt: .....
-[RECV] s=4276 len=437
-[RECV] hex: 4e cf ba d6 cb 75 62 5b d0 51 86 f9 60 f6 31 d6 2d 9c 9b 3a 18 2a f3 72 41 f4 23 07 b8 11 b7 82 9c 75 f9 b7 8d 3a 8f 9a 6e 0b 12 f7 9c 9b 58 ff f3 35 66 1c 43 13 59 a1 a2 f9 07 d5 36 25 87 b2 f4 9f a1 94 41 b5 d4 91 45 20 16 24 2a 88 3e b8 
-[RECV] txt: N....ub[.Q..`.1.-..:.*.rA.#......u...:..n.....X..5f.C.Y.....6%......A...E .$*.>.^..?.TmP.].oJ......4.......S......8..f|.K....v..za...q.9K>..{.rn....M.6..4..W........aS.....u.0 ...AMG.7._....5kM}....F.
-[SEND] s=4276 len=27
-[SEND] hex: 15 03 03 00 16 6a 7e 1e a8 7e 7e f3 94 f2 32 17 9b f1 77 a1 b8 5a d5 7c 80 b6 94 
-[SEND] txt: .....j~..~~...2...w..Z.|...
-[CONNECT] s=4276 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
+[RAW-SEND] len=116: ....o...k..i.*R.|.8!a.0;................4F.........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
+[RAW-RECV] len=5: ....J
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=4: ....
+[RAW-SEND] len=139: ............y...........y@F7CBd....x1.B|......k........(...l..h..I l..4V.8.......p.w..f........Bl..|...p..e..Yen.F.<(.....M..7..:e..4...j.:
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=1: .
+[RAW-RECV] len=5: ....$
+[RAW-RECV] len=36: d>.|..m...Np..........?A&...z......g
+[RAW-SEND] len=908: .....?.:D.pCQ.!.p..O..{.1...A+..~.l.....`zA....D.".h.......|...}..F..m.....Z..o..Y..27.+........$..<..;..)*.H.X....D&..r..N..+.J`E.Cp..X.~5^..\D...$. .5{...*.E.%....F^..^b.".....I5h...R..`<+%...b^7../....0,........W.r....6C=%l....'=.>..2.."Ce>?...&..tf.*kj......%~%bd#S:..&T.....~d&T;...C.^..}../.?..
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=437: :..po<.7<.....=v{]..../.........(....[.&....gTYY....h........i......R......\...7.....?..#-#..[@........~.&..7.\`........<..B:3...B.../....C.....3#.u...exV.)D....yE....9.........I.._.c..^..<...p.,3.s.t^7`..l._,b.`>..]T..._...:..0...._.(.....id/.1...8..r.D<t.0..RH.1...H\....a._...8.r......Q..E.bZ.....
 [RPC] comp=0x9 cmd=PreAuth
-[SEND] s=4276 len=225
-[SEND] hex: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2 d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00 8e 9b a6 03 8b 39 2b 01 0b 31 35 2e 31 2e 31 2e 
-[SEND] txt: .................Ht.../............h...fifa-2017-pc-trial...%........9+..15.1.1.3.0..Jm..Jun  9 2017 16:15:40......FIFA17.......:...FIFAPC..ir..3175939..9+..15.1.2.1.0......prod...........M...1.1...8.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 02 74 00 00 00 09 00 07 00 00 00 20 00 00 
-[RECV] txt: ...t......... ..
-[RECV] s=4276 len=628
-[RECV] hex: 86 eb ee 00 00 87 3c a3 01 07 33 30 33 31 30 37 00 8e 99 33 07 0e 01 04 07 09 0f 19 1c 80 e0 03 81 e0 03 82 e0 03 83 e0 03 85 e0 03 86 e0 03 90 1f 8e e9 ee 01 01 00 8e fb a6 03 8e fb a6 05 01 01 0b 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 
-[RECV] txt: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucle
+[RAW-RECV] len=16: ...t......... ..
+[RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
 [RPC] comp=0x9 cmd=Ping
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 09 00 02 00 00 01 00 00 00 
-[SEND] txt: ................
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 0a 00 00 00 09 00 02 00 00 01 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=10
-[RECV] hex: cf 4a 6d 00 9b 82 c1 f8 b2 67 
-[RECV] txt: .Jm......g
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=10: .Jm......g
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=31
-[SEND] hex: 00 00 00 0f 00 00 00 09 00 01 00 00 02 00 00 00 8e 6a 64 01 0a 4f 53 44 4b 5f 43 4f 52 45 00 
-[SEND] txt: .................jd..OSDK_CORE.
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=33
-[SEND] hex: 00 00 00 11 00 00 00 09 00 01 00 00 03 00 00 00 8e 6a 64 01 0c 4f 53 44 4b 5f 43 4c 49 45 4e 54 00 
-[SEND] txt: .................jd..OSDK_CLIENT.
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=34
-[SEND] hex: 00 00 00 12 00 00 00 09 00 01 00 00 04 00 00 00 8e 6a 64 01 0d 4f 53 44 4b 5f 4e 55 43 4c 45 55 53 00 
-[SEND] txt: .................jd..OSDK_NUCLEUS.
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=35
-[SEND] hex: 00 00 00 13 00 00 00 09 00 01 00 00 05 00 00 00 8e 6a 64 01 0e 4f 53 44 4b 5f 57 45 42 4f 46 46 45 52 00 
-[SEND] txt: .................jd..OSDK_WEBOFFER.
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=42
-[SEND] hex: 00 00 00 1a 00 00 00 09 00 01 00 00 06 00 00 00 8e 6a 64 01 15 4f 53 44 4b 5f 41 42 55 53 45 5f 52 45 50 4f 52 54 49 4e 47 00 
-[SEND] txt: .................jd..OSDK_ABUSE_REPORTING.
 [RPC] comp=0x9 cmd=FetchClientConfig
-[SEND] s=4276 len=46
-[SEND] hex: 00 00 00 1e 00 00 00 09 00 01 00 00 07 00 00 00 8e 6a 64 01 19 4f 53 44 4b 5f 58 4d 53 5f 41 42 55 53 45 5f 52 45 50 4f 52 54 49 4e 47 00 
-[SEND] txt: .................jd..OSDK_XMS_ABUSE_REPORTING.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 87 00 00 00 09 00 01 00 00 02 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=135
-[RECV] hex: 8e fb a6 05 01 01 05 10 63 6f 6e 6e 49 64 6c 65 54 69 6d 65 6f 75 74 00 04 39 30 73 00 16 64 65 66 61 75 6c 74 52 65 71 75 65 73 74 54 69 6d 65 6f 75 74 00 04 36 30 73 00 0b 70 69 6e 67 50 65 72 69 6f 64 00 04 31 35 73 00 16 76 6f 69 70 48 
-[RECV] txt: ........connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 55 00 00 00 09 00 01 00 00 03 20 00 00 
-[RECV] txt: ...U......... ..
-[RECV] s=4276 len=85
-[RECV] hex: 8e fb a6 05 01 01 04 0e 63 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 08 33 31 37 35 39 33 39 00 15 6d 69 6e 69 6d 75 6d 43 6c 69 65 6e 74 56 65 72 73 69 6f 6e 00 02 30 00 0a 75 70 64 61 74 65 55 72 6c 00 01 00 0c 66 6f 72 63 65 55 70 64 61 74 
-[RECV] txt: ........clientVersion..3175939..minimumClientVersion..0..updateUrl....forceUpdate..0.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00 
-[RECV] txt: ...y......... ..
-[RECV] s=4276 len=121
-[RECV] hex: 8e fb a6 05 01 01 03 0f 6e 75 63 6c 65 75 73 43 6f 6e 6e 65 63 74 00 16 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 00 0d 6e 75 63 6c 65 75 73 50 72 6f 78 79 00 16 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 
-[RECV] txt: ........nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0.1:8080.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=46
-[RECV] hex: 8e fb a6 05 01 01 01 09 6f 66 66 65 72 55 72 6c 00 1c 68 74 74 70 3a 2f 2f 31 32 37 2e 30 2e 30 2e 31 3a 38 30 38 30 2f 6f 66 66 65 72 00 
-[RECV] txt: ........offerUrl..http://127.0.0.1:8080/offer.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=19
-[RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[RECV] txt: ........enabled..0.
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=19
-[RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[RECV] txt: ........enabled..0.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=16: ...U......... ..
+[RAW-RECV] len=16: ...y......... ..
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=46: ........offerUrl..http://127.0.0.1:8080/offer.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
 [RPC] comp=0x1 cmd=Logout
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 01 00 46 00 00 08 00 00 00 
-[SEND] txt: .........F......
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00 
-[RECV] txt: .........F... ..
-[RECV] s=4276 len=148
-[RECV] hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 05 73 6b 5f 31 00 b2 cb e7 00 00 b6 1a 6c 01 0d 70 31 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 08 50 6c 61 
-[RECV] txt: .K....=+....*v....\...Zd.......,....^@..sk_1........l..p1@fut.local..M,..;...Player1................Hs...)f...Np...............m.........=i....\....
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[SEND] txt: ................
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[RECV] txt: ................
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4252 -> 127.0.0.1:8000
-[CONNECT] result=0xffffffff
-[CONNECT] s=4392 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4392 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[SEND] txt: ................
-[RECV] s=4392 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[RECV] txt: ................
-[SEND] s=4392 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4276 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[SEND] txt: ................
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[RECV] txt: ................
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4360 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4360 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[SEND] txt: ................
-[RECV] s=4360 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[RECV] txt: ................
-[SEND] s=4360 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4404 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4404 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[SEND] txt: ................
-[RECV] s=4404 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[RECV] txt: ................
-[SEND] s=4404 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4356 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4356 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[SEND] txt: ................
-[RECV] s=4356 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[RECV] txt: ................
-[SEND] s=4356 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4400 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4400 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[SEND] txt: ................
-[RECV] s=4400 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[RECV] txt: ................
-[SEND] s=4400 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4220 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[SEND] txt: ................
-[RECV] s=4220 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[RECV] txt: ................
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4292 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4292 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[SEND] txt: ................
-[RECV] s=4292 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[RECV] txt: ................
-[SEND] s=4292 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4220 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[SEND] txt: ................
-[RECV] s=4220 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[RECV] txt: ................
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 a0 00 00 
-[SEND] txt: ................
+[RAW-RECV] len=16: .........F... ..
+[STATE] transition(0, -1)
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
 

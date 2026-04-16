@@ -1,132 +1,115 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-16 20:24:04) ===
+﻿=== Frida Deep RPC Trace v2 (2026-04-16 20:29:44) ===
 
 --- FRIDA OUTPUT (last 5000 chars) ---
- len=16
-[RECV] hex: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00 
-[RECV] txt: ............. ..
-[RECV] s=4276 len=19
-[RECV] hex: 8e fb a6 05 01 01 01 08 65 6e 61 62 6c 65 64 00 02 30 00 
-[RECV] txt: ........enabled..0.
+
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[RAW-SEND] len=934: POST /igdupnp/control/WANIPConn1 HTTP/1.1..Host: 192.168.178.1:49000..Content-Length: 628..Connection: Close..User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)..Content-Type: text/xml; charset="utf-8"..SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"..Cache-Control: no-cac
+[RAW-RECV] len=1: H
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: T
+[RAW-RECV] len=1: P
+[RAW-RECV] len=1: /
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: 1
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: 5
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1: 0
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: I
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: t
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: n
+[RAW-RECV] len=1: a
+[RAW-RECV] len=1: l
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: S
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: v
+[RAW-RECV] len=1: e
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1:  
+[RAW-RECV] len=1: E
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: o
+[RAW-RECV] len=1: r
+[RAW-RECV] len=1: .
+[RAW-RECV] len=1: .
+[RAW-RECV] len=529: Connection: close..Content-Length: 439..Content-Type: text/xml; charset="utf-8"..Ext: ....<?xml version="1.0"?>.<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">.<s:Body>.<s:Fault>.<faultcode>s:Client</faultcode>.<faultstring
+[XML-SEND] <LSX><Request recipient="" id="11"><GetProfile index="0" version="3"/></Request></LSX>
+[RPC] comp=0x5 cmd=0x11
+[RAW-SEND] len=116: ....o...k..i.*R.|.8!a.0;................4F.........=.<.5./.......2...". ...winter15.gosredirector.ea.com............
+[RAW-RECV] len=5: ....J
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=4: ....
+[RAW-SEND] len=139: ............y...........y@F7CBd....x1.B|......k........(...l..h..I l..4V.8.......p.w..f........Bl..|...p..e..Yen.F.<(.....M..7..:e..4...j.:
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=1: .
+[RAW-RECV] len=5: ....$
+[RAW-RECV] len=36: d>.|..m...Np..........?A&...z......g
+[RAW-SEND] len=908: .....?.:D.pCQ.!.p..O..{.1...A+..~.l.....`zA....D.".h.......|...}..F..m.....Z..o..Y..27.+........$..<..;..)*.H.X....D&..r..N..+.J`E.Cp..X.~5^..\D...$. .5{...*.E.%....F^..^b.".....I5h...R..`<+%...b^7../....0,........W.r....6C=%l....'=.>..2.."Ce>?...&..tf.*kj......%~%bd#S:..&T.....~d&T;...C.^..}../.?..
+[RAW-RECV] len=5: .....
+[RAW-RECV] len=437: :..po<.7<.....=v{]..../.........(....[.&....gTYY....h........i......R......\...7.....?..#-#..[@........~.&..7.\`........<..B:3...B.../....C.....3#.u...exV.)D....yE....9.........I.._.c..^..<...p.,3.s.t^7`..l._,b.`>..]T..._...:..0...._.(.....id/.1...8..r.D<t.0..RH.1...H\....a._...8.r......Q..E.bZ.....
+[RPC] comp=0x9 cmd=PreAuth
+[RAW-RECV] len=16: ...t......... ..
+[RAW-RECV] len=628: ......<...303107...3...............................................connIdleTimeout..90s..defaultRequestTimeout..60s..pingPeriod..15s..voipHeadsetUpdateRate..1000..xlspConnectionIdleTimeout..300..nucleusConnect..http://127.0.0.1:8080..nucleusProxy..http://127.0.0.1:8080..nucleusPortal..http://127.0.0
+[RPC] comp=0x9 cmd=Ping
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=10: .Jm......g
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RPC] comp=0x9 cmd=FetchClientConfig
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=16: ...U......... ..
+[RAW-RECV] len=16: ...y......... ..
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=46: ........offerUrl..http://127.0.0.1:8080/offer.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
+[RAW-RECV] len=16: ............. ..
+[RAW-RECV] len=19: ........enabled..0.
 [RPC] comp=0x1 cmd=Logout
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 01 00 46 00 00 08 00 00 00 
-[SEND] txt: .........F......
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00 
-[RECV] txt: .........F... ..
-[RECV] s=4276 len=148
-[RECV] hex: bb 4b f3 00 00 c2 3d 2b 01 01 00 c3 2a 76 01 01 00 ce 5c f3 03 8b 5a 64 00 81 d0 ac f3 0e 9b 2c f4 00 00 ae 5e 40 01 05 73 6b 5f 31 00 b2 cb e7 00 00 b6 1a 6c 01 0d 70 31 40 66 75 74 2e 6c 6f 63 61 6c 00 c2 4d 2c 03 93 3b ad 01 08 50 6c 61 
-[RECV] txt: .K....=+....*v....\...Zd.......,....^@..sk_1........l..p1@fut.local..M,..;...Player1................Hs...)f...Np...............m.........=i....\....
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[SEND] txt: ................
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 80 00 00 
-[RECV] txt: ................
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 09 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4252 -> 127.0.0.1:8000
-[CONNECT] result=0xffffffff
-[CONNECT] s=4392 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4392 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[SEND] txt: ................
-[RECV] s=4392 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00 
-[RECV] txt: ................
-[SEND] s=4392 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0a a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4276 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[SEND] txt: ................
-[RECV] s=4276 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00 
-[RECV] txt: ................
-[SEND] s=4276 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0b a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4360 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4360 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[SEND] txt: ................
-[RECV] s=4360 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00 
-[RECV] txt: ................
-[SEND] s=4360 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0c a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4404 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4404 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[SEND] txt: ................
-[RECV] s=4404 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00 
-[RECV] txt: ................
-[SEND] s=4404 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0d a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4356 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4356 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[SEND] txt: ................
-[RECV] s=4356 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00 
-[RECV] txt: ................
-[SEND] s=4356 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0e a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4400 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4400 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[SEND] txt: ................
-[RECV] s=4400 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00 
-[RECV] txt: ................
-[SEND] s=4400 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 0f a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4220 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[SEND] txt: ................
-[RECV] s=4220 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00 
-[RECV] txt: ................
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 10 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4292 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4292 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[SEND] txt: ................
-[RECV] s=4292 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00 
-[RECV] txt: ................
-[SEND] s=4292 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 11 a0 00 00 
-[SEND] txt: ................
-[CONNECT] s=4220 -> 127.0.0.1:10041
-[CONNECT] result=0xffffffff
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[SEND] txt: ................
-[RECV] s=4220 len=16
-[RECV] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00 
-[RECV] txt: ................
-[SEND] s=4220 len=16
-[SEND] hex: 00 00 00 00 00 00 00 00 00 00 00 00 12 a0 00 00 
-[SEND] txt: ................
+[RAW-RECV] len=16: .........F... ..
+[STATE] transition(0, -1)
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
+[RAW-RECV] len=16: ................
 
 
 --- ORIGIN IPC SERVER (last 3000 chars) ---
@@ -140,7 +123,7 @@ cted
 [Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
 [Main] S4 disconnected
 [LOG] Saved: S4 disconnect
-[Main] Session 5 connected: 127.0.0.1:50589
+[Main] Session 5 connected: 127.0.0.1:50642
 [Main] S5: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
 [Main] S5: Raw Blaze binary detected
@@ -150,7 +133,7 @@ cted
 [Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
 [Main] S5 disconnected
 [LOG] Saved: S5 disconnect
-[Main] Session 6 connected: 127.0.0.1:50590
+[Main] Session 6 connected: 127.0.0.1:50643
 [Main] S6: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
 [Main] S6: Raw Blaze binary detected
@@ -160,7 +143,7 @@ cted
 [Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
 [Main] S6 disconnected
 [LOG] Saved: S6 disconnect
-[Main] Session 7 connected: 127.0.0.1:50591
+[Main] Session 7 connected: 127.0.0.1:50644
 [Main] S7: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
 [Main] S7: Raw Blaze binary detected
@@ -170,7 +153,7 @@ cted
 [Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
 [Main] S7 disconnected
 [LOG] Saved: S7 disconnect
-[Main] Session 8 connected: 127.0.0.1:50592
+[Main] Session 8 connected: 127.0.0.1:50645
 [Main] S8: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
 [Main] S8: Raw Blaze binary detected
@@ -180,7 +163,7 @@ cted
 [Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
 [Main] S8 disconnected
 [LOG] Saved: S8 disconnect
-[Main] Session 9 connected: 127.0.0.1:50593
+[Main] Session 9 connected: 127.0.0.1:50646
 [Main] S9: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
 [Main] S9: Raw Blaze binary detected
@@ -190,7 +173,7 @@ cted
 [Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
 [Main] S9 disconnected
 [LOG] Saved: S9 disconnect
-[Main] Session 10 connected: 127.0.0.1:50594
+[Main] Session 10 connected: 127.0.0.1:50647
 [Main] S10: received 16 bytes (total: 16)
 [Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
 [Main] S10: Raw Blaze binary detected
@@ -200,41 +183,41 @@ cted
 [Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
 
 --- DLL LOG (last 3000 chars) ---
-[20:22:28.792] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[20:22:28.792] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[20:22:28.792] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[20:22:28.792] PID: 87276
-[20:22:28.945] PATCHED: cert bypass at 000000014613244B
-[20:22:29.097] PATCHED: auth flag at 00000001473CE785
-[20:22:29.141] PATCHED: IsLoggedIntoEA -> true
-[20:22:29.141] PATCHED: IsLoggedIntoNetwork -> true
-[20:22:29.219] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[20:22:29.219] PATCHED: SDK gate -> always 1
-[20:22:29.219] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[20:22:29.219] PATCHED: Login vtable check -> return 1
-[20:22:29.230] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[20:22:29.230] LOGIN SilentLogin: already patched
-[20:22:29.230] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[20:22:29.230] LOGIN ExpressLogin: already patched
-[20:22:29.230] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[20:22:29.230] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[20:22:29.230] PREAUTH_HANDLER: first 128 bytes:
-[20:22:29.230]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[20:22:29.230]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[20:22:29.230]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[20:22:29.230]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[20:22:29.230]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[20:22:29.230]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[20:22:29.230]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[20:22:29.230]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[20:22:29.230] PREAUTH_HANDLER: Cave at 00000000009B0000, 44 bytes (XOR R8D + trampoline)
-[20:22:29.230] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[20:22:29.230] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[20:22:29.230] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[20:22:29.230] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[20:22:29.230] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[20:22:29.230] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[20:22:29.230] PATCHED: FUN_145e280b0 (version compare) -> always match
-[20:22:29.385] PATCHED: Origin SDK check at 00000001470A8430
-[20:22:29.710] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 922 ms
+[20:28:09.068] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[20:28:09.068] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[20:28:09.069] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[20:28:09.069] PID: 109344
+[20:28:09.340] PATCHED: Origin SDK check at 00000001470A8430
+[20:28:09.399] PATCHED: auth flag at 00000001473CE785
+[20:28:09.443] PATCHED: IsLoggedIntoEA -> true
+[20:28:09.443] PATCHED: IsLoggedIntoNetwork -> true
+[20:28:09.514] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[20:28:09.515] PATCHED: SDK gate -> always 1
+[20:28:09.515] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[20:28:09.515] PATCHED: Login vtable check -> return 1
+[20:28:09.526] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:28:09.526] LOGIN SilentLogin: already patched
+[20:28:09.526] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[20:28:09.526] LOGIN ExpressLogin: already patched
+[20:28:09.526] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[20:28:09.526] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[20:28:09.526] PREAUTH_HANDLER: first 128 bytes:
+[20:28:09.526]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[20:28:09.526]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[20:28:09.526]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[20:28:09.526]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[20:28:09.526]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[20:28:09.526]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[20:28:09.526]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[20:28:09.526]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[20:28:09.526] PREAUTH_HANDLER: Cave at 00000000001F0000, 44 bytes (XOR R8D + trampoline)
+[20:28:09.526] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[20:28:09.526] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[20:28:09.526] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[20:28:09.526] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[20:28:09.526] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[20:28:09.526] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[20:28:09.526] PATCHED: FUN_145e280b0 (version compare) -> always match
+[20:28:09.673] PATCHED: cert bypass at 000000014613244B
+[20:28:10.086] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 1016 ms
 
