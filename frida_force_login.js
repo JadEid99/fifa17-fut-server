@@ -128,58 +128,50 @@ var reconnectInterval = setInterval(function() {
 }, 500);
 
 // ============================================================
-// Step 5: Hook RequestAuthCode to see if it reaches SendXml
+// Step 5: Hook RequestAuthCode (FUN_1470db3c0) — BYPASS entirely
+// Instead of letting it call SendXml (which fails), we provide
+// the auth code directly by writing to the output params.
+// FUN_1470db3c0(userId, requestObj, outAuthCode, outLength, param5)
+// On success: *outAuthCode = string ptr, *outLength = length, return 0
 // ============================================================
+var fakeAuthPtr = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
 try {
     Interceptor.attach(addr(0x70db3c0), {
         onEnter: function(args) {
-            console.log('[AUTH-REQ] FUN_1470db3c0 called');
-            // Check if the function body is still our DLL's patch or original
-            var firstByte = addr(0x70db3c0).readU8();
-            console.log('[AUTH-REQ] First byte of function: 0x' + firstByte.toString(16));
-            // DLL Patch 3 writes: MOV RAX, imm64 (0x48 0xB8 ...)
-            // Original starts with different bytes
-            if (firstByte === 0x48) {
-                console.log('[AUTH-REQ] WARNING: DLL Patch 3 is active — function body replaced');
-                console.log('[AUTH-REQ] The fake auth code will be returned, not Origin SendXml');
+            console.log('[AUTH-REQ] FUN_1470db3c0 called — BYPASSING with fake auth code');
+            this._outAuth = args[2]; // R8 = pointer to auth code string pointer
+            this._outLen = args[3];  // R9 = pointer to length
+        },
+        onLeave: function(retval) {
+            // Write fake auth code to output params and return success
+            try {
+                if (this._outAuth && !this._outAuth.isNull()) {
+                    this._outAuth.writePointer(fakeAuthPtr);
+                    console.log('[AUTH-REQ] Wrote auth code ptr to R8 output');
+                }
+                if (this._outLen && !this._outLen.isNull()) {
+                    this._outLen.writeS64(22);
+                    console.log('[AUTH-REQ] Wrote length 22 to R9 output');
+                }
+                retval.replace(ptr(0)); // return 0 = success
+                console.log('[AUTH-REQ] *** BYPASSED — returning fake auth code ***');
+            } catch(e) {
+                console.log('[AUTH-REQ] Bypass error: ' + e);
             }
         }
     });
-    console.log('[INIT] Hooked RequestAuthCode');
-} catch(e) {}
+    console.log('[INIT] Hooked RequestAuthCode with FULL BYPASS');
+} catch(e) { console.log('[INIT] Auth hook error: ' + e); }
 
 // ============================================================
-// Step 6: Hook SendXml (FUN_1470e67f0) — bypass user ID check
-// Error 0xa2000003 = param_2==0 or param_2 != SDK+0x3a0
-// Both userId and SDK+0x3a0 are 0. We need to set both to non-zero.
+// Step 6: Monitor SendXml (should not be called if bypass works)
 // ============================================================
 try {
     Interceptor.attach(addr(0x70e67f0), {
         onEnter: function(args) {
-            console.log('[SENDXML] Auth SendXml called');
-            try {
-                var sdkObj = args[0];
-                var userId = args[1];
-                console.log('[SENDXML] userId=' + userId + ' SDK+0x3a0=' + sdkObj.add(0x3a0).readPointer());
-                
-                // Both are 0 — set both to a fake non-zero value
-                if (userId.isNull()) {
-                    var fakeId = ptr(33068179); // 0x1F8B4B3
-                    args[1] = fakeId;
-                    sdkObj.add(0x3a0).writePointer(fakeId);
-                    console.log('[SENDXML] *** FIXED: set userId and SDK+0x3a0 to ' + fakeId + ' ***');
-                }
-                
-                if (!args[2].isNull()) {
-                    try { console.log('[SENDXML] type="' + args[2].readUtf8String() + '"'); } catch(e) {}
-                }
-            } catch(e) { console.log('[SENDXML] error: ' + e); }
-        },
-        onLeave: function(retval) {
-            console.log('[SENDXML] returned ' + retval);
+            console.log('[SENDXML] SendXml called (should not happen with bypass!)');
         }
     });
-    console.log('[INIT] Hooked SendXml with ID bypass');
 } catch(e) {}
 
 // ============================================================
