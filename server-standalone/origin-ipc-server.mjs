@@ -21,11 +21,12 @@ function createHandler(socket) {
   let buffer = '';
   let msgCount = 0;
   
-  // Send a minimal initial message to unblock the game's recv()
-  // The game blocks in recv() waiting for server to send first
-  // Try just a null byte — the protocol delimiter
-  console.log('[Origin] Sending initial null byte to unblock recv');
-  socket.write(Buffer.from([0x00]));
+  // Send a minimal LSX message to unblock recv and satisfy the XML parser
+  // The game's SDK blocks in recv() waiting for a null-terminated XML string
+  // We send a minimal valid LSX that the parser can handle
+  var initMsg = '<LSX></LSX>';
+  console.log('[Origin] Sending init: ' + initMsg);
+  socket.write(initMsg + '\0');
   
   socket.on('data', (data) => {
     // Protocol uses null-terminated strings
