@@ -30,10 +30,14 @@ try {
     });
 } catch(e) {}
 
-// Find Winsock functions
-var sendAddr = Module.findExportByName('WS2_32.dll', 'send');
-var recvAddr = Module.findExportByName('WS2_32.dll', 'recv');
-var connectAddr = Module.findExportByName('WS2_32.dll', 'connect');
+// Find Winsock functions — use getExportByName with try/catch
+var sendAddr = null, recvAddr = null, connectAddr = null;
+try { sendAddr = Module.getExportByName('WS2_32.dll', 'send'); } catch(e) {}
+try { if (!sendAddr) sendAddr = Module.getExportByName('ws2_32.dll', 'send'); } catch(e) {}
+try { recvAddr = Module.getExportByName('WS2_32.dll', 'recv'); } catch(e) {}
+try { if (!recvAddr) recvAddr = Module.getExportByName('ws2_32.dll', 'recv'); } catch(e) {}
+try { connectAddr = Module.getExportByName('WS2_32.dll', 'connect'); } catch(e) {}
+try { if (!connectAddr) connectAddr = Module.getExportByName('ws2_32.dll', 'connect'); } catch(e) {}
 console.log('[WINSOCK] send=' + sendAddr + ' recv=' + recvAddr + ' connect=' + connectAddr);
 
 // Also try game's own function pointers
