@@ -671,3 +671,47 @@ Possible crash points:
 ### FIX: Add exception handler + full state dump before the call
 Added `Process.setExceptionHandler` to catch the exact crash address,
 plus dumps of all loginSM fields that LoginSender reads.
+
+
+---
+
+## Session: April 17, 2026 17:15 — Login Inject Test 4: FREEZE (deadlock)
+
+### RESULT: Game froze — LoginSender blocked, never returned
+
+Frida output:
+```
+[22584] Calling FUN_146e1eb70 (LoginSender) directly...
+[no more output — game frozen]
+```
+
+No crash, no exception — the function simply never returned.
+The game became completely unresponsive.
+
+### ANALYSIS: Deadlock
+
+`FUN_146e1eb70` calls `FUN_1478aa320` (RPC send) which likely tries to
+acquire a mutex or enqueue work on the RPC framework. But we're calling
+this from inside the `onLeave` of `FUN_146e1c3f0`, which is itself called
+from the PreAuth response handler. The RPC framework is still processing
+the PreAuth response — it holds a lock that `FUN_1478aa320` needs.
+
+**Classic deadlock:** Thread A holds Lock X (PreAuth processing) and tries
+to acquire Lock Y (RPC send queue). But Lock Y requires Lock X to be
+released first (or the RPC framework is single-threaded and can't process
+a new send while still in a response handler).
+
+### FIX: Inject in onEnter, let natural code path handle it
+
+Instead of calling LoginSender ourselves, inject the entry into
+`loginSM+0x218/+0x220` at the START of `FUN_146e1c3f0` (onEnter).
+The function's natural code will then:
+1. Do the TDF copy (writes to +0x1b8, doesn't touch +0x218)
+2. Call `FUN_146e1dae0` (LoginCheck) which reads +0x218/+0x220
+3. LoginCheck sees count=1, calls `FUN_146e1eb70` (LoginSender)
+4. LoginSender runs in the natural code path — no deadlock
+
+The key insight: the TDF copy writes to `loginSM+0x1b8` (raw TDF data),
+NOT to `loginSM+0x218/+0x220` (processed login entries). These are
+different fields. So writing to +0x218/+0x220 in onEnter won't be
+overwritten by the TDF copy.
