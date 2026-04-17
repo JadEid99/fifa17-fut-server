@@ -10,37 +10,15 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 Login Type Injector ===
-[      0] Patched FUN_146e00f40 (OSDK screen) -> RET
-[      0] Successfully replaced FUN_146e1dae0 (LoginCheck)
-[      0] All hooks installed. Waiting for PreAuth...
-[      0] Hooked Login job callback (LAB_146e1d730)
-[      0] Job scheduler tick hook SKIPPED (unsafe)
-[      0] Hooked FUN_146e19720 (LoginStart)
-[      0] Hooked FUN_1478aa320 (RPC job send)
-[Local::PID::98720 ]-> [  29499] RPC: 5:0x11
-[  29848] RPC: PreAuth
-[  29865] PreAuthHandler(err=0)
-[  29865] RPC: Ping
-[  29866] LoginTypesProcessor(loginSM=0x3eb09da0)
-[  29866]   loginSM+0x08 (parent) = 0x3eb07330
-[  29866]   parent+0x53f = 1 (GOOD — LoginCheck will run)
-[  29866] FUN_146e19720 (LoginStart): existing job=0x0 (will create new)
-[  29866] FUN_146e19720 done
-[  29866] LoginCheck REPLACED: initializing arrays + calling LoginSender
-[  29866]   jobHandle = 0x2a7d2130
-[  29866]   Calling FUN_146e192f0(param_1+0x258, 1) to resize array...
-[  29866]   Calling FUN_146f8e7e0(param_1+0x38, 1) to init tracking...
-[  29866]   Arrays initialized. Now calling LoginSender...
-[  29866] \U0001f3af LoginSender FIRED! p0=0x3eb09da0 p1=0x10a0a7650 p2=0x10a0a7670 p3=0x1
-[  29866]   flag string: "1\ufffd
-
-\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdc\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
-[  29866] FUN_1478aa320 (RPC job send): job=0x2a7d2130 token="FAKEAUTHCODE1234567890\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdPD	
-\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdD	
-\ufffd\ufffd\ufffd\ufffdD	
-\ufffd\ufffd\ufffd" transport=0xe4b
-[  29866] FUN_1478aa320 returned: 0x2
+=== FIFA 17 Login Type Injector v13 (minimal) ===
+[      0] Patched OSDK screen -> RET
+[      1] Replaced LoginCheck OK
+[      1] Ready. Waiting for PreAuth...
+[Local::PID::1176 ]-> [  30386] RPC: PreAuth
+[  30402] PreAuthHandler(err=0)
+[  30402] LoginTypesProcessor(loginSM=0x3eb09da0)
+[  30402]   parent+0x53f = 1
+[  30402] LoginCheck REPLACED: init arrays + call LoginSender
 Process terminated
 
 Thank you for using Frida!
