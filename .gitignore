@@ -28,4 +28,3 @@ FIFA17_dumped.bin.c
 # Trace outputs
 frida_trace.log
 frida_trace_err.log
-frida_trace_results.log
