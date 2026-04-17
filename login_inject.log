@@ -12,33 +12,22 @@
 Attaching...
 === FIFA 17 Login Type Injector ===
 [      0] Patched FUN_146e00f40 (OSDK screen) -> RET
-[      1] Successfully replaced FUN_146e1dae0 (LoginCheck)
+[      0] Successfully replaced FUN_146e1dae0 (LoginCheck)
 [      1] All hooks installed. Waiting for PreAuth...
-[Local::PID::104504 ]-> [  22210] RPC: 5:0x11
-[  22561] RPC: PreAuth
-[  22575] PreAuthHandler(err=0)
-[  22575] RPC: Ping
-[  22575] LoginTypesProcessor(loginSM=0x3eae9da0)
-[  22575]   loginSM+0x08 (parent) = 0x3eae7330
-[  22575]   parent+0x53f = 1 (GOOD — LoginCheck will run)
-[  22577] LoginTypesProcessor done
-[  22577] PreAuthHandler done
-[  22583] \U0001f3af LoginSender FIRED! p0=0x3eae9da0 p1=0x5d440000 p2=0x5d440020 p3=0x1
-[  22583]   flag string: "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdFAKEAUTHCODE1234567890\ufffd\ufffd"
-[  22583] \U0001f3af LoginSender returned 161052161
-[  22659] RPC: FetchClientConfig
-[  22659] RPC: FetchClientConfig
-[  22659] RPC: FetchClientConfig
-[  22659] RPC: FetchClientConfig
-[  22659] RPC: FetchClientConfig
-[  22659] RPC: FetchClientConfig
-[  52828] \u26a0\ufe0f Logout RPC sent
-[  52844] SM_Transition(newState=0 reason=-1)
-[  59309] RPC: FetchClientConfig
-[  59309] RPC: FetchClientConfig
-[  59309] RPC: FetchClientConfig
-[  59309] RPC: FetchClientConfig
-[  59309] RPC: FetchClientConfig
-[  59309] RPC: FetchClientConfig
-[  89461] \u26a0\ufe0f Logout RPC sent
-[  89477] SM_Transition(newState=0 reason=-1)
+[Local::PID::97524 ]-> 
+[Local::PID::97524 ]-> [  29958] RPC: 5:0x11
+[  30306] RPC: PreAuth
+[  30323] PreAuthHandler(err=0)
+[  30323] RPC: Ping
+[  30323] LoginTypesProcessor(loginSM=0x3eaa9da0)
+[  30323]   loginSM+0x08 (parent) = 0x3eaa7330
+[  30323]   parent+0x53f = 1 (GOOD — LoginCheck will run)
+[  30324] LoginCheck REPLACED: calling LoginSender directly
+[  30324]   jobHandle = 0x2dd41a70
+[  30324]   entry=0x10221d920 config=0x10221d940
+[  30324] \U0001f3af LoginSender FIRED! p0=0x3eaa9da0 p1=0x10221d920 p2=0x10221d940 p3=0x1
+[  30327]   flag string: "1\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffds\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
+[  30328] \U0001f3af LoginSender returned 160790017
+Process terminated
+
+Thank you for using Frida!
