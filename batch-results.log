@@ -1,4 +1,4 @@
-=== S1 disconnect (2026-04-17 16:36:19) ===
+=== S1 disconnect (2026-04-17 16:42:36) ===
 
 === FIFA 17 FUT Private Server ===
 
@@ -14,12 +14,12 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [Catch] Listening on port 9988
 [Catch] Listening on port 80
 [Catch] Listening on port 9946
-[Redirector-Raw] Client connected: 127.0.0.1:49540
+[Redirector-Raw] Client connected: 127.0.0.1:49675
 [Redirector-Raw] Received 116 bytes
 [Redirector-Raw] Full hex dump:
-  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 e2 61 82 4a  ....o...k..i.a.J
-  0010: 43 e9 92 2f 8f e3 85 b7 66 43 0a 7d 5e 7a 03 3a  C../....fC.}^z.:
-  0020: 47 53 51 9a 06 19 eb c0 72 8f 6a 00 00 10 00 9d  GSQ.....r.j.....
+  0000: 16 03 00 00 6f 01 00 00 6b 03 03 69 e2 62 fc ad  ....o...k..i.b..
+  0010: d0 9d df 4e fe df 12 af a8 d5 7d 1f 83 c7 f0 c4  ...N......}.....
+  0020: 04 c1 fa e7 05 0e 56 a9 c3 2a ac 00 00 10 00 9d  ......V..*......
   0030: 00 9c 00 3d 00 3c 00 35 00 2f 00 05 00 04 01 00  ...=.<.5./......
   0040: 00 32 00 00 00 22 00 20 00 00 1d 77 69 6e 74 65  .2...". ...winte
   0050: 72 31 35 2e 67 6f 73 72 65 64 69 72 65 63 74 6f  r15.gosredirecto
@@ -27,45 +27,45 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
   0070: 02 01 01 01                                      ....
 [Redirector-Raw] Detected SSLv3 ClientHello!
 [Redirector-Raw] Attempting SSLv3 handshake...
-[SSL] ClientHello: version=0x303 random=69e261824a43e992...
+[SSL] ClientHello: version=0x303 random=69e262fcadd09ddf...
 [SSL] Ciphers: 0x009d, 0x009c, 0x003d, 0x003c, 0x0035, 0x002f, 0x0005, 0x0004
 [SSL] Selected cipher: 0x0005
 [SSL] Sending ServerHello (79b) + Certificate (704b) + ServerHelloDone (9b)
 [SSL] Sent all handshake messages. Waiting for ClientKeyExchange...
 [SSL] Phase=waiting_client_response, received 139 bytes (total pending: 139)
-  0000: 16 03 03 00 86 10 00 00 82 00 80 55 ff a2 1d 03
-  0010: 30 92 3a 57 45 0f 18 c5 7a 27 84 6e 71 7a 06 38
-  0020: 8b bf ef de 48 a2 ef 31 8b 4a dc 40 3c 68 9c 8f
-  0030: f2 c4 95 4e 5c b2 91 e7 25 0c e0 a8 50 67 00 2b
-  0040: ba 03 2f f7 f9 d7 0a de 3d 12 a4 29 3a 8f a2 a8
-  0050: a5 11 f7 51 05 6e ba 06 ce d7 61 64 09 e5 37 66
-  0060: b1 8d 5b a2 5c f0 d6 9e 05 25 9b d4 8e c9 f3 97
-  0070: 07 56 e5 07 08 9d c1 68 d9 64 dc 37 a6 83 86 f9
-  0080: 38 4f d0 31 18 d7 1a 86 8e ef a7
+  0000: 16 03 03 00 86 10 00 00 82 00 80 3b 35 52 a2 c4
+  0010: 4d 19 01 24 d3 50 70 d5 6d 4c 38 9e 0b 48 52 db
+  0020: 81 48 1f 82 4c a0 45 3e 12 c2 9c af ef a1 18 4f
+  0030: aa 00 c0 31 4c 91 e1 ae 4f 48 be 53 6d d3 ef 17
+  0040: 79 99 80 4d 0b 80 49 7f 51 95 75 27 1d d7 f1 25
+  0050: 37 50 07 b0 07 0f 75 eb 2a 86 e5 82 7e 96 d5 c5
+  0060: 23 81 93 44 a1 2d b2 76 5d a3 3d 12 f5 33 cd f8
+  0070: 71 3b 72 d6 f1 62 18 95 f7 43 17 bc af c1 99 45
+  0080: 09 be 4f 82 af df 4f 99 f1 ab 32
 [SSL] Record: type=0x16 ver=0x303 len=134
 [SSL] Handshake type: 0x10 (ClientKeyExchange)
 [SSL] Encrypted PMS: 128 bytes (TLS format, explicit len: 128)
 [SSL] Decrypted PMS: 48 bytes, version=0x303
-[SSL] Master secret derived: 9ee530bb570a5b29482c1bf4e6981bb3...
+[SSL] Master secret derived: a2c0d85593322caa7c996f471ea9d8fc...
 [SSL] Keys stored. Waiting for ChangeCipherSpec + client Finished...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 03 15 7b 39 ff
-  0010: 08 4c 29 62 1f f3 bc 14 1b 71 53 85 cf 88 76 27
-  0020: d0 1e d5 a2 38 db 85 a0 49 16 15 6f 84 ea 40
+  0000: 14 03 03 00 01 01 16 03 03 00 24 01 85 e9 b4 de
+  0010: 8e c5 7e da 61 f8 5b 90 0b 60 76 b5 41 71 d9 ad
+  0020: 8c b9 be 9d 71 5d 3e d7 58 f0 d7 e2 74 2b f3
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 4f17cb4813f380cd20ba5eadc2b49850
+[SSL] RC4 decryption initialized with clientWriteKey: 963f67d35884320398942008afb44407
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c9d2c0ad01d076cf113b70099eb07d9c4a87f7ece48df60d3ec3c74032730e03f
-[SSL] Client Finished plaintext (16 bytes): 1400000c9d2c0ad01d076cf113b70099
-[SSL] Client Finished MAC: eb07d9c4a87f7ece48df60d3ec3c74032730e03f
-[SSL] Client verify_data:   9d2c0ad01d076cf113b70099
-[SSL] Expected verify_data:  9d2c0ad01d076cf113b70099
+[SSL] Decrypted hex: 1400000c3fd012ce5c2b5fd6e34e9429335334abf9efc401da301ae1fc0434e093f63b13
+[SSL] Client Finished plaintext (16 bytes): 1400000c3fd012ce5c2b5fd6e34e9429
+[SSL] Client Finished MAC: 335334abf9efc401da301ae1fc0434e093f63b13
+[SSL] Client verify_data:   3fd012ce5c2b5fd6e34e9429
+[SSL] Expected verify_data:  3fd012ce5c2b5fd6e34e9429
 [SSL] ✓ Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: eb07d9c4a87f7ece48df60d3ec3c74032730e03f
-[SSL] Actual client MAC:   eb07d9c4a87f7ece48df60d3ec3c74032730e03f
+[SSL] Expected client MAC: 335334abf9efc401da301ae1fc0434e093f63b13
+[SSL] Actual client MAC:   335334abf9efc401da301ae1fc0434e093f63b13
 [SSL] ✓ Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1038 bytes
@@ -75,7 +75,7 @@ hosts: 127.0.0.1 winter15.gosredirector.ea.com
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: a1decdaf7c047be3ce1467cd
+[SSL] Server verify_data: f87664df1010bf9e85b84621
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 908 bytes on socket (total pending: 908)
@@ -118,13 +118,13 @@ Connection: keep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 45 1f e7 57 b3 49 39 b4 19 dd 35 bc 42 23 f9 13 18 90 f0 89 1a 72
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): ff 3d ba 68 66 4f 87 93 5d d3 09 27 07 f4 ef 4b ad 31 d2 d0 42 43
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:49540
+[Redirector-Raw] Disconnected: 127.0.0.1:49675
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:49541
+[Main] Session 1 connected: 127.0.0.1:49676
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
