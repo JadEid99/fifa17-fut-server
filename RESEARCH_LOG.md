@@ -1284,3 +1284,53 @@ provide, causing the job to fail silently. Type 1 (SilentLogin) is
 token-based and matches our auth code approach.
 
 ### TEST 21: Same as test 17 but with transport type = 1
+
+
+---
+
+## Session: April 17, 2026 20:30 — STRATEGIC RESET
+
+### RESULT of Test 21 (transport=1): FROZE
+
+Same deadlock pattern as previous tests. LoginTypesProcessor entered
+but our replaced LoginCheck either crashed or blocked before printing.
+
+### DECISION: Stop manipulating the BlazeSDK from inside
+
+After 21 tests, every approach fails for the same root reason:
+**The BlazeSDK is tightly coupled. Bypassing any step breaks downstream.**
+
+### BREAKTHROUGH DISCOVERY: ZamboniDevelopment ecosystem
+
+Found https://github.com/ZamboniDevelopment — a complete working
+Blaze server emulator ecosystem for NHL 10-15. Includes:
+
+1. **BlazeSDK** — C# implementation with full TDF schemas
+2. **Zamboni14Legacy** — Working NHL 14 server using Blaze3SDK
+3. **ZamboniUltimateTeam** — 🎯 **FUT backend code** (updated 2 days ago)
+4. **Taggi** — TDF tag binary parser (solves our tag problem)
+5. **ZamboniCommonComponents** — Shared Blaze components
+
+### KEY INSIGHT FROM ZAMBONI14LEGACY
+
+Their working PreAuth response has fields we DON'T send:
+- `mEEFA` (boolean, true)
+- `mLegalDocGameIdentifier` (string)
+
+And their login flow sends 4 ASYNC notifications after Login:
+- NotifyUserAuthenticated (300ms delay)
+- NotifyUserAdded (500ms delay)
+- NotifyUserSessionExtendedDataUpdate (600ms delay)
+- NotifyUserUpdated (800ms delay)
+
+**WE HAVE NEVER SENT THESE NOTIFICATIONS.** This might be why even when
+the Login RPC is queued, the game doesn't complete auth — it's waiting
+for these notifications and times out.
+
+### NEW PLAN: Use Zamboni as our Blaze server
+
+Instead of our hand-crafted Node.js Blaze server, use Zamboni14Legacy
+(or a fork) configured for FIFA 17. It's C# but runs on Windows/Linux
+.NET 8. The C# BlazeSDK handles all TDF encoding correctly.
+
+See `DEEP_DIVE_PLAN.md` for full plan.
