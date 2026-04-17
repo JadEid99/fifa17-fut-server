@@ -13,21 +13,26 @@ Attaching...
 === FIFA 17 Login Type Injector ===
 [      0] Patched FUN_146e00f40 (OSDK screen) -> RET
 [      0] Successfully replaced FUN_146e1dae0 (LoginCheck)
-[      1] All hooks installed. Waiting for PreAuth...
-[Local::PID::97524 ]-> 
-[Local::PID::97524 ]-> [  29958] RPC: 5:0x11
-[  30306] RPC: PreAuth
-[  30323] PreAuthHandler(err=0)
-[  30323] RPC: Ping
-[  30323] LoginTypesProcessor(loginSM=0x3eaa9da0)
-[  30323]   loginSM+0x08 (parent) = 0x3eaa7330
-[  30323]   parent+0x53f = 1 (GOOD — LoginCheck will run)
-[  30324] LoginCheck REPLACED: calling LoginSender directly
-[  30324]   jobHandle = 0x2dd41a70
-[  30324]   entry=0x10221d920 config=0x10221d940
-[  30324] \U0001f3af LoginSender FIRED! p0=0x3eaa9da0 p1=0x10221d920 p2=0x10221d940 p3=0x1
-[  30327]   flag string: "1\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffds\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
-[  30328] \U0001f3af LoginSender returned 160790017
-Process terminated
-
-Thank you for using Frida!
+[      0] All hooks installed. Waiting for PreAuth...
+[Local::PID::88004 ]-> [  29946] RPC: 5:0x11
+[  30297] RPC: PreAuth
+[  30312] PreAuthHandler(err=0)
+[  30312] RPC: Ping
+[  30312] LoginTypesProcessor(loginSM=0x3eaa9da0)
+[  30312]   loginSM+0x08 (parent) = 0x3eaa7330
+[  30312]   parent+0x53f = 1 (GOOD — LoginCheck will run)
+[  30312] LoginCheck REPLACED: scheduling LoginSender via setTimeout
+[  30312]   loginSM = 0x3eaa9da0
+[  30312]   jobHandle = 0x2a7d2a30
+[  30314] LoginTypesProcessor done
+[  30314] PreAuthHandler done
+[  30395] RPC: FetchClientConfig
+[  30395] RPC: FetchClientConfig
+[  30395] RPC: FetchClientConfig
+[  30395] RPC: FetchClientConfig
+[  30395] RPC: FetchClientConfig
+[  30395] RPC: FetchClientConfig
+[  30413] setTimeout: calling LoginSender now (outside PreAuth stack)
+[  30413] \U0001f3af LoginSender FIRED! p0=0x3eaa9da0 p1=0x105188440 p2=0x105188460 p3=0x1
+[  30413]   flag string: "1\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd^\ufffd\ufffd\ufffd\ufffd\ufffd \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd3\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd"
+[  30413] \U0001f3af LoginSender returned 85495296
