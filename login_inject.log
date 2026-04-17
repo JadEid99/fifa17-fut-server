@@ -10,19 +10,9 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 v19: Fix CreateAccount response ===
-[      0] Patched OSDK screen -> RET
-[      0] Hooked CreateAccountHandler
-[      0] Hooked OSDKCompletionHandler
-[      0] Ready. Waiting for CreateAccount...
-[Local::PID::106692 ]-> [  22548] RPC: PreAuth
-[  22566] PreAuthHandler(err=0)
-[  22566] LoginTypesProcessor
-[  22568] LoginTypesProcessor done
-[  22568] PreAuthHandler done
-[  52815] AUTH RPC: Logout
-[  52833] OSDKCompletionHandler fired!
-[  52833] SM(0,-1)
-[  89449] AUTH RPC: Logout
-[  89466] OSDKCompletionHandler fired!
-[  89466] SM(0,-1)
+=== FIFA 17 v20: LoginSender with transport=1 ===
+[      0] Replaced LoginCheck OK
+[      0] Ready.
+[Local::PID::77568 ]-> [  22529] PreAuth
+[  22547] PreAuthHandler(err=0)
+[  22547] LoginTypesProcessor
