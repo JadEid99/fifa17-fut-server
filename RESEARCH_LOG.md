@@ -1025,3 +1025,70 @@ the Login failure — just a JS type error.
 
 We're ONE step away. The Login job is in the scheduler. We need to
 figure out why it's not being dispatched, or find a way to force it.
+
+
+---
+
+## Session: April 17, 2026 18:44 — Tests 12-13: CRASH from diagnostic hooks
+
+### RESULT: Both crashed right after FUN_1478aa320 returned 0x2
+
+The crash pattern is identical in both tests:
+```
+FUN_1478aa320 returned: 0x2
+Process terminated
+```
+
+### ROOT CAUSE: Diagnostic hooks corrupted the call stack
+
+Test 11 (same LoginSender code, no extra hooks) → NO CRASH.
+Tests 12-13 (added hooks on FUN_146e19720 + FUN_1478aa320) → CRASH.
+
+`Interceptor.attach` on `FUN_1478aa320` inserts a trampoline at the
+function entry. This function is called FROM INSIDE LoginSender. The
+trampoline modifies the stack/registers in a way that corrupts the
+return path after `FUN_1478aa320` returns to LoginSender.
+
+This is a known Frida issue with functions that use non-standard calling
+conventions or have very tight register usage.
+
+### FIX: Strip ALL non-essential hooks
+
+Reverted to minimal configuration matching test 11:
+- Replace FUN_146e1dae0 (LoginCheck) ← the core fix
+- Monitor RPC send (auth commands only)
+- Monitor PreAuth handler
+- Monitor LoginTypesProcessor (with +0x53f force)
+- Monitor state transitions
+
+NO hooks on: FUN_146e19720, FUN_1478aa320, FUN_1478abf10, LAB_146e1d730
+
+### COMPLETE TEST LOG (Tests 1-13)
+
+| Test | Approach | Result | Root Cause |
+|------|----------|--------|------------|
+| 1 | Hook LoginCheck onEnter | FAIL | ctx.r8 TypeError + late attach |
+| 2 | Fix bugs | FAIL | Frida can't intercept FUN_146e1dae0 |
+| 3 | Hook LoginTypesProcessor onLeave, call LoginCheck | CRASH | Re-entrancy |
+| 4 | Call LoginSender from onLeave | CRASH | entry+0x10 was 0 |
+| 5 | Add diagnostics, call LoginSender from onLeave | FREEZE | Deadlock (RPC lock) |
+| 6 | Inject into +0x218 in onEnter | CRASH | TDF objects need vtables |
+| 7 | Interceptor.replace LoginCheck, call orig | NO CRASH | origLoginCheck invalid, DLL's LoginSender fired instead |
+| 8 | Replace LoginCheck, call orig (with +0x53f check) | NO CRASH | Same as 7, DLL fired LoginSender |
+| 9 | Replace LoginCheck, call LoginSender directly | CRASH | param_1+0x258 not initialized |
+| 10 | Replace LoginCheck, setTimeout LoginSender | FREEZE | Deadlock (wrong thread) |
+| **11** | **Replace LoginCheck, init arrays + LoginSender** | **NO CRASH** | **Job queued 0x9917601 but never dispatched** |
+| 12 | Same as 11 + hook FUN_146e19720/FUN_1478aa320 | CRASH | Hooks corrupted call stack |
+| 13 | Same as 12 minus scheduler hook | CRASH | Same — FUN_1478aa320 hook |
+| 14 | Same as 11 (minimal hooks) | PENDING | Should reproduce test 11 |
+
+### KEY FINDING: Login job IS queued but never dispatches
+
+From test 11, the Login job was queued (handle 0x9917601) and the game
+continued normally (FetchClientConfig x6, no crash). But the Login RPC
+never appeared on the Blaze server wire. 30 seconds later, Logout fired.
+
+The job has a 7000ms timeout (from FUN_1478aa0f0 Ghidra analysis).
+The job callback is at LAB_146e1d730. Something prevents it from firing.
+
+### NEXT: Reproduce test 11, then investigate job dispatch
