@@ -1401,3 +1401,55 @@ The real issue has been wrong CIDS format + missing notifications.
 1. Test with corrected PreAuth (just pushed)
 2. If game still doesn't send Login: add the 4 post-Login notifications
 3. If Login still fails: use Zamboni14Legacy as our Blaze server
+
+
+---
+
+## Session: April 17, 2026 20:50 — Test 23: CIDS TDF type fix didn't work
+
+### RESULT: Same as before — LoginCheck array count=0
+
+Changed CIDS encoding from TDF type 0x07 to 0x04 (proper List type).
+No change. LoginCheck still returns 0, LoginFallback fires, Logout at 30s.
+
+### KEY INSIGHT: +0x120 in PreAuthResponse is NOT CIDS
+
+The field at resp+0x120 has element type `10` (from `FUN_146dd57a0`
+which sets `param_1[2] = 10`). This is NOT a `List<ushort>` — it's a
+List with element type 0x0A (float? or something FIFA-specific).
+
+FIFA 17 has a PreAuthResponse field that isn't in standard Blaze3SDK.
+The Ghidra dump said 14 fields but one of those is FIFA-specific.
+
+### CONCLUSION: Our Node.js TDF encoder is the problem
+
+Our hand-rolled TDF encoder has multiple encoding issues we can't easily
+diagnose. The only way to be sure the encoding is right is to use
+Zamboni's battle-tested C# BlazeSDK. It has:
+- Correct TDF type codes
+- Correct VarInt encoding
+- Correct list/map/struct encoding
+- Proper field ordering (alphabetical)
+
+### DECISION: Migrate to Zamboni's BlazeSDK as our Blaze server
+
+Next steps:
+1. Build Zamboni14Legacy locally (C# .NET 8)
+2. Configure it to use FIFA 17 identifiers
+3. Swap out our Node.js Blaze server with it
+4. Keep Origin IPC server (that works)
+5. Keep DLL (cert bypass, Origin SDK fakes)
+
+### COMPLETE TEST LOG (Tests 1-23)
+
+| # | Approach | Result |
+|---|----------|--------|
+| 1-18 | Frida injection attempts | Various crashes/freezes |
+| 19 | Return 1 from LoginCheck | Logout still fires |
+| 20 | Fix CreateAccount response | CreateAccount never sent |
+| 21 | transport type 1 | Freeze |
+| 22 | Fix PreAuth per Blaze3SDK schema | count=0 (same as before) |
+| 23 | Fix CIDS TDF type (0x07→0x04) | count=0 (same as before) |
+
+All 23 tests show the same failure mode. Our Node.js server's TDF
+encoding is incorrect in some way that we can't pinpoint.
