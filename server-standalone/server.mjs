@@ -1268,10 +1268,10 @@ function setupMainBlazeHandler(socket, session) {
     console.log(`[Main] S${sid}: comp=0x${comp.toString(16).padStart(4,'0')} cmd=0x${cmd.toString(16).padStart(4,'0')} len=${pkt.header.length} msgId=${pkt.header.msgId}`);
     let resp = null;
     try {
-      // Handle Ping packets (type=4) — echo them back
+      // Handle Ping packets (type=4) — respond with PING_REPLY (type=5)
       if (comp === 0x0000 && cmd === 0x0000 && pkt.header.msgType === 4) {
         console.log(`[Main] S${sid}: -> Ping (msgId=${pkt.header.msgId}), sending pong`);
-        // Echo the exact header back as a pong (type=4 response)
+        // Echo the msgId but set type to 5 (PING_REPLY)
         const pong = Buffer.alloc(HEADER_SIZE);
         pong.writeUInt32BE(0, 0);           // length=0
         pong.writeUInt16BE(0, 4);           // ext=0
@@ -1281,7 +1281,7 @@ function setupMainBlazeHandler(socket, session) {
         pong[10] = (mid >> 16) & 0xFF;
         pong[11] = (mid >> 8) & 0xFF;
         pong[12] = mid & 0xFF;
-        pong[13] = 0x80;                   // type=4 (100), flags=0
+        pong[13] = 0xA0;                    // type=5 (PING_REPLY), flags=0
         pong.writeUInt16BE(0, 14);          // error=0
         socket.write(pong);
         return;
