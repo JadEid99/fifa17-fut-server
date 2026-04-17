@@ -972,3 +972,56 @@ If we call these with count=1 inside our replaced LoginCheck BEFORE
 calling LoginSender, the arrays will be properly initialized and
 LoginSender won't crash. And since we're inside the natural call chain
 (FUN_146e1c3f0 → our replaced FUN_146e1dae0), no deadlock.
+
+
+---
+
+## Session: April 17, 2026 17:50 — Login Inject Test 11: NO CRASH, NO FREEZE!
+
+### RESULT: LoginSender fired, returned job handle 0x9917601, no crash!
+
+```
+[32937] LoginCheck REPLACED: initializing arrays + calling LoginSender
+[32937]   jobHandle = 0x2a7d1950
+[32937]   Arrays initialized. Now calling LoginSender...
+[32937] 🎯 LoginSender returned 0x9917601
+[32938] EXCEPTION: not a function  ← minor JS error, not a crash
+[32939] LoginTypesProcessor done
+[32939] PreAuthHandler done
+[33021] RPC: FetchClientConfig x6
+[63187] ⚠️ Logout RPC sent
+```
+
+### ANALYSIS: Login job queued but never dispatched
+
+LoginSender returned a non-zero job handle (0x9917601), meaning the
+Login RPC was successfully queued in the job scheduler. But:
+- FetchClientConfig RPCs fire normally (T+33021)
+- Login RPC never appears on the Blaze server wire
+- 30 seconds later, Logout fires
+
+The Login job IS in the scheduler but something prevents it from
+dispatching. Possible causes:
+1. Job timeout expired before dispatch
+2. Job was cancelled by the Logout path
+3. Job scheduler has a condition that prevents Login dispatch
+4. The job's callback (LAB_146e1d730) needs additional state
+
+### MINOR BUG: `EXCEPTION: not a function`
+`result.toInt32()` fails because NativeFunction returns a NativeReturnValue.
+Need to use `result.toNumber()` or cast differently. Not the cause of
+the Login failure — just a JS type error.
+
+### PROGRESS SUMMARY (Tests 1-11)
+- Test 1-2: Hook bugs (fixed)
+- Test 3: Frida can't hook FUN_146e1dae0 (switched to replace)
+- Test 4-5: Crash/deadlock from wrong call context
+- Test 6: Crash from writing to TDF array (+0x218)
+- Test 7: LoginCheck never called (+0x53f flag issue, was actually OK)
+- Test 8: LoginSender fired from DLL (wrong thread), not our code
+- Test 9: LoginSender fired from our code, crash (uninitialized +0x258)
+- Test 10: setTimeout deadlock
+- **Test 11: LoginSender fired, no crash, job queued — but never dispatched**
+
+We're ONE step away. The Login job is in the scheduler. We need to
+figure out why it's not being dispatched, or find a way to force it.
