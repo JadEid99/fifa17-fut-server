@@ -1,0 +1,2 @@
+TypeError: cannot read property 'r8' of undefined
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_inject_login_type.js:123)

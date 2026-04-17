@@ -1,0 +1,78 @@
+﻿========================================================================
+Login Type Injection Results
+Run: 2026-04-17 16:53:49
+========================================================================
+
+--- FRIDA SCHEMA DUMP ---
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+=== FIFA 17 Login Type Injector ===
+[      0] Patched FUN_146e00f40 (OSDK screen) -> RET
+[      1] All hooks installed. Waiting for PreAuth...
+[Local::PID::108680 ]-> [   1455] SM_Transition(newState=0 reason=-1)
+
+
+--- FRIDA ERRORS ---
+TypeError: cannot read property 'r8' of undefined
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_inject_login_type.js:123)
+
+
+--- DLL LOG (last 3000) ---
+24 08 48 89 74 24 10 55 57 41 56 48 8D
+[16:51:53.824]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[16:51:53.824]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[16:51:53.824]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[16:51:53.824]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[16:51:53.824]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[16:51:53.824]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[16:51:53.824]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[16:51:53.824] PREAUTH_HANDLER: Cave at 0000000000560000, 44 bytes (XOR R8D + trampoline)
+[16:51:53.824] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[16:51:53.824] CONNECT-HOOK: Patched DAT_148e223d8 at 562 ms (real=00007FFD6EB11A50)
+[16:51:53.824] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[16:51:53.824] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[16:51:53.824] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[16:51:53.824] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[16:51:53.824] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[16:51:53.824] PATCHED: FUN_145e280b0 (version compare) -> always match
+[16:51:53.971] PATCHED: cert bypass at 000000014613244B
+[16:51:54.024] PATCHED: Origin SDK check at 00000001470A8430
+[16:51:54.025] All patches in 766 ms
+[16:51:54.025] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:51:54.025] AUTH: Checking login gate globals...
+[16:51:54.025] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[16:51:54.025] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:51:54.025] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:51:54.210] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[16:51:59.661] AUTH: Slot cleared at 5600 ms
+[16:51:59.661] AUTH: OnlineMgr=0x3EC63E70
+[16:51:59.661] AUTH: slot=0x0 cave=0
+[16:51:59.661] AUTH: Using fake vtable (real not captured)
+[16:51:59.661] AUTH: Injected fake request 000000005D390000 into slot
+[16:51:59.762] AUTH: cave=1 slot=0x0
+[16:51:59.762] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:51:59.762] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
+[16:51:59.762] AUTH: state=2. Auth ready.
+[16:51:59.762] AUTH: OnlineMgr+0xb10 = 0x3EC6A6E0
+[16:51:59.762] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC6A960
+[16:51:59.762] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[16:51:59.762] AUTH: Found 0 objects with vtables in BlazeHub
+[16:51:59.762] AUTH: BlazeHub(000000003EC6A960)+0x53f = 1
+[16:51:59.762] AUTH: Applying OSDK patches (post-load)...
+[16:51:59.762] PATCHED: GetProfileSync -> return 0 (post-load)
+[16:51:59.762] PATCHED: GetSettingSync -> return 0 (post-load)
+[16:51:59.762] PATCHED: SetPresence -> return 0 (post-load)
+[16:51:59.762] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[16:51:59.762] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[16:51:59.762] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+

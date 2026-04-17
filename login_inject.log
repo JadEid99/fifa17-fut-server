@@ -1,0 +1,16 @@
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+=== FIFA 17 Login Type Injector ===
+[      0] Patched FUN_146e00f40 (OSDK screen) -> RET
+[      1] All hooks installed. Waiting for PreAuth...
+[Local::PID::108680 ]-> [   1455] SM_Transition(newState=0 reason=-1)
