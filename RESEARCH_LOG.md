@@ -808,3 +808,43 @@ the TDF array — it just reads simple fields from the entry we provide.
 If `Interceptor.replace` fails (same issue as `attach`), fallback to
 hooking LoginTypesProcessor onLeave with `setTimeout(0)` to call
 LoginSender outside the PreAuth handler stack (avoids deadlock).
+
+
+---
+
+## Session: April 17, 2026 17:30 — Login Inject Test 7: No crash, but LoginCheck never called
+
+### RESULT: Interceptor.replace succeeded, but replacement never invoked
+
+```
+[22623] PreAuthHandler(err=0)
+[22623] LoginTypesProcessor(loginSM=0x3eb39da0)
+[22625] LoginTypesProcessor done
+[22625] PreAuthHandler done
+[22707] RPC: FetchClientConfig x6
+[52872] Logout RPC sent
+```
+
+`Interceptor.replace` on `FUN_146e1dae0` succeeded (logged at T+0).
+But our replacement function was NEVER called. No "LoginCheck:" output
+appears between LoginTypesProcessor and PreAuthHandler done.
+
+### ANALYSIS
+
+`FUN_146e1c3f0` has this gate:
+```c
+if (*(char *)(*(longlong *)(param_1 + 8) + 0x53f) != '\0') {
+    // ... iteration + LoginCheck ...
+}
+```
+
+If `loginSM+0x08` (parent pointer) `+0x53f` is 0, the entire block
+including LoginCheck is SKIPPED. The DLL forces `BlazeHub+0x53f = 1`,
+but `loginSM+0x08` might point to a DIFFERENT object than the BlazeHub
+the DLL is patching.
+
+### FIX: Check and force `loginSM+0x08+0x53f` in LoginTypesProcessor onEnter
+
+Added diagnostic to read `*(loginSM+8)+0x53f` and force it to 1 if 0.
+This ensures the LoginCheck gate passes regardless of which object
+loginSM's parent points to.

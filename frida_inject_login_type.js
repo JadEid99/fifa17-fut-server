@@ -229,7 +229,25 @@ Interceptor.attach(addr(0x6e1cf10), {
 // Monitor LoginTypesProcessor for logging only
 Interceptor.attach(addr(0x6e1c3f0), {
   onEnter: function(args) {
-    console.log(ts() + " LoginTypesProcessor(loginSM=" + args[0] + ")");
+    const loginSM = args[0];
+    console.log(ts() + " LoginTypesProcessor(loginSM=" + loginSM + ")");
+    // Check the +0x53f flag that gates the LoginCheck call
+    try {
+      const parent = loginSM.add(0x08).readPointer();
+      if (!parent.isNull()) {
+        const flag53f = parent.add(0x53f).readU8();
+        console.log(ts() + "   loginSM+0x08 (parent) = " + parent);
+        console.log(ts() + "   parent+0x53f = " + flag53f + (flag53f ? " (GOOD — LoginCheck will run)" : " (BAD — LoginCheck SKIPPED!)"));
+        if (flag53f === 0) {
+          console.log(ts() + "   FORCING parent+0x53f = 1");
+          parent.add(0x53f).writeU8(1);
+        }
+      } else {
+        console.log(ts() + "   loginSM+0x08 = NULL!");
+      }
+    } catch(e) {
+      console.log(ts() + "   parent check error: " + e.message);
+    }
   },
   onLeave: function(ret) {
     console.log(ts() + " LoginTypesProcessor done");
