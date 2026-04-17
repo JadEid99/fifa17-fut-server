@@ -69,9 +69,11 @@ try {
     } catch(e) { console.log(ts() + "   step3 ERR: " + e); return ptr(0); }
 
     // Step 4: build entry + call LoginSender
+    // IMPORTANT: Write entry to +0x218/+0x220 FIRST to prevent the DLL's
+    // background LOGIN-INJECT from racing with us. The DLL checks
+    // if (arrStart == 0 && arrEnd == 0) before injecting.
     try {
       var entry = Memory.alloc(0x40);
-      Memory.allocUtf8String("1");  // keep alive
       var flagStr = Memory.allocUtf8String("1");
       entry.writePointer(flagStr);
       entry.add(0x10).writeU32(2);
@@ -80,6 +82,11 @@ try {
       config.add(0x10).writePointer(authToken);
       config.add(0x28).writeU16(0);
       entry.add(0x18).writePointer(config);
+
+      // Block the DLL's LOGIN-INJECT by making the array look non-empty
+      // Use a sentinel value (not our entry — the DLL might try to iterate it)
+      param_1.add(0x218).writePointer(ptr(1));
+      param_1.add(0x220).writePointer(ptr(1));
 
       console.log(ts() + "   step4: calling LoginSender");
       var fn3 = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
