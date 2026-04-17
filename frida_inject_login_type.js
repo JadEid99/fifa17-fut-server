@@ -45,33 +45,13 @@ try {
     console.log(ts() + "   job=" + jobHandle);
     if (jobHandle.isNull()) { console.log(ts() + "   job NULL"); return ptr(0); }
 
-    // Step 1: resize array at +0x258
-    try {
-      console.log(ts() + "   step1: resize");
-      var fn1 = new NativeFunction(addr(0x6e192f0), 'void', ['pointer', 'uint32']);
-      fn1(param_1.add(0x258), 1);
-      console.log(ts() + "   step1 OK");
-    } catch(e) { console.log(ts() + "   step1 ERR: " + e); return ptr(0); }
-
-    // Step 2: init tracking at +0x38
-    try {
-      console.log(ts() + "   step2: init");
-      var fn2 = new NativeFunction(addr(0x6f8e7e0), 'void', ['pointer', 'uint32']);
-      fn2(param_1.add(0x38), 1);
-      console.log(ts() + "   step2 OK");
-    } catch(e) { console.log(ts() + "   step2 ERR: " + e); return ptr(0); }
-
-    // Step 3: set flags
-    try {
-      param_1.add(0x1a0).writeU16(0);
-      param_1.add(0x210).writeU8(param_1.add(0x210).readU8() | 1);
-      console.log(ts() + "   step3: flags OK");
-    } catch(e) { console.log(ts() + "   step3 ERR: " + e); return ptr(0); }
-
-    // Step 4: build entry + call LoginSender
-    // IMPORTANT: Write entry to +0x218/+0x220 FIRST to prevent the DLL's
-    // background LOGIN-INJECT from racing with us. The DLL checks
-    // if (arrStart == 0 && arrEnd == 0) before injecting.
+    // Skip array initialization — it crashes intermittently because the
+    // internal arrays at +0x258 and +0x38 have complex state dependencies.
+    // Just call LoginSender directly. If it crashes, the exception handler
+    // will catch it and we'll retry on the next LoginCheck call.
+    //
+    // Test 11 proved LoginSender CAN work without array init — the crash
+    // in later tests was intermittent (race condition or state-dependent).
     try {
       var entry = Memory.alloc(0x40);
       var flagStr = Memory.allocUtf8String("1");
@@ -83,17 +63,21 @@ try {
       config.add(0x28).writeU16(0);
       entry.add(0x18).writePointer(config);
 
-      // Block the DLL's LOGIN-INJECT by making the array look non-empty
-      // Use a sentinel value (not our entry — the DLL might try to iterate it)
+      // Block DLL's LOGIN-INJECT race
       param_1.add(0x218).writePointer(ptr(1));
       param_1.add(0x220).writePointer(ptr(1));
 
-      console.log(ts() + "   step4: calling LoginSender");
+      console.log(ts() + "   calling LoginSender");
       var fn3 = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
       var result = fn3(param_1, entry, config, 1);
-      console.log(ts() + "   step4: LoginSender returned " + result);
+      console.log(ts() + "   LoginSender returned " + result);
       return ptr(1);
-    } catch(e) { console.log(ts() + "   step4 ERR: " + e); return ptr(0); }
+    } catch(e) {
+      console.log(ts() + "   LoginSender ERR: " + e);
+      // Reset for retry on next call
+      loginTypeInjected = false;
+      return ptr(0);
+    }
 
   }, 'uint64', ['pointer']));
   console.log(ts() + " Replaced LoginCheck OK");
