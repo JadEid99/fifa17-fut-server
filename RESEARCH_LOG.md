@@ -894,3 +894,45 @@ lock acquisition.
 If it deadlocks, the fallback is to use `setTimeout(0)` from the
 replacement to schedule the LoginSender call on the next Frida tick,
 which runs outside the PreAuth handler stack.
+
+
+---
+
+## Session: April 17, 2026 17:40 — Login Inject Test 9: CRASH after LoginSender returns
+
+### RESULT: LoginSender fired FROM OUR CODE, returned job handle, then crash
+
+```
+[30324] LoginCheck REPLACED: calling LoginSender directly
+[30324]   jobHandle = 0x2dd41a70
+[30328] 🎯 LoginSender returned 160790017 (0x9953A01)
+Process terminated
+```
+
+### ROOT CAUSE: param_1+0x258 (processed entries array) not initialized
+
+`FUN_146e1eb70` (LoginSender) calls `FUN_146e19090(param_1 + 600, ...)` 
+which accesses `param_1 + 0x258`. This array is normally resized and
+populated by the iteration loop in `FUN_146e1c3f0` BEFORE LoginCheck
+is called. Since our replacement skips the iteration, the array is
+uninitialized → crash when LoginSender tries to write to it.
+
+### FIX: Use setTimeout(100) to call LoginSender AFTER PreAuth handler returns
+
+Instead of calling LoginSender inside the replacement, schedule it
+via `setTimeout(100)`. This:
+1. Returns 1 from our replacement (prevents fallback path)
+2. Lets `FUN_146e1c3f0` and the PreAuth handler fully complete
+3. 100ms later, calls LoginSender from Frida's event loop
+4. At that point, all locks are released and no stack conflicts
+
+Risk: setTimeout runs on Frida's thread, not the game's main thread.
+But since we're just calling a NativeFunction, it should execute on
+whatever thread Frida's JS runs on. The RPC framework might need to
+be called from the game's main thread.
+
+If this deadlocks/crashes, the final fallback is to NOT call LoginSender
+at all — instead, just return 1 from LoginCheck and let the game's
+own retry logic eventually call LoginCheck again on the next connection
+attempt, at which point the DLL's LOGIN-INJECT will have populated
+the array from the background thread.

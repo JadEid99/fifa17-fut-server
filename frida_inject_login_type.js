@@ -55,55 +55,49 @@ const origLoginCheck = new NativeFunction(addr(0x6e1dae0), 'uint64', ['pointer']
 try {
   Interceptor.replace(addr(0x6e1dae0), new NativeCallback(function(param_1) {
   // DON'T call the original — it just iterates the empty array and returns 0.
-  // Instead, call LoginSender directly with our fake entry.
+  // DON'T call LoginSender here — it crashes because param_1+0x258 isn't initialized.
+  // Instead, save param_1 and schedule LoginSender on the next tick via setTimeout.
   
   if (loginTypeInjected) {
-    // Already injected once — return 0 on subsequent calls
     return ptr(0);
   }
   
   loginTypeInjected = true;
-  console.log(ts() + " LoginCheck REPLACED: calling LoginSender directly");
+  const savedLoginSM = param_1;
+  console.log(ts() + " LoginCheck REPLACED: scheduling LoginSender via setTimeout");
+  console.log(ts() + "   loginSM = " + savedLoginSM);
+  console.log(ts() + "   jobHandle = " + savedLoginSM.add(0x18).readPointer());
   
-  try {
-    // Check prerequisites
-    const jobHandle = param_1.add(0x18).readPointer();
-    if (jobHandle.isNull()) {
-      console.log(ts() + "   jobHandle is NULL — can't send Login RPC");
-      return ptr(0);
+  // Schedule LoginSender call outside the PreAuth handler stack
+  setTimeout(function() {
+    console.log(ts() + " setTimeout: calling LoginSender now (outside PreAuth stack)");
+    try {
+      const entry = Memory.alloc(0x40);
+      const flagStr = Memory.allocUtf8String("1");
+      entry.writePointer(flagStr);
+      entry.add(0x10).writeU32(2);
+      
+      const config = entry.add(0x20);
+      const authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
+      config.add(0x10).writePointer(authToken);
+      config.add(0x28).writeU16(0);
+      entry.add(0x18).writePointer(config);
+      
+      const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
+      const result = loginSenderFn(savedLoginSM, entry, config, 1);
+      console.log(ts() + " 🎯 LoginSender returned: 0x" + result.toString(16));
+      
+      if (result.toInt32() !== 0) {
+        console.log(ts() + " 🚀🚀🚀 LOGIN RPC QUEUED! 🚀🚀🚀");
+      }
+    } catch(e) {
+      console.log(ts() + " LoginSender error: " + e.message);
     }
-    console.log(ts() + "   jobHandle = " + jobHandle);
-    
-    // Allocate our fake entry and config
-    const entry = Memory.alloc(0x40);
-    const flagStr = Memory.allocUtf8String("1");
-    entry.writePointer(flagStr);
-    entry.add(0x10).writeU32(2);
-    
-    const config = entry.add(0x20);
-    const authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
-    config.add(0x10).writePointer(authToken);
-    config.add(0x28).writeU16(0);  // transport type 0 = Login
-    entry.add(0x18).writePointer(config);
-    
-    console.log(ts() + "   entry=" + entry + " config=" + config);
-    
-    // Call FUN_146e1eb70 (LoginSender) directly
-    const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
-    const result = loginSenderFn(param_1, entry, config, 1);
-    console.log(ts() + " 🎯 LoginSender returned: 0x" + result.toString(16));
-    
-    if (result.toInt32() !== 0) {
-      console.log(ts() + " 🚀🚀🚀 LOGIN RPC QUEUED! 🚀🚀🚀");
-      return ptr(1);
-    } else {
-      console.log(ts() + " LoginSender returned 0 — Login RPC was NOT sent");
-      return ptr(0);
-    }
-  } catch(e) {
-    console.log(ts() + " LoginSender EXCEPTION: " + e.message);
-    return ptr(0);
-  }
+  }, 100);  // 100ms delay to let PreAuth handler fully complete
+  
+  // Return 1 to tell the caller "login was initiated"
+  // This prevents FUN_146e19b30 (fallback) from running
+  return ptr(1);
 }, 'uint64', ['pointer']));
   console.log(ts() + " Successfully replaced FUN_146e1dae0 (LoginCheck)");
 } catch(replaceErr) {
