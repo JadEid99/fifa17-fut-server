@@ -1141,3 +1141,51 @@ but no Login RPC is actually sent. Does it:
 - Eventually retry?
 
 This is an information-gathering test, not a fix attempt.
+
+
+---
+
+## Session: April 17, 2026 19:38 — Test 19: Observation + New Strategy
+
+### RESULT (Test 19 observation): LoginCheck returns 1, Logout still fires at 30s
+
+Returning 1 from LoginCheck without calling LoginSender doesn't prevent
+Logout. The 30-second timeout in the OSDK LoginManager fires regardless.
+The Login job is queued but never dispatches on the wire.
+
+### ROOT CAUSE ANALYSIS: Why Login job never dispatches
+
+The BlazeSDK's Login job system works like this:
+1. `FUN_146e19720` creates a job with callback `LAB_146e1d730`
+2. `FUN_1478aa320` writes the auth token into the job
+3. The job scheduler (`FUN_1478abf10`) should fire the callback
+4. The callback sends the actual Login RPC on the wire
+
+The job is created and the token is written, but the callback never fires.
+This is likely because **the game expects CreateAccount to complete first**.
+The normal flow is: PreAuth → CreateAccount → (state machine advances) → Login.
+We've been skipping CreateAccount entirely.
+
+### NEW STRATEGY: Fix CreateAccount instead of bypassing it
+
+Instead of trying to bypass CreateAccount and call LoginSender directly,
+let the natural CreateAccount flow happen and fix the broken TDF decoder
+by writing the correct response values in the handler's onEnter.
+
+The CreateAccount handler (FUN_146e151d0) reads resp[0x10..0x13]:
+- resp[0x10] = UID byte (1 = account exists)
+- resp[0x13] = persona creation flag (1 = triggers SM_Transition(1,3))
+
+When resp[0x13] = 1:
+1. SM_Transition(1,3) fires → enters OSDK persona creation state
+2. OSDK screen loads (NOP'd by our patch)
+3. OSDK completion handler (FUN_146e15320) fires → SM_Transition(0,-1)
+4. State 0 onEnter → should trigger the Login flow
+
+This follows the game's NATURAL auth flow instead of trying to bypass it.
+The key question: does the game actually send CreateAccount in our setup?
+Previous tests show it doesn't — it goes PreAuth → FetchClientConfig → Logout.
+CreateAccount is only sent when the login types array has entries.
+
+BUT — if we DON'T replace LoginCheck, the natural flow will call
+FUN_146e19b30 (fallback) which might trigger CreateAccount.
