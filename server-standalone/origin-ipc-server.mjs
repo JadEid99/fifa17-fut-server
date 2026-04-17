@@ -1,213 +1,219 @@
 /**
- * Fake Origin IPC Server v4 — Correct LSX Protocol
- * 
- * Based on github.com/ploxxxy/origin-sdk protocol specification.
- * 
- * Protocol:
- * 1. Server sends Challenge as EVENT: <LSX><Event><Challenge key="hex"/></Event></LSX>\0
- * 2. Client encrypts key with AES-128-ECB (default key), sends ChallengeResponse
- * 3. Server sends ChallengeAccepted
- * 4. All subsequent messages are AES-128-ECB encrypted + hex-encoded
- * 5. Client sends GetAuthCode, server responds with AuthCode
+ * Fake Origin IPC Server v5 — GROUND TRUTH from Wireshark capture
+ *
+ * Confirmed protocol via known-plaintext attack on captured encrypted traffic:
+ *   Session key seed = ASCII charCodes of first 2 chars of ChallengeAccepted response
+ *   (NOT from ChallengeResponse as origin-sdk v10.6 does)
+ *   Session key then derived via: rng(7), newSeed = rng.next() + seed, then 16 rng bytes
+ *
+ * Verified working decryption of every message in origin_capture.pcapng.
+ *
+ * Response formats are EXACT copies from the captured ground truth.
  */
 
 import net from 'net';
 import crypto from 'crypto';
 
 const PORT = 3216;
-
-// AES-128-ECB crypto (matches Origin SDK exactly)
 const DEFAULT_KEY = Buffer.from([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
 
-// Custom PRNG matching Origin SDK's Random class
+// Fake persona — FIFA 17 uses PersonaId / UserId to proceed past login
+const FAKE_PERSONA_ID = '1000000001';
+const FAKE_USER_ID = '1000000001';
+const FAKE_PERSONA_NAME = 'Player';
+const FAKE_AUTH_CODE = 'QVV0aEZha2VBdXRoQ29kZUZvckZJRkExN1NlcnZlcg==';
+
 function createRng(seed) {
   let s = seed >>> 0;
   return {
-    next: function() {
-      s = ((s * 214013) + 2531011) >>> 0;
-      return (s >>> 16) & 32767;
-    },
-    setSeed: function(newSeed) { s = newSeed >>> 0; }
+    next() { s = ((s * 214013) + 2531011) >>> 0; return (s >>> 16) & 32767; },
+    setSeed(ns) { s = ns >>> 0; }
   };
 }
 
 function deriveKey(seed) {
-  var key = Buffer.alloc(16);
+  const key = Buffer.alloc(16);
   if (seed === 0) {
-    for (var i = 0; i < 16; i++) key[i] = i;
-  } else {
-    var rng = createRng(7);
-    var newSeed = (rng.next() + seed) >>> 0;
-    rng.setSeed(newSeed);
-    for (var i = 0; i < 16; i++) key[i] = rng.next() & 0xFF;
+    for (let i = 0; i < 16; i++) key[i] = i;
+    return key;
   }
+  const rng = createRng(7);
+  const newSeed = (rng.next() + seed) >>> 0;
+  rng.setSeed(newSeed);
+  for (let i = 0; i < 16; i++) key[i] = rng.next() & 0xFF;
   return key;
 }
 
 function aesEncrypt(plaintext, key) {
-  // AES-128-ECB with PKCS7 padding
-  var cipher = crypto.createCipheriv('aes-128-ecb', key, null);
-  cipher.setAutoPadding(true);
-  return Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+  const c = crypto.createCipheriv('aes-128-ecb', key, null);
+  c.setAutoPadding(true);
+  return Buffer.concat([c.update(plaintext, 'utf8'), c.final()]);
 }
 
 function aesDecrypt(ciphertext, key) {
-  var decipher = crypto.createDecipheriv('aes-128-ecb', key, null);
-  decipher.setAutoPadding(true);
-  return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
+  const d = crypto.createDecipheriv('aes-128-ecb', key, null);
+  d.setAutoPadding(true);
+  return Buffer.concat([d.update(ciphertext), d.final()]).toString('utf8');
 }
 
-function createHandler(socket) {
-  var addr = socket.remoteAddress + ':' + socket.remotePort;
-  console.log('[Origin] Connected: ' + addr);
-  
-  var buffer = '';
-  var msgCount = 0;
-  var challengeKey = crypto.randomBytes(16).toString('hex');
-  var sessionKey = null;
-  
-  // Step 1: Send Challenge — EXACT format from Wireshark capture
-  // <LSX><Event sender="EALS"><Challenge key="..." build="release" version="10,4,13,6637"/></Event></LSX>
-  var challengeXml = '<LSX><Event sender="EALS"><Challenge key="' + challengeKey + '" build="release" version="10,4,13,6637"/></Event></LSX>';
-  console.log('[Origin] Sending Challenge: ' + challengeXml);
+function handle(socket) {
+  const addr = socket.remoteAddress + ':' + socket.remotePort;
+  console.log('[Origin] ' + addr + ' connected');
+
+  let buffer = Buffer.alloc(0);
+  let sessionKey = null;
+  let msgCount = 0;
+
+  // Server always sends Challenge first (matches Wireshark ground truth exactly)
+  const challengeKey = crypto.randomBytes(16).toString('hex');
+  const challengeXml = '<LSX><Event sender="EALS"><Challenge key="' + challengeKey + '" build="release" version="10,4,13,6637"/></Event></LSX>';
   socket.write(challengeXml + '\0');
-  
-  socket.on('data', function(data) {
-    buffer += data.toString('utf8');
-    
-    // Split on null bytes
-    var parts = buffer.split('\0');
-    buffer = parts.pop(); // last part is incomplete
-    
-    for (var i = 0; i < parts.length; i++) {
-      var msg = parts[i].trim();
-      if (msg.length === 0) continue;
+  console.log('[Origin] -> Challenge (key=' + challengeKey + ')');
+
+  socket.on('data', (data) => {
+    buffer = Buffer.concat([buffer, data]);
+    while (true) {
+      const nullIdx = buffer.indexOf(0);
+      if (nullIdx === -1) break;
+      const msg = buffer.slice(0, nullIdx).toString('utf8').trim();
+      buffer = buffer.slice(nullIdx + 1);
+      if (!msg) continue;
       msgCount++;
-      
-      console.log('[Origin] #' + msgCount + ' raw: ' + msg.substring(0, 200));
-      
-      // Check if this is the ChallengeResponse (plaintext XML)
-      if (msg.indexOf('<LSX>') === 0 && msg.indexOf('ChallengeResponse') !== -1) {
-        handleChallengeResponse(socket, msg);
-      }
-      // Otherwise it's encrypted (hex-encoded)
-      else if (sessionKey && /^[0-9a-f]+$/i.test(msg)) {
-        try {
-          var cipherBytes = Buffer.from(msg, 'hex');
-          var xml = aesDecrypt(cipherBytes, sessionKey);
-          console.log('[Origin] Decrypted: ' + xml.substring(0, 300));
-          handleDecryptedMessage(socket, xml);
-        } catch(e) {
-          console.log('[Origin] Decrypt error: ' + e.message);
-        }
-      }
-      else {
-        console.log('[Origin] Unrecognized message format');
-      }
+      handleMessage(socket, msg);
     }
   });
-  
-  function handleChallengeResponse(sock, xml) {
-    console.log('[Origin] *** CHALLENGE RESPONSE RECEIVED ***');
-    
-    // Extract the id, response (encrypted challenge key, hex-encoded), and key (client's own key)
-    var idMatch = xml.match(/id="([^"]+)"/);
-    var id = idMatch ? idMatch[1] : '1';
-    var respMatch = xml.match(/response="([^"]+)"/);
-    var keyMatch = xml.match(/ChallengeResponse[^>]*key="([^"]+)"/);
-    
-    if (respMatch) {
-      var responseHex = respMatch[1];
-      console.log('[Origin] Response hex: ' + responseHex.substring(0, 64) + '...');
-      
-      // Derive session key from the response (first 2 bytes of hex as ASCII → u16 seed)
-      var byte0 = responseHex.charCodeAt(0);
-      var byte1 = responseHex.charCodeAt(1);
-      var seed = (byte0 << 8) | byte1;
-      sessionKey = deriveKey(seed);
-      console.log('[Origin] Session seed: ' + seed + ', key: ' + sessionKey.toString('hex'));
-    }
-    
-    // Send ChallengeAccepted — EXACT format from capture:
-    // <LSX><Response id="1" sender="EALS"><ChallengeAccepted response="..."/></Response></LSX>
-    // The response attribute should be OUR encryption of the client's key (from keyMatch)
-    var acceptedResponse = '';
-    if (keyMatch && sessionKey) {
-      // Encrypt the client's key with the default key (like the client did)
-      try {
-        var defaultCrypto = crypto.createCipheriv('aes-128-ecb', DEFAULT_KEY, null);
-        defaultCrypto.setAutoPadding(true);
-        var encrypted = Buffer.concat([defaultCrypto.update(keyMatch[1], 'utf8'), defaultCrypto.final()]);
-        acceptedResponse = encrypted.toString('hex');
-        console.log('[Origin] ChallengeAccepted response: ' + acceptedResponse.substring(0, 64));
-      } catch(e) {
-        console.log('[Origin] Encrypt error: ' + e.message);
-        acceptedResponse = respMatch ? respMatch[1] : '';
+
+  function handleMessage(sock, msg) {
+    // Plain XML (ChallengeResponse) or hex-encoded ciphertext?
+    if (msg.startsWith('<LSX>')) {
+      if (msg.includes('ChallengeResponse')) {
+        return handleChallengeResponse(sock, msg);
       }
+      console.log('[Origin] #' + msgCount + ' unexpected plain: ' + msg.substring(0, 120));
+      return;
     }
-    
-    var accepted = '<LSX><Response id="' + id + '" sender="EALS"><ChallengeAccepted response="' + acceptedResponse + '"/></Response></LSX>';
-    console.log('[Origin] Sending ChallengeAccepted: ' + accepted);
-    sock.write(accepted + '\0');
+    if (!sessionKey) {
+      console.log('[Origin] #' + msgCount + ' encrypted-but-no-session-key, dropping');
+      return;
+    }
+    if (!/^[0-9a-fA-F]+$/.test(msg) || msg.length % 32 !== 0) {
+      console.log('[Origin] #' + msgCount + ' bad hex, len=' + msg.length);
+      return;
+    }
+    try {
+      const plain = aesDecrypt(Buffer.from(msg, 'hex'), sessionKey);
+      handleRequest(sock, plain);
+    } catch (e) {
+      console.log('[Origin] decrypt failed: ' + e.message);
+    }
   }
-  
-  function handleDecryptedMessage(sock, xml) {
-    // Extract request type and id
-    var idMatch = xml.match(/id="(\d+)"/);
-    var id = idMatch ? idMatch[1] : '0';
-    
-    var response = null;
-    
-    if (xml.indexOf('GetAuthCode') !== -1) {
-      console.log('[Origin] *** AUTH CODE REQUEST ***');
-      response = '<LSX><Response id="' + id + '"><AuthCode Code="FAKEAUTHCODE1234567890" Type="0"/></Response></LSX>';
+
+  function handleChallengeResponse(sock, xml) {
+    const idMatch = xml.match(/id="([^"]+)"/);
+    const keyMatch = xml.match(/ChallengeResponse[^>]*key="([^"]+)"/);
+    if (!keyMatch) {
+      console.log('[Origin] missing key in ChallengeResponse');
+      return;
     }
-    else if (xml.indexOf('GetConfig') !== -1) {
-      response = '<LSX><Response id="' + id + '"><GetConfigResponse/></Response></LSX>';
+    const id = idMatch ? idMatch[1] : '1';
+    const clientKey = keyMatch[1];
+
+    // Encrypt client's key with default key → that's our ChallengeAccepted response field
+    const enc = crypto.createCipheriv('aes-128-ecb', DEFAULT_KEY, null);
+    enc.setAutoPadding(true);
+    const accepted = Buffer.concat([enc.update(clientKey, 'utf8'), enc.final()]).toString('hex');
+
+    // Session key: seed = ASCII bytes of first 2 chars of `accepted`
+    const seed = (accepted.charCodeAt(0) << 8) | accepted.charCodeAt(1);
+    sessionKey = deriveKey(seed);
+    console.log('[Origin] session seed=' + seed + ' key=' + sessionKey.toString('hex'));
+
+    const xmlOut = '<LSX><Response id="' + id + '" sender="EALS"><ChallengeAccepted response="' + accepted + '"/></Response></LSX>';
+    sock.write(xmlOut + '\0');
+    console.log('[Origin] -> ChallengeAccepted (session ready)');
+  }
+
+  function send(sock, xml) {
+    const cipher = aesEncrypt(xml, sessionKey);
+    sock.write(cipher.toString('hex') + '\0');
+    console.log('[Origin] -> ENC: ' + xml.substring(0, 140));
+  }
+
+  function handleRequest(sock, xml) {
+    console.log('[Origin] <- DEC: ' + xml.substring(0, 200));
+    const idMatch = xml.match(/id="(\d+)"/);
+    const id = idMatch ? idMatch[1] : '0';
+    let out = null;
+
+    if (xml.includes('GetAuthCode')) {
+      // Return real-looking auth code — FIFA 17 will forward this to Blaze
+      out = '<LSX><Response id="' + id + '" sender="EbisuSDK"><AuthCode Code="' + FAKE_AUTH_CODE + '" Type="0"/></Response></LSX>';
     }
-    else if (xml.indexOf('GetProfile') !== -1) {
-      response = '<LSX><Response id="' + id + '"><GetProfileResponse PersonaId="1000000001" UserId="2000000001" DisplayName="Player1" DateOfBirth="1990-01-01" Country="US" Language="en_US" index="0"/></Response></LSX>';
+    else if (xml.includes('GetConfig')) {
+      out = '<LSX><Response id="' + id + '" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>';
     }
-    else if (xml.indexOf('GetSetting') !== -1) {
-      var m = xml.match(/SettingId="([^"]+)"/);
-      var sid = m ? m[1] : '';
-      var vals = {'ENVIRONMENT':'prod','IS_IGO_ENABLED':'0','LANGUAGE':'en_US'};
-      response = '<LSX><Response id="' + id + '"><GetSettingResponse SettingId="' + sid + '" Value="' + (vals[sid]||'') + '"/></Response></LSX>';
+    else if (xml.includes('GetProfile')) {
+      out = '<LSX><Response id="' + id + '" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="' + FAKE_PERSONA_ID + '" AvatarId="" Country="US" CommerceCountry="US" GeoCountry="US" UserId="' + FAKE_USER_ID + '" Persona="' + FAKE_PERSONA_NAME + '" IsUnderAge="false" CommerceCurrency="USD"/></Response></LSX>';
     }
-    else if (xml.indexOf('GetGameInfo') !== -1 || xml.indexOf('GetAllGameInfo') !== -1) {
-      response = '<LSX><Response id="' + id + '"><GetAllGameInfoResponse UpToDate="true" Languages="en_US" FreeTrial="false" FullGamePurchased="true" FullGameReleased="true" InstalledLanguage="en_US"/></Response></LSX>';
+    else if (xml.includes('GetSetting')) {
+      const m = xml.match(/SettingId="([^"]+)"/);
+      const sid = m ? m[1] : '';
+      const vals = {
+        'ENVIRONMENT': 'production',
+        'IS_IGO_ENABLED': 'false',
+        'IS_IGO_AVAILABLE': 'false',
+        'LANGUAGE': 'en_US'
+      };
+      const value = vals[sid] || '';
+      out = '<LSX><Response id="' + id + '" sender=""><GetSettingResponse Setting="' + value + '"/></Response></LSX>';
     }
-    else if (xml.indexOf('SetPresence') !== -1 || xml.indexOf('SetDownloaderUtilization') !== -1) {
-      response = '<LSX><Response id="' + id + '"><ErrorSuccess/></Response></LSX>';
+    else if (xml.includes('GetGameInfo')) {
+      const m = xml.match(/GameInfoId="([^"]+)"/);
+      const gid = m ? m[1] : '';
+      const vals = {
+        'FREETRIAL': 'false',
+        'LANGUAGES': 'ar_SA,cs_CZ,da_DK,de_DE,en_US,es_ES,es_MX,fr_FR,it_IT,nl_NL,no_NO,pl_PL,pt_BR,pt_PT,ru_RU,sv_SE,tr_TR,zh_TW',
+        'FULLGAME_PURCHASED': 'true',
+        'FULLGAME_RELEASED': 'true',
+        'UP_TO_DATE': 'true'
+      };
+      const value = vals[gid] !== undefined ? vals[gid] : 'true';
+      out = '<LSX><Response id="' + id + '" sender=""><GetGameInfoResponse GameInfo="' + value + '"/></Response></LSX>';
     }
-    else if (xml.indexOf('GetAuthToken') !== -1) {
-      response = '<LSX><Response id="' + id + '"><AuthToken Token="FAKETOKEN123" ExpiresIn="3600"/></Response></LSX>';
+    else if (xml.includes('GetInternetConnectedState')) {
+      // "1" = connected (wireshark showed 0 but game was offline there)
+      out = '<LSX><Response id="' + id + '" sender=""><InternetConnectedState connected="1"/></Response></LSX>';
+    }
+    else if (xml.includes('IsProgressiveInstallationAvailable')) {
+      out = '<LSX><Response id="' + id + '" sender=""><IsProgressiveInstallationAvailableResponse ItemId="" Available="false"/></Response></LSX>';
+    }
+    else if (xml.includes('SetDownloaderUtilization') || xml.includes('SetPresence')) {
+      out = '<LSX><Response id="' + id + '" sender=""><ErrorSuccess Code="0" Description=""/></Response></LSX>';
+    }
+    else if (xml.includes('QueryImage')) {
+      out = '<LSX><Response id="' + id + '" sender=""><QueryImageResponse ImageUrl=""/></Response></LSX>';
     }
     else {
-      console.log('[Origin] Unknown request, sending ErrorSuccess');
-      response = '<LSX><Response id="' + id + '"><ErrorSuccess/></Response></LSX>';
+      console.log('[Origin] UNKNOWN request -> ErrorSuccess');
+      out = '<LSX><Response id="' + id + '" sender=""><ErrorSuccess Code="0" Description=""/></Response></LSX>';
     }
-    
-    if (response) {
-      // Encrypt response with session key
-      var encrypted = aesEncrypt(response, sessionKey);
-      var hexEncoded = encrypted.toString('hex');
-      console.log('[Origin] Sending encrypted response (' + response.substring(0, 100) + ')');
-      sock.write(hexEncoded + '\0');
-    }
+    send(sock, out);
   }
-  
-  socket.on('close', function() { console.log('[Origin] Disconnected: ' + addr + ' (' + msgCount + ' msgs)'); });
-  socket.on('error', function(e) { console.log('[Origin] Error: ' + e.message); });
+
+  socket.on('close', () => console.log('[Origin] ' + addr + ' closed (' + msgCount + ' msgs)'));
+  socket.on('error', (e) => console.log('[Origin] ' + addr + ' err: ' + e.message));
 }
 
-var server = net.createServer(createHandler);
-server.on('error', function(e) {
+const server = net.createServer(handle);
+server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.log('[Origin] Port ' + PORT + ' in use, retrying...');
-    setTimeout(function() { server.close(); server.listen(PORT, '127.0.0.1'); }, 2000);
+    console.log('[Origin] Port ' + PORT + ' in use, retry in 2s');
+    setTimeout(() => { server.close(); server.listen(PORT, '127.0.0.1'); }, 2000);
+  } else {
+    console.log('[Origin] server err: ' + e.message);
   }
 });
-server.listen(PORT, '127.0.0.1', function() {
-  console.log('[Origin] Listening on 127.0.0.1:' + PORT);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log('[Origin] IPC server listening on 127.0.0.1:' + PORT);
+  console.log('[Origin] session key algorithm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)');
 });

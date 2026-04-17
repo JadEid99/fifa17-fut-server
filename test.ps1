@@ -89,6 +89,10 @@ $serverJob = Start-Job -ScriptBlock {
     Set-Location $repoRoot
     node "$repoRoot\server-standalone\server.mjs" 2>&1
 } -ArgumentList $repoRoot
+$originJob = Start-Job -ScriptBlock {
+    param($repoRoot)
+    node "$repoRoot\server-standalone\origin-ipc-server.mjs" 2>&1
+} -ArgumentList $repoRoot
 Start-Sleep 2
 
 # Step 6: Launch FIFA 17 and auto-navigate menus
@@ -133,6 +137,10 @@ $serverOutput = Receive-Job $serverJob 2>&1
 Stop-Job $serverJob -ErrorAction SilentlyContinue
 Remove-Job $serverJob -ErrorAction SilentlyContinue
 
+$originOutput = Receive-Job $originJob 2>&1
+Stop-Job $originJob -ErrorAction SilentlyContinue
+Remove-Job $originJob -ErrorAction SilentlyContinue
+
 $dllLog = ""
 if (Test-Path $logFile) {
     $dllLog = Get-Content $logFile -Raw
@@ -142,7 +150,10 @@ $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $results = @"
 === TEST RESULTS ($timestamp) ===
 
---- SERVER OUTPUT ---
+--- ORIGIN IPC SERVER OUTPUT ---
+$($originOutput -join "`n")
+
+--- BLAZE SERVER OUTPUT ---
 $($serverOutput -join "`n")
 
 --- DLL LOG ---

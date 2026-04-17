@@ -86,38 +86,47 @@ Start-Sleep 30
 # Collect results
 Write-Host "[COLLECT] Gathering results..." -ForegroundColor Yellow
 $blazeOut = (Receive-Job $blazeJob 2>&1 | Out-String).Trim()
+$originOut = (Receive-Job $originJob 2>&1 | Out-String).Trim()
 
 # Classify result
 $r1 = "UNKNOWN"
 if ($blazeOut -match "PostAuth") { $r1 = "POSTAUTH" }
 elseif ($blazeOut -match "Login/Auth cmd=0x28|Login/Auth cmd=0x32|Login/Auth cmd=0x98") { $r1 = "LOGIN" }
+elseif ($originOut -match "GetAuthCode") { $r1 = "ORIGIN_AUTH_CODE_REQUESTED" }
+elseif ($originOut -match "GetProfile|GetConfig|GetSetting") { $r1 = "ORIGIN_SESSION_OK" }
+elseif ($originOut -match "CHALLENGE RESPONSE|session seed=") { $r1 = "ORIGIN_HANDSHAKE" }
 elseif ($blazeOut -match "Auth cmd=0xa.*CreateAccount") { $r1 = "CREATE_ACCOUNT" }
 elseif ($blazeOut -match "FetchClientConfig") { $r1 = "FETCH_CONFIG" }
 elseif ($blazeOut -match "comp=0x0009 cmd=0x0007") { $r1 = "PREAUTH" }
 elseif ($blazeOut -match "Session.*connected") { $r1 = "CONNECTED" }
 
 Write-Host ""
-Write-Host "=== RESULT: $r1 ===" -ForegroundColor $(if($r1 -match "LOGIN|POSTAUTH"){"Green"}elseif($r1 -match "CREATE_ACCOUNT|FETCH_CONFIG"){"Yellow"}else{"Red"})
+Write-Host "=== RESULT: $r1 ===" -ForegroundColor $(if($r1 -match "LOGIN|POSTAUTH|AUTH_CODE"){"Green"}elseif($r1 -match "SESSION_OK|HANDSHAKE|CREATE_ACCOUNT|FETCH_CONFIG"){"Yellow"}else{"Red"})
 
 # Save results
 $dllLog = ""; if(Test-Path $logFile){$dllLog = Get-Content $logFile -Raw}
-$bs1 = if($blazeOut.Length -gt 15000){$blazeOut.Substring($blazeOut.Length-15000)}else{$blazeOut}
-$dl1 = if($dllLog.Length -gt 8000){$dllLog.Substring($dllLog.Length-8000)}else{$dllLog}
+$bs1 = if($blazeOut.Length -gt 10000){$blazeOut.Substring($blazeOut.Length-10000)}else{$blazeOut}
+$os1 = if($originOut.Length -gt 10000){$originOut.Substring($originOut.Length-10000)}else{$originOut}
+$dl1 = if($dllLog.Length -gt 6000){$dllLog.Substring($dllLog.Length-6000)}else{$dllLog}
 
 $results = @"
 === Batch Test ($(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')) ===
 RESULT: $r1
 
---- BLAZE SERVER LOG (last 5000 chars) ---
+--- ORIGIN IPC SERVER LOG (last 10000 chars) ---
+$os1
+
+--- BLAZE SERVER LOG (last 10000 chars) ---
 $bs1
 
---- DLL LOG (last 8000 chars) ---
+--- DLL LOG (last 6000 chars) ---
 $dl1
 "@
 Set-Content $resultsFile $results -Encoding UTF8
 
 # Cleanup
 Stop-Job $blazeJob -EA SilentlyContinue; Remove-Job $blazeJob -EA SilentlyContinue
+Stop-Job $originJob -EA SilentlyContinue; Remove-Job $originJob -EA SilentlyContinue
 
 git add -A; git commit -m "test $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"; git push 2>&1
 Write-Host "Done." -ForegroundColor Cyan
