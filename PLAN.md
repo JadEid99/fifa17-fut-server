@@ -1,108 +1,145 @@
-# FIFA 17 Diagnosis — The Master Plan
+# FIFA 17 Private Server — Master Plan
 
-## Where We Are
-Origin IPC works. Blaze PreAuth + FetchClientConfig work. But the game sends
-**Logout** (cmd 0x46, empty body) as its first authentication action.
-This is not the Blaze protocol level — this is the game's high-level
-LoginAdaptor (UI layer) calling `FUN_1472d62a0` (`LoginAdaptor::Logout`).
+## Status: Phase 1 COMPLETE, Phase 2 PARTIAL, Phase 3 IN PROGRESS
 
-## What We Learned Today
+---
 
-### 1. LoginStateMachineImpl Structure (from Ghidra)
-`FUN_146e116a0` constructs a LoginStateMachineImpl. It contains THREE
-sub-state-machines at offsets:
-- `+0x07` — first SM (initialized from `FUN_146e116a0` recursive call)
-- `+0xa2` — second SM (from `FUN_146e11610`)
-- `+0xac` — third SM (from `FUN_146e11570`)
+## Phase 1: Forensic Observation ✅ COMPLETE
 
-This confirms why attempting state transition (2,1) crashed earlier —
-**there are only 3 sub-machines, at slot indices 1, 2, 4 of the outer struct**
-(the array has 5 pointers: [0]=self, [1]=SM1, [2]=SM2, [3]=NULL, [4]=SM3).
-Your earlier "SM[3] = 0x0" finding matches exactly.
+**Goal:** Build a complete, verified map of the game's decision-making from
+PreAuth completion to Logout.
 
-### 2. Logout Has No TDF Body
-Unlike Login/CreateAccount/OriginLogin, Logout is NOT registered in the
-Blaze RPC TDF table. It's a bare command with cmd=0x46, empty body.
-That's why your server sees `len=0`.
+**Deliverable:** We now have a full passive Frida trace (`frida_trace_full.log`)
+showing every function call in the auth chain with timestamps and state dumps.
 
-### 3. Logout Is Called from UI Layer
-`FUN_1472d62a0` is `LoginAdaptor::Logout`. It calls
-`DAT_144b8fee8->0x70->0x38()` which sends the Blaze RPC.
-Something in the game's high-level login logic is deciding to call this.
+### Key Findings from Phase 1
 
-### 4. PreAuthResponse TDF Has 14 Fields
-TDF member info table at `PTR_DAT_144874a90` has 14 entries. The member
-table itself is static data Ghidra can't decompile. We need Frida to
-dump this at runtime.
+1. **Root cause confirmed: Login types array is empty.**
+   - `FUN_146e1c3f0` (LoginTypesProcessor) runs after PreAuth
+   - `loginSM+0x218 = 0x0`, `loginSM+0x220 = 0x0` → count = 0
+   - `FUN_146e1dae0` (LoginCheck) returns 0
+   - `FUN_146e19b30` (LoginFallback_NoTypes) fires
+   - `FUN_146e1eb70` (LoginSender) NEVER fires
+   - 30 seconds later, OSDK LoginManager state machine sends Logout
 
-### 5. BF4 Working PreAuth Structure (Reference)
-BF4's working PreAuth response contains at minimum:
-- ASRC (source), CIDS (component IDs list), CONF (config map),
-  ESRC, INST (instance name), MINR, NASP (namespace), PLAT,
-  QOSS (QoS struct), + more
-- Decoded from BF4BlazeEmulator/Components_Client/Util.py
+2. **Complete call stack at Logout:**
+   ```
+   0x146e10b43 → 0x146e15fa5 → 0x146e155b4 → 0x146e126a5 (SM transition)
+   → 0x14717ead8 → 0x1471b6960 → 0x1471b7edf → 0x1471b37b6 (OSDK LoginMgr)
+   → 0x146f7b9ed (online tick)
+   ```
 
-### 6. Login Types Populated from PreAuth TDF +0x120
-`FUN_146e1c3f0` reads from `PreAuthResponse + 0x120` to populate
-`loginSM+0x218..+0x220` (login type array). If the array is empty,
-`FUN_146e1dae0` returns 0 and the fallback `FUN_146e19b30` runs.
+3. **OnlineManager state during Logout:**
+   - `+0x1c0 = 0xFFFFFFFF` (never initialized to a real state)
+   - `+0x1f0 = 0xFFFFFFFF` (never initialized)
+   - `+0x13b8 = 0` (idle)
+   - `BlazeHub+0x53f = 1` (DLL forced)
 
-## The Plan
+4. **Origin SDK is real (not our fake):**
+   - `DAT_144b7c7a0 = 0x27a48f10` — game-allocated heap object
+   - `IsOriginSDKConnected` returns 1 consistently
+   - Origin IPC completes full 13-message handshake
 
-### Phase A: Instrument (you run the Frida script)
-File: `frida_flow_trace.js`
+5. **DLL Patch 3 cave executes but doesn't help:**
+   - `req[+0xd8] = auth code pointer`, `req[+0xe8] = 1`
+   - Auth code IS delivered, but the login types array is still empty
+   - The auth code and login types are independent systems
 
-This passive script hooks every key function in the auth chain.
-It does NOT patch anything. It just logs.
+---
 
-**You run:**
+## Phase 2: Understanding — PARTIAL
+
+**Goal:** Know what a working auth flow looks like.
+
+### What We Found
+
+1. **BF4 emulator PreAuth response decoded (12 fields):**
+   ASRC, CIDS, CONF, ESRC, INST, MINR, NASP, PILD, PLAT, QOSS, RSRC, SVER
+   — **No login types field.** BF4 uses `-authCode noneed` command line
+   to bypass the login type check entirely. FIFA 17 doesn't support this.
+
+2. **FIFA 17 PreAuthResponse has 14 TDF fields** (from Ghidra registration):
+   `_DAT_144875638 = 0xe` (14 entries in member info table at `PTR_DAT_144874a90`)
+
+3. **Our server sends ~15 fields:**
+   ANON, ASRC, CIDS, CNGN, CONF, INST, MINR, NASP, PILD, PLAT, PTAG, QOSS, RSRC, SVER, PTVR
+   — None of these populate the login types list at response offset +0x120.
+
+4. **The login types TDF tag name remains unknown.**
+   Schema dump attempts (raw byte scan, registration area scan, decoder
+   instruction scan) did not reveal the tag. The member info table uses
+   32-bit hashes, not raw 3-byte encoded tags.
+
+5. **String table from member info contains field names:**
+   `authenticationSource`, `componentIds`, `clientId`, `entitlementSource`, `underage`
+   — These are human-readable names, but the TDF tag-to-name mapping
+   is done via hash lookup, not direct string matching.
+
+### What We Still Don't Know
+
+- The exact TDF tag name for the login types field
+- Whether any other Blaze emulator (Zamboni NHL, PocketRelay) sends this field
+- What the real EA server's PreAuth response looked like for FIFA 17
+
+### Why This Doesn't Block Us
+
+We don't need the tag name to fix the problem. We can inject the login
+type entry directly into memory at the right moment (Phase 3).
+
+---
+
+## Phase 3: Targeted Solution — IN PROGRESS
+
+**Approach chosen: Direct login type injection via Frida**
+
+Based on Phase 1 findings, we know:
+- The login types array at `loginSM+0x218/+0x220` must be non-empty
+- `FUN_146e1dae0` (LoginCheck) iterates this array
+- `FUN_146e1eb70` (LoginSender) is called for each entry
+- Frida v57 proved LoginSender works when the array is populated
+- v57 failed because injection was from a background thread (timing race)
+
+**The fix:** Hook `FUN_146e1dae0` at entry. When the array is empty,
+inject a fake login type entry BEFORE the function iterates. This runs
+on the game's main thread (inside the PreAuth handler call chain).
+
+**Current test:** `login_inject_test.ps1` with `frida_inject_login_type.js`
+
+**Expected outcomes:**
+- 🎯 LoginSender fires → Login RPC sent → server responds → PostAuth
+- ⚠️ LoginSender fires but crashes → entry layout wrong, fix and retry
+- ❌ LoginCheck still returns 0 → injection didn't take, debug
+
+**If Login RPC hits the wire:**
+The server already has Login/SilentLogin/OriginLogin handlers that return
+valid session data (SESS struct with BUID, PDTL, KEY, etc.). PostAuth
+handler also exists. We'd be past the wall for the first time.
+
+**If Login works but PostAuth fails:**
+We'd need to handle whatever the game sends after Login. But that's a
+much simpler problem — it's just adding more RPC handlers to the server.
+
+---
+
+## Architecture Reference
+
 ```
-frida -l frida_flow_trace.js FIFA17.exe > trace.log 2>&1
+Game Startup
+  ├─ DLL loads → fake SDK object, 21 patches
+  ├─ Origin IPC: Challenge → ChallengeAccepted → 13 messages ✅
+  ├─ Blaze TLS → Redirector → Main connection ✅
+  ├─ PreAuth → Ping → 6x FetchClientConfig ✅
+  ├─ LoginTypesProcessor: array empty → LoginCheck returns 0 ← THE WALL
+  ├─ LoginFallback_NoTypes → 30s timeout → Logout
+  └─ Disconnect
+
+With login type injection:
+  ├─ ... (same as above through FetchClientConfig) ✅
+  ├─ LoginTypesProcessor: array empty
+  ├─ [FRIDA] Inject fake entry into +0x218/+0x220
+  ├─ LoginCheck: count=1 → calls LoginSender
+  ├─ LoginSender: sends Login RPC with auth token ← NEW
+  ├─ Server responds with session data
+  ├─ PostAuth → online menus → FUT? ← GOAL
+  └─ ...
 ```
-(Game should already be launched with the DLL.)
-
-Let the game get to the point where it sends Logout, then stop and
-send me `trace.log`.
-
-### Phase B: Analyze (I do this)
-From the trace we will determine:
-
-1. **Is `FUN_146e1c3f0` called?** (It should be, after PreAuth response.)
-2. **What's the count of login types in `loginSM+0x218..+0x220`?**
-   - If 0: **we need to add login types to the PreAuth response**.
-3. **Does `FUN_146e1eb70` (Login sender) ever fire?**
-   - If no: decision was made before Login was reached.
-4. **Does `FUN_146e19b30` (fallback) fire?**
-   - If yes: login types were empty, we know the fix.
-5. **What's the stack trace at the moment Logout RPC is sent?**
-   - This reveals the exact code path that chose Logout.
-
-### Phase C: Fix (one of these paths)
-
-**Path A: Login types missing from PreAuth.**
-We add them to our PreAuth TDF response. I know approximately what
-tag is used (based on offset +0x120 → ~9th field). We try standard
-BlazeSDK tag names: `LGTY`, `LGDY`, `LOGT`, `ALGT`, etc.
-
-**Path B: Login types present but Login still isn't sent.**
-Something else is blocking — probably the `+0x53f` flag on BlazeHub
-isn't set at the right moment. We fix the timing.
-
-**Path C: UI layer calls Logout on a different trigger.**
-A state-machine state's `onEnter` calls `LoginAdaptor::Logout` when
-some condition fails. We'd identify the condition and fix it.
-
-## What I Need From You
-
-1. **Pull the latest changes** (I'll push when this plan is done).
-2. **Run the Frida trace** while the game attempts to connect.
-3. **Stop when you see "EA servers unavailable"** or similar.
-4. **Send me `trace.log`** — even if 1MB+ that's fine, I'll parse it.
-
-## Estimated Time to Solution
-- Phase A (Frida run): 5 minutes (you run it)
-- Phase B (my analysis): 1 back-and-forth
-- Phase C (fix): 1-2 iterations
-
-We should have a working auth in 2-3 more interactions if this plan
-works as intended.

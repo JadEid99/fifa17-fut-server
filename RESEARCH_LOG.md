@@ -468,3 +468,84 @@ Expected outcomes:
 - 🎯 LoginSender fires → Login RPC sent → server responds → PostAuth?
 - ⚠️ LoginSender fires but crashes → entry layout is wrong
 - ❌ LoginCheck still returns 0 → injection didn't take effect
+
+### RESULT: PENDING — test running now (April 17, 2026 ~16:55)
+
+---
+
+## Complete Session Timeline (April 17, 2026)
+
+### 15:00 — Project onboarding
+- Read all documentation: SESSION_LOG.md, FIFA17_SOLUTION.md, FIFA17_ONLINE_FLOW.md,
+  SOLUTION_ANALYSIS.md, NEXT_SESSION_PLAN.md, PROJECT_ROADMAP.md
+- Read FIFA 17 Server Revival Documentation.txt, FIFA Connection Sequence Workarounds.txt
+- Read unknowncheats.txt (BF3/BF4 Blaze emulator community threads)
+- Read DLL source (dll-proxy/dinput8_proxy.cpp, 1122 lines, v97)
+- Read Frida script (frida_force_login.js, v63)
+- Read Blaze server (server-standalone/server.mjs, 1992 lines)
+- Read Origin IPC server (server-standalone/origin-ipc-server.mjs, v5)
+- Read origin-sdk Rust crate (crypto.rs, random.rs)
+- Read BF4 emulator code (BF4BlazeEmulator/)
+- Verified Ghidra dump accessible (FIFA17_dumped.bin.c, 6.5M lines, 209MB)
+
+### 15:30 — Initial analysis
+- Identified three hypotheses for Logout:
+  H1: Login types array empty (PreAuth missing field)
+  H2: Origin SDK internal state not set (Patch 3 bypasses LSX)
+  H3: Connection state stuck in error
+- Proposed 3-phase plan: Observe → Understand → Act
+
+### 15:48 — Phase 1 setup
+- Created `frida_flow_trace.js` — passive instrumentation of 15 functions
+- Created `flow_trace_test.ps1` — automated test script
+- Created `FLOW_TRACE_PLAN.md` — technical spec
+- Created `RESEARCH_LOG.md` — this file
+- Pushed to git
+
+### 16:02 — First trace run
+- RESULT: Verdict classifier bug (said LOGIN_SENT, actually LOGOUT_WIRE)
+- IsOriginSDKConnected spam (900/1221 lines) ate the important events
+- Fixed: ratelimited IsOriginSDKConnected to log only on change
+- Fixed: save full trace + include first 30KB and last 60KB in report
+- Fixed: verdict classifier to match exact Frida markers
+
+### 16:14 — Second trace run — BREAKTHROUGH
+- **H1 CONFIRMED:** Login types array is empty (count=0)
+- LoginCheck returns 0, LoginFallback_NoTypes fires, LoginSender never fires
+- Full stack trace at Logout captured (OSDK LoginManager → SM transition)
+- OnlineManager state: +0x1c0 = 0xFFFFFFFF, +0x1f0 = 0xFFFFFFFF
+- Origin SDK object is real (0x27a48f10), not our DLL's fake
+
+### 16:20 — Phase 2: Understanding
+- Decoded BF4 PreAuth response (12 fields, NO login types)
+- BF4 uses `-authCode noneed` to bypass — FIFA 17 doesn't support this
+- FIFA 17 has 14 PreAuth fields, we send 15 (but none are login types)
+- The login types field is at PreAuth response object offset +0x120
+- It's a TDF list with vtable 0x143889d10, constructed but empty
+
+### 16:30 — Ghidra deep dive
+- Found LoginStateMachineImpl constructor (3 sub-state-machines at indices 1,2,4)
+- Confirmed SM[3]=NULL (explains earlier crash on state transition 2,1)
+- Found PreAuthResponse has 14 TDF member info entries
+- Found string table with field names: authenticationSource, componentIds,
+  clientId, entitlementSource, underage
+- Could NOT find the TDF tag-to-offset mapping for offset +0x120
+
+### 16:40 — Schema dump attempt 1
+- Created `frida_dump_preauth_schema.js` — dumps member info table
+- Found string pointers to field names but not tag encodings
+- Table layout is complex (array of pointers, not inline structs)
+
+### 16:47 — Schema dump attempt 2
+- Created `frida_decode_preauth_tags.js` — scans for TDF tag byte patterns
+- Scanned member info table, registration area, and decoder instructions
+- Found byte patterns but they decode to nonsense tags (HSR', RHX!, etc.)
+- Tags are stored as 32-bit hashes, not raw 3-byte encoded values
+
+### 16:55 — Phase 3: Direct injection
+- DECISION: Stop chasing the TDF tag, inject login type entry directly
+- Created `frida_inject_login_type.js` — hooks LoginCheck, injects entry
+- Created `login_inject_test.ps1` — automated test
+- This is the same approach as Frida v57 but with correct timing
+  (on game's main thread, inside PreAuth handler call chain)
+- Test running now
