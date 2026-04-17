@@ -13,4 +13,8 @@ Attaching...
 === Frida v63: Origin Protocol Monitor ===
 [INIT] Hooked XML send
 === Frida v63 Ready ===
-[Local::PID::84600 ]-> 
+[Local::PID::57848 ]-> [XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="37f650a9ab7a175b3f9e9efb84d9027db57b50c77ee5a47498de84fa97b41762954f64f2e4e86e9eee82d20216684899" key="b4c02ce89b5e8f7d2cc8ea6b6748ddbb" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
+[XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="75b36695d5f019e8012719c85d6c8a1559d96a0cdc38eaac98ab0ae40445c3fa954f64f2e4e86e9eee82d20216684899" key="463c22254361ba6c6060786a78aa0e77" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
+Process terminated
+
+Thank you for using Frida!
