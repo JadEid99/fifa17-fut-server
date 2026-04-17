@@ -1189,3 +1189,50 @@ CreateAccount is only sent when the login types array has entries.
 
 BUT — if we DON'T replace LoginCheck, the natural flow will call
 FUN_146e19b30 (fallback) which might trigger CreateAccount.
+
+
+---
+
+### COMPLETE TEST LOG (Tests 1-19)
+
+| # | Approach | Result | Key Finding |
+|---|----------|--------|-------------|
+| 1 | Hook LoginCheck onEnter | FAIL | ctx.r8 TypeError + late Frida attach |
+| 2 | Fix bugs, hook LoginCheck | FAIL | Frida can't intercept FUN_146e1dae0 |
+| 3 | Hook LoginTypesProcessor onLeave, call LoginCheck | CRASH | Re-entrancy (LoginCheck called twice) |
+| 4 | Call LoginSender from onLeave | CRASH | entry+0x10 was 0 |
+| 5 | Add diagnostics, call LoginSender from onLeave | FREEZE | Deadlock (RPC lock held by PreAuth handler) |
+| 6 | Inject into +0x218 in onEnter | CRASH | TDF objects need vtables |
+| 7 | Interceptor.replace LoginCheck, call orig | OK | origLoginCheck invalid after replace; DLL's LoginSender fired instead |
+| 8 | Same + force +0x53f flag | OK | Same — DLL fired LoginSender, not our code |
+| 9 | Replace LoginCheck, init arrays + call LoginSender | CRASH | param_1+0x258 not initialized (intermittent) |
+| 10 | Replace LoginCheck, setTimeout LoginSender | FREEZE | Deadlock (Frida thread) |
+| 11 | Replace LoginCheck, init arrays + LoginSender | **OK** | **Job queued 0x9917601 but never dispatched on wire** |
+| 12 | Same + hook FUN_146e19720/FUN_1478aa320 | CRASH | Diagnostic hooks corrupted call stack |
+| 13 | Same minus scheduler hook | CRASH | FUN_1478aa320 hook still corrupts |
+| 14 | Minimal (same as 11) | CRASH | Intermittent — resize function crash |
+| 15 | Same with syntax error | NO-OP | Frida script didn't load |
+| 16 | Same (v14 rewrite) | CRASH | Intermittent — resize crash again |
+| 17 | Skip array init, just call LoginSender | **OK** | **Job queued 0xA140201, never dispatched** |
+| 18 | Same | CRASH | Intermittent LoginSender crash |
+| 19 | Return 1 from LoginCheck, no LoginSender | OK | Logout still fires at 30s — returning 1 doesn't help |
+| 20 | **Fix CreateAccount response** | **PENDING** | New strategy: let natural flow happen |
+
+### Architecture (current test setup)
+
+```
+Windows PC:
+  ├─ FIFA17.exe + dinput8.dll (DLL proxy with 21 patches)
+  ├─ Frida attached (frida_inject_login_type.js)
+  ├─ Node.js: server.mjs (Blaze server on 42230 + 10041)
+  └─ Node.js: origin-ipc-server.mjs (Origin IPC on 3216)
+
+Connection flow:
+  1. DLL loads → fake SDK object, patches applied ✅
+  2. Origin IPC: Challenge → ChallengeAccepted → 13 messages ✅
+  3. Blaze TLS → Redirector → Main connection ✅
+  4. PreAuth → Ping → 6x FetchClientConfig ✅
+  5. CreateAccount → [Frida writes resp values] → SM_Transition(1,3) ← TEST 20
+  6. OSDK screen (NOP'd) → completion → SM_Transition(0,-1)
+  7. Login → server responds → PostAuth → online menus → FUT?
+```
