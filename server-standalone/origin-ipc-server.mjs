@@ -18,8 +18,10 @@ const PORT = 3216;
 const DEFAULT_KEY = Buffer.from([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
 
 // Fake persona — FIFA 17 uses PersonaId / UserId to proceed past login
-const FAKE_PERSONA_ID = '1000000001';
-const FAKE_USER_ID = '1000000001';
+// Using values from a real Origin account (from Wireshark capture) — the game may
+// validate these against certain ranges/formats.
+const FAKE_PERSONA_ID = '33068179';
+const FAKE_USER_ID = '33068179';
 const FAKE_PERSONA_NAME = 'Player';
 const FAKE_AUTH_CODE = 'QVV0aEZha2VBdXRoQ29kZUZvckZJRkExN1NlcnZlcg==';
 
