@@ -759,3 +759,52 @@ The key insight: the TDF copy writes to `loginSM+0x1b8` (raw TDF data),
 NOT to `loginSM+0x218/+0x220` (processed login entries). These are
 different fields. So writing to +0x218/+0x220 in onEnter won't be
 overwritten by the TDF copy.
+
+
+---
+
+## Session: April 17, 2026 17:25 — Login Inject Test 6: CRASH (wrong data in +0x218)
+
+### RESULT: Game crashed when natural code iterated our fake entry
+
+```
+[22736] INJECTING login type entry into loginSM+0x218/+0x220
+[22736] Injected: entry=0x107b93e40 config=0x107b93e60
+Process terminated
+```
+
+### ROOT CAUSE IDENTIFIED
+
+`FUN_146e1c3f0` reads `+0x218/+0x220` IMMEDIATELY after the TDF copy
+and iterates the entries in a loop:
+
+```c
+for (; lVar7 != lVar1; lVar7 = lVar7 + 0x20) {
+    uVar3 = FUN_146138430(0x83, 0xfffffffe, 1);
+    puVar4 = (undefined4 *)FUN_146dd6ec0(param_1 + 0x38, lVar7);
+    *puVar4 = uVar3;
+}
+```
+
+`FUN_146dd6ec0(param_1 + 0x38, lVar7)` treats `lVar7` as a pointer to
+a **real BlazeSDK TDF LoginTypeInfo object with a vtable**. Our fake
+entry is just raw pointers — no vtable. The function dereferences the
+vtable and crashes.
+
+**The +0x218/+0x220 array contains TDF objects, not simple structs.**
+We cannot inject into this array without constructing proper TDF objects.
+
+### NEW APPROACH: Interceptor.replace on FUN_146e1dae0
+
+Instead of injecting data, replace the LoginCheck function entirely.
+Our replacement:
+1. Calls the original LoginCheck first (returns 0 = no types)
+2. Then calls FUN_146e1eb70 (LoginSender) directly with our fake entry
+3. Returns 1 to indicate "login sent"
+
+This avoids touching +0x218/+0x220 entirely. LoginSender doesn't iterate
+the TDF array — it just reads simple fields from the entry we provide.
+
+If `Interceptor.replace` fails (same issue as `attach`), fallback to
+hooking LoginTypesProcessor onLeave with `setTimeout(0)` to call
+LoginSender outside the PreAuth handler stack (avoids deadlock).

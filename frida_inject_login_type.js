@@ -39,71 +39,128 @@ try {
 let loginTypeInjected = false;
 let loginSenderFired = false;
 
-// Hook FUN_146e1c3f0 (LoginTypesProcessor) — inject login type entry
-// at the START of this function, BEFORE it calls LoginCheck internally.
-// This way the natural code path processes our entry without deadlocks.
-Interceptor.attach(addr(0x6e1c3f0), {
-  onEnter: function(args) {
-    const loginSM = args[0];
-    console.log(ts() + " LoginTypesProcessor(loginSM=" + loginSM + ")");
-    this._loginSM = loginSM;
-    
-    if (loginTypeInjected) return;
-    
-    try {
-      // The function will read +0x218/+0x220 after doing the TDF copy.
-      // We need to inject AFTER the TDF copy but BEFORE LoginCheck.
-      // Since we can't hook between those two calls, we use a different
-      // approach: we'll set a flag here and do the injection in a
-      // setTimeout(0) which runs after this function returns but before
-      // the next game tick processes the Logout timeout.
-      //
-      // Actually — the simplest approach: just populate +0x218/+0x220
-      // right now. The TDF copy will overwrite +0x1b8 (a different field),
-      // but +0x218/+0x220 is the PROCESSED array that LoginCheck reads.
-      // If we write to +0x218/+0x220 now, the TDF copy won't touch it
-      // (it writes to +0x1b8), and LoginCheck will see our entry.
-      
-      loginTypeInjected = true;
-      console.log(ts() + " INJECTING login type entry into loginSM+0x218/+0x220");
-      
-      const entry = Memory.alloc(0x40);
-      const flagStr = Memory.allocUtf8String("1");
-      entry.writePointer(flagStr);
-      entry.add(0x10).writeU32(2);
-      
-      const config = entry.add(0x20);
-      const authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
-      config.add(0x10).writePointer(authToken);
-      config.add(0x28).writeU16(0);
-      entry.add(0x18).writePointer(config);
-      
-      loginSM.add(0x218).writePointer(entry);
-      loginSM.add(0x220).writePointer(entry.add(0x20));
-      
-      console.log(ts() + " Injected: entry=" + entry + " config=" + config);
-      console.log(ts() + " loginSM+0x218=" + loginSM.add(0x218).readPointer());
-      console.log(ts() + " loginSM+0x220=" + loginSM.add(0x220).readPointer());
-      console.log(ts() + " Now letting the natural code path run (LoginCheck will see count=1)");
-    } catch(e) {
-      console.log(ts() + " Inject error: " + e.message);
-    }
-  },
-  onLeave: function(retval) {
-    if (!this._loginSM) return;
-    try {
-      const sm = this._loginSM;
-      const start = sm.add(0x218).readPointer();
-      const end = sm.add(0x220).readPointer();
-      if (!start.isNull() && !end.isNull()) {
-        const count = end.sub(start).toInt32() / 0x20;
-        console.log(ts() + " LoginTypesProcessor done: array count=" + count);
-      } else {
-        console.log(ts() + " LoginTypesProcessor done: array still empty (injection may have been overwritten)");
-      }
-    } catch(e) {}
+// The problem: we can't inject into loginSM+0x218/+0x220 because those
+// contain TDF objects with vtables that the code iterates and dereferences.
+// We can't hook FUN_146e1dae0 (LoginCheck) with Interceptor.attach.
+//
+// Solution: Use Interceptor.replace on FUN_146e1dae0 to completely replace
+// it with our own implementation that calls FUN_146e1eb70 (LoginSender)
+// with our fake entry.
+//
+// FUN_146e1dae0 signature: uint64 FUN_146e1dae0(longlong param_1)
+// It returns 0 (no login types) or 1 (login sent).
+
+const origLoginCheck = new NativeFunction(addr(0x6e1dae0), 'uint64', ['pointer']);
+
+try {
+  Interceptor.replace(addr(0x6e1dae0), new NativeCallback(function(param_1) {
+  // First, call the original to let it do its normal thing
+  const origResult = origLoginCheck(param_1);
+  
+  if (origResult.toInt32() !== 0) {
+    // Original found login types and processed them — great, nothing to do
+    console.log(ts() + " LoginCheck: original returned " + origResult + " (login types found naturally!)");
+    return origResult;
   }
-});
+  
+  if (loginTypeInjected) {
+    // Already injected once, don't do it again
+    console.log(ts() + " LoginCheck: original returned 0, already injected before");
+    return origResult;
+  }
+  
+  loginTypeInjected = true;
+  console.log(ts() + " LoginCheck: original returned 0 (no login types) — INJECTING and calling LoginSender");
+  
+  try {
+    // Check prerequisites
+    const jobHandle = param_1.add(0x18).readPointer();
+    if (jobHandle.isNull()) {
+      console.log(ts() + "   jobHandle is NULL — can't send Login RPC");
+      return ptr(0);
+    }
+    console.log(ts() + "   jobHandle = " + jobHandle);
+    
+    // Allocate our fake entry and config
+    const entry = Memory.alloc(0x40);
+    const flagStr = Memory.allocUtf8String("1");
+    entry.writePointer(flagStr);
+    entry.add(0x10).writeU32(2);
+    
+    const config = entry.add(0x20);
+    const authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
+    config.add(0x10).writePointer(authToken);
+    config.add(0x28).writeU16(0);  // transport type 0 = Login
+    entry.add(0x18).writePointer(config);
+    
+    console.log(ts() + "   entry=" + entry + " config=" + config + " auth=\"FAKEAUTHCODE1234567890\"");
+    
+    // Call FUN_146e1eb70 (LoginSender) directly
+    // Signature: uint64 FUN_146e1eb70(longlong param_1, uint64* param_2, longlong param_3, int param_4)
+    const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
+    const result = loginSenderFn(param_1, entry, config, 1);
+    console.log(ts() + " 🎯 LoginSender returned: " + result);
+    
+    if (result.toInt32() !== 0) {
+      console.log(ts() + " 🚀🚀🚀 LOGIN RPC SENT! 🚀🚀🚀");
+      return ptr(1);
+    } else {
+      console.log(ts() + " LoginSender returned 0 — Login RPC was NOT sent");
+      return ptr(0);
+    }
+  } catch(e) {
+    console.log(ts() + " LoginSender EXCEPTION: " + e.message);
+    return ptr(0);
+  }
+}, 'uint64', ['pointer']));
+  console.log(ts() + " Successfully replaced FUN_146e1dae0 (LoginCheck)");
+} catch(replaceErr) {
+  console.log(ts() + " Interceptor.replace failed: " + replaceErr.message);
+  console.log(ts() + " FALLBACK: Patching FUN_146e1dae0 with Memory.patchCode");
+  
+  // Fallback: use Memory.patchCode to write a JMP to our code cave
+  // We'll write the function body directly using x86 assembly
+  try {
+    // Simpler fallback: hook FUN_146e1c3f0 at onLeave and call LoginSender
+    // from a setTimeout(0) to avoid the deadlock (runs on next tick)
+    Interceptor.attach(addr(0x6e1c3f0), {
+      onLeave: function(retval) {
+        if (loginTypeInjected) return;
+        loginTypeInjected = true;
+        
+        const loginSM = this.context.rbx; // RBX typically holds param_1 in callee-saved
+        console.log(ts() + " FALLBACK: LoginTypesProcessor done, scheduling LoginSender on next tick");
+        console.log(ts() + "   loginSM candidate (rbx) = " + loginSM);
+        
+        // Use setTimeout to call LoginSender outside the PreAuth handler stack
+        setTimeout(function() {
+          console.log(ts() + " FALLBACK: setTimeout fired, calling LoginSender...");
+          try {
+            const entry = Memory.alloc(0x40);
+            const flagStr = Memory.allocUtf8String("1");
+            entry.writePointer(flagStr);
+            entry.add(0x10).writeU32(2);
+            
+            const config = entry.add(0x20);
+            const authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
+            config.add(0x10).writePointer(authToken);
+            config.add(0x28).writeU16(0);
+            entry.add(0x18).writePointer(config);
+            
+            const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
+            const result = loginSenderFn(loginSM, entry, config, 1);
+            console.log(ts() + " FALLBACK LoginSender returned: " + result);
+          } catch(e) {
+            console.log(ts() + " FALLBACK LoginSender error: " + e.message);
+          }
+        }, 0);
+      }
+    });
+    console.log(ts() + " FALLBACK: Hooked LoginTypesProcessor onLeave with setTimeout");
+  } catch(fallbackErr) {
+    console.log(ts() + " FALLBACK also failed: " + fallbackErr.message);
+  }
+}
 
 // Monitor LoginSender (FUN_146e1eb70) — this is the goal
 Interceptor.attach(addr(0x6e1eb70), {
@@ -169,7 +226,7 @@ Interceptor.attach(addr(0x6e1cf10), {
   }
 });
 
-// Monitor LoginTypesProcessor
+// Monitor LoginTypesProcessor for logging only
 Interceptor.attach(addr(0x6e1c3f0), {
   onEnter: function(args) {
     console.log(ts() + " LoginTypesProcessor(loginSM=" + args[0] + ")");
