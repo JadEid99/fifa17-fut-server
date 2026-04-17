@@ -133,6 +133,20 @@ function handle(socket) {
     const xmlOut = '<LSX><Response id="' + id + '" sender="EALS"><ChallengeAccepted response="' + accepted + '"/></Response></LSX>';
     sock.write(xmlOut + '\0');
     console.log('[Origin] -> ChallengeAccepted (session ready)');
+    
+    // CRITICAL: FIFA 17 waits for a server-pushed <Login IsLoggedIn="true"/> event.
+    // Without it, the IsLoggedIn internal flag stays false and the game sends Logout
+    // to the Blaze server instead of attempting to authenticate.
+    // Found via ghidra: FUN_147102800 dispatches on <Login> tag with sender="EALS"
+    // and calls thunk_FUN_147138640 which sets IsLoggedIn=true on the Origin SDK object.
+    //
+    // Delay slightly so the client processes ChallengeAccepted first and has the session key.
+    setTimeout(() => {
+      if (sock.destroyed) return;
+      const loginEvent = '<LSX><Event sender="EALS"><Login IsLoggedIn="true"/></Event></LSX>';
+      send(sock, loginEvent);
+      console.log('[Origin] -> pushed Login event (IsLoggedIn=true)');
+    }, 50);
   }
 
   function send(sock, xml) {
