@@ -1334,3 +1334,70 @@ Instead of our hand-crafted Node.js Blaze server, use Zamboni14Legacy
 .NET 8. The C# BlazeSDK handles all TDF encoding correctly.
 
 See `DEEP_DIVE_PLAN.md` for full plan.
+
+
+---
+
+## Session: April 17, 2026 20:45 — MAJOR DISCOVERY: PreAuth schema fixes
+
+### CLONED: Zamboni BlazeSDK + NHL14 + UltimateTeam + Taggi
+
+All five Zamboni repos cloned to `zamboni-refs/`. Analysis reveals
+exactly how Blaze3SDK's PreAuthResponse should be structured.
+
+### DEFINITIVE PREAUTH SCHEMA (Blaze3SDK)
+
+14 fields, alphabetical by TDF tag:
+```
+ANON (bool)   - mAnonymousChildAccountsEnabled
+ASRC (string) - mAuthenticationSource
+CIDS (list<ushort>) - mComponentIds
+CNGN (string) - mParentalConsentEntitlementGroupName
+CONF (struct) - mConfig (FetchConfigResponse{ CONF: map<string,string> })
+INST (string) - mInstanceName
+MINR (bool)   - mUnderageSupported
+NASP (string) - mPersonaNamespace
+PILD (string) - mLegalDocGameIdentifier
+PLAT (string) - mPlatform
+PTAG (string) - mParentalConsentEntitlementTag
+QOSS (struct) - mQosSettings (QosConfigInfo{ BWPS, LNP, LTPS, SVID })
+RSRC (string) - mRegistrationSource
+SVER (string) - mServerVersion
+```
+
+### BUGS IN OUR CURRENT RESPONSE
+
+1. **Extra PTVR field** — not in schema (removed)
+2. **Wrong CIDS values** — we used 0x7800-0x7806 (early Blaze version);
+   Blaze3SDK uses standard IDs: 1,4,5,7,9,10,11,12,13,14,15,20,21,25,27,28,2000,2049,30722
+3. **LTPS was empty struct, not empty map** — type mismatch (0x03 vs 0x05)
+4. **PILD was empty string** — should be the game identifier
+5. **SVER had trailing newline** — may or may not matter
+6. **Inner CONF map had lots of extra configs** — kept them, game reads them
+
+### LOGIN FLOW (from Zamboni NHL14 — WORKING)
+
+After PreAuth succeeds:
+1. Client sends SilentLogin (or PS3Login for consoles) with AUTH + PID + TYPE
+2. Server returns FullLoginResponse with session data
+3. Server sends 4 async notifications:
+   - NotifyUserAuthenticated (300ms delay)
+   - NotifyUserAdded (500ms delay)  
+   - NotifyUserSessionExtendedDataUpdate (600ms delay)
+   - NotifyUserUpdated (800ms delay)
+
+**WE HAVE NEVER SENT THESE NOTIFICATIONS.** Even if Login succeeds, the
+game probably waits for them and times out → Logout.
+
+### KEY INSIGHT: Login types are NOT in PreAuthResponse
+
+Zamboni NHL14 works fine without any login types field in PreAuth. The
+"login types" the game reads from `param_2 + 0x120` are probably the
+CIDS list, not a separate field. We were chasing the wrong ghost.
+
+The real issue has been wrong CIDS format + missing notifications.
+
+### PLAN
+1. Test with corrected PreAuth (just pushed)
+2. If game still doesn't send Login: add the 4 post-Login notifications
+3. If Login still fails: use Zamboni14Legacy as our Blaze server

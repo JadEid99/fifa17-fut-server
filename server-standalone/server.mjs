@@ -1778,14 +1778,22 @@ function handlePreAuth(pkt) {
     return buildReply(pkt, body);
   }
   
-  // Build a proper FIFA 17 PreAuth response based on PocketRelay's format
-  // Adapted from PocketRelay's PreAuthResponse for Mass Effect 3
+  // Build PreAuthResponse matching Blaze3SDK schema exactly (14 fields).
+  // Schema from zamboni-refs/BlazeSDK/Blaze3SDK/Blaze/Util/PreAuthResponse.cs
+  //   ANON, ASRC, CIDS, CNGN, CONF, INST, MINR, NASP, PILD, PLAT, PTAG, QOSS, RSRC, SVER
+  // TDF decoder needs fields in alphabetical order by tag.
   const enc = new TdfEncoder();
-  enc.writeInteger('ANON', 0);
-  enc.writeString('ASRC', '303107');  // Auth source
-  enc.writeIntList('CIDS', [0x0001, 0x0004, 0x0007, 0x0009, 0x000F, 0x0019, 0x001C, 0x7800, 0x7801, 0x7802, 0x7803, 0x7805, 0x7806, 0x07D0]);
-  enc.writeString('CNGN', '');
-  // Config map with pingPeriod, timeouts etc
+  enc.writeInteger('ANON', 0);                     // bool: anon child accounts enabled
+  enc.writeString('ASRC', '303107');               // auth source
+  // CIDS: component IDs — from Blaze3SDK + FIFA 17 additions
+  //   Authentication=1, GameManager=4, Redirector=5, Stats=7, Util=9,
+  //   CensusData=10, Clubs=11, GameReportingLegacy=12, League=13, Mail=14,
+  //   Messaging=15, Playgroups=6, Locker=20, Rooms=21, Tournaments=23,
+  //   CommerceInfo=24, AssociationLists=25, GpsContentController=27,
+  //   GameReporting=28, DynamicInetFilter=2000, Rsp=2049, UserSessions=30722
+  enc.writeIntList('CIDS', [1, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 25, 27, 28, 2000, 2049, 30722]);
+  enc.writeString('CNGN', '');                     // parental consent entitlement group name
+  // CONF: nested FetchConfigResponse { CONF: map<string,string> }
   enc.writeStructStart('CONF');
   enc.writeMap('CONF', {
     'connIdleTimeout': '90s',
@@ -1801,13 +1809,13 @@ function handlePreAuth(pkt) {
     'blazeServerClientId': 'GOS-BlazeServer-FIFA17-PC'
   });
   enc.writeStructEnd();
-  enc.writeString('INST', 'fifa-2017-pc');  // Must match game's SVCN
-  enc.writeInteger('MINR', 0);
-  enc.writeString('NASP', 'cem_ea_id');
-  enc.writeString('PILD', '');
-  enc.writeString('PLAT', 'pc');
-  enc.writeString('PTAG', '');
-  // QoS server config
+  enc.writeString('INST', 'fifa-2017-pc-trial');   // instance name — must match client's SVCN
+  enc.writeInteger('MINR', 0);                     // bool: underage supported
+  enc.writeString('NASP', 'cem_ea_id');            // persona namespace
+  enc.writeString('PILD', 'fifa-2017-pc-trial');   // legal doc game identifier (was empty!)
+  enc.writeString('PLAT', 'pc');                   // platform
+  enc.writeString('PTAG', '');                     // parental consent entitlement tag
+  // QOSS: QosConfigInfo { BWPS, LNP, LTPS, SVID }
   enc.writeStructStart('QOSS');
   enc.writeStructStart('BWPS');
   enc.writeString('PSA ', '127.0.0.1');
@@ -1815,15 +1823,14 @@ function handlePreAuth(pkt) {
   enc.writeString('SNA ', 'prod-sjc');
   enc.writeStructEnd(); // BWPS
   enc.writeInteger('LNP ', 10);
-  enc.writeStructStart('LTPS');
-  enc.writeStructEnd(); // LTPS (empty)
+  enc.writeMap('LTPS', {});                        // empty map (was empty struct — wrong type!)
   enc.writeInteger('SVID', 0x45410805);
   enc.writeStructEnd(); // QOSS
-  enc.writeString('RSRC', '303107');
-  enc.writeString('SVER', 'Blaze 15.1.2.1.0 (CL# 3175939)\n');
-  enc.writeString('PTVR', '1.1');  // Protocol version - must match game's PTVR
+  enc.writeString('RSRC', '303107');               // registration source
+  enc.writeString('SVER', 'Blaze 15.1.2.1.0 (CL# 3175939)');  // server version (no trailing newline)
+  // NO PTVR — not in Blaze3SDK schema
   const body = enc.build();
-  console.log(`[PreAuth] Sending FIFA17 PreAuth response (${body.length} bytes)`);
+  console.log(`[PreAuth] Sending FIFA17 PreAuth response (${body.length} bytes) — Blaze3SDK schema`);
   return buildReply(pkt, body);
 }
 function handlePostAuth(session, pkt) {

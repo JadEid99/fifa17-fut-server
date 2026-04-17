@@ -28,3 +28,6 @@ FIFA17_dumped.bin.c
 # Trace outputs (only ephemeral — results pushed via frida_trace_results.log + frida_trace_full.log)
 frida_trace.log
 frida_trace_err.log
+
+# Reference clones (keep locally, don't push)
+zamboni-refs/
