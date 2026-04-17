@@ -1,6 +1,6 @@
 ﻿========================================================================
 PreAuth Schema Dump Results
-Run: 2026-04-17 16:40:48
+Run: 2026-04-17 16:47:44
 ========================================================================
 
 --- FRIDA SCHEMA DUMP ---
@@ -16,265 +16,85 @@ Run: 2026-04-17 16:40:48
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== PreAuthResponse TDF Member Info Table ===
-Table pointer address: 0x144874a90
-Table data at: 0x144867628
+=== PreAuth TDF Tag Decoder ===
 
---- Trying entry size = 24 bytes ---
-[ 0] 0600000006000000b412554301000000b412554301000000
-     u32: 6 6 435512b4 1
-     tag(BE)=!@   tag(LE)=   & tag(u32lo)=   & tag(u32hi)=    
-[ 1] a07686440100000003000000000000000000000000000000
-     u32: 448676a0 1 3 0
-     tag(BE)=H':& tag(LE)=AG:@ tag(u32lo)=AG:@ tag(u32hi)=1(9V
-[ 2] 000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 3] 000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 4] 007686440100000001000000000000000000000000000000
-     u32: 44867600 1 1 0
-     tag(BE)= ':& tag(LE)=AG8  tag(u32lo)=AG8  tag(u32hi)=1(9V
-[ 5] 000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 6] 000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 7] 000000000000000028768644010000000100000000000000
-     u32: 0 0 44867628 1
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 8] 0300000002bf4da7f04b760900000000904b760900000000
-     u32: 3 -58b240fe 9764bf0 0
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 9] 2077864401000000d091da46010000002876864401000000
-     u32: 44867720 1 46da91d0 1
-     tag(BE)=('>& tag(LE)=AG<@ tag(u32lo)=AG<@ tag(u32hi)=1(9W
-[10] 0300000000000000500a874401000000b08f864401000000
-     u32: 3 0 44870a50 1
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[11] 000000000000000000000000000000007086894401000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[12] 788689440100000010edc04401000000e876864401000000
-     u32: 44898678 1 44c0ed10 1
-     tag(BE)=>(:) tag(LE)=B89X tag(u32lo)=B89X tag(u32hi)=1(F&
-[13] 008e928b0000000000000000000000000000000000000000
-     u32: -746d7200 0 0 0
-     tag(BE)= (Z2 tag(LE)=DHX  tag(u32lo)=DHX  tag(u32hi)=BY*.
+=== Reading member info table raw bytes ===
+Scanning for valid TDF tags in table memory:
+  offset 21: a33c87 -> HSR'
+  offset 82: ca8e01 -> RHX!
+  offset b1: a6fb8e -> ION.
+  offset e1: a33c97 -> HSR7
+  offset 129: 9a8843 -> FHA#
+  offset 171: b29bb6 -> LINV
+  offset 1e9: ce8843 -> SHA#
+  offset 261: a33ccb -> HSS+
+  offset 2d9: cf8843 -> SXA#
 
---- Trying entry size = 32 bytes ---
-[ 0] 0600000006000000b412554301000000b412554301000000a076864401000000
-     u32: 6 6 435512b4 1
-     tag(BE)=!@   tag(LE)=   & tag(u32lo)=   & tag(u32hi)=    
-[ 1] 0300000000000000000000000000000000000000000000000000000000000000
-     u32: 3 0 0 0
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 2] 0000000000000000000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 3] 0076864401000000010000000000000000000000000000000000000000000000
-     u32: 44867600 1 1 0
-     tag(BE)= ':& tag(LE)=AG8  tag(u32lo)=AG8  tag(u32hi)=1(9V
-[ 4] 0000000000000000000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 5] 0000000000000000000000000000000028768644010000000100000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 6] 0300000002bf4da7f04b760900000000904b7609000000002077864401000000
-     u32: 3 -58b240fe 9764bf0 0
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 7] d091da460100000028768644010000000300000000000000500a874401000000
-     u32: 46da91d0 1 44867628 1
-     tag(BE)=T)': tag(LE)=VI'0 tag(u32lo)=VI'0 tag(u32hi)=1MJ1
-[ 8] b08f864401000000000000000000000000000000000000007086894401000000
-     u32: 44868fb0 1 0 0
-     tag(BE)=L(^& tag(LE)=AH^P tag(u32lo)=AH^P tag(u32hi)=1(:/
-[ 9] 788689440100000010edc04401000000e876864401000000008e928b00000000
-     u32: 44898678 1 44c0ed10 1
-     tag(BE)=>(:) tag(LE)=B89X tag(u32lo)=B89X tag(u32hi)=1(F&
-[10] 00000000000000000000000000000000908a8f87829586808483880194858d01
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[11] 8991008193018c000100000000000000801cc24401000000a011c14401000000
-     u32: -7eff6e77 8c0193 1 0
-     tag(BE)=B9$  tag(LE)= )&) tag(u32lo)= )&) tag(u32hi)=@0"1
-[12] 9036c0440100000050edb84401000000a0c9b844010000004032c04401000000
-     u32: 44c03690 1 44b8ed50 1
-     tag(BE)=D#;  tag(LE)=P#:0 tag(u32lo)=P#:0 tag(u32hi)=1, V
-[13] 900a8a440100000010148a4401000000f085b84401000000507e894401000000
-     u32: 448a0a90 1 448a1410 1
-     tag(BE)=D J* tag(LE)=B@J0 tag(u32lo)=B@J0 tag(u32hi)=1(H*
+=== Scanning PreAuth registration area ===
+  0x144874a21 (+21): a69b8e -> IIN.
+  0x144874a22 (+22): 9b8e00 -> FXX 
+  0x144874ab1 (+b1): a33c87 -> HSR'
+  0x144874b12 (+112): ca8e01 -> RHX!
+  0x144874b41 (+141): a6fb8e -> ION.
+  0x144874b71 (+171): a33c97 -> HSR7
+  0x144874bb9 (+1b9): 9a8843 -> FHA#
 
---- Trying entry size = 40 bytes ---
-[ 0] 0600000006000000b412554301000000b412554301000000a0768644010000000300000000000000
-     u32: 6 6 435512b4 1
-     tag(BE)=!@   tag(LE)=   & tag(u32lo)=   & tag(u32hi)=    
-[ 1] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 2] 00000000000000000000000000000000007686440100000001000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 3] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 4] 00000000000000000000000000000000287686440100000001000000000000000300000002bf4da7
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 5] f04b760900000000904b7609000000002077864401000000d091da46010000002876864401000000
-     u32: 9764bf0 0 9764b90 0
-     tag(BE)=\$MV tag(LE)==DOP tag(u32lo)==DOP tag(u32hi)="79+
-[ 6] 0300000000000000500a874401000000b08f86440100000000000000000000000000000000000000
-     u32: 3 0 44870a50 1
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 7] 7086894401000000788689440100000010edc04401000000e876864401000000008e928b00000000
-     u32: 44898670 1 44898678 1
-     tag(BE)=<(:) tag(LE)=B89P tag(u32lo)=B89P tag(u32hi)=1(F&
-[ 8] 00000000000000000000000000000000908a8f87829586808483880194858d018991008193018c00
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 9] 0100000000000000801cc24401000000a011c144010000009036c0440100000050edb84401000000
-     u32: 1 0 44c21c80 1
-     tag(BE)= 0   tag(LE)=   ! tag(u32lo)=   ! tag(u32hi)=    
-[10] a0c9b844010000004032c04401000000900a8a440100000010148a4401000000f085b84401000000
-     u32: 44b8c9a0 1 44c03240 1
-     tag(BE)=H,FX tag(LE)=N,F@ tag(u32lo)=N,F@ tag(u32hi)=1+C)
-[11] 507e89440100000090138a4401000000d013c0440100000020c7b84401000000701ac14401000000
-     u32: 44897e50 1 448a1390 1
-     tag(BE)=4'Z) tag(LE)=B7Y0 tag(u32lo)=B7Y0 tag(u32hi)=1(E^
-[12] 00628844010000002028c044010000005082894401000000209bb8440100000040cec04401000000
-     u32: 44886200 1 44c02820 1
-     tag(BE)= &*( tag(LE)=B&(  tag(u32lo)=B&(  tag(u32hi)=1(AB
-[13] 507c89440100000040cfc04401000000f0eac0440100000090208a44010000004092b84401000000
-     u32: 44897c50 1 44c0cf40 1
-     tag(BE)=4'R) tag(LE)=B7Q0 tag(u32lo)=B7Q0 tag(u32hi)=1(E\
-
---- Trying entry size = 48 bytes ---
-[ 0] 0600000006000000b412554301000000b412554301000000a07686440100000003000000000000000000000000000000
-     u32: 6 6 435512b4 1
-     tag(BE)=!@   tag(LE)=   & tag(u32lo)=   & tag(u32hi)=    
-[ 1] 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 2] 007686440100000001000000000000000000000000000000000000000000000000000000000000000000000000000000
-     u32: 44867600 1 1 0
-     tag(BE)= ':& tag(LE)=AG8  tag(u32lo)=AG8  tag(u32hi)=1(9V
-[ 3] 000000000000000000000000000000000000000000000000000000000000000028768644010000000100000000000000
-     u32: 0 0 0 0
-     tag(BE)=     tag(LE)=     tag(u32lo)=     tag(u32hi)=    
-[ 4] 0300000002bf4da7f04b760900000000904b7609000000002077864401000000d091da46010000002876864401000000
-     u32: 3 -58b240fe 9764bf0 0
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 5] 0300000000000000500a874401000000b08f864401000000000000000000000000000000000000007086894401000000
-     u32: 3 0 44870a50 1
-     tag(BE)= P   tag(LE)=   # tag(u32lo)=   # tag(u32hi)=    
-[ 6] 788689440100000010edc04401000000e876864401000000008e928b0000000000000000000000000000000000000000
-     u32: 44898678 1 44c0ed10 1
-     tag(BE)=>(:) tag(LE)=B89X tag(u32lo)=B89X tag(u32hi)=1(F&
-[ 7] 908a8f87829586808483880194858d018991008193018c000100000000000000801cc24401000000a011c14401000000
-     u32: -78707570 -7f796a7e 1888384 18d8594
-     tag(BE)=D(J/ tag(LE)=CXJ0 tag(u32lo)=CXJ0 tag(u32hi)=AX^*
-[ 8] 9036c0440100000050edb84401000000a0c9b844010000004032c04401000000900a8a440100000010148a4401000000
-     u32: 44c03690 1 44b8ed50 1
-     tag(BE)=D#;  tag(LE)=P#:0 tag(u32lo)=P#:0 tag(u32hi)=1, V
-[ 9] f085b84401000000507e89440100000090138a4401000000d013c0440100000020c7b84401000000701ac14401000000
-     u32: 44b885f0 1 44897e50 1
-     tag(BE)=\(6X tag(LE)=N(7P tag(u32lo)=N(7P tag(u32hi)=1+B%
-[10] 00628844010000002028c044010000005082894401000000209bb8440100000040cec04401000000507c894401000000
-     u32: 44886200 1 44c02820 1
-     tag(BE)= &*( tag(LE)=B&(  tag(u32lo)=B&(  tag(u32hi)=1(AB
-[11] 40cfc04401000000f0eac0440100000090208a44010000004092b84401000000f00b8744010000009088b84401000000
-     u32: 44c0cf40 1 44c0eaf0 1
-     tag(BE)=0,_  tag(LE)=P,]  tag(u32lo)=P,]  tag(u32hi)=1,#/
-[12] 004c8a440100000080f9c04401000000d014c04401000000d016c04401000000f0d5bf440100000010dbbf4401000000
-     u32: 448a4c00 1 44c0f980 1
-     tag(BE)= $R* tag(LE)=BDP  tag(u32lo)=BDP  tag(u32hi)=1(I,
-[13] c0f8c04401000000802ec04401000000f0d3c04401000000c0d1c04401000000d07e894401000000c0c8c04401000000
-     u32: 44c0f8c0 1 44c02e80 1
-     tag(BE)=P/C  tag(LE)=P/C  tag(u32lo)=P/C  tag(u32hi)=1,#X
-
-=== Alternative: Read from registration struct ===
-Registration struct -> member info at: 0x144874a90
-Count: 14
-
-Trying as array of pointers:
-[0] ptr=0x144867628
-    0600000006000000b412554301000000b412554301000000a07686440100000003000000000000000000000000000000
-[1] ptr=0x143895cf0
-    61757468656e7469636174696f6e536f7572636500000000636f6d706f6e656e7449647300000000636c69656e744964
-[2] ptr=0x0
-[3] ptr=0x0
-[4] ptr=0x41873ca300
-    read err
-[5] ptr=0x1d8
-[6] ptr=0x144875ef0
-    030000003be539c2f04c760900000000004d760900000000305f874401000000a012df460100000018d7864401000000
-[7] ptr=0x143895d08
-    636f6d706f6e656e7449647300000000636c69656e7449640000000000000000656e7469746c656d656e74536f757263
-[8] ptr=0x0
-[9] ptr=0x0
-[10] ptr=0x8e993300
-[11] ptr=0x70
-[12] ptr=0x144867628
-    0600000006000000b412554301000000b412554301000000a07686440100000003000000000000000000000000000000
-[13] ptr=0x143895d18
-    636c69656e7449640000000000000000656e7469746c656d656e74536f7572636500000000000000756e646572616765
+=== Scanning PreAuth TDF decoder for tag constants ===
 
 === Done ===
-[Local::PID::109104 ]-> 
+[Local::PID::12124 ]-> 
 
 --- FRIDA ERRORS ---
+TypeError: cannot read property 'r8' of undefined
+    at onEnter (C:\Users\Jad\fifa17-fut-server\frida_decode_preauth_tags.js:84)
 
 
 --- DLL LOG (last 3000) ---
-ANDLER: first 128 bytes:
-[16:39:43.173]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[16:39:43.173]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[16:39:43.173]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[16:39:43.173]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[16:39:43.173]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[16:39:43.173]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[16:39:43.173]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[16:39:43.173]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[16:39:43.173] PREAUTH_HANDLER: Cave at 0000000000590000, 44 bytes (XOR R8D + trampoline)
-[16:39:43.173] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[16:39:43.173] CONNECT-HOOK: Patched DAT_148e223d8 at 515 ms (real=00007FFD6EB11A50)
-[16:39:43.173] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[16:39:43.173] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[16:39:43.173] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[16:39:43.173] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[16:39:43.173] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[16:39:43.173] PATCHED: FUN_145e280b0 (version compare) -> always match
-[16:39:43.323] PATCHED: Origin SDK check at 00000001470A8430
-[16:39:43.323] All patches in 671 ms
-[16:39:43.324] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[16:39:43.324] AUTH: Checking login gate globals...
-[16:39:43.324] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[16:39:43.324] AUTH: DAT_144b86bdf = 0 (error flag)
-[16:39:43.324] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[16:39:43.559] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[16:39:49.056] AUTH: Slot cleared at 5700 ms
-[16:39:49.056] AUTH: OnlineMgr=0x3EC23E70
-[16:39:49.056] AUTH: slot=0x0 cave=0
-[16:39:49.056] AUTH: Using fake vtable (real not captured)
-[16:39:49.056] AUTH: Injected fake request 000000005D390000 into slot
-[16:39:49.157] AUTH: cave=1 slot=0x0
-[16:39:49.157] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[16:39:49.157] AUTH: req[+0xd8]=0x99C9D38 req[+0xe8]=1
-[16:39:49.157] AUTH: state=2. Auth ready.
-[16:39:49.157] AUTH: OnlineMgr+0xb10 = 0x3EC2A6E0
-[16:39:49.157] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC2A960
-[16:39:49.157] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[16:39:49.157] AUTH: Found 0 objects with vtables in BlazeHub
-[16:39:49.157] AUTH: BlazeHub(000000003EC2A960)+0x53f = 1
-[16:39:49.157] AUTH: Applying OSDK patches (post-load)...
-[16:39:49.157] PATCHED: GetProfileSync -> return 0 (post-load)
-[16:39:49.157] PATCHED: GetSettingSync -> return 0 (post-load)
-[16:39:49.157] PATCHED: SetPresence -> return 0 (post-load)
-[16:39:49.157] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[16:39:49.157] PATCHED: FUN_14717d5d0 (age check) -> always pass
-[16:39:49.157] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+24 08 48 89 74 24 10 55 57 41 56 48 8D
+[16:46:39.972]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[16:46:39.972]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[16:46:39.972]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[16:46:39.972]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[16:46:39.972]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[16:46:39.972]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[16:46:39.972]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[16:46:39.972] PREAUTH_HANDLER: Cave at 0000000000A00000, 44 bytes (XOR R8D + trampoline)
+[16:46:39.972] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[16:46:39.972] CONNECT-HOOK: Patched DAT_148e223d8 at 609 ms (real=00007FFD6EB11A50)
+[16:46:39.972] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[16:46:39.972] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[16:46:39.972] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[16:46:39.972] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[16:46:39.972] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[16:46:39.972] PATCHED: FUN_145e280b0 (version compare) -> always match
+[16:46:40.123] PATCHED: cert bypass at 000000014613244B
+[16:46:40.177] PATCHED: Origin SDK check at 00000001470A8430
+[16:46:40.177] All patches in 812 ms
+[16:46:40.177] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:46:40.177] AUTH: Checking login gate globals...
+[16:46:40.177] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[16:46:40.177] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:46:40.177] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:46:40.419] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[16:46:46.009] AUTH: Slot cleared at 5800 ms
+[16:46:46.009] AUTH: OnlineMgr=0x3EBF3E70
+[16:46:46.009] AUTH: slot=0x0 cave=0
+[16:46:46.009] AUTH: Using fake vtable (real not captured)
+[16:46:46.009] AUTH: Injected fake request 000000005D3A0000 into slot
+[16:46:46.109] AUTH: cave=1 slot=0x0
+[16:46:46.109] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:46:46.109] AUTH: req[+0xd8]=0x99DA0B0 req[+0xe8]=1
+[16:46:46.109] AUTH: state=2. Auth ready.
+[16:46:46.109] AUTH: OnlineMgr+0xb10 = 0x3EBFA6E0
+[16:46:46.109] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBFA960
+[16:46:46.109] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[16:46:46.109] AUTH: Found 0 objects with vtables in BlazeHub
+[16:46:46.109] AUTH: BlazeHub(000000003EBFA960)+0x53f = 1
+[16:46:46.109] AUTH: Applying OSDK patches (post-load)...
+[16:46:46.109] PATCHED: GetProfileSync -> return 0 (post-load)
+[16:46:46.109] PATCHED: GetSettingSync -> return 0 (post-load)
+[16:46:46.109] PATCHED: SetPresence -> return 0 (post-load)
+[16:46:46.109] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[16:46:46.109] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[16:46:46.109] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
