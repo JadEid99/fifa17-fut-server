@@ -70,16 +70,20 @@ Interceptor.attach(addr(0x6e1c3f0), {
         // Allocate a fake login type entry (0x20 bytes per entry)
         const entry = Memory.alloc(0x40);
         
-        // Entry layout (from FUN_146e1eb70 analysis):
-        //   +0x00: pointer to string (must be non-empty — checked by *(char*)*param_2 != '\0')
+        // Entry layout (from FUN_146e1eb70 Ghidra analysis):
+        //   +0x00: pointer to string (flag — *(char*)*param_2 != '\0')
+        //   +0x10: u32 — used as (value >> 1) for string length param
         //   +0x18: pointer to config object
         // Config object layout:
-        //   +0x10: pointer to auth token string
-        //   +0x28: u16 transport type (0 = Login, 1 = SilentLogin)
+        //   +0x10: pointer to auth token string (must be non-empty)
+        //   +0x28: u16 transport type (0 = Login)
         
         // Write a non-empty flag string at entry+0x00
         const flagStr = Memory.allocUtf8String("1");
         entry.writePointer(flagStr);
+        
+        // entry+0x10: u32 used as string length hint (set to reasonable value)
+        entry.add(0x10).writeU32(2);  // (2 >> 1) = 1, safe length
         
         // Write auth token at config+0x10
         const config = entry.add(0x20);  // use second half of allocation
@@ -103,13 +107,17 @@ Interceptor.attach(addr(0x6e1c3f0), {
         console.log(ts() + " Injected: entry=" + entry + " config=" + config);
         console.log(ts() + " Array: start=" + newStart + " end=" + newEnd + " count=" + count);
         
-        // Now manually call FUN_146e1dae0 (LoginCheck) which will iterate
-        // our injected entry and call FUN_146e1eb70 (LoginSender).
-        // We call it on the game's thread (we're in onLeave of LoginTypesProcessor).
-        console.log(ts() + " Calling FUN_146e1dae0 (LoginCheck) manually...");
-        const loginCheckFn = new NativeFunction(addr(0x6e1dae0), 'uint64', ['pointer']);
-        const result = loginCheckFn(loginSM);
-        console.log(ts() + " LoginCheck returned: " + result);
+        // Call FUN_146e1eb70 (LoginSender) directly instead of going through
+        // FUN_146e1dae0 (LoginCheck) — avoids re-entrancy issues since we're
+        // in the onLeave of FUN_146e1c3f0 which already called LoginCheck.
+        console.log(ts() + " Calling FUN_146e1eb70 (LoginSender) directly...");
+        try {
+          const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
+          const result = loginSenderFn(loginSM, entry, config, 1);
+          console.log(ts() + " 🎯 LoginSender returned: " + result);
+        } catch(e) {
+          console.log(ts() + " LoginSender CRASHED: " + e.message);
+        }
       } else {
         const count = arrEnd.sub(arrStart).toInt32() / 0x20;
         console.log(ts() + " LoginTypesProcessor done: array has " + count + " entries");

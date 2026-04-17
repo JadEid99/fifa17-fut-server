@@ -578,3 +578,40 @@ The `flow_trace_test.ps1` worked because it attached Frida BEFORE menus.
 3. Extended wait times: 40s for connection flow + 30s for Login/PostAuth
 
 ### RETEST: Running now
+
+
+---
+
+## Session: April 17, 2026 17:07 — Login Inject Test 2: CRASH (progress!)
+
+### RESULT: Injection worked, LoginCheck call crashed the game
+
+Frida output:
+```
+[22703] PreAuthHandler(err=0)
+[22703] LoginTypesProcessor(loginSM=0x3eb39da0)
+[22705] LoginTypesProcessor: array STILL empty after processing — INJECTING
+[22705] Injected: entry=0x10b05d000 config=0x10b05d020
+[22705] Array: start=0x10b05d000 end=0x10b05d020 count=1
+[22705] Calling FUN_146e1dae0 (LoginCheck) manually...
+Process terminated
+```
+
+Blaze server: `S1 error: read ECONNRESET` — game crashed during LoginCheck.
+
+### ANALYSIS
+The injection succeeded (count=1). The crash happened when we called
+`FUN_146e1dae0` manually from `onLeave` of `FUN_146e1c3f0`. Two possible causes:
+
+1. **Re-entrancy:** `FUN_146e1c3f0` already called `FUN_146e1dae0` internally
+   (which returned 0). Calling it again from the same stack frame may cause
+   issues (double-initialization, corrupted state).
+
+2. **Entry layout wrong:** `FUN_146e1eb70` reads `param_2[2]` (offset +0x10)
+   as a u32 and shifts right by 1 for a length parameter. We left +0x10 as 0.
+
+### FIXES APPLIED
+1. Set `entry+0x10 = 2` (so `2 >> 1 = 1`, safe length value)
+2. Call `FUN_146e1eb70` (LoginSender) DIRECTLY instead of going through
+   `FUN_146e1dae0` (LoginCheck) — avoids re-entrancy
+3. Pass exact parameters: `loginSenderFn(loginSM, entry, config, 1)`
