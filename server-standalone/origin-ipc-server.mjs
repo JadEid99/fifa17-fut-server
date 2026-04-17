@@ -66,8 +66,8 @@ function createHandler(socket) {
   var challengeKey = crypto.randomBytes(16).toString('hex');
   var sessionKey = null;
   
-  // Step 1: Send Challenge as EVENT (correct LSX format!)
-  var challengeXml = '<LSX><Event><Challenge key="' + challengeKey + '"/></Event></LSX>';
+  // Step 1: Send Challenge as EVENT with sender="EALS"
+  var challengeXml = '<LSX><Event sender="EALS"><Challenge key="' + challengeKey + '" version="3"/></Event></LSX>';
   console.log('[Origin] Sending Challenge: ' + challengeXml);
   socket.write(challengeXml + '\0');
   
