@@ -96,6 +96,14 @@ class TdfEncoder {
   writeUnion(tag, type, cb) { this.writeTagAndType(tag, 0x06); this.buffers.push(Buffer.from([type])); if (type !== 0x7F) cb(this); return this; }
   writeIntList(tag, vals) { this.writeTagAndType(tag, 0x07); this.buffers.push(this.encodeVarInt(vals.length)); for (const v of vals) this.buffers.push(this.encodeVarInt(v)); return this; }
   writeList(tag, itemType, count, cb) { this.writeTagAndType(tag, 0x04); this.buffers.push(Buffer.from([itemType])); this.buffers.push(this.encodeVarInt(count)); for (let i = 0; i < count; i++) { cb(this, i); if (itemType === 0x03) this.buffers.push(Buffer.from([0x00])); } return this; }
+  writeIntegerList(tag, vals) {
+    // Proper List<int>: type 0x04 (LIST), itemType 0x00 (INTEGER), count, VarInts
+    this.writeTagAndType(tag, 0x04);
+    this.buffers.push(Buffer.from([0x00])); // itemType = integer
+    this.buffers.push(this.encodeVarInt(vals.length));
+    for (const v of vals) this.buffers.push(this.encodeVarInt(v));
+    return this;
+  }
   writeMap(tag, map) {
     // TDF Map: type 0x05, keyType(1), valueType(1), count(varint), then key-value pairs
     this.writeTagAndType(tag, 0x05);
@@ -1791,7 +1799,7 @@ function handlePreAuth(pkt) {
   //   Messaging=15, Playgroups=6, Locker=20, Rooms=21, Tournaments=23,
   //   CommerceInfo=24, AssociationLists=25, GpsContentController=27,
   //   GameReporting=28, DynamicInetFilter=2000, Rsp=2049, UserSessions=30722
-  enc.writeIntList('CIDS', [1, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 25, 27, 28, 2000, 2049, 30722]);
+  enc.writeIntegerList('CIDS', [1, 4, 5, 7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 25, 27, 28, 2000, 2049, 30722]);
   enc.writeString('CNGN', '');                     // parental consent entitlement group name
   // CONF: nested FetchConfigResponse { CONF: map<string,string> }
   enc.writeStructStart('CONF');
