@@ -543,8 +543,10 @@ static DWORD WINAPI PatchThread(LPVOID) {
         __try {
             if(!g_codePatchDone) PatchCertCheck();
             if(!g_originPatchDone) PatchOriginCheck();
-            // Patch 3: DISABLED — Origin IPC server provides auth code
-            // if(!g_authBypassDone) PatchAuthBypass();
+            // Patch 3: RE-ENABLED — game never calls LSX GetAuthCode, so we short-circuit
+            // FUN_1470db3c0 to return a fake auth code directly. Origin IPC server still
+            // serves GetConfig/GetProfile/GetSetting so SDK init completes cleanly.
+            if(!g_authBypassDone) PatchAuthBypass();
             if(!g_authFlagDone) PatchAuthFlag();
             if(g_loginPatchCount<2) PatchIsLoggedInFunctions();
             if(!g_sdkGateDone) PatchSdkGateCheck();

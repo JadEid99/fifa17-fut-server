@@ -1318,7 +1318,12 @@ function setupMainBlazeHandler(socket, session) {
         if (cmd === 0x000A) { 
           resp = handleCreateAccount(session, pkt);
         }
-        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0046, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
+        else if (cmd === 0x0046) {
+          // Logout — ack with EMPTY TDF (do NOT send login payload; that confuses the game)
+          console.log(`[Main] S${sid}: -> Logout (ack with empty response)`);
+          resp = buildReply(pkt, Buffer.alloc(0));
+        }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
@@ -1578,13 +1583,37 @@ function handleCreateAccount(session, pkt) {
   } catch(e) {}
   
   console.log('[CreateAccount] Auth token: ' + authToken);
+  session.auth = true;
   
+  // Full SessionInfo response matching what PostAuth expects.
+  // Key fields: NTOS, PCTK, PRIV, SESS(struct), SPAM, THST, TSUI, TURI
   const enc = new TdfEncoder();
-  enc.writeInteger('BUID', session.nucleusId);
-  enc.writeString('PNAM', session.displayName);
+  enc.writeInteger('NTOS', 0);
+  enc.writeString('PCTK', '');
+  enc.writeString('PRIV', '');
+  enc.writeStructStart('SESS');
+    enc.writeInteger('BUID', session.nucleusId);
+    enc.writeInteger('FRST', 0);
+    enc.writeString('KEY ', `sk_${session.id}`);
+    enc.writeInteger('LLOG', 0);
+    enc.writeString('MAIL', `p${session.id}@fut.local`);
+    enc.writeStructStart('PDTL');
+      enc.writeString('DSNM', session.displayName);
+      enc.writeInteger('LAST', 0);
+      enc.writeInteger('PID ', session.personaId);
+      enc.writeInteger('STAS', 0);
+      enc.writeInteger('XREF', 0);
+      enc.writeInteger('XTYP', 0);
+    enc.writeStructEnd();
+    enc.writeInteger('UID ', session.nucleusId);
+  enc.writeStructEnd();
+  enc.writeInteger('SPAM', 0);
+  enc.writeString('THST', '');
+  enc.writeString('TSUI', '');
+  enc.writeString('TURI', '');
   
   const body = enc.build();
-  console.log('[CreateAccount] Response: ' + body.length + ' bytes');
+  console.log('[CreateAccount] Response: ' + body.length + ' bytes (full SessionInfo)');
   return buildReply(pkt, body);
 }
 
