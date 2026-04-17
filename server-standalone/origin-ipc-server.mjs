@@ -66,8 +66,9 @@ function createHandler(socket) {
   var challengeKey = crypto.randomBytes(16).toString('hex');
   var sessionKey = null;
   
-  // Step 1: Send Challenge as EVENT with sender="EALS"
-  var challengeXml = '<LSX><Event sender="EALS"><Challenge key="' + challengeKey + '" version="3"/></Event></LSX>';
+  // Step 1: Send Challenge — EXACT format from Wireshark capture
+  // <LSX><Event sender="EALS"><Challenge key="..." build="release" version="10,4,13,6637"/></Event></LSX>
+  var challengeXml = '<LSX><Event sender="EALS"><Challenge key="' + challengeKey + '" build="release" version="10,4,13,6637"/></Event></LSX>';
   console.log('[Origin] Sending Challenge: ' + challengeXml);
   socket.write(challengeXml + '\0');
   
@@ -109,16 +110,17 @@ function createHandler(socket) {
   function handleChallengeResponse(sock, xml) {
     console.log('[Origin] *** CHALLENGE RESPONSE RECEIVED ***');
     
-    // Extract the response (encrypted challenge key, hex-encoded)
+    // Extract the id, response (encrypted challenge key, hex-encoded), and key (client's own key)
+    var idMatch = xml.match(/id="([^"]+)"/);
+    var id = idMatch ? idMatch[1] : '1';
     var respMatch = xml.match(/response="([^"]+)"/);
-    var keyMatch = xml.match(/key="([^"]+)"/);
+    var keyMatch = xml.match(/ChallengeResponse[^>]*key="([^"]+)"/);
     
     if (respMatch) {
       var responseHex = respMatch[1];
-      console.log('[Origin] Response hex: ' + responseHex.substring(0, 64));
+      console.log('[Origin] Response hex: ' + responseHex.substring(0, 64) + '...');
       
-      // Derive session key from the response
-      // First 2 bytes of hex string as ASCII → u16 seed
+      // Derive session key from the response (first 2 bytes of hex as ASCII → u16 seed)
       var byte0 = responseHex.charCodeAt(0);
       var byte1 = responseHex.charCodeAt(1);
       var seed = (byte0 << 8) | byte1;
@@ -126,9 +128,26 @@ function createHandler(socket) {
       console.log('[Origin] Session seed: ' + seed + ', key: ' + sessionKey.toString('hex'));
     }
     
-    // Send ChallengeAccepted
-    var accepted = '<LSX><Response id="0"><ChallengeAccepted><response>' + (respMatch ? respMatch[1] : '') + '</response></ChallengeAccepted></Response></LSX>';
-    console.log('[Origin] Sending ChallengeAccepted');
+    // Send ChallengeAccepted — EXACT format from capture:
+    // <LSX><Response id="1" sender="EALS"><ChallengeAccepted response="..."/></Response></LSX>
+    // The response attribute should be OUR encryption of the client's key (from keyMatch)
+    var acceptedResponse = '';
+    if (keyMatch && sessionKey) {
+      // Encrypt the client's key with the default key (like the client did)
+      try {
+        var defaultCrypto = crypto.createCipheriv('aes-128-ecb', DEFAULT_KEY, null);
+        defaultCrypto.setAutoPadding(true);
+        var encrypted = Buffer.concat([defaultCrypto.update(keyMatch[1], 'utf8'), defaultCrypto.final()]);
+        acceptedResponse = encrypted.toString('hex');
+        console.log('[Origin] ChallengeAccepted response: ' + acceptedResponse.substring(0, 64));
+      } catch(e) {
+        console.log('[Origin] Encrypt error: ' + e.message);
+        acceptedResponse = respMatch ? respMatch[1] : '';
+      }
+    }
+    
+    var accepted = '<LSX><Response id="' + id + '" sender="EALS"><ChallengeAccepted response="' + acceptedResponse + '"/></Response></LSX>';
+    console.log('[Origin] Sending ChallengeAccepted: ' + accepted);
     sock.write(accepted + '\0');
   }
   

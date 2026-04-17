@@ -271,3 +271,69 @@ Server responds (encrypted):
 - `LSX-Dumper` by Warranty Voider: github.com/zeroKilo/LSX-Dumper — tool for dumping LSX protocol
 - The protocol uses version "3" for encrypted communication
 - Older protocol versions use the default key for ALL messages (no session key derivation)
+
+
+## WIRESHARK CAPTURE — GROUND TRUTH (April 17, 2026)
+
+Successfully captured real Origin↔FIFA 17 IPC traffic on port 4216.
+
+### Exact Protocol Format (from capture)
+
+**Message 1: Origin → Game (Challenge) — 131 bytes**
+```xml
+<LSX><Event sender="EALS"><Challenge key="2b8ee7faea76e8a34f5f5d20e5328e32" build="release" version="10,4,13,6637"/></Event></LSX>\0
+```
+- `sender="EALS"` attribute on `<Event>`
+- `build="release"` attribute on `<Challenge>`
+- `version="10,4,13,6637"` (comma-separated, NOT just "3")
+- Null terminator
+
+**Message 2: Game → Origin (ChallengeResponse) — 381 bytes**
+```xml
+<LSX><Request recipient="EALS" id="1"><ChallengeResponse response="00b9c8afef744cbc1dd1b1e8aca6a2ed5fb0f43c5e287f833ea2750983772e0f954f64f2e4e86e9eee82d20216684899" key="dfbf4ba525f0c0c2da678381722206c2" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>\0
+```
+- `version="3"` on ChallengeResponse (protocol version, not SDK version)
+- `response` = 96-char hex string (48 bytes encrypted with default key + PKCS7 padding)
+- `key` = 32-char hex (16 bytes) — GAME's OWN key, different from Challenge key!
+- Contains ContentId, Title, MultiplayerId, Language, Version (FIFA 17 uses 9.12.1.2)
+
+**Message 3: Origin → Game (ChallengeAccepted) — 182 bytes**
+```xml
+<LSX><Response id="1" sender="EALS"><ChallengeAccepted response="65af7a2fdc8c63dc74c3382b1888608597b09acfb695e63466618d75ba992808954f64f2e4e86e9eee82d20216684899"/></Response></LSX>\0
+```
+- `sender="EALS"` on `<Response>`
+- `response` = 96-char hex (likely encryption of game's key with default key, but with FIFA 17's custom variant)
+
+**Messages 4+: ENCRYPTED, hex-encoded**
+- Hex-encoded ASCII strings (e.g., "ee0a8c7c90b3...")
+- Ciphertext length matches AES-128-ECB with PKCS7 padding
+- BUT: Neither the origin-sdk session key derivation nor the default key decrypts these messages
+- FIFA 17's Origin SDK 9.12.1.2 uses a DIFFERENT encryption scheme than v10.6.1.8
+
+### Observations
+
+1. **All encrypted messages from game end with same 15 bytes**: `...5711be57f994c06a1b303d9c0` — same padding block, suggests ECB mode confirmed
+2. **Common prefixes** across same-direction messages (e.g., all game requests start similarly) — confirms ECB
+3. **Messages 4+ have message IDs starting at 2 (first encrypted request after challenge)**
+4. The game's ChallengeResponse `key` attribute (`dfbf4b...`) is DIFFERENT from the Challenge's `key` (`2b8ee7...`) — the game generates its own key for the session
+
+### Mystery: The Session Key Derivation
+
+The origin-sdk crate derives the session key from the first 2 bytes of the response hex string interpreted as ASCII:
+- `response = "00b9c8..."` → ASCII bytes `0x30 0x30` → seed `0x3030 = 12336`
+
+Applying this to FIFA 17's response `"00b9c8afef..."` gives seed 12336, but decryption fails. FIFA 17 must use:
+- A different key derivation algorithm
+- OR a different encryption mode (CBC? with different IV?)
+- OR encryption on the HEX STRING itself (treating ASCII hex as plaintext)
+
+### Files Available
+- `origin_capture.pcapng` — full Wireshark capture
+- Contains complete handshake + ~30 encrypted messages
+
+### NEXT STEP: Decrypt the post-challenge messages
+
+To emulate Origin properly, we need to understand the encryption. Options:
+1. Reverse-engineer the crypto from FIFA 17's binary (find the encrypt/decrypt functions in Ghidra)
+2. Use a known-plaintext attack (we know the XML structure — try all plausible keys)
+3. Look for the LSX-Dumper tool source code which may have FIFA-era protocol details
