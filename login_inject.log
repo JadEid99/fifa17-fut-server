@@ -12,16 +12,28 @@
 Attaching...
 === FIFA 17 Login Type Injector ===
 [      0] Patched FUN_146e00f40 (OSDK screen) -> RET
+[      0] Successfully replaced FUN_146e1dae0 (LoginCheck)
 [      0] All hooks installed. Waiting for PreAuth...
-[Local::PID::94580 ]-> [  22367] RPC: 5:0x11
-[  22718] RPC: PreAuth
-[  22736] PreAuthHandler(err=0)
-[  22736] RPC: Ping
-[  22736] LoginTypesProcessor(loginSM=0x3ea49da0)
-[  22736] INJECTING login type entry into loginSM+0x218/+0x220
-[  22736] Injected: entry=0x107b93e40 config=0x107b93e60
-[  22736] loginSM+0x218=0x107b93e40
-[  22736] loginSM+0x220=0x107b93e60
-Process terminated
-
-Thank you for using Frida!
+[Local::PID::109720 ]-> [  22256] RPC: 5:0x11
+[  22606] RPC: PreAuth
+[  22623] PreAuthHandler(err=0)
+[  22623] RPC: Ping
+[  22623] LoginTypesProcessor(loginSM=0x3eb39da0)
+[  22625] LoginTypesProcessor done
+[  22625] PreAuthHandler done
+[  22707] RPC: FetchClientConfig
+[  22707] RPC: FetchClientConfig
+[  22707] RPC: FetchClientConfig
+[  22707] RPC: FetchClientConfig
+[  22707] RPC: FetchClientConfig
+[  22707] RPC: FetchClientConfig
+[  52872] \u26a0\ufe0f Logout RPC sent
+[  52890] SM_Transition(newState=0 reason=-1)
+[  59341] RPC: FetchClientConfig
+[  59341] RPC: FetchClientConfig
+[  59341] RPC: FetchClientConfig
+[  59341] RPC: FetchClientConfig
+[  59341] RPC: FetchClientConfig
+[  59341] RPC: FetchClientConfig
+[  89490] \u26a0\ufe0f Logout RPC sent
+[  89507] SM_Transition(newState=0 reason=-1)
