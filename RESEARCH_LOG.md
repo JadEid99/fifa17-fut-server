@@ -1092,3 +1092,52 @@ The job has a 7000ms timeout (from FUN_1478aa0f0 Ghidra analysis).
 The job callback is at LAB_146e1d730. Something prevents it from firing.
 
 ### NEXT: Reproduce test 11, then investigate job dispatch
+
+
+---
+
+## Session: April 17, 2026 19:18 — Tests 14-18 Summary
+
+### Test 14: CRASH at step 1 (resize function)
+### Test 15: Syntax error — Frida script didn't load (no-op)
+### Test 16: CRASH at step 1 (resize function again)
+### Test 17: NO CRASH — LoginSender returned 0xA140201, but Login never on wire
+### Test 18: CRASH at step 4 (LoginSender) — same intermittent pattern
+
+### KEY FINDING: The crashes are INTERMITTENT
+
+Same code produces different results:
+- Test 11: NO CRASH, LoginSender returned 0x9917601
+- Test 14: CRASH at step 1 (resize)
+- Test 16: CRASH at step 1 (resize)  
+- Test 17: NO CRASH, LoginSender returned 0xA140201
+- Test 18: CRASH at step 4 (LoginSender)
+
+The intermittent nature confirms a race condition with the DLL's
+background thread. The DLL's LOGIN-INJECT code runs concurrently
+and modifies loginSM state.
+
+### KEY FINDING: Login job queued but NEVER dispatches on wire
+
+In both successful runs (tests 11 and 17), LoginSender returned a
+non-zero job handle, but the Login RPC never appeared on the Blaze
+server. The job has a 7000ms timeout. The Logout fires 30 seconds
+later (way past the timeout).
+
+The job callback `LAB_146e1d730` never fires. The job scheduler
+`FUN_1478abf10` either doesn't run or skips the Login job.
+
+### NEW APPROACH: Return 1 from LoginCheck WITHOUT calling LoginSender
+
+Instead of trying to send the Login RPC through the job system
+(which never dispatches), just return 1 from LoginCheck to prevent
+the Logout fallback. This changes the state machine behavior.
+
+The goal is to see what the game does when LoginCheck returns 1
+but no Login RPC is actually sent. Does it:
+- Wait indefinitely? (better than Logout — we can investigate)
+- Try a different auth path?
+- Show a different error message?
+- Eventually retry?
+
+This is an information-gathering test, not a fix attempt.

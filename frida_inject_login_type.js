@@ -45,39 +45,18 @@ try {
     console.log(ts() + "   job=" + jobHandle);
     if (jobHandle.isNull()) { console.log(ts() + "   job NULL"); return ptr(0); }
 
-    // Skip array initialization — it crashes intermittently because the
-    // internal arrays at +0x258 and +0x38 have complex state dependencies.
-    // Just call LoginSender directly. If it crashes, the exception handler
-    // will catch it and we'll retry on the next LoginCheck call.
-    //
-    // Test 11 proved LoginSender CAN work without array init — the crash
-    // in later tests was intermittent (race condition or state-dependent).
-    try {
-      var entry = Memory.alloc(0x40);
-      var flagStr = Memory.allocUtf8String("1");
-      entry.writePointer(flagStr);
-      entry.add(0x10).writeU32(2);
-      var config = entry.add(0x20);
-      var authToken = Memory.allocUtf8String("FAKEAUTHCODE1234567890");
-      config.add(0x10).writePointer(authToken);
-      config.add(0x28).writeU16(0);
-      entry.add(0x18).writePointer(config);
-
-      // Block DLL's LOGIN-INJECT race
-      param_1.add(0x218).writePointer(ptr(1));
-      param_1.add(0x220).writePointer(ptr(1));
-
-      console.log(ts() + "   calling LoginSender");
-      var fn3 = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
-      var result = fn3(param_1, entry, config, 1);
-      console.log(ts() + "   LoginSender returned " + result);
-      return ptr(1);
-    } catch(e) {
-      console.log(ts() + "   LoginSender ERR: " + e);
-      // Reset for retry on next call
-      loginTypeInjected = false;
-      return ptr(0);
-    }
+    // Just return 1 to tell the game "login was initiated".
+    // This prevents the Logout fallback path.
+    // The DLL's background LOGIN-INJECT will handle the actual LoginSender call.
+    // Even though the Login RPC doesn't dispatch on the wire, returning 1
+    // changes the state machine behavior — the game won't send Logout immediately.
+    
+    // Block DLL's LOGIN-INJECT race
+    param_1.add(0x218).writePointer(ptr(1));
+    param_1.add(0x220).writePointer(ptr(1));
+    
+    console.log(ts() + "   returning 1 (login initiated)");
+    return ptr(1);
 
   }, 'uint64', ['pointer']));
   console.log(ts() + " Replaced LoginCheck OK");
