@@ -936,3 +936,39 @@ at all — instead, just return 1 from LoginCheck and let the game's
 own retry logic eventually call LoginCheck again on the next connection
 attempt, at which point the DLL's LOGIN-INJECT will have populated
 the array from the background thread.
+
+
+---
+
+## Session: April 17, 2026 17:45 — Login Inject Test 10: FREEZE (setTimeout deadlock)
+
+### RESULT: setTimeout fired, LoginSender returned 0x5180200, then freeze
+
+Same deadlock as test 5. Calling LoginSender from ANY non-game-thread
+context (Frida setTimeout, DLL background thread, Frida onLeave) causes
+the RPC framework to deadlock.
+
+### KEY INSIGHT: LoginSender MUST be called from the natural code path
+
+Every attempt to call LoginSender from outside the natural flow fails:
+- From onLeave of LoginTypesProcessor → deadlock (test 5)
+- From DLL background thread → RPC queued but never dispatched (test 8)
+- From setTimeout → deadlock (test 10)
+- From inside replaced LoginCheck → crash because +0x258 not init (test 9)
+
+The ONLY safe place is inside the natural `FUN_146e1c3f0` code path,
+AFTER the array initialization but BEFORE LoginCheck.
+
+### FIX: Initialize +0x258 array, then call LoginSender from replaced LoginCheck
+
+The crash in test 9 was because `param_1+0x258` wasn't initialized.
+`FUN_146e1c3f0` calls two functions to initialize it:
+```c
+FUN_146e192f0(param_1 + 600, count);  // resize array at +0x258
+FUN_146f8e7e0(param_1 + 0x38, count); // init tracking array
+```
+
+If we call these with count=1 inside our replaced LoginCheck BEFORE
+calling LoginSender, the arrays will be properly initialized and
+LoginSender won't crash. And since we're inside the natural call chain
+(FUN_146e1c3f0 → our replaced FUN_146e1dae0), no deadlock.
