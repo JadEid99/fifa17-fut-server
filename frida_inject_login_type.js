@@ -119,9 +119,14 @@ Interceptor.attach(addr(0x6e1eb70), {
 
 // Monitor RPC sends to see if Login actually goes on the wire
 Interceptor.attach(addr(0x6df0e80), {
-  onEnter: function(args, ctx) {
-    const comp = ctx.r8.toInt32() & 0xFFFF;
-    const cmd = ctx.r9.toInt32() & 0xFFFF;
+  onEnter: function(args) {
+    var comp, cmd;
+    try {
+      comp = this.context.r8.toInt32() & 0xFFFF;
+      cmd = this.context.r9.toInt32() & 0xFFFF;
+    } catch(e) {
+      return;
+    }
     if (comp === 0 && cmd === 0) return;
     const names = {
       "1:0xa": "CreateAccount", "1:0x28": "Login", "1:0x32": "SilentLogin",

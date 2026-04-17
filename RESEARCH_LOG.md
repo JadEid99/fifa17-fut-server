@@ -549,3 +549,32 @@ Expected outcomes:
 - This is the same approach as Frida v57 but with correct timing
   (on game's main thread, inside PreAuth handler call chain)
 - Test running now
+
+
+---
+
+## Session: April 17, 2026 16:53 — Login Inject Test 1 FAILED (bugs)
+
+### RESULT: Two bugs prevented the test from working
+
+**Bug 1: `ctx.r8` TypeError in RPC send hook (line 123)**
+The Frida `Interceptor.attach` callback uses `this.context` to access
+registers, not a `ctx` parameter. The error `TypeError: cannot read
+property 'r8' of undefined` crashed the RPC hook. When one hook errors
+in Frida, it can suppress subsequent hook callbacks.
+
+**Bug 2: Frida attached AFTER PreAuth already fired**
+The test script waited 25 seconds (menu navigation + init), THEN attached
+Frida. But PreAuth fires during those 25 seconds. By the time Frida
+hooks were installed, PreAuth was done and the game was already in the
+Logout timeout path.
+
+The `flow_trace_test.ps1` worked because it attached Frida BEFORE menus.
+
+### FIXES APPLIED
+1. Changed `ctx.r8` to `this.context.r8` with try/catch
+2. Moved Frida attachment to BEFORE menu navigation (same pattern as
+   `flow_trace_test.ps1`)
+3. Extended wait times: 40s for connection flow + 30s for Login/PostAuth
+
+### RETEST: Running now

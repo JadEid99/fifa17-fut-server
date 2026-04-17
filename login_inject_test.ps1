@@ -101,29 +101,36 @@ if (-not $fifaProc) {
 $fifaPid = $fifaProc.Id
 Write-Host "[GAME] FIFA17 PID = $fifaPid" -ForegroundColor Green
 
-# Navigate past splash/menus so the game fully initializes
-Write-Host "[MENU] Pressing Enter through menus..." -ForegroundColor Yellow
-Start-Sleep 8
-FEnter; Start-Sleep 5
-FEnter; Start-Sleep 5
-FEnter; Start-Sleep 5
-FEnter; Start-Sleep 5
-
-# Wait for DLL patches + Origin IPC + Blaze PreAuth to complete
-Write-Host "[WAIT] Waiting 25s for full initialization..." -ForegroundColor Yellow
-Start-Sleep 25
-
-# Attach Frida with login inject (one-shot — script runs and exits)
-Write-Host "[FRIDA] Dumping PreAuth schema from PID $fifaPid..." -ForegroundColor Yellow
+# ---------------------------------------------------------------------------
+# 5. Attach Frida EARLY — before menu navigation so we catch PreAuth
+# ---------------------------------------------------------------------------
+Write-Host "[FRIDA] Attaching login type injector to PID $fifaPid..." -ForegroundColor Yellow
 $fridaProc = Start-Process -FilePath "frida" `
     -ArgumentList "-p $fifaPid -l `"$fridaScript`"" `
     -RedirectStandardOutput $fridaLogFile `
     -RedirectStandardError  $fridaErrFile `
     -PassThru -NoNewWindow
 
-# The login inject script hooks functions and waits for PreAuth.
-# Give it 60 seconds for the full connection flow.
-Start-Sleep 60
+Start-Sleep 5
+
+# Navigate past splash/menus so the game fully initializes
+Write-Host "[MENU] Pressing Enter through menus..." -ForegroundColor Yellow
+FEnter; Start-Sleep 5
+FEnter; Start-Sleep 5
+FEnter; Start-Sleep 5
+FEnter; Start-Sleep 5
+
+# Wait for DLL patches + Origin IPC + Blaze PreAuth to complete
+Write-Host "[WAIT] Waiting 40s for full connection flow..." -ForegroundColor Yellow
+Start-Sleep 40
+
+# Press Enter in case there's a dialog
+FEnter; Start-Sleep 5
+
+# Wait more for potential Login RPC + PostAuth
+Write-Host "[WAIT] Waiting 30s more for Login/PostAuth..." -ForegroundColor Yellow
+Start-Sleep 30
+
 Stop-Process -Id $fridaProc.Id -Force -EA SilentlyContinue
 Start-Sleep 2
 
