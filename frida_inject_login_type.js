@@ -264,3 +264,80 @@ Interceptor.attach(addr(0x6e1c3f0), {
 });
 
 console.log(ts() + " All hooks installed. Waiting for PreAuth...");
+
+// Hook the Login job callback (LAB_146e1d730) to see if it fires
+try {
+  Interceptor.attach(addr(0x6e1d730), {
+    onEnter: function(args) {
+      console.log(ts() + " 🔥 LOGIN JOB CALLBACK FIRED! (LAB_146e1d730)");
+      console.log(ts() + "   args[0]=" + args[0] + " args[1]=" + args[1]);
+    },
+    onLeave: function(ret) {
+      console.log(ts() + " LOGIN JOB CALLBACK returned");
+    }
+  });
+  console.log(ts() + " Hooked Login job callback (LAB_146e1d730)");
+} catch(e) {
+  console.log(ts() + " Failed to hook Login job callback: " + e.message);
+}
+
+// Hook the job scheduler tick (FUN_1478abf10) to see if jobs are being processed
+// This fires frequently so only log when it does something interesting
+try {
+  Interceptor.attach(addr(0x78abf10), {
+    onEnter: function(args) {
+      // args[0] is the job object. Check if it's our Login job.
+      try {
+        const jobCallback = args[0].add(0x10).readPointer(); // puVar1[4] = callback at offset 0x10
+        const loginCallbackAddr = addr(0x6e1d730);
+        if (jobCallback.equals(loginCallbackAddr)) {
+          const state = args[0].add(0x30).readU32(); // puVar1[0xc] = state at offset 0x30
+          const timeout = args[0].add(0x3c).readU32(); // puVar1[0xf] = timeout at offset 0x3c
+          console.log(ts() + " JOB TICK: Login job! state=" + state + " timeout=" + timeout);
+        }
+      } catch(e) {}
+    }
+  });
+  console.log(ts() + " Hooked job scheduler tick (FUN_1478abf10)");
+} catch(e) {
+  console.log(ts() + " Failed to hook job scheduler: " + e.message);
+}
+
+// Hook FUN_146e19720 (Login start / job creation) to see when the job is created
+try {
+  Interceptor.attach(addr(0x6e19720), {
+    onEnter: function(args) {
+      const existingJob = args[0].add(0x18).readPointer();
+      console.log(ts() + " FUN_146e19720 (LoginStart): existing job=" + existingJob + (existingJob.isNull() ? " (will create new)" : " (SKIP — already exists)"));
+    },
+    onLeave: function(ret) {
+      console.log(ts() + " FUN_146e19720 done");
+    }
+  });
+  console.log(ts() + " Hooked FUN_146e19720 (LoginStart)");
+} catch(e) {
+  console.log(ts() + " Failed to hook LoginStart: " + e.message);
+}
+
+// Hook FUN_1478aa320 (RPC send via job) to see if the auth token is written
+try {
+  Interceptor.attach(addr(0x78aa320), {
+    onEnter: function(args) {
+      const jobObj = args[0];
+      const authToken = args[1];
+      const transportType = args[2];
+      try {
+        const tokenStr = authToken.readCString(64);
+        console.log(ts() + " FUN_1478aa320 (RPC job send): job=" + jobObj + " token=\"" + tokenStr + "\" transport=" + transportType);
+      } catch(e) {
+        console.log(ts() + " FUN_1478aa320: job=" + jobObj + " token=" + authToken);
+      }
+    },
+    onLeave: function(ret) {
+      console.log(ts() + " FUN_1478aa320 returned: 0x" + ret.toString(16));
+    }
+  });
+  console.log(ts() + " Hooked FUN_1478aa320 (RPC job send)");
+} catch(e) {
+  console.log(ts() + " Failed to hook RPC job send: " + e.message);
+}
