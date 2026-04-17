@@ -1236,3 +1236,51 @@ Connection flow:
   6. OSDK screen (NOP'd) → completion → SM_Transition(0,-1)
   7. Login → server responds → PostAuth → online menus → FUT?
 ```
+
+
+---
+
+## Session: April 17, 2026 20:11 — Test 20: CreateAccount never sent
+
+### RESULT: CreateAccountHandler never fired
+
+The game doesn't send CreateAccount in our current DLL patch config.
+Flow: PreAuth → FetchClientConfig x6 → (30s) → Logout.
+
+CreateAccount is sent from a state machine state's onEnter (via vtable),
+NOT from the LoginFallback path. The fallback just triggers a timeout.
+
+### KEY INSIGHT: CreateAccount is NOT part of the Login flow
+
+From Ghidra analysis of FUN_146e15070 (CreateAccount sender):
+- It's a state machine handler called via vtable
+- It sends component=1, command=10 (0x0A)
+- It's triggered when the SM enters the "create account" state
+- This state is SEPARATE from the Login state
+
+The normal flow with real EA servers:
+1. PreAuth response contains login types
+2. LoginCheck iterates them → LoginSender sends Login RPC
+3. Server responds → PostAuth → online
+
+CreateAccount only fires when the server indicates "no account exists"
+in the login type response. It's an ALTERNATIVE path, not a prerequisite.
+
+### REVISED UNDERSTANDING: Why Login job doesn't dispatch
+
+The Login job IS queued (FUN_1478aa320 writes the auth token, returns
+slot ID 2). But the job callback never fires. Possible cause:
+
+**Transport type 0 might mean "no transport".**
+
+FUN_1478aa000 is called with `0x73707274` ("sprt") and the transport
+type from `config+0x28`. We've been setting this to 0. In BlazeSDK:
+- Type 0 = Login (email/password)
+- Type 1 = SilentLogin (token-based)
+- Type 2 = OriginLogin
+
+Type 0 might require additional fields (email, password) that we don't
+provide, causing the job to fail silently. Type 1 (SilentLogin) is
+token-based and matches our auth code approach.
+
+### TEST 21: Same as test 17 but with transport type = 1
