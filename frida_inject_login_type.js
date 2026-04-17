@@ -107,9 +107,47 @@ Interceptor.attach(addr(0x6e1c3f0), {
         console.log(ts() + " Injected: entry=" + entry + " config=" + config);
         console.log(ts() + " Array: start=" + newStart + " end=" + newEnd + " count=" + count);
         
-        // Call FUN_146e1eb70 (LoginSender) directly instead of going through
-        // FUN_146e1dae0 (LoginCheck) — avoids re-entrancy issues since we're
-        // in the onLeave of FUN_146e1c3f0 which already called LoginCheck.
+        // Dump the entry memory for debugging
+        console.log(ts() + " Entry hex dump:");
+        console.log(ts() + "   +00: " + entry.readByteArray(8).unwrap().toString());
+        try {
+          const bytes = new Uint8Array(entry.readByteArray(0x20));
+          const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(' ');
+          console.log(ts() + "   raw: " + hex);
+        } catch(e) {}
+        console.log(ts() + "   entry[0] (flag ptr) = " + entry.readPointer());
+        console.log(ts() + "   entry[0]->str = \"" + entry.readPointer().readCString(32) + "\"");
+        console.log(ts() + "   entry+0x10 (u32) = " + entry.add(0x10).readU32());
+        console.log(ts() + "   entry+0x18 (config ptr) = " + entry.add(0x18).readPointer());
+        console.log(ts() + "   config+0x10 (auth ptr) = " + config.add(0x10).readPointer());
+        console.log(ts() + "   config+0x10->str = \"" + config.add(0x10).readPointer().readCString(32) + "\"");
+        console.log(ts() + "   config+0x28 (transport) = " + config.add(0x28).readU16());
+        
+        // Also dump loginSM state that LoginSender checks
+        console.log(ts() + " loginSM state:");
+        console.log(ts() + "   +0x18 (job handle) = " + loginSM.add(0x18).readPointer());
+        console.log(ts() + "   +0x290 (cached ptr) = " + loginSM.add(0x290).readPointer());
+        console.log(ts() + "   +0x08 (parent ptr) = " + loginSM.add(0x08).readPointer());
+        try {
+          const parent = loginSM.add(0x08).readPointer();
+          if (!parent.isNull()) {
+            console.log(ts() + "   parent+0x788 = " + parent.add(0x788).readPointer());
+            console.log(ts() + "   parent+0x53f = " + parent.add(0x53f).readU8());
+            console.log(ts() + "   parent+0x53c = " + parent.add(0x53c).readU16());
+          }
+        } catch(e) { console.log(ts() + "   parent read err: " + e.message); }
+        
+        // Install exception handler to catch the crash address
+        Process.setExceptionHandler(function(details) {
+          console.log(ts() + " !!! EXCEPTION: " + details.type + " at " + details.address);
+          console.log(ts() + " !!! Context: rip=" + details.context.pc);
+          console.log(ts() + " !!! rax=" + details.context.rax + " rcx=" + details.context.rcx);
+          console.log(ts() + " !!! rdx=" + details.context.rdx + " r8=" + details.context.r8);
+          console.log(ts() + " !!! rsp=" + details.context.rsp + " rbp=" + details.context.rbp);
+          return false; // don't handle, let it crash (but we logged the address)
+        });
+        
+        // Call FUN_146e1eb70 (LoginSender) directly
         console.log(ts() + " Calling FUN_146e1eb70 (LoginSender) directly...");
         try {
           const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);

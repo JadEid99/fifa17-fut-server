@@ -615,3 +615,59 @@ The injection succeeded (count=1). The crash happened when we called
 2. Call `FUN_146e1eb70` (LoginSender) DIRECTLY instead of going through
    `FUN_146e1dae0` (LoginCheck) — avoids re-entrancy
 3. Pass exact parameters: `loginSenderFn(loginSM, entry, config, 1)`
+
+
+---
+
+## Session: April 17, 2026 17:12 — Login Inject Test 3: CRASH again
+
+### RESULT: Same crash — LoginSender call never returns
+
+```
+[22715] Calling FUN_146e1eb70 (LoginSender) directly...
+Process terminated
+```
+
+The crash is inside `FUN_146e1eb70`. We never see the return value.
+The entry layout fix (+0x10 = 2) didn't help.
+
+### ANALYSIS: What FUN_146e1eb70 does (from Ghidra)
+
+```c
+// Line 1: Cache setup
+if (*(longlong *)(param_1 + 0x290) == 0) {
+    lVar4 = *(longlong *)(*(longlong *)(param_1 + 8) + 0x788);
+    *(longlong *)(param_1 + 0x290) = lVar4;
+    if (lVar4 != 0) FUN_146dfd050(lVar4, param_1);  // register callback
+}
+
+// Line 2: Guard checks
+if ((param_3 != 0) &&
+    (((param_4 != 1 || (*(char *)*param_2 != '\0')) &&
+      (*(longlong *)(param_1 + 0x18) != 0)))) {
+
+    // Line 3: Pre-login setup
+    FUN_146e1e680(param_1, param_4, *param_2);
+
+    // Line 4: Read auth token
+    pcVar1 = *(char **)(param_3 + 0x10);
+    if ((pcVar1 != NULL) && (*pcVar1 != '\0')) {
+
+        // Line 5: Setup transport
+        FUN_1478aa000(*(param_1 + 0x18), 0x73707274, *(u16*)(param_3 + 0x28), 0);
+
+        // Line 6: Send the actual Login RPC!
+        iVar2 = FUN_1478aa320(*(param_1 + 0x18), pcVar1,
+                    *(u16*)(*(param_1 + 8) + 0x53c), 0,
+                    *(u16*)(param_1 + 0x1c8), 0, param_4);
+```
+
+Possible crash points:
+1. `*(longlong *)(param_1 + 8) + 0x788` — dereferencing parent+0x788
+2. `FUN_146e1e680(param_1, param_4, *param_2)` — pre-login setup
+3. `FUN_1478aa000(*(param_1 + 0x18), ...)` — transport setup
+4. `FUN_1478aa320(...)` — the actual RPC send
+
+### FIX: Add exception handler + full state dump before the call
+Added `Process.setExceptionHandler` to catch the exact crash address,
+plus dumps of all loginSM fields that LoginSender reads.
