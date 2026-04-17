@@ -38,19 +38,46 @@ try {
     console.log(ts() + " LoginCheck REPLACED: init arrays + call LoginSender");
     
     try {
-      const jobHandle = param_1.add(0x18).readPointer();
+      var jobHandle = param_1.add(0x18).readPointer();
+      console.log(ts() + "   jobHandle = " + jobHandle);
       if (jobHandle.isNull()) {
         console.log(ts() + "   jobHandle NULL — abort");
         return ptr(0);
       }
-      
-      // Initialize arrays (same as FUN_146e1c3f0 does before LoginCheck)
-      const resizeFn = new NativeFunction(addr(0x6e192f0), 'void', ['pointer', 'uint32']);
+    } catch(e) {
+      console.log(ts() + "   ERROR reading jobHandle: " + e.message);
+      return ptr(0);
+    }
+    
+    // Initialize arrays — wrap each call individually
+    try {
+      console.log(ts() + "   calling resizeFn...");
+      var resizeFn = new NativeFunction(addr(0x6e192f0), 'void', ['pointer', 'uint32']);
       resizeFn(param_1.add(0x258), 1);
-      const initFn = new NativeFunction(addr(0x6f8e7e0), 'void', ['pointer', 'uint32']);
+      console.log(ts() + "   resizeFn OK");
+    } catch(e) {
+      console.log(ts() + "   resizeFn CRASHED: " + e.message);
+      return ptr(0);
+    }
+    
+    try {
+      console.log(ts() + "   calling initFn...");
+      var initFn = new NativeFunction(addr(0x6f8e7e0), 'void', ['pointer', 'uint32']);
       initFn(param_1.add(0x38), 1);
+      console.log(ts() + "   initFn OK");
+    } catch(e) {
+      console.log(ts() + "   initFn CRASHED: " + e.message);
+      return ptr(0);
+    }
+    
+    try {
       param_1.add(0x1a0).writeU16(0);
       param_1.add(0x210).writeU8(param_1.add(0x210).readU8() | 1);
+      console.log(ts() + "   flags set OK");
+    } catch(e) {
+      console.log(ts() + "   flags CRASHED: " + e.message);
+      return ptr(0);
+    }
       
       // Build fake login entry
       const entry = Memory.alloc(0x40);
@@ -64,9 +91,10 @@ try {
       entry.add(0x18).writePointer(config);
       
       // Call LoginSender
-      const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
-      const result = loginSenderFn(param_1, entry, config, 1);
-      console.log(ts() + " LoginSender returned: " + result);
+      console.log(ts() + "   calling LoginSender...");
+      var loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
+      var result = loginSenderFn(param_1, entry, config, 1);
+      console.log(ts() + "   LoginSender returned: " + result);
       
       return ptr(1);
     } catch(e) {
@@ -127,3 +155,11 @@ Interceptor.attach(addr(0x6e126b0), {
 });
 
 console.log(ts() + " Ready. Waiting for PreAuth...");
+
+// Exception handler to catch crash details
+Process.setExceptionHandler(function(details) {
+  console.log(ts() + " !!! CRASH: " + details.type + " at " + details.address);
+  console.log(ts() + " !!! pc=" + details.context.pc + " rax=" + details.context.rax);
+  console.log(ts() + " !!! rcx=" + details.context.rcx + " rdx=" + details.context.rdx);
+  return false;
+});
