@@ -1368,6 +1368,47 @@ function setupMainBlazeHandler(socket, session) {
         const hdrHex = Array.from(resp.subarray(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
         console.log(`[Main] S${sid}: header: ${hdrHex}`);
         socket.write(resp);
+        
+        // Proactive notifications after PreAuth:
+        // The game's FIFA online layer is waiting for a server-initiated SilentLogin
+        // notification to transition from "fetching auth" state to "authenticated".
+        // Without this, the game gives up after FetchClientConfig and sends Logout.
+        if (comp === 0x0009 && cmd === 0x0007 && !session.loginSent) {
+          session.loginSent = true;
+          console.log(`[Main] S${sid}: Sending proactive SilentLogin notification after PreAuth`);
+          
+          // Build a SilentLogin notification (comp=0x0001, cmd=0x0032, notify=true)
+          const le = new TdfEncoder();
+          le.writeInteger('AGUP', 0);
+          le.writeString('LDHT', '');
+          le.writeInteger('NTOS', 0);
+          le.writeString('PCTK', `tok_${sid}`);
+          le.writeString('PRIV', '');
+          le.writeStructStart('SESS');
+            le.writeInteger('BUID', session.nucleusId);
+            le.writeInteger('FRST', 0);
+            le.writeString('KEY ', `sk_${sid}`);
+            le.writeInteger('LLOG', 0);
+            le.writeString('MAIL', `p${sid}@fut.local`);
+            le.writeStructStart('PDTL');
+              le.writeString('DSNM', session.displayName);
+              le.writeInteger('LAST', 0);
+              le.writeInteger('PID ', session.personaId);
+              le.writeInteger('STAS', 0);
+              le.writeInteger('XREF', 0);
+              le.writeInteger('XTYP', 0);
+            le.writeStructEnd();
+            le.writeInteger('UID ', session.nucleusId);
+          le.writeStructEnd();
+          le.writeInteger('SPAM', 0);
+          le.writeString('THST', '');
+          le.writeString('TSUI', '');
+          le.writeString('TURI', '');
+          const lb = le.build();
+          const lh = encodeHeader({ length: lb.length, component: 0x0001, command: 0x0032, error: 0, notify: true });
+          socket.write(Buffer.concat([lh, lb]));
+          console.log(`[Main] S${sid}: SilentLogin notification sent (${lb.length} bytes)`);
+        }
       }
     } catch (e) {
       console.log(`[Main] S${sid}: ERROR handling packet: ${e.message}`);
