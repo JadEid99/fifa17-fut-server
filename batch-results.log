@@ -1,112 +1,311 @@
-﻿=== Frida Deep RPC Trace v2 (2026-04-17 07:11:36) ===
+﻿=== Batch Test (2026-04-17 08:59:22) ===
+RESULT: ORIGIN_SESSION_OK
 
---- FRIDA OUTPUT (last 5000 chars) ---
-     ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
-   . . . .   Connected to Local System (id=local)
-Attaching...
-=== Frida v63: Origin Protocol Monitor ===
-[INIT] Hooked XML send
-=== Frida v63 Ready ===
-[Local::PID::57848 ]-> [XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="37f650a9ab7a175b3f9e9efb84d9027db57b50c77ee5a47498de84fa97b41762954f64f2e4e86e9eee82d20216684899" key="b4c02ce89b5e8f7d2cc8ea6b6748ddbb" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
-[XML-SEND] <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="75b36695d5f019e8012719c85d6c8a1559d96a0cdc38eaac98ab0ae40445c3fa954f64f2e4e86e9eee82d20216684899" key="463c22254361ba6c6060786a78aa0e77" version="3"><ContentId>1027460</ContentId><Title>FIFA 17</Title><MultiplayerId>1027460</MultiplayerId><Language/><Version>9.12.1.2</Version></ChallengeResponse></Request></LSX>
-Process terminated
+--- ORIGIN IPC SERVER LOG (last 10000 chars) ---
+[Origin] IPC server listening on 127.0.0.1:3216
+[Origin] session key algorithm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
+[Origin] 127.0.0.1:63014 connected
+[Origin] -> Challenge (key=e52df394b2a59d5f701105b6a9d57586)
+[Origin] session seed=14643 key=b7bf4f1af5a115c34af081b222b38dc8
+[Origin] -> ChallengeAccepted (session ready)
+[Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="3" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="1000000001" AvatarId="" Country="US" CommerceCoun
+[Origin] <- DEC: <LSX><Request recipient="" id="4"><GetSetting SettingId="IS_IGO_ENABLED" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="4" sender=""><GetSettingResponse Setting="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="5"><GetGameInfo GameInfoId="FREETRIAL" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="5" sender=""><GetGameInfoResponse GameInfo="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="6"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="6" sender=""><GetSettingResponse Setting="production"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="7"><GetSetting SettingId="IS_IGO_AVAILABLE" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="7" sender=""><GetSettingResponse Setting="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="8"><IsProgressiveInstallationAvailable ItemId="" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="8" sender=""><IsProgressiveInstallationAvailableResponse ItemId="" Available="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="9"><GetProfile index="0" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="9" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="1000000001" AvatarId="" Country="US" CommerceCoun
+[Origin] <- DEC: <LSX><Request recipient="" id="10"><GetSetting SettingId="LANGUAGE" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="10" sender=""><GetSettingResponse Setting="en_US"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="11"><SetDownloaderUtilization Utilization="1" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="11" sender=""><ErrorSuccess Code="0" Description=""/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="12"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="12" sender=""><GetSettingResponse Setting="production"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="13"><GetProfile index="0" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="13" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="1000000001" AvatarId="" Country="US" CommerceCou
 
-Thank you for using Frida!
+--- BLAZE SERVER LOG (last 10000 chars) ---
 
+[SSL] Sent encrypted server Finished
+[SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
+[SSL-DATA] Received 908 bytes on socket (total pending: 908)
+[SSL] TLS record: type=0x17 ver=0x303 len=903 (pending: 908)
+[SSL] Decrypted 883 bytes of application data
+[SSL] Raw app data (883b): 50 4f 53 54 20 2f 72 65 64 69 72 65 63 74 6f 72 2f 67 65 74 53 65 72 76 65 72 49 6e 73 74 61 6e
+[HTTP-Blaze] Request:
+POST /redirector/getServerInstance HTTP/1.1
+Host: winter15.gosredirector.ea.com:42230
+Content-Length: 671
+Connection: Close
+User-Agent: ProtoHttp 1.3/DS 15.1.2.1.0 (Windows)
+Content-Type: application/xml
 
---- ORIGIN IPC SERVER (last 3000 chars) ---
-[Origin] Listening on 127.0.0.1:3216
-[Origin] Connected: 127.0.0.1:62365
-[Origin] Sending Challenge: <LSX><Event sender="EALS"><Challenge key="8fe585ce47dd5ca8b100f2926902762d" version="3"/></Event></LSX>
-[Origin] #1 raw: <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="c73ad54f4897255f9c8e6babd28d51b871791f8de4389f52b908b82311a966aa954f64f2e4e86e9eee82d20216684899" key="c54a0da044319e775345968d4aa2e2
-[Origin] *** CHALLENGE RESPONSE RECEIVED ***
-[Origin] Response hex: c73ad54f4897255f9c8e6babd28d51b871791f8de4389f52b908b82311a966aa
-[Origin] Session seed: 25399, key: ecc2a3443fa3a87b13082258d5ee2181
-[Origin] Sending ChallengeAccepted
-[Origin] Disconnected: 127.0.0.1:62365 (1 msgs)
-[Origin] Connected: 127.0.0.1:62370
-[Origin] Sending Challenge: <LSX><Event sender="EALS"><Challenge key="38c4dade30ccfa51c7aea2328158a51f" version="3"/></Event></LSX>
-[Origin] #1 raw: <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="37f650a9ab7a175b3f9e9efb84d9027db57b50c77ee5a47498de84fa97b41762954f64f2e4e86e9eee82d20216684899" key="b4c02ce89b5e8f7d2cc8ea6b6748dd
-[Origin] *** CHALLENGE RESPONSE RECEIVED ***
-[Origin] Response hex: 37f650a9ab7a175b3f9e9efb84d9027db57b50c77ee5a47498de84fa97b41762
-[Origin] Session seed: 13111, key: 2c406835ad9b02acbd48a11bcd485525
-[Origin] Sending ChallengeAccepted
-[Origin] Disconnected: 127.0.0.1:62370 (1 msgs)
-[Origin] Connected: 127.0.0.1:62371
-[Origin] Sending Challenge: <LSX><Event sender="EALS"><Challenge key="06e99f736e789173d498e8a7ae8a7fa5" version="3"/></Event></LSX>
-[Origin] #1 raw: <LSX><Request recipient="EALS" id="1"><ChallengeResponse response="75b36695d5f019e8012719c85d6c8a1559d96a0cdc38eaac98ab0ae40445c3fa954f64f2e4e86e9eee82d20216684899" key="463c22254361ba6c6060786a78aa0e
-[Origin] *** CHALLENGE RESPONSE RECEIVED ***
-[Origin] Response hex: 75b36695d5f019e8012719c85d6c8a1559d96a0cdc38eaac98ab0ae40445c3fa
-[Origin] Session seed: 14133, key: 36e7887864d97f711b0b29f358519b0e
-[Origin] Sending ChallengeAccepted
-[Origin] Disconnected: 127.0.0.1:62371 (1 msgs)
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstancerequest>
+  <blazesdkversion>15.1.1.3.0</blazesdkversion>
+  <blazesdkbuilddate>Jun  9 2017 16:15:59</blazesdkbuilddate>
+  <clientname>FIFA17</clientname>
+  <clienttype>CLIENT_TYPE_GAMEPLAY_USER</clienttype>
+  <clientplatform>pc</client
+[HTTP-Blaze] POST /redirector/getServerInstance (body: 671 bytes)
+[HTTP-Blaze] GetServerInstance -> 127.0.0.1:10041
+[HTTP-Blaze] secure=0
+[HTTP-Blaze] Response (417 bytes):
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 322
+Connection: keep-alive
 
---- BLAZE SERVER LOG (last 3000 chars) ---
-=== FIFA 17 FUT Private Server ===
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstanceinfo>
+  <address member="0">
+    <valu>
+      <hostname>127.0.0.1</hostname>
+      <ip>2130706433</ip>
+      <port>10041</port>
+    </valu>
+  </address
+[HTTP-Blaze] Sent encrypted HTTP response
+[SSL-DATA] Received 27 bytes on socket (total pending: 27)
+[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): 98 22 f2 0f 25 ef 33 b9 84 3e 7c 32 c7 82 b7 e6 56 6c 16 e1 22 6f
+[SSL] Alert decrypted: 01 00
+[SSL] Alert MAC match: true
+[SSL] Alert: level=1 desc=0
+[Redirector-Raw] Disconnected: 127.0.0.1:63023
+[SSL-CONN] Socket closed
+[Main] Session 1 connected: 127.0.0.1:63024
+[Main] S1: received 225 bytes (total: 225)
+[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
+[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
+[Main]   0020: d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
+[Main]   0030: 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00  -pc-trial...%...
+[Main] S1: Raw Blaze binary detected
+[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=0
+[Main] S1: -> PreAuth
+[PreAuth] Variant: full
+[PreAuth] Request TDF:
+[PreAuth]   CDAT (struct) {
+[PreAuth]     IITO (int) = 0
+[PreAuth]     LANG (int) = 1701729619
+[PreAuth]     SVCN (str) = "fifa-2017-pc-trial"
+[PreAuth]     TYPE (int) = 0
+[PreAuth]   }
+[PreAuth]   CINF (struct) {
+[PreAuth]     BSDK (str) = "15.1.1.3.0"
+[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
+[PreAuth]     CLNT (str) = "FIFA17"
+[PreAuth]     CPFT (int) = 4
+[PreAuth]     CSKU (str) = "FIFAPC"
+[PreAuth]     CVER (str) = "3175939"
+[PreAuth]     DSDK (str) = "15.1.2.1.0"
+[PreAuth]     ENV  (str) = "prod"
+[PreAuth]     LOC  (int) = 1701729619
+[PreAuth]     PTVR (str) = "1.1"
+[PreAuth]   }
+[PreAuth]   FCCR (struct) {
+[PreAuth]     CFID (str) = "BlazeSDK"
+[PreAuth]   }
+[PreAuth]   LADD (int) = 380807360
+[PreAuth] Sending FIFA17 PreAuth response (628 bytes)
+[Main] S1: Sending response (644 bytes)
+[Main] S1: header: 00 00 02 74 00 00 00 09 00 07 00 00 00 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=1
+[Main] S1: Sending response (26 bytes)
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 01 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=2
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
+[FetchClientConfig] CFID="OSDK_CORE"
+[FetchClientConfig] Responding with 5 config entries
+[Main] S1: Sending response (151 bytes)
+[Main] S1: header: 00 00 00 87 00 00 00 09 00 01 00 00 02 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=3
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
+[FetchClientConfig] CFID="OSDK_CLIENT"
+[FetchClientConfig] Responding with 4 config entries
+[Main] S1: Sending response (101 bytes)
+[Main] S1: header: 00 00 00 55 00 00 00 09 00 01 00 00 03 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=4
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
+[FetchClientConfig] CFID="OSDK_NUCLEUS"
+[FetchClientConfig] Responding with 3 config entries
+[Main] S1: Sending response (137 bytes)
+[Main] S1: header: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=5
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
+[FetchClientConfig] CFID="OSDK_WEBOFFER"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (62 bytes)
+[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=6
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (35 bytes)
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=7
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (35 bytes)
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00
+[Main] S1: comp=0x0001 cmd=0x0046 len=0 msgId=8
+[Main] S1: -> Auth cmd=0x46 (Logout)
+[Main] S1: Sending response (164 bytes)
+[Main] S1: header: 00 00 00 94 00 00 00 01 00 46 00 00 08 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
+[Main] S1: -> Ping (msgId=9), sending pong
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
+[Main] S1: -> Ignoring null/error packet (msgId=9 type=5)
+[Main] S1 disconnected
+[LOG] Saved: S1 disconnect
+[Main] Session 2 connected: 127.0.0.1:63030
+[Main] S2: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0a 80 00 00  ................
+[Main] S2: Raw Blaze binary detected
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=10
+[Main] S2: -> Ping (msgId=10), sending pong
+[Main] S2: comp=0x0000 cmd=0x0000 len=0 msgId=10
+[Main] S2: -> Ignoring null/error packet (msgId=10 type=5)
+[Main] S2 disconnected
+[LOG] Saved: S2 disconnect
+[Main] Session 3 connected: 127.0.0.1:63031
+[Main] S3: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0b 80 00 00  ................
+[Main] S3: Raw Blaze binary detected
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=11
+[Main] S3: -> Ping (msgId=11), sending pong
+[Main] S3: comp=0x0000 cmd=0x0000 len=0 msgId=11
+[Main] S3: -> Ignoring null/error packet (msgId=11 type=5)
+[Main] S3 disconnected
+[LOG] Saved: S3 disconnect
+[Main] Session 4 connected: 127.0.0.1:63032
+[Main] S4: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0c 80 00 00  ................
+[Main] S4: Raw Blaze binary detected
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S4: -> Ping (msgId=12), sending pong
+[Main] S4: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S4: -> Ignoring null/error packet (msgId=12 type=5)
+[Main] S4 disconnected
+[LOG] Saved: S4 disconnect
+[Main] Session 5 connected: 127.0.0.1:63033
+[Main] S5: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0d 80 00 00  ................
+[Main] S5: Raw Blaze binary detected
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ping (msgId=13), sending pong
+[Main] S5: comp=0x0000 cmd=0x0000 len=0 msgId=13
+[Main] S5: -> Ignoring null/error packet (msgId=13 type=5)
+[Main] S5 disconnected
+[LOG] Saved: S5 disconnect
+[Main] Session 6 connected: 127.0.0.1:63034
+[Main] S6: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0e 80 00 00  ................
+[Main] S6: Raw Blaze binary detected
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ping (msgId=14), sending pong
+[Main] S6: comp=0x0000 cmd=0x0000 len=0 msgId=14
+[Main] S6: -> Ignoring null/error packet (msgId=14 type=5)
+[Main] S6 disconnected
+[LOG] Saved: S6 disconnect
+[Main] Session 7 connected: 127.0.0.1:63035
+[Main] S7: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 0f 80 00 00  ................
+[Main] S7: Raw Blaze binary detected
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ping (msgId=15), sending pong
+[Main] S7: comp=0x0000 cmd=0x0000 len=0 msgId=15
+[Main] S7: -> Ignoring null/error packet (msgId=15 type=5)
+[Main] S7 disconnected
+[LOG] Saved: S7 disconnect
+[Main] Session 8 connected: 127.0.0.1:63036
+[Main] S8: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 10 80 00 00  ................
+[Main] S8: Raw Blaze binary detected
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S8: -> Ping (msgId=16), sending pong
+[Main] S8: comp=0x0000 cmd=0x0000 len=0 msgId=16
+[Main] S8: -> Ignoring null/error packet (msgId=16 type=5)
+[Main] S8 disconnected
+[LOG] Saved: S8 disconnect
+[Main] Session 9 connected: 127.0.0.1:63037
+[Main] S9: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 11 80 00 00  ................
+[Main] S9: Raw Blaze binary detected
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S9: -> Ping (msgId=17), sending pong
+[Main] S9: comp=0x0000 cmd=0x0000 len=0 msgId=17
+[Main] S9: -> Ignoring null/error packet (msgId=17 type=5)
+[Main] S9 disconnected
+[LOG] Saved: S9 disconnect
+[Main] Session 10 connected: 127.0.0.1:63038
+[Main] S10: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
+[Main] S10: Raw Blaze binary detected
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ping (msgId=18), sending pong
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
 
+--- DLL LOG (last 6000 chars) ---
+[08:57:54.366] EARLY: Fake SDK object at 00000000001E0000, vtable at 00000000001D0000
+[08:57:54.366] EARLY: DAT_144b86bf8 = 0x1E0000 (set BEFORE game init)
+[08:57:54.366] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[08:57:54.366] PID: 105896
+[08:57:54.534] PATCHED: cert bypass at 000000014613244B
+[08:57:54.689] PATCHED: auth flag at 00000001473CE785
+[08:57:54.735] PATCHED: IsLoggedIntoEA -> true
+[08:57:54.735] PATCHED: IsLoggedIntoNetwork -> true
+[08:57:54.812] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[08:57:54.812] PATCHED: SDK gate -> always 1
+[08:57:54.812] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[08:57:54.812] PATCHED: Login vtable check -> return 1
+[08:57:54.824] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[08:57:54.824] LOGIN SilentLogin: already patched
+[08:57:54.824] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[08:57:54.824] LOGIN ExpressLogin: already patched
+[08:57:54.824] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[08:57:54.824] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[08:57:54.824] PREAUTH_HANDLER: first 128 bytes:
+[08:57:54.824]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[08:57:54.824]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[08:57:54.824]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[08:57:54.824]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[08:57:54.824]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[08:57:54.824]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[08:57:54.824]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[08:57:54.824]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[08:57:54.824] PREAUTH_HANDLER: Cave at 00000000030F0000, 44 bytes (XOR R8D + trampoline)
+[08:57:54.824] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[08:57:54.824] CONNECT-HOOK: Patched DAT_148e223d8 at 453 ms (real=00007FFD6EB11A50)
+[08:57:54.824] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[08:57:54.824] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[08:57:54.824] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[08:57:54.824] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[08:57:54.824] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[08:57:54.824] PATCHED: FUN_145e280b0 (version compare) -> always match
+[08:57:54.985] PATCHED: Origin SDK check at 00000001470A8430
+[08:57:55.330] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[08:57:55.398] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 1032 ms
 
-Waiting for FIFA 17...
-hosts: 127.0.0.1 winter15.gosredirector.ea.com
+=== S10 disconnect (2026-04-17 06:59:24) ===
 
-[QOS-UDP] Listening on UDP port 17502
-[Redirector-Raw] Listening on port 42230
-[Main] Blaze server on port 10041
-[HTTP] on port 8080
-[Catch] Listening on port 443
-[Catch] Listening on port 9988
-[Catch] Listening on port 80
-[Catch] Listening on port 9946
-
---- DLL LOG (last 3000 chars) ---
-[07:10:04.453] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[07:10:04.453] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[07:10:04.453] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[07:10:04.453] PID: 57848
-[07:10:04.625] PATCHED: cert bypass at 000000014613244B
-[07:10:04.781] PATCHED: auth flag at 00000001473CE785
-[07:10:04.828] PATCHED: IsLoggedIntoEA -> true
-[07:10:04.828] PATCHED: IsLoggedIntoNetwork -> true
-[07:10:04.890] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[07:10:04.890] PATCHED: SDK gate -> always 1
-[07:10:04.890] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[07:10:04.890] PATCHED: Login vtable check -> return 1
-[07:10:04.909] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[07:10:04.909] LOGIN SilentLogin: already patched
-[07:10:04.909] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[07:10:04.909] LOGIN ExpressLogin: already patched
-[07:10:04.909] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[07:10:04.909] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[07:10:04.909] PREAUTH_HANDLER: first 128 bytes:
-[07:10:04.909]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[07:10:04.909]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[07:10:04.909]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[07:10:04.909]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[07:10:04.909]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[07:10:04.909]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[07:10:04.909]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[07:10:04.909]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[07:10:04.909] PREAUTH_HANDLER: Cave at 00000000009B0000, 44 bytes (XOR R8D + trampoline)
-[07:10:04.909] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[07:10:04.909] CONNECT-HOOK: Patched DAT_148e223d8 at 469 ms (real=00007FFD6EB11A50)
-[07:10:04.909] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[07:10:04.909] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[07:10:04.909] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[07:10:04.909] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[07:10:04.909] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[07:10:04.909] PATCHED: FUN_145e280b0 (version compare) -> always match
-[07:10:05.050] PATCHED: Origin SDK check at 00000001470A8430
-[07:10:05.425] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[07:10:05.494] ORIGIN-PORT: SDK=0x27A48F10 port=4216 -> 3216 at 1047 ms
-[07:10:20.450] ORIGIN-PORT: SDK=0x27A491A0 port=4216 -> 3216 at 16000 ms
-[07:10:35.697] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[07:10:35.709] ORIGIN-PORT: SDK=0x27A600A0 port=4216 -> 3216 at 31266 ms
-
+[Main] Session 10 connected: 127.0.0.1:63038
+[Main] S10: received 16 bytes (total: 16)
+[Main]   0000: 00 00 00 00 00 00 00 00 00 00 00 00 12 80 00 00  ................
+[Main] S10: Raw Blaze binary detected
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ping (msgId=18), sending pong
+[Main] S10: comp=0x0000 cmd=0x0000 len=0 msgId=18
+[Main] S10: -> Ignoring null/error packet (msgId=18 type=5)
+[Main] S10 disconnected
