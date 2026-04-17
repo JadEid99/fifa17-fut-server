@@ -6,13 +6,22 @@
    . . . .       object?   -> Display information about 'object'
    . . . .       exit/quit -> Exit
    . . . .
-   . . . .   More info at https://frida.re/docs/home/
-   . . . .
+   . . . .   More info at https://frida.re/docs/home/   . . . .
    . . . .   Connected to Local System (id=local)
+
 Attaching...
-=== FIFA 17 v20: LoginSender with transport=1 ===
-[      0] Replaced LoginCheck OK
-[      0] Ready.
-[Local::PID::77568 ]-> [  22529] PreAuth
-[  22547] PreAuthHandler(err=0)
-[  22547] LoginTypesProcessor
+=== v22: Passive observer (no injection) ===
+[      0] Ready. Testing fixed PreAuth response (Blaze3SDK schema)...
+[Local::PID::107488 ]-> [  23850] PreAuth
+[  23867] PreAuthHandler(err=0)
+[  23867] LoginTypesProcessor
+[  23867]   parent+0x53f = 1
+[  23867] LoginCheck: array count=0
+[  23867] LoginCheck returned 0x0
+[  23867] \u26a0\ufe0f LoginFallback (no login types)
+[  23869] LoginTypesProcessor done
+[  23869] PreAuthHandler done
+[  54100] AUTH: Logout
+[  54118] SM(0,-1)
+[  93216] AUTH: Logout
+[  93236] SM(0,-1)
