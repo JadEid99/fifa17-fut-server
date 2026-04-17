@@ -112,7 +112,7 @@ try {
     const result = loginSenderFn(param_1, entry, config, 1);
     console.log(ts() + " 🎯 LoginSender returned: 0x" + result.toString(16));
     
-    if (result.toInt32() !== 0) {
+    if (result.compare(0) !== 0) {
       console.log(ts() + " 🚀🚀🚀 LOGIN RPC QUEUED! 🚀🚀🚀");
       return ptr(1);
     }
@@ -281,27 +281,11 @@ try {
   console.log(ts() + " Failed to hook Login job callback: " + e.message);
 }
 
-// Hook the job scheduler tick (FUN_1478abf10) to see if jobs are being processed
-// This fires frequently so only log when it does something interesting
-try {
-  Interceptor.attach(addr(0x78abf10), {
-    onEnter: function(args) {
-      // args[0] is the job object. Check if it's our Login job.
-      try {
-        const jobCallback = args[0].add(0x10).readPointer(); // puVar1[4] = callback at offset 0x10
-        const loginCallbackAddr = addr(0x6e1d730);
-        if (jobCallback.equals(loginCallbackAddr)) {
-          const state = args[0].add(0x30).readU32(); // puVar1[0xc] = state at offset 0x30
-          const timeout = args[0].add(0x3c).readU32(); // puVar1[0xf] = timeout at offset 0x3c
-          console.log(ts() + " JOB TICK: Login job! state=" + state + " timeout=" + timeout);
-        }
-      } catch(e) {}
-    }
-  });
-  console.log(ts() + " Hooked job scheduler tick (FUN_1478abf10)");
-} catch(e) {
-  console.log(ts() + " Failed to hook job scheduler: " + e.message);
-}
+// Hook the job scheduler tick — DISABLED (causes crash by reading job objects)
+// try {
+//   Interceptor.attach(addr(0x78abf10), { ... });
+// } catch(e) {}
+console.log(ts() + " Job scheduler tick hook SKIPPED (unsafe)");
 
 // Hook FUN_146e19720 (Login start / job creation) to see when the job is created
 try {
