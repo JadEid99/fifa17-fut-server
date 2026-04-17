@@ -848,3 +848,49 @@ the DLL is patching.
 Added diagnostic to read `*(loginSM+8)+0x53f` and force it to 1 if 0.
 This ensures the LoginCheck gate passes regardless of which object
 loginSM's parent points to.
+
+
+---
+
+## Session: April 17, 2026 17:35 — Login Inject Test 8: LoginSender fired but from WRONG source
+
+### RESULT: LoginSender fired (returned 0x99A5A01) but Login RPC never on wire
+
+Key findings:
+1. `parent+0x53f = 1` — the flag IS set, LoginCheck gate passes
+2. `Interceptor.replace` succeeded
+3. BUT our replacement errored: `TypeError: not a function` at line 60
+   — `origLoginCheck(param_1)` failed because `Interceptor.replace`
+   invalidates the original NativeFunction reference
+4. The LoginSender that actually fired was from the **DLL's background
+   thread** (`LOGIN-INJECT` at T+27s), NOT from our Frida replacement
+5. DLL's background thread call queues the RPC on the wrong thread →
+   Login RPC never dispatched on the wire
+
+### FIX: Don't call origLoginCheck at all
+
+Our replacement should:
+1. Skip calling the original (it just returns 0 for empty array)
+2. Call LoginSender directly with our fake entry
+3. Return 1
+
+This runs on the game's main thread (inside the PreAuth handler call
+chain via `FUN_146e1c3f0` → our replaced `FUN_146e1dae0`). No deadlock
+because `FUN_146e1dae0` is the LAST thing `FUN_146e1c3f0` calls before
+returning — the RPC framework lock should be released by then.
+
+Wait — will this deadlock like test 5? In test 5, we called LoginSender
+from `onLeave` of `FUN_146e1c3f0`. Now we're calling it from INSIDE
+`FUN_146e1dae0` which is called BY `FUN_146e1c3f0`. Same stack depth.
+
+BUT — in test 5, we called LoginSender from Frida's `onLeave` callback
+which runs in Frida's interceptor context. Now we're calling it from a
+`NativeCallback` that completely REPLACES the function — the game thinks
+it's running `FUN_146e1dae0` natively. This might make a difference for
+lock acquisition.
+
+### RISK: Possible deadlock again
+
+If it deadlocks, the fallback is to use `setTimeout(0)` from the
+replacement to schedule the LoginSender call on the next Frida tick,
+which runs outside the PreAuth handler stack.

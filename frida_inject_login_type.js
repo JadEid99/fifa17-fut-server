@@ -54,23 +54,16 @@ const origLoginCheck = new NativeFunction(addr(0x6e1dae0), 'uint64', ['pointer']
 
 try {
   Interceptor.replace(addr(0x6e1dae0), new NativeCallback(function(param_1) {
-  // First, call the original to let it do its normal thing
-  const origResult = origLoginCheck(param_1);
-  
-  if (origResult.toInt32() !== 0) {
-    // Original found login types and processed them — great, nothing to do
-    console.log(ts() + " LoginCheck: original returned " + origResult + " (login types found naturally!)");
-    return origResult;
-  }
+  // DON'T call the original — it just iterates the empty array and returns 0.
+  // Instead, call LoginSender directly with our fake entry.
   
   if (loginTypeInjected) {
-    // Already injected once, don't do it again
-    console.log(ts() + " LoginCheck: original returned 0, already injected before");
-    return origResult;
+    // Already injected once — return 0 on subsequent calls
+    return ptr(0);
   }
   
   loginTypeInjected = true;
-  console.log(ts() + " LoginCheck: original returned 0 (no login types) — INJECTING and calling LoginSender");
+  console.log(ts() + " LoginCheck REPLACED: calling LoginSender directly");
   
   try {
     // Check prerequisites
@@ -93,16 +86,15 @@ try {
     config.add(0x28).writeU16(0);  // transport type 0 = Login
     entry.add(0x18).writePointer(config);
     
-    console.log(ts() + "   entry=" + entry + " config=" + config + " auth=\"FAKEAUTHCODE1234567890\"");
+    console.log(ts() + "   entry=" + entry + " config=" + config);
     
     // Call FUN_146e1eb70 (LoginSender) directly
-    // Signature: uint64 FUN_146e1eb70(longlong param_1, uint64* param_2, longlong param_3, int param_4)
     const loginSenderFn = new NativeFunction(addr(0x6e1eb70), 'uint64', ['pointer', 'pointer', 'pointer', 'int']);
     const result = loginSenderFn(param_1, entry, config, 1);
-    console.log(ts() + " 🎯 LoginSender returned: " + result);
+    console.log(ts() + " 🎯 LoginSender returned: 0x" + result.toString(16));
     
     if (result.toInt32() !== 0) {
-      console.log(ts() + " 🚀🚀🚀 LOGIN RPC SENT! 🚀🚀🚀");
+      console.log(ts() + " 🚀🚀🚀 LOGIN RPC QUEUED! 🚀🚀🚀");
       return ptr(1);
     } else {
       console.log(ts() + " LoginSender returned 0 — Login RPC was NOT sent");
