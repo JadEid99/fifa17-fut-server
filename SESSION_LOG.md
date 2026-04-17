@@ -529,3 +529,160 @@ The "EA servers are not available" error message appears on screen.
 | `0x147138640` | Login event parser | Reads `IsLoggedIn` attribute |
 | `0x146e1cf10` | PreAuth response handler | Patched to always-success |
 | `0x146e19a00` | PreAuth completion/cleanup | Patched to immediate RET |
+
+
+---
+
+## ADDITIONAL TECHNICAL DETAILS (Session 2)
+
+### ChallengeAccepted Response Field — Verified
+
+The ChallengeAccepted `response` attribute = `AES-128-ECB(client's 32-char hex key as ASCII string, default key [0..15])`.
+
+**Proof:** From Wireshark capture:
+- Client's key: `dfbf4ba525f0c0c2da678381722206c2`
+- Expected ChallengeAccepted response: `65af7a2fdc8c63dc74c3382b1888608597b09acfb695e63466618d75ba992808954f64f2e4e86e9eee82d20216684899`
+- `AES-ECB-Encrypt("dfbf4ba525f0c0c2da678381722206c2", [0,1,2,...,15])` = exact match ✅
+
+### PKCS7 Padding Block Observation
+
+Both ChallengeResponse and ChallengeAccepted `response` fields (96 hex chars = 48 bytes = 3 AES blocks) end with the SAME 32 hex chars: `954f64f2e4e86e9eee82d20216684899`. This is the AES-ECB encryption of a 16-byte PKCS7 padding block (`[0x10, 0x10, ..., 0x10]`) with the default key. Since AES-ECB is deterministic, the same padding block always produces the same ciphertext. This confirms both sides use the same default key for the challenge handshake.
+
+### PRNG Algorithm (Exact Implementation)
+
+```javascript
+function createRng(seed) {
+  let s = seed >>> 0;  // unsigned 32-bit
+  return {
+    next() {
+      s = ((s * 214013) + 2531011) >>> 0;  // MSVC LCG constants
+      return (s >>> 16) & 32767;            // bits 16-30
+    },
+    setSeed(ns) { s = ns >>> 0; }
+  };
+}
+
+function deriveKey(seed) {
+  if (seed === 0) return Buffer.from([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+  const rng = createRng(7);           // initial seed = 7
+  const newSeed = (rng.next() + seed) >>> 0;  // rng(7).next() = 61, so newSeed = seed + 61
+  rng.setSeed(newSeed);
+  const key = Buffer.alloc(16);
+  for (let i = 0; i < 16; i++) key[i] = rng.next() & 0xFF;
+  return key;
+}
+```
+
+Constants: MULTIPLIER=214013 (0x343FD), INCREMENT=2531011 (0x269EC3), RAND_MAX=32767 (0x7FFF). These are the Microsoft Visual C++ LCG constants.
+
+### `-authCode` Command Line Argument
+
+Searched the Ghidra dump for `authCode` / `auth_code` / `-authCode` — **no command-line parser for this exists in FIFA 17**. The BF4 Blaze emulator uses `-authCode noneed` but FIFA 17 does not support this argument. The `commandline.txt` entry `-authCode FAKEAUTHCODE1234567890` has no effect.
+
+### Blaze Protocol Message Type Byte Encoding
+
+Byte 13 of the 16-byte Blaze header encodes the message type in the top 3 bits:
+
+| Byte Value | Top 3 Bits | Type | Meaning |
+|------------|-----------|------|---------|
+| 0x00 | 000 | 0 | MESSAGE (request) |
+| 0x20 | 001 | 1 | REPLY (response) |
+| 0x40 | 010 | 2 | NOTIFICATION (server push) |
+| 0x60 | 011 | 3 | ERROR_REPLY |
+| 0x80 | 100 | 4 | PING |
+| 0xA0 | 101 | 5 | PING_REPLY |
+
+Our server was incorrectly responding to PING (0x80) with another PING (0x80) instead of PING_REPLY (0xA0). Fixed in this session.
+
+### Blaze Session Sequence (Observed in Every Test)
+
+Every test run since the crypto fix shows this exact sequence on the plaintext Blaze server (port 10041):
+
+```
+Session 1:
+  1. PreAuth (comp=0x0009 cmd=0x0007) → 628-byte response
+  2. Ping (comp=0x0009 cmd=0x0002) → pong
+  3. FetchClientConfig "OSDK_CORE" → 5 entries
+  4. FetchClientConfig "OSDK_CLIENT" → 4 entries
+  5. FetchClientConfig "OSDK_NUCLEUS" → 3 entries
+  6. FetchClientConfig "OSDK_WEBOFFER" → 1 entry
+  7. FetchClientConfig "OSDK_ABUSE_REPORTING" → 1 entry
+  8. FetchClientConfig "OSDK_XMS_ABUSE_REPORTING" → 1 entry
+  9. Low-level PING (type=4, comp=0 cmd=0) → PING_REPLY
+  10. Logout (comp=0x0001 cmd=0x0046 len=0) → empty ack
+  11. Disconnect
+
+Sessions 2-N:
+  Each sends a single PING (type=4) packet, gets PING_REPLY, disconnects.
+  These are the game's reconnection attempts (every ~15s).
+```
+
+### Origin IPC Session Sequence (Observed in Every Test)
+
+```
+1. Server → Game: Challenge (plaintext)
+2. Game → Server: ChallengeResponse (plaintext)
+3. Server → Game: ChallengeAccepted (plaintext)
+4. Server → Game: Login event IsLoggedIn=true (encrypted) [added in session 2]
+5. Game → Server: GetConfig (encrypted) → GetConfigResponse
+6. Game → Server: GetProfile index=0 (encrypted) → GetProfileResponse
+7. Game → Server: GetSetting IS_IGO_ENABLED → "false"
+8. Game → Server: GetGameInfo FREETRIAL → "false"
+9. Game → Server: GetSetting ENVIRONMENT → "production"
+10. Game → Server: GetSetting IS_IGO_AVAILABLE → "false"
+11. Game → Server: IsProgressiveInstallationAvailable → Available="false"
+12. Game → Server: GetProfile index=0 (repeat)
+13. Game → Server: GetSetting LANGUAGE → "en_US"
+14. Game → Server: SetDownloaderUtilization → ErrorSuccess
+15. Game → Server: GetSetting ENVIRONMENT (repeat) → "production"
+```
+
+Note: Game NEVER sends GetAuthCode via LSX. This is because DLL Patch 3 short-circuits `FUN_1470db3c0` before it reaches the LSX send path.
+
+### "FIFA 17 is shutting down" Popup
+
+This external Windows popup appears when the test script kills the node processes at the end of the test. The Origin IPC socket closes, and the game's Origin SDK detects "Origin client was terminated." This is a cosmetic side-effect of test teardown, not a bug in our implementation.
+
+### `origin_format_test.ps1` vs `batch_test_lsx.ps1`
+
+- `origin_format_test.ps1` — Older test script that sets `CHALLENGE_FORMAT` env var. Was used during Phase 6-7 when testing different Challenge XML formats. **This script was associated with the game freeze issue** because it was used before the crypto breakthrough.
+- `batch_test_lsx.ps1` — Current primary test script. Starts both Blaze server and Origin IPC server, builds DLL, launches game, navigates menus, collects all logs (Origin IPC + Blaze + DLL). **This is the script that should be used for all testing.**
+
+### PocketRelay Reference (ME3 Blaze Server)
+
+PocketRelay (github.com/PocketRelay/Server) is a Rust implementation of the ME3 multiplayer Blaze server. Key findings from their source:
+
+- **OriginLoginRequest**: `{ AUTH: "ORIGIN_AUTH_TOKEN", TYPE: 1 }` — cmd 0x98 on component 0x0001
+- **SilentLoginRequest**: `{ AUTH: "AUTH_TOKEN", PID: player_id, TYPE: 2 }` — cmd 0x0032
+- **LoginRequest**: `{ MAIL: "email", PASS: "password", TYPE: 0 }` — cmd 0x0028
+- **AuthResponse** (for all login types): Contains AGUP, LDHT, NTOS, PCTK (session token), PRIV, SESS struct (BUID, FRST, KEY, LLOG, MAIL, PDTL, UID), SPAM, THST, TSUI, TURI
+- ME3 uses the same Blaze SDK version family as FIFA 17
+
+### Origin SDK Object Lifecycle (Ghidra)
+
+- **FUN_1470e07b0**: Creates Origin SDK object. Allocates 0x3c8 bytes, calls `FUN_1470de960` to initialize, stores pointer in `DAT_144b7c7a0`, then calls `FUN_1470e5770` to initiate TCP connection.
+- **FUN_1470df860**: Destroys Origin SDK object. Sets `DAT_144b7c7a0 = 0`, cleans up all internal state.
+- **FUN_1470e2840**: Returns `DAT_144b7c7a0 != 0` — used as "is SDK connected" check by all Origin API functions. If false, all Origin calls (GetProfile, GetAuthCode, etc.) bail out with error `0xa0010000`.
+
+### GetInternetConnectedState Discrepancy
+
+In the real Wireshark capture, Origin returned `connected="0"` (user was offline/not signed in). Our server returns `connected="1"`. This might matter — if the game interprets `connected="1"` as "internet available, should be able to reach EA servers" but then can't, it might trigger the "EA servers unavailable" error. Worth testing with `connected="0"`.
+
+### DLL Patch Timeline (Typical Run)
+
+```
+T+0ms:     DllMain — fake SDK object created
+T+150ms:   Patch 1: cert bypass
+T+350ms:   Patch 3: FUN_1470db3c0 body → fake auth code
+T+400ms:   Patch 4: auth flag
+T+450ms:   Patches 5-6: IsLoggedIntoEA/Network → true
+T+500ms:   Patch 7: SDK gate, login vtable, PreAuth handler
+T+500ms:   Connect hook: DAT_148e223d8 patched
+T+500ms:   Origin online check, version patches
+T+800ms:   Origin SDK connect redirected 4216→3216
+T+5600ms:  Auth slot cleared, fake request injected
+T+5700ms:  Cave executed, auth code delivered (req[+0xe8]=1)
+T+5700ms:  Post-load OSDK patches applied
+```
+
+The 5.6-second gap between patches completing and auth slot clearing is the DLL's polling loop waiting for the game's initial auth request to complete/clear before injecting the fake one.
