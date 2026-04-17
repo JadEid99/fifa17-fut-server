@@ -1,0 +1,269 @@
+﻿     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+[      0] HOOKED PreAuthHandler @ 0x146e1cf10
+[      0] HOOKED LoginTypesProcessor @ 0x146e1c3f0
+[      0] HOOKED LoginCheck @ 0x146e1dae0
+[      0] HOOKED LoginSender @ 0x146e1eb70
+[      0] HOOKED LoginFallback_NoTypes @ 0x146e19b30
+[      0] HOOKED OriginRequestAuthCodeSync @ 0x1470db3c0
+[      0] HOOKED Origin_RequestAuthCode_LSX @ 0x1470e67f0
+[      0] HOOKED IsOriginSDKConnected @ 0x1470e2840
+[      0] HOOKED FirstPartyAuthTokenReq @ 0x146f199c0
+[      0] HOOKED LoginEventDispatcher @ 0x147102800
+[      0] HOOKED RpcSend @ 0x146df0e80
+[      0] HOOKED RpcBuilder @ 0x146dab760
+[      0] HOOKED SM_Transition @ 0x146e126b0
+[      0] HOOKED LSX_SendXml @ 0x1470e6ee0
+[      0] HOOKED OnlineTick @ 0x146f7c7e0
+[      0] === Frida flow trace attached ===
+[      0] Base: 0x140000000
+[Local::PID::61392 ]-> [   2001] ============ CHECKPOINT: initial (after DLL patches should be done) ============
+[   2001]   OnlineFlag       = 0
+[   2001]   OnlineManager    = 0x0
+[   2001]   OriginSdkObject  = 0x27a48f10
+[   2001]   SdkManager       = 0x1d0000
+[   2001]   SDK +0x3a0 (userId)  = 0
+[   2001]   SDK +0x35c (port)    = 1934168184
+[   2001] ============
+[   2001] === PreAuthResponse member info table @ 0x144867628 ===
+[   2001]   [0] 0600000006000000b412554301000000b412554301000000a0768644010000000300000000000000
+[   2001]        u32[0]=0x6 u32[1]=0x6 u32[2]=0x435512b4
+[   2001]   [1] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [2] 00000000000000000000000000000000007686440100000001000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [3] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [4] 00000000000000000000000000000000287686440100000001000000000000000300000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [5] 000000000000000000000000000000002077864401000000d091da46010000002876864401000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [6] 0300000000000000500a874401000000b08f86440100000000000000000000000000000000000000
+[   2001]        u32[0]=0x3 u32[1]=0x0 u32[2]=0x44870a50
+[   2001]   [7] 000000000000000000000000000000000000000000000000e876864401000000008e928b00000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [8] 00000000000000000000000000000000908a8f87829586808483880194858d018991008193018c00
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [9] 0000000000000000801cc24401000000a011c144010000009036c04401000000401bc04401000000
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x44c21c80
+[   2002]   [10] 9035c044010000004032c04401000000a043874401000000f076bd4401000000302ec04401000000
+[   2002]        u32[0]=0x44c03590 u32[1]=0x1 u32[2]=0x44c03240
+[   2002]   [11] 3077bd44010000008091b844010000004050884401000000a009874401000000701ac14401000000
+[   2002]        u32[0]=0x44bd7730 u32[1]=0x1 u32[2]=0x44b89180
+[   2002]   [12] 00628844010000002028c04401000000d054884401000000209bb84401000000b019c24401000000
+[   2002]        u32[0]=0x44886200 u32[1]=0x1 u32[2]=0x44c02820
+[   2002]   [13] 00f9c04401000000704b8a4401000000b0d4c04401000000a0548a44010000004092b84401000000
+[   2002]        u32[0]=0x44c0f900 u32[1]=0x1 u32[2]=0x448a4b70
+[   3591] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
+[   3591] LSX_SendXml: <LSX><Request recipient="" id="12"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>\ufffdpass_3\ufffdt_3\ufffd@|z*\ufffd\ufffd\ufffd\ufffd\ufffdN\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd0r\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffde\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdX\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdE\ufffd\ufffd\ufffdp\ufffdcD\ufffd\ufffd\ufffd
+[   3651] FirstPartyAuthTokenReq(base=0x3ec48d08)
+[   3651]   slot1=0x5d3e0000 slot2=0x0
+[   3651] OriginRequestAuthCodeSync(userId=0x0 clientId=0x5d3e0018 scope=0x3939fc60 outCode=0x3939fc58)
+[   3651] OriginRequestAuthCodeSync returned
+[   3678] STATE-CHANGE tick#810 OM(+0x1c0=-999\u21924294967295 +0x1f0=-999\u21924294967295 +0x13b8=-999\u21922)
+[   3805] STATE-CHANGE tick#840 OM(+0x1c0=4294967295\u21924294967295 +0x1f0=4294967295\u21924294967295 +0x13b8=2\u21920)
+[   5002] ============ CHECKPOINT: 5s mark ============
+[   5002]   OnlineFlag       = 1
+[   5002]   OnlineManager    = 0x3ec43e70
+[   5002]   OriginSdkObject  = 0x27a48f10
+[   5002]   SdkManager       = 0x3eac6c70
+[   5002]   OM +0x1c0 (connState?) = 4294967295
+[   5002]   OM +0x1f0 (gameMode?)  = 4294967295
+[   5002]   OM +0x13b8 (UI state)  = 0
+[   5002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[   5002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[   5002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[   5002]   OM +0x4ece (authFail)  = 0
+[   5002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[   5002]     BlazeHub             = 0x3ec4a960
+[   5002]     BH +0x53f (flag)     = 1
+[   5002]     auth slot 0 obj  = 0x1438f5d50
+[   5002]       +0xd8 (auth code ptr) = 0xa2964252872
+[   5002]       +0xe8 (ready flag)    = 96
+[   5002]       auth code str = "<err>"
+[   5002]   SDK +0x3a0 (userId)  = 0
+[   5002]   SDK +0x35c (port)    = 1934168184
+[   5002] ============
+[  10002] ============ CHECKPOINT: 10s mark ============
+[  10002]   OnlineFlag       = 1
+[  10002]   OnlineManager    = 0x3ec43e70
+[  10002]   OriginSdkObject  = 0x27a48f10
+[  10002]   SdkManager       = 0x3eac6c70
+[  10002]   OM +0x1c0 (connState?) = 4294967295
+[  10002]   OM +0x1f0 (gameMode?)  = 4294967295
+[  10002]   OM +0x13b8 (UI state)  = 0
+[  10002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  10002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  10002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  10002]   OM +0x4ece (authFail)  = 0
+[  10002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  10002]     BlazeHub             = 0x3ec4a960
+[  10002]     BH +0x53f (flag)     = 1
+[  10002]     auth slot 0 obj  = 0x1438f5d50
+[  10002]       +0xd8 (auth code ptr) = 0xa2964252872
+[  10002]       +0xe8 (ready flag)    = 96
+[  10002]       auth code str = "<err>"
+[  10002]   SDK +0x3a0 (userId)  = 0
+[  10002]   SDK +0x35c (port)    = 1934168184
+[  10002] ============
+[  22264] RpcBuilder(comp=0x11 cmd=0x0)
+[  22264] RpcSend [5:0x11]
+[  22617] RpcBuilder(comp=0x7 cmd=0x0)
+[  22617] RpcSend [PreAuth]
+[  22632] PreAuthHandler(this=0x3eac7ff0 resp=0x3edd5ef0 err=0)
+[  22632] RpcBuilder(comp=0x2 cmd=0x0)
+[  22632] RpcSend [Ping]
+[  22632] LoginTypesProcessor(loginSM=0x3eac9da0 resp+0x120=0x3edd6010)
+[  22632]   resp TDF bytes (first 64): 109d88430100000000000080000000000a00000000000000a09b8843010000000000008000000000b076bd44010000006853ac3e000000000000000001000000
+[  22632] LoginCheck(loginSM=0x3eac9da0 count=0)
+[  22632] LoginCheck returned 0
+[  22632] \u26a0\ufe0f  LoginFallback_NoTypes called (login types array empty!)
+[  22634] LoginFallback_NoTypes done
+[  22634] LoginTypesProcessor done. loginSM+0x218=0x0 +0x220=0x0 count=0
+[  22634] PreAuthHandler returned
+[  22634]   resp dump +0x100..+0x150:
+[  22634]     +100: 0000000001000000f0b5544301000000
+[  22634]     +110: 182d884301000000b85fdd3e00000000
+[  22634]     +120: 109d8843010000000000008000000000
+[  22634]     +130: 0a00000000000000a09b884301000000
+[  22634]     +140: 0000008000000000b076bd4401000000
+[  22634]     +150: 6853ac3e000000000000000001000000
+[  22634] ============ CHECKPOINT: PreAuth done ============
+[  22634]   OnlineFlag       = 1
+[  22635]   OnlineManager    = 0x3ec43e70
+[  22635]   OriginSdkObject  = 0x27a48f10
+[  22635]   SdkManager       = 0x3eac6c70
+[  22635]   OM +0x1c0 (connState?) = 4294967295
+[  22635]   OM +0x1f0 (gameMode?)  = 4294967295
+[  22635]   OM +0x13b8 (UI state)  = 0
+[  22635]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  22635]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  22635]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  22635]   OM +0x4ece (authFail)  = 0
+[  22635]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  22635]     BlazeHub             = 0x3ec4a960
+[  22635]     BH +0x53f (flag)     = 1
+[  22635]     auth slot 0 obj  = 0x1438f5d50
+[  22635]       +0xd8 (auth code ptr) = 0xa2964252872
+[  22635]       +0xe8 (ready flag)    = 96
+[  22635]       auth code str = "<err>"
+[  22635]   SDK +0x3a0 (userId)  = 0
+[  22635]   SDK +0x35c (port)    = 1934168184
+[  22635] ============
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  52865] RpcBuilder(comp=0x46 cmd=0x0)
+[  52865] \U0001f6a8 LOGOUT SENT [Logout]
+[  52865] ============ CHECKPOINT: just before Logout RPC ============
+[  52865]   OnlineFlag       = 1
+[  52865]   OnlineManager    = 0x3ec43e70
+[  52865]   OriginSdkObject  = 0x27a48f10
+[  52865]   SdkManager       = 0x3eac6c70
+[  52865]   OM +0x1c0 (connState?) = 4294967295
+[  52865]   OM +0x1f0 (gameMode?)  = 4294967295
+[  52865]   OM +0x13b8 (UI state)  = 0
+[  52865]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  52865]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  52865]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  52865]   OM +0x4ece (authFail)  = 0
+[  52865]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  52865]     BlazeHub             = 0x3ec4a960
+[  52865]     BH +0x53f (flag)     = 1
+[  52865]     auth slot 0 obj  = 0x1438f5d50
+[  52865]       +0xd8 (auth code ptr) = 0xa2964252872
+[  52865]       +0xe8 (ready flag)    = 96
+[  52865]       auth code str = "<err>"
+[  52865]   SDK +0x3a0 (userId)  = 0
+[  52865]   SDK +0x35c (port)    = 1934168184
+[  52865] ============
+[  52933]   STACK:
+[  52933]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  52933]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  52933]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  52933]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  52934] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  89483] RpcBuilder(comp=0x46 cmd=0x0)
+[  89483] \U0001f6a8 LOGOUT SENT [Logout]
+[  89483] ============ CHECKPOINT: just before Logout RPC ============
+[  89483]   OnlineFlag       = 1
+[  89483]   OnlineManager    = 0x3ec43e70
+[  89483]   OriginSdkObject  = 0x27a48f10
+[  89483]   SdkManager       = 0x3eac6c70
+[  89483]   OM +0x1c0 (connState?) = 4294967295
+[  89483]   OM +0x1f0 (gameMode?)  = 4294967295
+[  89483]   OM +0x13b8 (UI state)  = 0
+[  89483]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  89483]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  89483]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  89483]   OM +0x4ece (authFail)  = 0
+[  89483]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  89483]     BlazeHub             = 0x3ec4a960
+[  89483]     BH +0x53f (flag)     = 1
+[  89483]     auth slot 0 obj  = 0x1438f5d50
+[  89483]       +0xd8 (auth code ptr) = 0xa2964252872
+[  89483]       +0xe8 (ready flag)    = 96
+[  89484]       auth code str = "<err>"
+[  89484]   SDK +0x3a0 (userId)  = 0
+[  89484]   SDK +0x35c (port)    = 1934168184
+[  89484] ============
+[  89484]   STACK:
+[  89484]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  89484]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  89484]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  89484]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  89500] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
+

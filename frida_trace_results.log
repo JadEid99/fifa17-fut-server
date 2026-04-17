@@ -1,917 +1,559 @@
 ﻿========================================================================
 FIFA 17 FLOW TRACE RESULTS
-Run: 2026-04-17 16:06:09
-Verdict: LOGIN_SENT
+Run: 2026-04-17 16:14:00
+Verdict: LOGOUT_CAPTURED_WITH_STACK
+Frida raw size: 14506 chars  (saved full in frida_trace_full.log)
 ========================================================================
 
 --- FRIDA ERRORS (first, if any) ---
 
 
---- FRIDA FLOW TRACE (full) ---
-> 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91035] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91053] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91070] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91085] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91103] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91118] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91137] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91152] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91169] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91184] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91202] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91236] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91251] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91269] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91287] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91302] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91320] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91335] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91353] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91368] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91386] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91404] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91419] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91436] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91454] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91469] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91486] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91503] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91518] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91536] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91551] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91570] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91585] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91602] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91620] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91635] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91653] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91669] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91687] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91702] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91720] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91735] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91753] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91768] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91785] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91803] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91836] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91852] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91870] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91885] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91904] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91919] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91935] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91953] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91968] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  91986] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92004] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92019] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92036] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92053] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92070] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92085] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92103] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92118] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92136] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92154] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92169] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92187] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92202] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92219] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92234] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92252] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92270] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92285] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92303] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92318] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92335] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92351] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92369] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92387] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92402] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92419] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92434] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92452] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92470] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92504] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92518] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92536] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92551] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92586] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92604] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92619] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92637] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92652] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92668] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92686] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92719] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92734] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92752] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92770] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92785] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92803] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92835] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92853] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92868] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92886] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92901] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92919] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92937] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92952] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92970] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  92985] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93002] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93020] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93035] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93053] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93068] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93086] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93101] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93119] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93137] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93152] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93170] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93185] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93203] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93236] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93253] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93268] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93286] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93304] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93319] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93337] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93352] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93370] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93385] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93402] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93420] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93435] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93453] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93468] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93503] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93518] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93536] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93553] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93586] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93601] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93619] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93635] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93653] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93668] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93686] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93719] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93737] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93752] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93770] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93785] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93803] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93836] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93851] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93870] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93884] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93902] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93919] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93937] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93952] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93970] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  93985] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94003] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94018] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94035] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94053] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94068] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94086] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94104] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94119] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94137] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94152] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94170] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94185] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94203] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94236] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94253] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94268] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94286] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94301] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94319] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94337] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94352] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94370] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94385] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94403] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94420] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94435] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94454] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94468] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94486] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94501] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94518] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94536] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94551] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94569] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94587] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94602] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94620] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94635] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94653] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94669] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94687] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94702] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94720] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94735] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94753] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94768] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94786] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94804] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94836] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94851] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94868] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94886] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94901] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94920] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94935] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94953] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94968] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  94986] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95003] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95019] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95037] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95052] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95070] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95085] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95102] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95119] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95134] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95152] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95171] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95186] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95201] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95219] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95236] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95254] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95269] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95287] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95302] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95319] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95337] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95352] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95369] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95387] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95402] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95419] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95434] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95452] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95470] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95504] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95519] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95537] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95552] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95570] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95586] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95604] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95619] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95637] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95652] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95670] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95685] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95703] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95718] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95736] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95753] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95768] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95786] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95801] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95819] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95837] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95852] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95870] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95885] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95903] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95918] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95936] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95954] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95969] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  95986] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96001] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96019] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96036] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96051] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96069] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96084] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96103] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96118] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96136] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96151] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96168] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96186] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96202] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96220] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96235] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96254] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96268] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96286] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96301] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96319] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96334] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96352] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96370] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96385] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96403] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96418] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96436] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96451] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96469] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96503] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96518] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96535] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96553] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96570] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96584] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96602] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96620] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96635] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96653] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96668] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96687] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96719] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96734] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96753] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96768] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96786] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96803] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96835] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96853] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96868] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96886] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96901] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96918] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96935] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96953] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96968] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  96986] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97004] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97018] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97036] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97051] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97069] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97084] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97102] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97120] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97135] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97153] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97168] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97185] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97202] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97220] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97237] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97252] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97270] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97285] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97302] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97320] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97336] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97353] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97368] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97386] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97403] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97418] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97436] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97451] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97469] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97484] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97501] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97520] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97535] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97553] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97585] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97603] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97618] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97636] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97652] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97669] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97687] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97702] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97720] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97735] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97753] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97769] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97787] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97802] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97820] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97835] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97852] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97870] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97885] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97903] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97918] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97936] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97951] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97969] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  97987] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98002] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98019] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98036] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98051] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98069] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98087] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98102] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98120] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98135] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98153] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98168] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98185] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98203] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98236] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98254] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98269] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98287] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98302] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98320] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98335] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98352] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98370] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98385] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98403] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98418] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98437] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98452] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98470] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98504] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98520] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98535] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98553] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98585] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98603] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98618] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98636] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98653] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98668] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98686] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98719] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98737] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98752] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98769] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98787] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98802] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98820] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98835] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98852] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98870] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98885] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98903] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98918] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98936] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98951] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98969] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  98984] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99002] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99020] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99035] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99053] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99068] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99086] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99101] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99119] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99137] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99152] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99170] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99185] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99203] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99235] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99252] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99269] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99284] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99302] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99320] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99335] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99353] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99368] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99386] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99401] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99419] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99437] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99452] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99470] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99485] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99503] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99520] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99535] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99553] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99586] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99604] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99619] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99637] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99651] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99668] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99687] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99719] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99736] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99751] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99770] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99785] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99803] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99818] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99836] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[  99851] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104500] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104517] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104534] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104549] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104567] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104582] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104601] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104616] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104634] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104649] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104667] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104682] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104700] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104718] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104733] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104751] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104768] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104783] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104801] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104815] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104833] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104848] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104866] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104884] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104899] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104917] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104932] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104950] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104965] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 104982] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105000] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105015] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105033] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105048] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105066] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105084] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105099] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105117] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105132] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105150] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105168] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105182] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105200] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105215] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105233] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105248] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105266] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105284] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105299] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105317] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105332] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105349] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105382] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105400] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105418] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105433] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105451] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105466] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105483] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105501] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105516] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105534] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105551] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105566] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105583] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105601] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105616] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105634] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105649] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105667] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105685] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105699] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105717] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105732] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105750] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105765] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105783] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105801] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105816] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105834] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105849] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105866] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105884] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105899] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105917] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105932] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105950] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105968] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105983] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 105999] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106017] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106032] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106050] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106065] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106083] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106101] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106116] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106134] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106149] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106167] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106182] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106200] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106218] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106233] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106251] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106266] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106284] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106298] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106316] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106334] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106349] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106382] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106400] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106415] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106433] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106451] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106466] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106484] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106499] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106517] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106532] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106550] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106566] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106584] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106598] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106616] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106634] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106649] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106667] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106682] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106700] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106718] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106733] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106750] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106765] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106783] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106801] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106816] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106834] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106849] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106867] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106882] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106900] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106917] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106932] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106950] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106965] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 106983] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107001] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107016] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107032] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107050] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107065] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107083] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107099] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107117] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107132] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107150] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107167] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107182] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107200] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107215] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107233] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107250] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107266] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107284] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107299] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107317] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107332] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107350] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107382] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107400] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107417] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107432] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107450] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107468] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107483] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107500] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107516] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107534] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107549] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107567] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107582] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107600] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107615] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107633] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107648] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107667] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107682] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107699] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107717] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107735] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107749] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107767] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107782] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107799] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107817] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107832] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107850] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107865] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107883] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107900] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107915] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107933] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107948] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107966] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107984] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 107999] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108017] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108032] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108050] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108068] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108083] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108101] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108116] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108134] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108149] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108167] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108182] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108200] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108215] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108233] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108251] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108266] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108284] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108299] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108317] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108332] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108350] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108382] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108400] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108415] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108433] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108451] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108466] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108484] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108499] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108517] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108532] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108550] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108568] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108583] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108601] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108616] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108634] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108649] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108666] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108684] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108699] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108717] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108732] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108750] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108765] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108783] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108801] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108816] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108834] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108851] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108868] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108883] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108901] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108916] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108934] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108949] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108967] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 108984] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109000] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109017] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109032] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109050] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109065] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109083] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109101] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109116] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109134] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109149] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109167] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109183] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109201] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109216] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109234] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109250] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109268] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109282] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109300] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109315] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109333] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109349] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109382] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109400] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109417] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109432] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109450] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109468] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109483] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109500] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109516] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109534] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109549] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109567] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109582] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109600] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109615] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109632] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109650] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109665] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109683] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109701] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109716] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109734] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109749] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109767] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109785] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109799] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109817] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109832] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109850] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109865] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109883] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109901] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109916] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109934] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109949] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109967] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109982] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 109999] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110016] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110034] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110049] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110066] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110084] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110099] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110116] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110134] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110149] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110166] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110182] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110200] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110215] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110233] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110250] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110265] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110283] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110301] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110316] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110334] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110349] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110367] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110385] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110399] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110417] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110434] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110448] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110466] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110484] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110499] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110517] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110532] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110550] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
-[ 110565] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
+--- FRIDA FLOW TRACE (first 30000 = start/init events) ---
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+[      0] HOOKED PreAuthHandler @ 0x146e1cf10
+[      0] HOOKED LoginTypesProcessor @ 0x146e1c3f0
+[      0] HOOKED LoginCheck @ 0x146e1dae0
+[      0] HOOKED LoginSender @ 0x146e1eb70
+[      0] HOOKED LoginFallback_NoTypes @ 0x146e19b30
+[      0] HOOKED OriginRequestAuthCodeSync @ 0x1470db3c0
+[      0] HOOKED Origin_RequestAuthCode_LSX @ 0x1470e67f0
+[      0] HOOKED IsOriginSDKConnected @ 0x1470e2840
+[      0] HOOKED FirstPartyAuthTokenReq @ 0x146f199c0
+[      0] HOOKED LoginEventDispatcher @ 0x147102800
+[      0] HOOKED RpcSend @ 0x146df0e80
+[      0] HOOKED RpcBuilder @ 0x146dab760
+[      0] HOOKED SM_Transition @ 0x146e126b0
+[      0] HOOKED LSX_SendXml @ 0x1470e6ee0
+[      0] HOOKED OnlineTick @ 0x146f7c7e0
+[      0] === Frida flow trace attached ===
+[      0] Base: 0x140000000
+[Local::PID::61392 ]-> [   2001] ============ CHECKPOINT: initial (after DLL patches should be done) ============
+[   2001]   OnlineFlag       = 0
+[   2001]   OnlineManager    = 0x0
+[   2001]   OriginSdkObject  = 0x27a48f10
+[   2001]   SdkManager       = 0x1d0000
+[   2001]   SDK +0x3a0 (userId)  = 0
+[   2001]   SDK +0x35c (port)    = 1934168184
+[   2001] ============
+[   2001] === PreAuthResponse member info table @ 0x144867628 ===
+[   2001]   [0] 0600000006000000b412554301000000b412554301000000a0768644010000000300000000000000
+[   2001]        u32[0]=0x6 u32[1]=0x6 u32[2]=0x435512b4
+[   2001]   [1] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [2] 00000000000000000000000000000000007686440100000001000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [3] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [4] 00000000000000000000000000000000287686440100000001000000000000000300000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [5] 000000000000000000000000000000002077864401000000d091da46010000002876864401000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [6] 0300000000000000500a874401000000b08f86440100000000000000000000000000000000000000
+[   2001]        u32[0]=0x3 u32[1]=0x0 u32[2]=0x44870a50
+[   2001]   [7] 000000000000000000000000000000000000000000000000e876864401000000008e928b00000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [8] 00000000000000000000000000000000908a8f87829586808483880194858d018991008193018c00
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [9] 0000000000000000801cc24401000000a011c144010000009036c04401000000401bc04401000000
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x44c21c80
+[   2002]   [10] 9035c044010000004032c04401000000a043874401000000f076bd4401000000302ec04401000000
+[   2002]        u32[0]=0x44c03590 u32[1]=0x1 u32[2]=0x44c03240
+[   2002]   [11] 3077bd44010000008091b844010000004050884401000000a009874401000000701ac14401000000
+[   2002]        u32[0]=0x44bd7730 u32[1]=0x1 u32[2]=0x44b89180
+[   2002]   [12] 00628844010000002028c04401000000d054884401000000209bb84401000000b019c24401000000
+[   2002]        u32[0]=0x44886200 u32[1]=0x1 u32[2]=0x44c02820
+[   2002]   [13] 00f9c04401000000704b8a4401000000b0d4c04401000000a0548a44010000004092b84401000000
+[   2002]        u32[0]=0x44c0f900 u32[1]=0x1 u32[2]=0x448a4b70
+[   3591] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
+[   3591] LSX_SendXml: <LSX><Request recipient="" id="12"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>\ufffdpass_3\ufffdt_3\ufffd@|z*\ufffd\ufffd\ufffd\ufffd\ufffdN\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd0r\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffde\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdX\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdE\ufffd\ufffd\ufffdp\ufffdcD\ufffd\ufffd\ufffd
+[   3651] FirstPartyAuthTokenReq(base=0x3ec48d08)
+[   3651]   slot1=0x5d3e0000 slot2=0x0
+[   3651] OriginRequestAuthCodeSync(userId=0x0 clientId=0x5d3e0018 scope=0x3939fc60 outCode=0x3939fc58)
+[   3651] OriginRequestAuthCodeSync returned
+[   3678] STATE-CHANGE tick#810 OM(+0x1c0=-999\u21924294967295 +0x1f0=-999\u21924294967295 +0x13b8=-999\u21922)
+[   3805] STATE-CHANGE tick#840 OM(+0x1c0=4294967295\u21924294967295 +0x1f0=4294967295\u21924294967295 +0x13b8=2\u21920)
+[   5002] ============ CHECKPOINT: 5s mark ============
+[   5002]   OnlineFlag       = 1
+[   5002]   OnlineManager    = 0x3ec43e70
+[   5002]   OriginSdkObject  = 0x27a48f10
+[   5002]   SdkManager       = 0x3eac6c70
+[   5002]   OM +0x1c0 (connState?) = 4294967295
+[   5002]   OM +0x1f0 (gameMode?)  = 4294967295
+[   5002]   OM +0x13b8 (UI state)  = 0
+[   5002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[   5002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[   5002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[   5002]   OM +0x4ece (authFail)  = 0
+[   5002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[   5002]     BlazeHub             = 0x3ec4a960
+[   5002]     BH +0x53f (flag)     = 1
+[   5002]     auth slot 0 obj  = 0x1438f5d50
+[   5002]       +0xd8 (auth code ptr) = 0xa2964252872
+[   5002]       +0xe8 (ready flag)    = 96
+[   5002]       auth code str = "<err>"
+[   5002]   SDK +0x3a0 (userId)  = 0
+[   5002]   SDK +0x35c (port)    = 1934168184
+[   5002] ============
+[  10002] ============ CHECKPOINT: 10s mark ============
+[  10002]   OnlineFlag       = 1
+[  10002]   OnlineManager    = 0x3ec43e70
+[  10002]   OriginSdkObject  = 0x27a48f10
+[  10002]   SdkManager       = 0x3eac6c70
+[  10002]   OM +0x1c0 (connState?) = 4294967295
+[  10002]   OM +0x1f0 (gameMode?)  = 4294967295
+[  10002]   OM +0x13b8 (UI state)  = 0
+[  10002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  10002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  10002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  10002]   OM +0x4ece (authFail)  = 0
+[  10002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  10002]     BlazeHub             = 0x3ec4a960
+[  10002]     BH +0x53f (flag)     = 1
+[  10002]     auth slot 0 obj  = 0x1438f5d50
+[  10002]       +0xd8 (auth code ptr) = 0xa2964252872
+[  10002]       +0xe8 (ready flag)    = 96
+[  10002]       auth code str = "<err>"
+[  10002]   SDK +0x3a0 (userId)  = 0
+[  10002]   SDK +0x35c (port)    = 1934168184
+[  10002] ============
+[  22264] RpcBuilder(comp=0x11 cmd=0x0)
+[  22264] RpcSend [5:0x11]
+[  22617] RpcBuilder(comp=0x7 cmd=0x0)
+[  22617] RpcSend [PreAuth]
+[  22632] PreAuthHandler(this=0x3eac7ff0 resp=0x3edd5ef0 err=0)
+[  22632] RpcBuilder(comp=0x2 cmd=0x0)
+[  22632] RpcSend [Ping]
+[  22632] LoginTypesProcessor(loginSM=0x3eac9da0 resp+0x120=0x3edd6010)
+[  22632]   resp TDF bytes (first 64): 109d88430100000000000080000000000a00000000000000a09b8843010000000000008000000000b076bd44010000006853ac3e000000000000000001000000
+[  22632] LoginCheck(loginSM=0x3eac9da0 count=0)
+[  22632] LoginCheck returned 0
+[  22632] \u26a0\ufe0f  LoginFallback_NoTypes called (login types array empty!)
+[  22634] LoginFallback_NoTypes done
+[  22634] LoginTypesProcessor done. loginSM+0x218=0x0 +0x220=0x0 count=0
+[  22634] PreAuthHandler returned
+[  22634]   resp dump +0x100..+0x150:
+[  22634]     +100: 0000000001000000f0b5544301000000
+[  22634]     +110: 182d884301000000b85fdd3e00000000
+[  22634]     +120: 109d8843010000000000008000000000
+[  22634]     +130: 0a00000000000000a09b884301000000
+[  22634]     +140: 0000008000000000b076bd4401000000
+[  22634]     +150: 6853ac3e000000000000000001000000
+[  22634] ============ CHECKPOINT: PreAuth done ============
+[  22634]   OnlineFlag       = 1
+[  22635]   OnlineManager    = 0x3ec43e70
+[  22635]   OriginSdkObject  = 0x27a48f10
+[  22635]   SdkManager       = 0x3eac6c70
+[  22635]   OM +0x1c0 (connState?) = 4294967295
+[  22635]   OM +0x1f0 (gameMode?)  = 4294967295
+[  22635]   OM +0x13b8 (UI state)  = 0
+[  22635]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  22635]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  22635]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  22635]   OM +0x4ece (authFail)  = 0
+[  22635]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  22635]     BlazeHub             = 0x3ec4a960
+[  22635]     BH +0x53f (flag)     = 1
+[  22635]     auth slot 0 obj  = 0x1438f5d50
+[  22635]       +0xd8 (auth code ptr) = 0xa2964252872
+[  22635]       +0xe8 (ready flag)    = 96
+[  22635]       auth code str = "<err>"
+[  22635]   SDK +0x3a0 (userId)  = 0
+[  22635]   SDK +0x35c (port)    = 1934168184
+[  22635] ============
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  52865] RpcBuilder(comp=0x46 cmd=0x0)
+[  52865] \U0001f6a8 LOGOUT SENT [Logout]
+[  52865] ============ CHECKPOINT: just before Logout RPC ============
+[  52865]   OnlineFlag       = 1
+[  52865]   OnlineManager    = 0x3ec43e70
+[  52865]   OriginSdkObject  = 0x27a48f10
+[  52865]   SdkManager       = 0x3eac6c70
+[  52865]   OM +0x1c0 (connState?) = 4294967295
+[  52865]   OM +0x1f0 (gameMode?)  = 4294967295
+[  52865]   OM +0x13b8 (UI state)  = 0
+[  52865]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  52865]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  52865]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  52865]   OM +0x4ece (authFail)  = 0
+[  52865]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  52865]     BlazeHub             = 0x3ec4a960
+[  52865]     BH +0x53f (flag)     = 1
+[  52865]     auth slot 0 obj  = 0x1438f5d50
+[  52865]       +0xd8 (auth code ptr) = 0xa2964252872
+[  52865]       +0xe8 (ready flag)    = 96
+[  52865]       auth code str = "<err>"
+[  52865]   SDK +0x3a0 (userId)  = 0
+[  52865]   SDK +0x35c (port)    = 1934168184
+[  52865] ============
+[  52933]   STACK:
+[  52933]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  52933]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  52933]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  52933]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  52934] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  89483] RpcBuilder(comp=0x46 cmd=0x0)
+[  89483] \U0001f6a8 LOGOUT SENT [Logout]
+[  89483] ============ CHECKPOINT: just before Logout RPC ============
+[  89483]   OnlineFlag       = 1
+[  89483]   OnlineManager    = 0x3ec43e70
+[  89483]   OriginSdkObject  = 0x27a48f10
+[  89483]   SdkManager       = 0x3eac6c70
+[  89483]   OM +0x1c0 (connState?) = 4294967295
+[  89483]   OM +0x1f0 (gameMode?)  = 4294967295
+[  89483]   OM +0x13b8 (UI state)  = 0
+[  89483]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  89483]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  89483]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  89483]   OM +0x4ece (authFail)  = 0
+[  89483]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  89483]     BlazeHub             = 0x3ec4a960
+[  89483]     BH +0x53f (flag)     = 1
+[  89483]     auth slot 0 obj  = 0x1438f5d50
+[  89483]       +0xd8 (auth code ptr) = 0xa2964252872
+[  89483]       +0xe8 (ready flag)    = 96
+[  89484]       auth code str = "<err>"
+[  89484]   SDK +0x3a0 (userId)  = 0
+[  89484]   SDK +0x35c (port)    = 1934168184
+[  89484] ============
+[  89484]   STACK:
+[  89484]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  89484]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  89484]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  89484]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  89500] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
 
+--- FRIDA FLOW TRACE (last 60000 = end-state events) ---
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+[      0] HOOKED PreAuthHandler @ 0x146e1cf10
+[      0] HOOKED LoginTypesProcessor @ 0x146e1c3f0
+[      0] HOOKED LoginCheck @ 0x146e1dae0
+[      0] HOOKED LoginSender @ 0x146e1eb70
+[      0] HOOKED LoginFallback_NoTypes @ 0x146e19b30
+[      0] HOOKED OriginRequestAuthCodeSync @ 0x1470db3c0
+[      0] HOOKED Origin_RequestAuthCode_LSX @ 0x1470e67f0
+[      0] HOOKED IsOriginSDKConnected @ 0x1470e2840
+[      0] HOOKED FirstPartyAuthTokenReq @ 0x146f199c0
+[      0] HOOKED LoginEventDispatcher @ 0x147102800
+[      0] HOOKED RpcSend @ 0x146df0e80
+[      0] HOOKED RpcBuilder @ 0x146dab760
+[      0] HOOKED SM_Transition @ 0x146e126b0
+[      0] HOOKED LSX_SendXml @ 0x1470e6ee0
+[      0] HOOKED OnlineTick @ 0x146f7c7e0
+[      0] === Frida flow trace attached ===
+[      0] Base: 0x140000000
+[Local::PID::61392 ]-> [   2001] ============ CHECKPOINT: initial (after DLL patches should be done) ============
+[   2001]   OnlineFlag       = 0
+[   2001]   OnlineManager    = 0x0
+[   2001]   OriginSdkObject  = 0x27a48f10
+[   2001]   SdkManager       = 0x1d0000
+[   2001]   SDK +0x3a0 (userId)  = 0
+[   2001]   SDK +0x35c (port)    = 1934168184
+[   2001] ============
+[   2001] === PreAuthResponse member info table @ 0x144867628 ===
+[   2001]   [0] 0600000006000000b412554301000000b412554301000000a0768644010000000300000000000000
+[   2001]        u32[0]=0x6 u32[1]=0x6 u32[2]=0x435512b4
+[   2001]   [1] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [2] 00000000000000000000000000000000007686440100000001000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [3] 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [4] 00000000000000000000000000000000287686440100000001000000000000000300000000000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [5] 000000000000000000000000000000002077864401000000d091da46010000002876864401000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2001]   [6] 0300000000000000500a874401000000b08f86440100000000000000000000000000000000000000
+[   2001]        u32[0]=0x3 u32[1]=0x0 u32[2]=0x44870a50
+[   2001]   [7] 000000000000000000000000000000000000000000000000e876864401000000008e928b00000000
+[   2001]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [8] 00000000000000000000000000000000908a8f87829586808483880194858d018991008193018c00
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x0
+[   2002]   [9] 0000000000000000801cc24401000000a011c144010000009036c04401000000401bc04401000000
+[   2002]        u32[0]=0x0 u32[1]=0x0 u32[2]=0x44c21c80
+[   2002]   [10] 9035c044010000004032c04401000000a043874401000000f076bd4401000000302ec04401000000
+[   2002]        u32[0]=0x44c03590 u32[1]=0x1 u32[2]=0x44c03240
+[   2002]   [11] 3077bd44010000008091b844010000004050884401000000a009874401000000701ac14401000000
+[   2002]        u32[0]=0x44bd7730 u32[1]=0x1 u32[2]=0x44b89180
+[   2002]   [12] 00628844010000002028c04401000000d054884401000000209bb84401000000b019c24401000000
+[   2002]        u32[0]=0x44886200 u32[1]=0x1 u32[2]=0x44c02820
+[   2002]   [13] 00f9c04401000000704b8a4401000000b0d4c04401000000a0548a44010000004092b84401000000
+[   2002]        u32[0]=0x44c0f900 u32[1]=0x1 u32[2]=0x448a4b70
+[   3591] IsOriginSDKConnected => 1  (DAT_144b7c7a0 = 0x27a48f10)
+[   3591] LSX_SendXml: <LSX><Request recipient="" id="12"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>\ufffdpass_3\ufffdt_3\ufffd@|z*\ufffd\ufffd\ufffd\ufffd\ufffdN\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd0r\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdB\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd \ufffde\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdX\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdE\ufffd\ufffd\ufffdp\ufffdcD\ufffd\ufffd\ufffd
+[   3651] FirstPartyAuthTokenReq(base=0x3ec48d08)
+[   3651]   slot1=0x5d3e0000 slot2=0x0
+[   3651] OriginRequestAuthCodeSync(userId=0x0 clientId=0x5d3e0018 scope=0x3939fc60 outCode=0x3939fc58)
+[   3651] OriginRequestAuthCodeSync returned
+[   3678] STATE-CHANGE tick#810 OM(+0x1c0=-999\u21924294967295 +0x1f0=-999\u21924294967295 +0x13b8=-999\u21922)
+[   3805] STATE-CHANGE tick#840 OM(+0x1c0=4294967295\u21924294967295 +0x1f0=4294967295\u21924294967295 +0x13b8=2\u21920)
+[   5002] ============ CHECKPOINT: 5s mark ============
+[   5002]   OnlineFlag       = 1
+[   5002]   OnlineManager    = 0x3ec43e70
+[   5002]   OriginSdkObject  = 0x27a48f10
+[   5002]   SdkManager       = 0x3eac6c70
+[   5002]   OM +0x1c0 (connState?) = 4294967295
+[   5002]   OM +0x1f0 (gameMode?)  = 4294967295
+[   5002]   OM +0x13b8 (UI state)  = 0
+[   5002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[   5002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[   5002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[   5002]   OM +0x4ece (authFail)  = 0
+[   5002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[   5002]     BlazeHub             = 0x3ec4a960
+[   5002]     BH +0x53f (flag)     = 1
+[   5002]     auth slot 0 obj  = 0x1438f5d50
+[   5002]       +0xd8 (auth code ptr) = 0xa2964252872
+[   5002]       +0xe8 (ready flag)    = 96
+[   5002]       auth code str = "<err>"
+[   5002]   SDK +0x3a0 (userId)  = 0
+[   5002]   SDK +0x35c (port)    = 1934168184
+[   5002] ============
+[  10002] ============ CHECKPOINT: 10s mark ============
+[  10002]   OnlineFlag       = 1
+[  10002]   OnlineManager    = 0x3ec43e70
+[  10002]   OriginSdkObject  = 0x27a48f10
+[  10002]   SdkManager       = 0x3eac6c70
+[  10002]   OM +0x1c0 (connState?) = 4294967295
+[  10002]   OM +0x1f0 (gameMode?)  = 4294967295
+[  10002]   OM +0x13b8 (UI state)  = 0
+[  10002]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  10002]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  10002]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  10002]   OM +0x4ece (authFail)  = 0
+[  10002]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  10002]     BlazeHub             = 0x3ec4a960
+[  10002]     BH +0x53f (flag)     = 1
+[  10002]     auth slot 0 obj  = 0x1438f5d50
+[  10002]       +0xd8 (auth code ptr) = 0xa2964252872
+[  10002]       +0xe8 (ready flag)    = 96
+[  10002]       auth code str = "<err>"
+[  10002]   SDK +0x3a0 (userId)  = 0
+[  10002]   SDK +0x35c (port)    = 1934168184
+[  10002] ============
+[  22264] RpcBuilder(comp=0x11 cmd=0x0)
+[  22264] RpcSend [5:0x11]
+[  22617] RpcBuilder(comp=0x7 cmd=0x0)
+[  22617] RpcSend [PreAuth]
+[  22632] PreAuthHandler(this=0x3eac7ff0 resp=0x3edd5ef0 err=0)
+[  22632] RpcBuilder(comp=0x2 cmd=0x0)
+[  22632] RpcSend [Ping]
+[  22632] LoginTypesProcessor(loginSM=0x3eac9da0 resp+0x120=0x3edd6010)
+[  22632]   resp TDF bytes (first 64): 109d88430100000000000080000000000a00000000000000a09b8843010000000000008000000000b076bd44010000006853ac3e000000000000000001000000
+[  22632] LoginCheck(loginSM=0x3eac9da0 count=0)
+[  22632] LoginCheck returned 0
+[  22632] \u26a0\ufe0f  LoginFallback_NoTypes called (login types array empty!)
+[  22634] LoginFallback_NoTypes done
+[  22634] LoginTypesProcessor done. loginSM+0x218=0x0 +0x220=0x0 count=0
+[  22634] PreAuthHandler returned
+[  22634]   resp dump +0x100..+0x150:
+[  22634]     +100: 0000000001000000f0b5544301000000
+[  22634]     +110: 182d884301000000b85fdd3e00000000
+[  22634]     +120: 109d8843010000000000008000000000
+[  22634]     +130: 0a00000000000000a09b884301000000
+[  22634]     +140: 0000008000000000b076bd4401000000
+[  22634]     +150: 6853ac3e000000000000000001000000
+[  22634] ============ CHECKPOINT: PreAuth done ============
+[  22634]   OnlineFlag       = 1
+[  22635]   OnlineManager    = 0x3ec43e70
+[  22635]   OriginSdkObject  = 0x27a48f10
+[  22635]   SdkManager       = 0x3eac6c70
+[  22635]   OM +0x1c0 (connState?) = 4294967295
+[  22635]   OM +0x1f0 (gameMode?)  = 4294967295
+[  22635]   OM +0x13b8 (UI state)  = 0
+[  22635]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  22635]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  22635]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  22635]   OM +0x4ece (authFail)  = 0
+[  22635]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  22635]     BlazeHub             = 0x3ec4a960
+[  22635]     BH +0x53f (flag)     = 1
+[  22635]     auth slot 0 obj  = 0x1438f5d50
+[  22635]       +0xd8 (auth code ptr) = 0xa2964252872
+[  22635]       +0xe8 (ready flag)    = 96
+[  22635]       auth code str = "<err>"
+[  22635]   SDK +0x3a0 (userId)  = 0
+[  22635]   SDK +0x35c (port)    = 1934168184
+[  22635] ============
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  22715] RpcBuilder(comp=0x1 cmd=0x0)
+[  22715] RpcSend [FetchClientConfig]
+[  52865] RpcBuilder(comp=0x46 cmd=0x0)
+[  52865] \U0001f6a8 LOGOUT SENT [Logout]
+[  52865] ============ CHECKPOINT: just before Logout RPC ============
+[  52865]   OnlineFlag       = 1
+[  52865]   OnlineManager    = 0x3ec43e70
+[  52865]   OriginSdkObject  = 0x27a48f10
+[  52865]   SdkManager       = 0x3eac6c70
+[  52865]   OM +0x1c0 (connState?) = 4294967295
+[  52865]   OM +0x1f0 (gameMode?)  = 4294967295
+[  52865]   OM +0x13b8 (UI state)  = 0
+[  52865]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  52865]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  52865]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  52865]   OM +0x4ece (authFail)  = 0
+[  52865]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  52865]     BlazeHub             = 0x3ec4a960
+[  52865]     BH +0x53f (flag)     = 1
+[  52865]     auth slot 0 obj  = 0x1438f5d50
+[  52865]       +0xd8 (auth code ptr) = 0xa2964252872
+[  52865]       +0xe8 (ready flag)    = 96
+[  52865]       auth code str = "<err>"
+[  52865]   SDK +0x3a0 (userId)  = 0
+[  52865]   SDK +0x35c (port)    = 1934168184
+[  52865] ============
+[  52933]   STACK:
+[  52933]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  52933]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  52933]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  52933]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  52933]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  52933]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  52933]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  52934] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  59348] RpcBuilder(comp=0x1 cmd=0x0)
+[  59348] RpcSend [FetchClientConfig]
+[  89483] RpcBuilder(comp=0x46 cmd=0x0)
+[  89483] \U0001f6a8 LOGOUT SENT [Logout]
+[  89483] ============ CHECKPOINT: just before Logout RPC ============
+[  89483]   OnlineFlag       = 1
+[  89483]   OnlineManager    = 0x3ec43e70
+[  89483]   OriginSdkObject  = 0x27a48f10
+[  89483]   SdkManager       = 0x3eac6c70
+[  89483]   OM +0x1c0 (connState?) = 4294967295
+[  89483]   OM +0x1f0 (gameMode?)  = 4294967295
+[  89483]   OM +0x13b8 (UI state)  = 0
+[  89483]   OM +0x4e98 (auth0 ptr) = 0x1438f5d50
+[  89483]   OM +0x4ea0 (auth1 ptr) = 0x0
+[  89483]   OM +0x4ea8 (auth2 ptr) = 0x0
+[  89483]   OM +0x4ece (authFail)  = 0
+[  89483]   OM +0xb10 (connMgr)    = 0x3ec4a6e0
+[  89483]     BlazeHub             = 0x3ec4a960
+[  89483]     BH +0x53f (flag)     = 1
+[  89483]     auth slot 0 obj  = 0x1438f5d50
+[  89483]       +0xd8 (auth code ptr) = 0xa2964252872
+[  89483]       +0xe8 (ready flag)    = 96
+[  89484]       auth code str = "<err>"
+[  89484]   SDK +0x3a0 (userId)  = 0
+[  89484]   SDK +0x35c (port)    = 1934168184
+[  89484] ============
+[  89484]   STACK:
+[  89484]     0x146e10b43 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e15fa5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e155b4 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x146e126a5 FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x14717ead8 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b6960 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b7edf FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x1471b37b6 FIFA17.exe!EA::Ant::FIFAAnimatable::UsingWrongAllocatorMacro
+[  89484]     0x146f7b9ed FIFA17.exe!EA::Ant::FIFAAnimatable::operator new
+[  89484]     0x147e1af71 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x147e1a163 FIFA17.exe!agsDriverExtensionsDX11_SetDepthBounds
+[  89484]     0x145e30e78 FIFA17.exe!IsGameRuntime
+[  89484]     0x7ffcf5114f7f FIFA17.exe!beginthreadex
+[  89484]     0x7ffcf5115126 FIFA17.exe!endthreadex
+[  89484]     0x7ffd6eb87374 FIFA17.exe!BaseThreadInitThunk
+[  89500] SM_Transition(sm=0x3eaed2f0 newState=0 reason=-1)
 
 --- ORIGIN IPC SERVER (last 10000) ---
 [Origin] IPC server listening on 127.0.0.1:3216
 [Origin] session key algorithm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
-[Origin] 127.0.0.1:64058 connected
-[Origin] -> Challenge (key=ad3106336d06c7d2373303ca26fc7705)
-[Origin] session seed=12598 key=a17448953ccef2a80f6f05d792ff513d
+[Origin] 127.0.0.1:64108 connected
+[Origin] -> Challenge (key=91dda8d7a16a3d976a030b37d22c98eb)
+[Origin] session seed=25698 key=bc8f6f7759f0e783184762ca5986e1db
 [Origin] -> ChallengeAccepted (session ready)
 [Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
 [Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
@@ -941,23 +583,23 @@ Verdict: LOGIN_SENT
 --- BLAZE SERVER (last 10000) ---
 hed...
 [SSL] Phase=waiting_client_response, received 47 bytes (total pending: 47)
-  0000: 14 03 03 00 01 01 16 03 03 00 24 39 e3 b2 a5 47
-  0010: 6d 99 12 12 44 e1 fd 68 3b a7 ec e5 a9 bf 99 a9
-  0020: 85 fa d8 d0 ab 05 f5 94 8f b6 1a 05 fb 72 80
+  0000: 14 03 03 00 01 01 16 03 03 00 24 a7 fb 05 d3 77
+  0010: f7 04 88 7f 29 45 1d 35 97 01 f6 a6 db 84 1a b2
+  0020: 8a 49 70 da ea 98 4f cd b1 1c a0 05 81 2e d8
 [SSL] Record: type=0x14 ver=0x303 len=1
 [SSL] Client ChangeCipherSpec received - initializing RC4 decryption
-[SSL] RC4 decryption initialized with clientWriteKey: 5796f80d7fe3a6a50b1759cd9e605e87
+[SSL] RC4 decryption initialized with clientWriteKey: c27bc40dd89c5d603fbaf7f3857aa61f
 [SSL] Record: type=0x16 ver=0x303 len=36
 [SSL] Encrypted handshake record (client Finished): 36 bytes
 [SSL] Decrypted client Finished record: 36 bytes
-[SSL] Decrypted hex: 1400000c83dbd8c416ad7bee47ed41b26635a00360445a556dfbc2539219bc0b5921d923
-[SSL] Client Finished plaintext (16 bytes): 1400000c83dbd8c416ad7bee47ed41b2
-[SSL] Client Finished MAC: 6635a00360445a556dfbc2539219bc0b5921d923
-[SSL] Client verify_data:   83dbd8c416ad7bee47ed41b2
-[SSL] Expected verify_data:  83dbd8c416ad7bee47ed41b2
+[SSL] Decrypted hex: 1400000c67dd36fb096a6a28338741207282b42f1e4eba02533bf5e654d3a555aa527dfb
+[SSL] Client Finished plaintext (16 bytes): 1400000c67dd36fb096a6a2833874120
+[SSL] Client Finished MAC: 7282b42f1e4eba02533bf5e654d3a555aa527dfb
+[SSL] Client verify_data:   67dd36fb096a6a2833874120
+[SSL] Expected verify_data:  67dd36fb096a6a2833874120
 [SSL] Ô£ô Client Finished verify_data MATCHES!
-[SSL] Expected client MAC: 6635a00360445a556dfbc2539219bc0b5921d923
-[SSL] Actual client MAC:   6635a00360445a556dfbc2539219bc0b5921d923
+[SSL] Expected client MAC: 7282b42f1e4eba02533bf5e654d3a555aa527dfb
+[SSL] Actual client MAC:   7282b42f1e4eba02533bf5e654d3a555aa527dfb
 [SSL] Ô£ô Client Finished MAC MATCHES!
 [SSL] Sent server ChangeCipherSpec
 [SSL] Server Finished hash input: 6 messages, total 1038 bytes
@@ -967,7 +609,7 @@ hed...
 [SSL]   msg[3]: 4 bytes, starts=0xe
 [SSL]   msg[4]: 134 bytes, starts=0x10
 [SSL]   msg[5]: 16 bytes, starts=0x14
-[SSL] Server verify_data: 0e1409c170da6b0a84868619
+[SSL] Server verify_data: b42db3c3d5d5b5fe088523d4
 [SSL] Sent encrypted server Finished
 [SSL] === HANDSHAKE COMPLETE === Waiting for Blaze data...
 [SSL-DATA] Received 908 bytes on socket (total pending: 908)
@@ -1010,13 +652,13 @@ Connection: keep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 38 a3 c8 42 c7 06 91 9c 62 9a f7 70 1a eb 49 dd df 63 37 d0 07 34
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): df 8e 3c 12 01 c2 11 08 70 4f 5d e3 96 bf f3 32 3f 0f 8f 73 1f 68
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:64069
+[Redirector-Raw] Disconnected: 127.0.0.1:64123
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:64070
+[Main] Session 1 connected: 127.0.0.1:64124
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
@@ -1151,71 +793,71 @@ Connection: keep-alive
 [Main] S1: -> Ping (msgId=20), sending pong
 
 --- DLL LOG (last 8000) ---
-[16:04:13.390] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
-[16:04:13.390] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
-[16:04:13.390] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
-[16:04:13.390] PID: 66204
-[16:04:13.560] PATCHED: cert bypass at 000000014613244B
-[16:04:13.718] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
-[16:04:13.718] PATCHED: FUN_1470db3c0 body -> fake auth code
-[16:04:13.763] PATCHED: auth flag at 00000001473CE785
-[16:04:13.818] PATCHED: IsLoggedIntoEA -> true
-[16:04:13.818] PATCHED: IsLoggedIntoNetwork -> true
-[16:04:13.918] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
-[16:04:13.918] PATCHED: SDK gate -> always 1
-[16:04:13.930] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
-[16:04:13.930] PATCHED: Login vtable check -> return 1
-[16:04:13.930] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[16:04:13.930] LOGIN SilentLogin: already patched
-[16:04:13.930] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
-[16:04:13.930] LOGIN ExpressLogin: already patched
-[16:04:13.930] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
-[16:04:13.930] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
-[16:04:13.930] PREAUTH_HANDLER: first 128 bytes:
-[16:04:13.930]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[16:04:13.930]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[16:04:13.930]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[16:04:13.930]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[16:04:13.930]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[16:04:13.930]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[16:04:13.930]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[16:04:13.930]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[16:04:13.930] PREAUTH_HANDLER: Cave at 0000000000560000, 44 bytes (XOR R8D + trampoline)
-[16:04:13.930] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[16:04:13.930] CONNECT-HOOK: Patched DAT_148e223d8 at 547 ms (real=00007FFD6EB11A50)
-[16:04:13.930] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[16:04:13.930] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[16:04:13.930] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[16:04:13.930] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[16:04:13.930] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[16:04:13.930] PATCHED: FUN_145e280b0 (version compare) -> always match
-[16:04:14.082] PATCHED: Origin SDK check at 00000001470A8430
-[16:04:14.082] All patches in 703 ms
-[16:04:14.082] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[16:04:14.082] AUTH: Checking login gate globals...
-[16:04:14.082] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[16:04:14.082] AUTH: DAT_144b86bdf = 0 (error flag)
-[16:04:14.082] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[16:04:14.334] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[16:04:19.723] AUTH: Slot cleared at 5600 ms
-[16:04:19.723] AUTH: OnlineMgr=0x3EC53E70
-[16:04:19.723] AUTH: slot=0x0 cave=0
-[16:04:19.723] AUTH: Using fake vtable (real not captured)
-[16:04:19.723] AUTH: Injected fake request 000000005D3F0000 into slot
-[16:04:19.824] AUTH: cave=1 slot=0x0
-[16:04:19.824] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[16:04:19.824] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[16:04:19.824] AUTH: state=2. Auth ready.
-[16:04:19.824] AUTH: OnlineMgr+0xb10 = 0x3EC5A6E0
-[16:04:19.824] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC5A960
-[16:04:19.824] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[16:04:19.824] AUTH: Found 0 objects with vtables in BlazeHub
-[16:04:19.824] AUTH: BlazeHub(000000003EC5A960)+0x53f = 1
-[16:04:19.824] AUTH: Applying OSDK patches (post-load)...
-[16:04:19.824] PATCHED: GetProfileSync -> return 0 (post-load)
-[16:04:19.824] PATCHED: GetSettingSync -> return 0 (post-load)
-[16:04:19.824] PATCHED: SetPresence -> return 0 (post-load)
-[16:04:19.824] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[16:04:19.824] PATCHED: FUN_14717d5d0 (age check) -> always pass
-[16:04:19.824] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[16:12:08.650] EARLY: Fake SDK object at 00000000001D0000, vtable at 00000000001C0000
+[16:12:08.650] EARLY: DAT_144b86bf8 = 0x1D0000 (set BEFORE game init)
+[16:12:08.650] === FIFA 17 v96 (EARLY SDK object in DllMain + all patches) ===
+[16:12:08.650] PID: 61392
+[16:12:08.803] PATCHED: cert bypass at 000000014613244B
+[16:12:08.982] AUTH: call site at 0000000146F19A11, target FUN_1470db3c0 at 00000001470DB3C0
+[16:12:08.982] PATCHED: FUN_1470db3c0 body -> fake auth code
+[16:12:09.022] PATCHED: auth flag at 00000001473CE785
+[16:12:09.072] PATCHED: IsLoggedIntoEA -> true
+[16:12:09.072] PATCHED: IsLoggedIntoNetwork -> true
+[16:12:09.153] SDK GATE: addr=00000001471A5DA0 bytes=48 83 3D 50
+[16:12:09.153] PATCHED: SDK gate -> always 1
+[16:12:09.165] LOGIN Login: vtable=000000014389F938 [+0x10]=0x146E156A0 bytes=48 8B 41
+[16:12:09.165] PATCHED: Login vtable check -> return 1
+[16:12:09.165] LOGIN SilentLogin: vtable=000000014389FA70 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:12:09.165] LOGIN SilentLogin: already patched
+[16:12:09.165] LOGIN ExpressLogin: vtable=000000014389FB98 [+0x10]=0x146E156A0 bytes=B0 01 C3
+[16:12:09.165] LOGIN ExpressLogin: already patched
+[16:12:09.165] PREAUTH_COMPLETION: addr=0000000146E19A00 bytes=48 89 5C 24
+[16:12:09.165] PATCHED: FUN_146e19a00 -> immediate RET (no disconnect/cleanup)
+[16:12:09.165] PREAUTH_HANDLER: first 128 bytes:
+[16:12:09.165]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[16:12:09.165]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[16:12:09.165]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[16:12:09.165]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[16:12:09.165]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[16:12:09.165]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[16:12:09.165]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[16:12:09.165]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[16:12:09.165] PREAUTH_HANDLER: Cave at 0000000000AD0000, 44 bytes (XOR R8D + trampoline)
+[16:12:09.165] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[16:12:09.165] CONNECT-HOOK: Patched DAT_148e223d8 at 515 ms (real=00007FFD6EB11A50)
+[16:12:09.165] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[16:12:09.165] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[16:12:09.165] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[16:12:09.165] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[16:12:09.165] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[16:12:09.165] PATCHED: FUN_145e280b0 (version compare) -> always match
+[16:12:09.314] PATCHED: Origin SDK check at 00000001470A8430
+[16:12:09.314] All patches in 656 ms
+[16:12:09.314] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[16:12:09.314] AUTH: Checking login gate globals...
+[16:12:09.314] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[16:12:09.314] AUTH: DAT_144b86bdf = 0 (error flag)
+[16:12:09.314] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[16:12:09.548] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[16:12:15.046] AUTH: Slot cleared at 5700 ms
+[16:12:15.046] AUTH: OnlineMgr=0x3EC43E70
+[16:12:15.046] AUTH: slot=0x0 cave=0
+[16:12:15.046] AUTH: Using fake vtable (real not captured)
+[16:12:15.046] AUTH: Injected fake request 000000005D3E0000 into slot
+[16:12:15.146] AUTH: cave=1 slot=0x0
+[16:12:15.146] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[16:12:15.146] AUTH: req[+0xd8]=0x99C9D38 req[+0xe8]=1
+[16:12:15.146] AUTH: state=2. Auth ready.
+[16:12:15.146] AUTH: OnlineMgr+0xb10 = 0x3EC4A6E0
+[16:12:15.146] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC4A960
+[16:12:15.146] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[16:12:15.146] AUTH: Found 0 objects with vtables in BlazeHub
+[16:12:15.146] AUTH: BlazeHub(000000003EC4A960)+0x53f = 1
+[16:12:15.146] AUTH: Applying OSDK patches (post-load)...
+[16:12:15.146] PATCHED: GetProfileSync -> return 0 (post-load)
+[16:12:15.146] PATCHED: GetSettingSync -> return 0 (post-load)
+[16:12:15.146] PATCHED: SetPresence -> return 0 (post-load)
+[16:12:15.146] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[16:12:15.146] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[16:12:15.146] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
