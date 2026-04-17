@@ -337,3 +337,195 @@ To emulate Origin properly, we need to understand the encryption. Options:
 1. Reverse-engineer the crypto from FIFA 17's binary (find the encrypt/decrypt functions in Ghidra)
 2. Use a known-plaintext attack (we know the XML structure — try all plausible keys)
 3. Look for the LSX-Dumper tool source code which may have FIFA-era protocol details
+
+
+---
+
+# SESSION 2 — April 17, 2026 (continued)
+
+## CRYPTO BREAKTHROUGH: Session Key Derivation SOLVED
+
+### The Problem
+After the ChallengeAccepted handshake, all subsequent Origin IPC messages are AES-128-ECB encrypted, hex-encoded, null-terminated. The origin-sdk Rust crate (v10.6.1.8) derives the session key from the first 2 ASCII chars of the CLIENT's ChallengeResponse `response` field. This did NOT work for FIFA 17 (Origin SDK v9.12.1.2).
+
+### The Solution: Known-Plaintext Attack
+We knew that all game→Origin encrypted messages start with the same 16-byte ciphertext block (`ee0a8c7c90b3738b61f520e33e1bb920`). We also knew the plaintext MUST be `<LSX><Request re` (16 ASCII bytes = 1 AES block).
+
+**Method:** Brute-forced all 65536 possible u16 seeds (0-65535) through the origin-sdk PRNG key derivation, generated the AES key for each, and tested whether decrypting the known ciphertext block produced the known plaintext.
+
+**Result:** Seed **13877** (variant A, origin-sdk algorithm) produces key `f27f5c27d11e0bb8831c11e778fe71f7`, which correctly decrypts ALL messages in both directions.
+
+### The Key Insight: Seed Source is ChallengeAccepted, NOT ChallengeResponse
+
+- **origin-sdk v10.6.1.8:** seed = ASCII of first 2 chars of ChallengeResponse's `response` field (CLIENT's encrypted challenge key)
+- **FIFA 17 v9.12.1.2:** seed = ASCII of first 2 chars of ChallengeAccepted's `response` field (SERVER's encrypted client key)
+
+Both sides can compute this because:
+1. Client sends its `key` attribute in ChallengeResponse
+2. Server encrypts client's key with default key [0..15] → ChallengeAccepted `response`
+3. Client can also compute this encryption (it knows its own key + the default key)
+4. Both sides take first 2 hex chars of that encrypted value as ASCII → seed
+
+**Proof from Wireshark capture:**
+- ChallengeAccepted response starts with `"65af7a..."` 
+- ASCII of `'6'` = 0x36, ASCII of `'5'` = 0x35
+- Seed = (0x36 << 8) | 0x35 = **13877**
+- deriveKey(13877) = `f27f5c27d11e0bb8831c11e778fe71f7` ✅
+
+### Verification: Complete Protocol Decrypted
+
+Using the derived session key, we decrypted ALL 18+ messages from the Wireshark capture. Every single one produced valid XML:
+
+```
+O->G [PLAIN] Challenge (key=2b8ee7...)
+G->O [PLAIN] ChallengeResponse (response=00b9c8..., key=dfbf4b...)
+O->G [PLAIN] ChallengeAccepted (response=65af7a...)
+G->O [ENC]   <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
+O->G [ENC]   <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
+G->O [ENC]   <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
+O->G [ENC]   <LSX><Response id="3" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="33068179" .../>
+G->O [ENC]   GetSetting IS_IGO_ENABLED → "false"
+G->O [ENC]   GetGameInfo FREETRIAL → "false"
+G->O [ENC]   GetGameInfo LANGUAGES → "ar_SA,cs_CZ,da_DK,de_DE,en_US,..."
+G->O [ENC]   GetSetting ENVIRONMENT → "production"
+G->O [ENC]   GetSetting IS_IGO_AVAILABLE → "false"
+G->O [ENC]   IsProgressiveInstallationAvailable → Available="false"
+G->O [ENC]   GetProfile (repeated)
+G->O [ENC]   GetSetting LANGUAGE → "en_US"
+G->O [ENC]   GetGameInfo FREETRIAL → "false"
+G->O [ENC]   SetDownloaderUtilization → ErrorSuccess
+G->O [ENC]   GetSetting ENVIRONMENT → "production"
+G->O [ENC]   GetInternetConnectedState → connected="0"
+G->O [ENC]   GetProfile (third time)
+```
+
+### Exact Response Formats (Ground Truth from Capture)
+
+These are the EXACT XML formats the real Origin server used:
+
+| Request | Response Format |
+|---------|----------------|
+| GetConfig | `<GetConfigResponse Config="false"/>` |
+| GetProfile | `<GetProfileResponse IsSubscriber="true" PersonaId="33068179" AvatarId="" Country="US" CommerceCountry="US" GeoCountry="US" UserId="33068179" Persona="Player" IsUnderAge="false" CommerceCurrency="USD"/>` |
+| GetSetting | `<GetSettingResponse Setting="VALUE"/>` (NOT `SettingId=`/`Value=`) |
+| GetGameInfo | `<GetGameInfoResponse GameInfo="VALUE"/>` |
+| GetInternetConnectedState | `<InternetConnectedState connected="0"/>` |
+| IsProgressiveInstallationAvailable | `<IsProgressiveInstallationAvailableResponse ItemId="" Available="false"/>` |
+| SetDownloaderUtilization | `<ErrorSuccess Code="0" Description=""/>` |
+
+### Implementation
+
+Updated `server-standalone/origin-ipc-server.mjs` (v5) with:
+1. Correct session key derivation from ChallengeAccepted response
+2. All response formats matching Wireshark ground truth
+3. Full AES-128-ECB encrypt/decrypt for post-challenge messages
+4. Verified end-to-end with automated test (ChallengeAccepted matches byte-for-byte, session key matches)
+
+### Impact
+
+**Game freeze PERMANENTLY FIXED.** Before this breakthrough, the game froze at the language selection screen because the Origin SDK's recv() blocked the main thread waiting for valid encrypted data. With correct crypto, the SDK completes its full init sequence (13+ messages) and the game proceeds normally.
+
+---
+
+## PHASE 10: Post-Crypto — Blaze Authentication Bottleneck
+
+### What Works Now
+| Step | Status |
+|------|--------|
+| Origin IPC Challenge/Response | ✅ Full crypto working |
+| Origin IPC GetConfig/GetProfile/GetSetting | ✅ All 13 messages served |
+| Game launches past language screen | ✅ No more freeze |
+| TLS Redirector handshake | ✅ |
+| Blaze PreAuth | ✅ |
+| 6x FetchClientConfig | ✅ |
+| DLL Patch 3 (fake auth code) | ✅ Cave executes, req[+0xe8]=1 |
+
+### Current Bottleneck
+After completing Origin IPC init + Blaze PreAuth + FetchClientConfig, the game sends **Logout (comp=0x0001 cmd=0x0046) with empty body** as its FIRST authentication command. It never sends CreateAccount, Login, SilentLogin, or OriginLogin.
+
+The "EA servers are not available" error message appears on screen.
+
+### What We Tried (All Failed)
+
+1. **Changed PersonaId to real value (33068179)** — No change. Game still sends Logout.
+
+2. **Proactive SilentLogin notification from Blaze server** — Sent `comp=0x0001 cmd=0x0032 notify=true` with full SESS/PDTL struct after PreAuth. Game ignored it, still sent Logout.
+
+3. **Pushed `<Login IsLoggedIn="true"/>` event via Origin IPC** — Sent encrypted `<LSX><Event sender="EALS"><Login IsLoggedIn="true"/></Event></LSX>` after ChallengeAccepted. Event was delivered (confirmed in logs). Game still sent Logout.
+
+4. **Fixed Blaze ping reply type** — Changed pong type byte from 0x80 (PING) to 0xA0 (PING_REPLY). Correct fix but not the core issue.
+
+5. **Fixed Logout handler** — Separated Logout from Login handler, returns empty ack instead of full session payload. Correct fix but not the core issue.
+
+6. **Enhanced CreateAccount handler** — Returns full SessionInfo (SESS struct with BUID, PDTL, etc.). Never reached because game sends Logout, not CreateAccount.
+
+### Ghidra Analysis: Why Logout?
+
+**FUN_146f199c0** (FirstPartyAuthTokenRequest processor):
+- Called from `FUN_146f7c7e0` (online tick, every frame)
+- Iterates 2 auth request slots at `OnlineMgr+0x4e98`
+- For each non-null slot: calls `FUN_1470db3c0` (OriginRequestAuthCodeSync)
+- If auth code returned: copies to buffer, sets `req[+0xe8]=1`
+- DLL Patch 3 short-circuits `FUN_1470db3c0` to return fake auth code instantly
+
+**The auth code IS being delivered** (DLL log confirms `CAVE EXECUTED`, `req[+0xe8]=1`). But the game's upper layer still chooses Logout.
+
+**FUN_147102800** (Origin SDK Login event dispatcher):
+- Found in Ghidra: dispatches on `<Login>` tag with `sender="EALS"` 
+- Calls `FUN_147138640` which reads `IsLoggedIn` attribute
+- Sets internal Origin SDK `IsLoggedIn` flag
+- We pushed this event but game still sent Logout
+
+### Theories for Why Logout Persists
+
+1. **The `<Login>` event format may need additional attributes** beyond `IsLoggedIn="true"`. The game might need `SessionInformation`, `UserId`, or other fields to fully transition to "logged in" state.
+
+2. **The `<Login>` event might need to be a `<Command>` not an `<Event>`** — different LSX message types have different dispatch paths.
+
+3. **The auth code injection via slot is too late** — by the time the DLL's polling loop injects the fake request (6 seconds after startup), the game's online state machine has already decided "no auth available" and queued the Logout. The auth code arrives but the decision was already made.
+
+4. **FIFA 17's online layer has a SEPARATE "is user logged into Origin" check** that reads from the Origin SDK object directly (not from the `<Login>` event). This check might look at a field we haven't set.
+
+5. **The game expects `GetAuthCode` to be called via LSX** (not via DLL patch). The natural flow would be: game calls `FUN_1470db3c0` → LSX `GetAuthCode` → Origin server returns auth code → game uses it for Blaze login. Our DLL patch bypasses the LSX call entirely, which might skip setting some internal state that the Blaze login path checks.
+
+### Recommended Next Steps
+
+1. **Try the LSX GetAuthCode path instead of DLL Patch 3**: Disable Patch 3, let `FUN_1470db3c0` call through to `FUN_1470e67f0` which sends LSX `GetAuthCode`. Our Origin IPC server already handles this and returns a fake auth code. This is the "natural" flow and might set all required internal state.
+
+2. **Capture what happens when `FUN_1470e2840()` is called**: This function returns `DAT_144b7c7a0 != 0` (Origin SDK object exists). If it returns false, `FUN_1470db3c0` errors out without calling LSX. Add Frida hook to trace this.
+
+3. **Hook `FUN_146f199c0` with Frida** to see if it's even being called, and if so, what the slot values are when it runs.
+
+4. **Try sending `<Login>` with more attributes**: Add `UserId`, `PersonaId`, `SessionInformation` to the Login event.
+
+5. **Look at PocketRelay's client plugin** (ASI for ME3) to see how they handle the Origin auth bypass — they might patch at a different level.
+
+6. **Try `-webMode SP`** in commandline.txt to see if single-player mode bypasses the auth entirely and lets us reach the main menu.
+
+---
+
+## FILES (Current State)
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `server-standalone/origin-ipc-server.mjs` | Fake Origin IPC server (v5) | ✅ Working — full crypto, all responses |
+| `server-standalone/server.mjs` | Blaze server (TLS + plaintext) | ✅ Working — PreAuth, FetchClientConfig, proactive SilentLogin |
+| `dll-proxy/dinput8_proxy.cpp` | DLL proxy (v97) | ✅ Working — all patches including Patch 3 re-enabled |
+| `origin_capture.pcapng` | Wireshark ground truth | Reference data |
+| `batch_test_lsx.ps1` | Main test script | ✅ Starts both servers, collects all logs |
+| `commandline.txt` | Game launch args | Contains -authCode (unused by game) |
+
+## KEY ADDRESSES (Ghidra, base 0x140000000)
+
+| Address | Function | Notes |
+|---------|----------|-------|
+| `0x1470db3c0` | OriginRequestAuthCodeSync | Patched by DLL Patch 3 |
+| `0x1470e67f0` | Origin SDK RequestAuthCode (LSX sender) | Sends GetAuthCode via LSX |
+| `0x1470e2840` | IsOriginSDKConnected | Returns `DAT_144b7c7a0 != 0` |
+| `0x144b7c7a0` | Origin SDK object pointer | Set during SDK init, cleared on destroy |
+| `0x146f199c0` | FirstPartyAuthTokenRequest processor | Per-frame tick, processes auth slots |
+| `0x146f7c7e0` | Online tick (main loop) | Calls auth processor + other online logic |
+| `0x147102800` | Login event dispatcher (Origin SDK) | Dispatches `<Login>` events from server |
+| `0x147138640` | Login event parser | Reads `IsLoggedIn` attribute |
+| `0x146e1cf10` | PreAuth response handler | Patched to always-success |
+| `0x146e19a00` | PreAuth completion/cleanup | Patched to immediate RET |
