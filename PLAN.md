@@ -105,10 +105,25 @@ on the game's main thread (inside the PreAuth handler call chain).
 
 **Current test:** `login_inject_test.ps1` with `frida_inject_login_type.js`
 
-**Expected outcomes:**
-- 🎯 LoginSender fires → Login RPC sent → server responds → PostAuth
-- ⚠️ LoginSender fires but crashes → entry layout wrong, fix and retry
-- ❌ LoginCheck still returns 0 → injection didn't take, debug
+**Test history (Phase 3):**
+
+| Test | Approach | Result | Root Cause |
+|------|----------|--------|------------|
+| 1 | Hook LoginCheck, inject entry | FAILED | Two bugs: ctx.r8 TypeError + Frida attached too late |
+| 2 | Fix bugs, hook LoginCheck | FAILED | Frida can't intercept FUN_146e1dae0 |
+| 3 | Hook LoginTypesProcessor onLeave, call LoginCheck manually | CRASH | Re-entrancy: LoginCheck already called by natural path |
+| 4 | Call LoginSender directly from onLeave | CRASH | Same crash, entry+0x10 was 0 |
+| 5 | Fix entry+0x10, add diagnostics | FREEZE | Deadlock: LoginSender blocks on RPC lock held by PreAuth handler |
+| 6 | Inject in onEnter, let natural code path run | RUNNING | Cleanest approach — no manual calls |
+
+**Why Test 6 should work:**
+- We inject the login type entry into `loginSM+0x218/+0x220` in `onEnter`
+  of `FUN_146e1c3f0` (LoginTypesProcessor)
+- The function's natural code does the TDF copy to `+0x1b8` (different field)
+- Then it calls `FUN_146e1dae0` (LoginCheck) which reads `+0x218/+0x220`
+- LoginCheck sees count=1, calls `FUN_146e1eb70` (LoginSender)
+- LoginSender runs in the natural code flow — no deadlock, no re-entrancy
+- Login RPC goes on the wire
 
 **If Login RPC hits the wire:**
 The server already has Login/SilentLogin/OriginLogin handlers that return

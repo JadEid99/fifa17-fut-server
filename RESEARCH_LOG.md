@@ -469,7 +469,11 @@ Expected outcomes:
 - ⚠️ LoginSender fires but crashes → entry layout is wrong
 - ❌ LoginCheck still returns 0 → injection didn't take effect
 
-### RESULT: PENDING — test running now (April 17, 2026 ~16:55)
+### RESULT: PENDING — test running now (April 17, 2026 ~17:25)
+
+Test 5 approach: inject in `onEnter` of `FUN_146e1c3f0`, let the game's
+own code path call LoginCheck → LoginSender naturally. No manual function
+calls from Frida — just data injection.
 
 ---
 
@@ -549,6 +553,46 @@ Expected outcomes:
 - This is the same approach as Frida v57 but with correct timing
   (on game's main thread, inside PreAuth handler call chain)
 - Test running now
+
+### 17:00 — Login Inject Test 1: FAILED (two bugs)
+- Bug 1: `ctx.r8` TypeError — Frida uses `this.context`, not `ctx` param
+- Bug 2: Frida attached AFTER PreAuth already fired (25s delay before attach)
+- Fixes: `this.context.r8` with try/catch, attach Frida BEFORE menus
+
+### 17:05 — Login Inject Test 2: Frida can't hook FUN_146e1dae0
+- Error: `unable to intercept function at 0x146E1DAE0`
+- Frida can't hook LoginCheck directly (possibly due to DLL patches nearby)
+- Fix: Hook `FUN_146e1c3f0` (LoginTypesProcessor) instead, inject in onLeave,
+  then call LoginCheck manually via NativeFunction
+
+### 17:07 — Login Inject Test 3: CRASH (progress!)
+- Injection succeeded: `count=1` in the array
+- Called `FUN_146e1dae0` (LoginCheck) manually → game crashed
+- Crash was inside LoginCheck, likely re-entrancy issue (LoginCheck was
+  already called by the natural code path, calling it again corrupts state)
+- Fix: Call `FUN_146e1eb70` (LoginSender) directly instead of LoginCheck
+
+### 17:12 — Login Inject Test 4: CRASH again
+- Called `FUN_146e1eb70` (LoginSender) directly from onLeave
+- Game crashed immediately — no return value logged
+- Added exception handler + full state dump for diagnostics
+
+### 17:15 — Login Inject Test 5: FREEZE (deadlock!)
+- LoginSender called, never returned — game froze completely
+- Diagnosis: deadlock. We're calling LoginSender from inside the PreAuth
+  response handler's call chain. The RPC framework holds a lock from
+  processing the PreAuth response. LoginSender tries to acquire the same
+  lock to send a new RPC → deadlock.
+- Fix: Don't call any functions manually. Just inject the entry into
+  `loginSM+0x218/+0x220` in `onEnter` of LoginTypesProcessor, BEFORE
+  the function runs. The natural code path will call LoginCheck → LoginSender.
+- Key insight: TDF copy writes to `+0x1b8` (different field), NOT `+0x218`.
+  So our injection at `+0x218` won't be overwritten.
+
+### 17:25 — Login Inject Test 6: Running now
+- Cleanest approach: inject in onEnter, let game's own code do everything
+- No manual NativeFunction calls from Frida — just data injection
+- If this works, LoginSender fires naturally and Login RPC goes on the wire
 
 
 ---
