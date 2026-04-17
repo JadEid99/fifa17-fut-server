@@ -39,17 +39,32 @@ try {
 let loginTypeInjected = false;
 let loginSenderFired = false;
 
-// Hook FUN_146e1dae0 (LoginCheck) — inject login type entry before iteration
-Interceptor.attach(addr(0x6e1dae0), {
+// Hook FUN_146e1c3f0 (LoginTypesProcessor) — this is called from the PreAuth
+// handler and eventually calls FUN_146e1dae0 (LoginCheck) internally.
+// We inject the login type entry at the START of this function, so when
+// LoginCheck runs, the array will already have our entry.
+//
+// We can't hook FUN_146e1dae0 directly because Frida reports
+// "unable to intercept function" (possibly due to DLL patches nearby).
+Interceptor.attach(addr(0x6e1c3f0), {
   onEnter: function(args) {
     const loginSM = args[0];
+    console.log(ts() + " LoginTypesProcessor(loginSM=" + loginSM + ")");
+    this._loginSM = loginSM;
+  },
+  onLeave: function(retval) {
+    const loginSM = this._loginSM;
+    if (!loginSM || loginTypeInjected) {
+      console.log(ts() + " LoginTypesProcessor done (skip inject)");
+      return;
+    }
     
     try {
       const arrStart = loginSM.add(0x218).readPointer();
       const arrEnd = loginSM.add(0x220).readPointer();
       
-      if (arrStart.isNull() && arrEnd.isNull() && !loginTypeInjected) {
-        console.log(ts() + " LoginCheck: array empty — INJECTING login type entry");
+      if (arrStart.isNull() && arrEnd.isNull()) {
+        console.log(ts() + " LoginTypesProcessor: array STILL empty after processing — INJECTING");
         loginTypeInjected = true;
         
         // Allocate a fake login type entry (0x20 bytes per entry)
@@ -87,16 +102,21 @@ Interceptor.attach(addr(0x6e1dae0), {
         
         console.log(ts() + " Injected: entry=" + entry + " config=" + config);
         console.log(ts() + " Array: start=" + newStart + " end=" + newEnd + " count=" + count);
-      } else if (!arrStart.isNull()) {
+        
+        // Now manually call FUN_146e1dae0 (LoginCheck) which will iterate
+        // our injected entry and call FUN_146e1eb70 (LoginSender).
+        // We call it on the game's thread (we're in onLeave of LoginTypesProcessor).
+        console.log(ts() + " Calling FUN_146e1dae0 (LoginCheck) manually...");
+        const loginCheckFn = new NativeFunction(addr(0x6e1dae0), 'uint64', ['pointer']);
+        const result = loginCheckFn(loginSM);
+        console.log(ts() + " LoginCheck returned: " + result);
+      } else {
         const count = arrEnd.sub(arrStart).toInt32() / 0x20;
-        console.log(ts() + " LoginCheck: array has " + count + " entries (already populated)");
+        console.log(ts() + " LoginTypesProcessor done: array has " + count + " entries");
       }
     } catch(e) {
-      console.log(ts() + " LoginCheck inject error: " + e.message);
+      console.log(ts() + " LoginTypesProcessor inject error: " + e.message);
     }
-  },
-  onLeave: function(retval) {
-    console.log(ts() + " LoginCheck returned " + retval.toInt32());
   }
 });
 
