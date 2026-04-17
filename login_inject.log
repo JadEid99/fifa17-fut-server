@@ -10,4 +10,21 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-[Local::PID::74412 ]-> 
+=== FIFA 17 Login Type Injector v15 ===
+[      0] Patched OSDK screen -> RET
+[      0] Replaced LoginCheck OK
+[      0] Ready.
+[Local::PID::96000 ]-> [  26591] RPC: PreAuth
+[  26606] PreAuthHandler(err=0)
+[  26606] LoginTypesProcessor
+[  26607] LoginCheck REPLACED
+[  26607]   job=0x2a7d2250
+[  26607]   step1: resize
+[  26607]   step1 OK
+[  26607]   step2: init
+[  26607]   step2 OK
+[  26607]   step3: flags OK
+[  26607]   step4: calling LoginSender
+Process terminated
+
+Thank you for using Frida!
