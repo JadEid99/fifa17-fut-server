@@ -300,3 +300,128 @@ fired ~10000 times and pushed all the important events out.
 ### TODO NEXT: Re-run flow_trace_test.ps1 with the fixed script
 Expected: we'll finally see the PreAuthHandler / LoginTypesProcessor /
 LoginCheck / LoginSender / LOGOUT SENT events with their stack traces.
+
+
+---
+
+## Session: April 17, 2026 16:14 — BREAKTHROUGH: Root Cause Found
+
+### RESULT: H1 CONFIRMED — Login types array is empty
+
+From `frida_trace_full.log`:
+
+```
+[22632] PreAuthHandler(this=0x3eac7ff0 resp=0x3edd5ef0 err=0)
+[22632] LoginTypesProcessor(loginSM=0x3eac9da0 resp+0x120=0x3edd6010)
+[22632]   resp TDF bytes (first 64): 109d88430100000000000080000000000a...
+[22632] LoginCheck(loginSM=0x3eac9da0 count=0)               ← EMPTY!
+[22632] LoginCheck returned 0                                 ← FAIL
+[22632] ⚠️ LoginFallback_NoTypes called (login types array empty!)
+[22634] LoginTypesProcessor done. loginSM+0x218=0x0 +0x220=0x0 count=0
+```
+
+**The login types array is empty.** `LoginSender` (`FUN_146e1eb70`) NEVER
+fires. Instead `FUN_146e19b30` (fallback for no login types) is called,
+and 30 seconds later Logout is sent.
+
+### FACT: The TDF list at PreAuthResponse+0x120 has vtable PTR_FUN_143889d10
+First 8 bytes of `resp+0x120` = `0x143889d10` — a VALID game RDATA
+pointer. So the TDF list object IS constructed, it's just empty.
+
+The TDF list size indicator at `resp+0x120+0x10 = 0x0a` (10 bytes? entry
+count?) and `resp+0x120+0x18 = 0x4388889a0` (some pointer).
+
+**What's missing:** our PreAuth response doesn't write actual TDF list
+entries for the login types field. The list object is default-constructed
+(empty) when PreAuth response is decoded.
+
+### FACT: Stack trace at Logout reveals the caller
+```
+0x146e10b43   (inside FIFA17.exe — 1st caller)
+0x146e15fa5   (2nd in chain)
+0x146e155b4
+0x146e126a5   (FUN_146e126b0 vtable[0x10] call dispatch)  ← state machine transition!
+0x14717ead8
+0x1471b6960
+0x1471b7edf
+0x1471b37b6   (OSDK/LoginManager code)
+0x146f7b9ed   (FUN_146f7c7e0 online tick context)
+```
+
+**This confirms:** Logout is triggered by the OSDK LoginManager state
+machine, which transitioned to a "give up" state because
+`LoginFallback_NoTypes` ran (no login types available → no way to auth).
+
+### FACT: OnlineManager state during Logout
+```
+OM +0x1c0 = 0xFFFFFFFF  ← never initialized to a real state!
+OM +0x1f0 = 0xFFFFFFFF  ← same
+OM +0x13b8 = 0          ← idle
+BH +0x53f = 1            ← DLL's forced flag (good)
+auth slot 0 obj = 0x1438f5d50  ← a GAME-INTERNAL address, not our injected one
+  +0xe8 (ready flag) = 96  ← odd value (ASCII 0x60?), not 1
+```
+
+Note: `auth slot 0 obj = 0x1438f5d50` is in game RDATA — this is a
+pointer to a STRING or SENTINEL, not a real allocated auth request.
+The `+0xe8=96` is just garbage from reading into adjacent memory.
+
+### FACT: OriginRequestAuthCodeSync DID fire
+```
+[3651] FirstPartyAuthTokenReq(base=0x3ec48d08)
+[3651]   slot1=0x5d3e0000 slot2=0x0
+[3651] OriginRequestAuthCodeSync(userId=0x0 clientId=0x5d3e0018 scope=0x3939fc60 outCode=0x3939fc58)
+[3651] OriginRequestAuthCodeSync returned
+```
+
+`userId=0x0` !! The DLL Patch 3 cave runs, but it receives `userId=0`
+from the caller. That means `FUN_1470da6d0` returned 0 (the SDK's user
+id at `+0x3a0` is 0, not our fake 33068179).
+
+Also `Origin_RequestAuthCode_LSX` (`FUN_1470e67f0`) NEVER fires — Patch 3
+short-circuits it as expected.
+
+### FACT: Member info table is at 0x144867628 (NOT 0x144874a90)
+Ghidra had stale offset. Live dump shows base is `0x144867628`, with
+14 entries of what appear to be 40 bytes each. The meaningful entries
+(with tag hashes and valid pointers) are indices [9]-[13]:
+
+```
+[9]  u32[0]=0x44c21c80  — vtable pointer
+[10] u32[0]=0x44c03590  u32[1]=0x1  u32[2]=0x44c03240
+[11] u32[0]=0x44bd7730  u32[1]=0x1  u32[2]=0x44b89180
+[12] u32[0]=0x44886200  u32[1]=0x1  u32[2]=0x44c02820
+[13] u32[0]=0x44c0f900  u32[1]=0x1  u32[2]=0x448a4b70
+```
+
+The layout doesn't look like simple {tag, offset, type} — it has what
+appear to be pointers. This is likely a structure with `TdfMemberInfo*`
+entries that each have their own layout. Need to dump these individual
+entries to decode tags.
+
+### THE FIX — Add the LoginType list to our PreAuth response
+
+**The PreAuth response we're sending doesn't include the LoginType TDF
+field.** BF4's working PreAuth response probably does — that's why BF4
+clients successfully send Login commands after PreAuth.
+
+Our server (`server-standalone/server.mjs`) currently sends these
+PreAuth fields: ANON, ASRC, CIDS, CONF, INST, NASP, PLAT, QOSS, RSRC,
+SVER, PTVR. **We need to add a LoginType list field.**
+
+In BlazeSDK, this field is typically called:
+- `LGTP` or `LTIP` or similar (list of login types)
+- A TdfList of strings or integers representing supported login types
+- Values typically: `"nucleus"`, `"dotnet"`, `"origin"`, or numeric codes
+
+### NEXT ACTION: Find the exact tag name for the login types list
+
+Options:
+1. Dump the member info table entries in detail to extract tag hashes
+2. Look at BF4's encoded PreAuth response bytes around the similar
+   field location and decode its tag
+3. Search Ghidra for BlazeSDK tag strings like "LGTP", "LTIP", etc.
+
+Then add that field to our server.mjs PreAuth response with valid
+login type entries (e.g. one entry specifying "nucleus" auth with a
+suitable persona namespace).
