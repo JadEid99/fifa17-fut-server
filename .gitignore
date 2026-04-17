@@ -21,3 +21,11 @@ blaze-cert.der
 
 # Ghidra exports (too large for git)
 ghidra/
+
+# Ghidra dump (200MB local reference, do not push)
+FIFA17_dumped.bin.c
+
+# Trace outputs
+frida_trace.log
+frida_trace_err.log
+frida_trace_results.log
