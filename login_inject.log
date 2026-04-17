@@ -12,50 +12,21 @@
 Attaching...
 === FIFA 17 Login Type Injector v15 ===
 [      0] Patched OSDK screen -> RET
-[     21] Replaced LoginCheck OK
-[     21] Ready.
-[Local::PID::63776 ]-> [    302] !!! CRASH: system at 0x7ffd6e065369
-[    302] !!! pc=0x7ffd6e065369
-[    407] !!! CRASH: system at 0x7ffd6e065369
-[    407] !!! pc=0x7ffd6e065369
-[    407] !!! CRASH: system at 0x7ffd6e065369
-[    407] !!! pc=0x7ffd6e065369
-[    407] !!! CRASH: system at 0x7ffd6e065369
-[    407] !!! pc=0x7ffd6e065369
-[    476] !!! CRASH: system at 0x7ffd6e065369
-[    476] !!! pc=0x7ffd6e065369
-[    476] !!! CRASH: system at 0x7ffd6e065369
-[    476] !!! pc=0x7ffd6e065369
-[    477] !!! CRASH: system at 0x7ffd6e065369
-[    477] !!! pc=0x7ffd6e065369
-[    477] !!! CRASH: system at 0x7ffd6e065369
-[    477] !!! pc=0x7ffd6e065369
-[    477] !!! CRASH: system at 0x7ffd6e065369
-[    477] !!! pc=0x7ffd6e065369
-[    540] !!! CRASH: system at 0x7ffd6e065369
-[    540] !!! pc=0x7ffd6e065369
-[    552] !!! CRASH: system at 0x7ffd6e065369
-[    552] !!! pc=0x7ffd6e065369
-[    875] !!! CRASH: system at 0x7ffd6e065369
-[    875] !!! pc=0x7ffd6e065369
-[   1308] !!! CRASH: system at 0x7ffd6e065369
-[   1308] !!! pc=0x7ffd6e065369
-[   2229] !!! CRASH: system at 0x7ffd6e065369
-[   2229] !!! pc=0x7ffd6e065369
-[  30018] RPC: PreAuth
-[  30038] PreAuthHandler(err=0)
-[  30038] LoginTypesProcessor
-[  30039] LoginCheck REPLACED
-[  30039]   job=0x2afe5100
-[  30039]   calling LoginSender
-[  30040]   LoginSender returned 168982017
-[  30043] LoginTypesProcessor done
-[  30043] PreAuthHandler done
-[  60285] AUTH RPC: Logout
-[  60301] SM(0,-1)
-[  63877] !!! CRASH: system at 0x7ffd6e065369
-[  63877] !!! pc=0x7ffd6e065369
-[  63881] !!! CRASH: system at 0x7ffd6e065369
-[  63881] !!! pc=0x7ffd6e065369
-[  97724] AUTH RPC: Logout
-[  97734] SM(0,-1)
+[      0] Replaced LoginCheck OK
+[      0] Ready.
+[Local::PID::106148 ]-> [  28352] RPC: PreAuth
+[  28369] PreAuthHandler(err=0)
+[  28369] LoginTypesProcessor
+[  28370] LoginCheck REPLACED
+[  28370]   job=0x2a7d21c0
+[  28370]   returning 1 (login initiated)
+[  28372] LoginTypesProcessor done
+[  28372] PreAuthHandler done
+[  58621] AUTH RPC: Logout
+[  58635] SM(0,-1)
+[  63977] !!! CRASH: system at 0x7ffd6e065369
+[  63977] !!! pc=0x7ffd6e065369
+[  63980] !!! CRASH: system at 0x7ffd6e065369
+[  63980] !!! pc=0x7ffd6e065369
+[  96636] AUTH RPC: Logout
+[  96653] SM(0,-1)
