@@ -10,23 +10,19 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-=== FIFA 17 Login Type Injector v15 ===
+=== FIFA 17 v19: Fix CreateAccount response ===
 [      0] Patched OSDK screen -> RET
-[      0] Replaced LoginCheck OK
-[      0] Ready.
-[Local::PID::106148 ]-> [  28352] RPC: PreAuth
-[  28369] PreAuthHandler(err=0)
-[  28369] LoginTypesProcessor
-[  28370] LoginCheck REPLACED
-[  28370]   job=0x2a7d21c0
-[  28370]   returning 1 (login initiated)
-[  28372] LoginTypesProcessor done
-[  28372] PreAuthHandler done
-[  58621] AUTH RPC: Logout
-[  58635] SM(0,-1)
-[  63977] !!! CRASH: system at 0x7ffd6e065369
-[  63977] !!! pc=0x7ffd6e065369
-[  63980] !!! CRASH: system at 0x7ffd6e065369
-[  63980] !!! pc=0x7ffd6e065369
-[  96636] AUTH RPC: Logout
-[  96653] SM(0,-1)
+[      0] Hooked CreateAccountHandler
+[      0] Hooked OSDKCompletionHandler
+[      0] Ready. Waiting for CreateAccount...
+[Local::PID::106692 ]-> [  22548] RPC: PreAuth
+[  22566] PreAuthHandler(err=0)
+[  22566] LoginTypesProcessor
+[  22568] LoginTypesProcessor done
+[  22568] PreAuthHandler done
+[  52815] AUTH RPC: Logout
+[  52833] OSDKCompletionHandler fired!
+[  52833] SM(0,-1)
+[  89449] AUTH RPC: Logout
+[  89466] OSDKCompletionHandler fired!
+[  89466] SM(0,-1)
