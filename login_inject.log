@@ -6,22 +6,22 @@
    . . . .       object?   -> Display information about 'object'
    . . . .       exit/quit -> Exit
    . . . .
-   . . . .   More info at https://frida.re/docs/home/   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
    . . . .   Connected to Local System (id=local)
-
 Attaching...
 === v22: Passive observer (no injection) ===
 [      0] Ready. Testing fixed PreAuth response (Blaze3SDK schema)...
-[Local::PID::107488 ]-> [  23850] PreAuth
-[  23867] PreAuthHandler(err=0)
-[  23867] LoginTypesProcessor
-[  23867]   parent+0x53f = 1
-[  23867] LoginCheck: array count=0
-[  23867] LoginCheck returned 0x0
-[  23867] \u26a0\ufe0f LoginFallback (no login types)
-[  23869] LoginTypesProcessor done
-[  23869] PreAuthHandler done
-[  54100] AUTH: Logout
-[  54118] SM(0,-1)
-[  93216] AUTH: Logout
-[  93236] SM(0,-1)
+[Local::PID::94676 ]-> [  22643] PreAuth
+[  22658] PreAuthHandler(err=0)
+[  22658] LoginTypesProcessor
+[  22658]   parent+0x53f = 1
+[  22658] LoginCheck: array count=0
+[  22658] LoginCheck returned 0x0
+[  22658] \u26a0\ufe0f LoginFallback (no login types)
+[  22660] LoginTypesProcessor done
+[  22660] PreAuthHandler done
+[  52908] AUTH: Logout
+[  52924] SM(0,-1)
+[  89507] AUTH: Logout
+[  89523] SM(0,-1)
