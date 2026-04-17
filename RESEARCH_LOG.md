@@ -425,3 +425,46 @@ Options:
 Then add that field to our server.mjs PreAuth response with valid
 login type entries (e.g. one entry specifying "nucleus" auth with a
 suitable persona namespace).
+
+
+---
+
+## Session: April 17, 2026 16:47 — TDF Tag Hunt Failed, Switching to Direct Injection
+
+### RESULT: Schema dump did not reveal the TDF tag name
+The member info table scan found byte patterns that decode to nonsense
+tags (HSR', RHX!, ION., etc.). The TDF tags are stored in a format
+different from what I assumed — likely as 32-bit hashes, not raw 3-byte
+encoded values.
+
+### DECISION: Stop chasing the tag, inject directly
+We know:
+1. The login types array at `loginSM+0x218/+0x220` is empty (CONFIRMED)
+2. `FUN_146e1dae0` (LoginCheck) returns 0 because the array is empty
+3. `FUN_146e1eb70` (LoginSender) fires when the array has entries (v57 proved this)
+4. The timing issue in v57 was that injection happened from a background thread
+
+### NEW APPROACH: `frida_inject_login_type.js`
+Hook `FUN_146e1dae0` (LoginCheck) at entry. When the array is empty,
+inject a fake login type entry BEFORE the function iterates. This runs
+on the game's main thread (inside the PreAuth handler call chain), so:
+- The Login RPC will be sent on the correct thread
+- The Blaze connection will still be alive
+- No timing race condition
+
+The entry layout (from `FUN_146e1eb70` analysis):
+```
+entry+0x00: ptr to non-empty string (flag)
+entry+0x18: ptr to config object
+  config+0x10: ptr to auth token string
+  config+0x28: u16 transport type (0=Login)
+```
+
+### TEST: `login_inject_test.ps1`
+Runs the game with Frida attached, injects login type on first
+LoginCheck call, monitors for LoginSender and Login RPC on wire.
+
+Expected outcomes:
+- 🎯 LoginSender fires → Login RPC sent → server responds → PostAuth?
+- ⚠️ LoginSender fires but crashes → entry layout is wrong
+- ❌ LoginCheck still returns 0 → injection didn't take effect
