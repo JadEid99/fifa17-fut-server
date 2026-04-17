@@ -14,7 +14,7 @@ $gameDir  = "D:\Games\FIFA 17"
 $gameExe  = "$gameDir\FIFA17.exe"
 $dllLogFile = "$gameDir\fifa17_ssl_bypass.log"
 
-$fridaScript  = "$repoRoot\frida_dump_preauth_schema.js"
+$fridaScript  = "$repoRoot\frida_decode_preauth_tags.js"
 $fridaLogFile = "$repoRoot\schema_dump.log"
 $fridaErrFile = "$repoRoot\schema_dump_err.log"
 $resultsFile  = "$repoRoot\schema_dump_results.log"
