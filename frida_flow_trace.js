@@ -258,12 +258,18 @@ hookFn(0x70e67f0, "Origin_RequestAuthCode_LSX",
 );
 
 // Is Origin SDK connected (DAT_144b7c7a0 != 0)
+// NOTE: this is called VERY frequently (every tick). We log only on changes.
+let lastIsConnected = null;
 hookFn(0x70e2840, "IsOriginSDKConnected",
   function(args) {},
   function(ret) {
     try {
-      const sdkObj = SDK_OBJ_PTR.readPointer();
-      log("IsOriginSDKConnected => " + (ret.toInt32() & 0xFF) + "  (DAT_144b7c7a0 = " + sdkObj + ")");
+      const v = (ret.toInt32() & 0xFF);
+      if (v !== lastIsConnected) {
+        const sdkObj = SDK_OBJ_PTR.readPointer();
+        log("IsOriginSDKConnected => " + v + "  (DAT_144b7c7a0 = " + sdkObj + ")");
+        lastIsConnected = v;
+      }
     } catch (e) {}
   }
 );

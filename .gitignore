@@ -25,6 +25,6 @@ ghidra/
 # Ghidra dump (200MB local reference, do not push)
 FIFA17_dumped.bin.c
 
-# Trace outputs
+# Trace outputs (only ephemeral — results pushed via frida_trace_results.log + frida_trace_full.log)
 frida_trace.log
 frida_trace_err.log

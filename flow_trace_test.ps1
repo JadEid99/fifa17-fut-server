@@ -174,16 +174,18 @@ $dllLog = ""
 if (Test-Path $dllLogFile) { $dllLog = Get-Content $dllLogFile -Raw }
 
 # ---------------------------------------------------------------------------
-# 8. Classify result
+# 8. Classify result (check the BLAZE wire — that's ground truth)
 # ---------------------------------------------------------------------------
+# The Frida script logs "🎯 LoginSender" when FUN_146e1eb70 fires. We match the
+# exact marker, not the word "login" (which appears in many contexts).
 $verdict = "UNKNOWN"
-if     ($fridaOut  -match "LoginSender")                 { $verdict = "LOGIN_SENT" }
-elseif ($blazeOut  -match "cmd=0x28|cmd=0x32|cmd=0x98")  { $verdict = "LOGIN_WIRE" }
-elseif ($fridaOut  -match "LOGOUT SENT")                 { $verdict = "LOGOUT_CAPTURED" }
-elseif ($fridaOut  -match "LoginFallback_NoTypes")       { $verdict = "FALLBACK_NO_LOGIN_TYPES" }
-elseif ($blazeOut  -match "cmd=0x46|cmd=0x0046")         { $verdict = "LOGOUT_WIRE" }
-elseif ($blazeOut  -match "FetchClientConfig")           { $verdict = "FETCH_CONFIG_ONLY" }
-elseif ($blazeOut  -match "PreAuth")                     { $verdict = "PREAUTH_ONLY" }
+if     ($fridaOut -match "LOGOUT SENT")                     { $verdict = "LOGOUT_CAPTURED_WITH_STACK" }
+elseif ($fridaOut -match "🎯 LoginSender")                  { $verdict = "LOGIN_SENDER_FIRED" }
+elseif ($fridaOut -match "⚠️  LoginFallback_NoTypes")       { $verdict = "FALLBACK_NO_LOGIN_TYPES" }
+elseif ($blazeOut -match "Auth cmd=0x28|Auth cmd=0x32|Auth cmd=0x98")  { $verdict = "LOGIN_WIRE" }
+elseif ($blazeOut -match "Auth cmd=0x46|Auth cmd=0x0046|cmd=0x46 \(Logout\)") { $verdict = "LOGOUT_WIRE" }
+elseif ($blazeOut -match "FetchClientConfig")               { $verdict = "FETCH_CONFIG_ONLY" }
+elseif ($blazeOut -match "PreAuth")                         { $verdict = "PREAUTH_ONLY" }
 
 Write-Host ""
 $color = if ($verdict -match "LOGIN")     { "Green" }
@@ -202,18 +204,30 @@ function Tail($s, $n) {
     return $s
 }
 
+# Filter the Frida output — drop the "IsOriginSDKConnected" spam since
+# it's hooked to log only on state change, but just in case we get any
+# remaining noise, drop lines that match ancient patterns too.
+$fridaFiltered = ($fridaOut -split "`n" | Where-Object { $_ -notmatch "^\s*$" }) -join "`n"
+
+# Save a FULL (unfiltered) raw frida trace so we don't lose anything
+Set-Content "$repoRoot\frida_trace_full.log" $fridaOut -Encoding UTF8
+
 $report = @"
 ========================================================================
 FIFA 17 FLOW TRACE RESULTS
 Run: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
 Verdict: $verdict
+Frida raw size: $($fridaOut.Length) chars  (saved full in frida_trace_full.log)
 ========================================================================
 
 --- FRIDA ERRORS (first, if any) ---
 $(Tail $fridaErr 2000)
 
---- FRIDA FLOW TRACE (full) ---
-$(Tail $fridaOut 60000)
+--- FRIDA FLOW TRACE (first 30000 = start/init events) ---
+$(if ($fridaFiltered.Length -gt 30000) { $fridaFiltered.Substring(0, 30000) } else { $fridaFiltered })
+
+--- FRIDA FLOW TRACE (last 60000 = end-state events) ---
+$(Tail $fridaFiltered 60000)
 
 --- ORIGIN IPC SERVER (last 10000) ---
 $(Tail $originOut 10000)

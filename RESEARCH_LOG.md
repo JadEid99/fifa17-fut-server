@@ -211,3 +211,92 @@ The stack trace tells us the exact function that chose Logout.
 - Identify which of H1/H2/H3 is active
 - Update this log with findings under a new "Session" entry
 - Pick the fix path and implement
+
+
+---
+
+## Session: April 17, 2026 16:06 — First Flow Trace Run
+
+### RESULT: Verdict classifier was buggy (said LOGIN_SENT), actual outcome = LOGOUT_WIRE
+
+The wire-level truth from the Blaze server (this is ground truth):
+
+```
+msgId=2..7   FetchClientConfig x 6 (all 6 OSDK_* sections served)
+msgId=17     Ping (low-level, type=4) → pong
+msgId=18     Ping (low-level, type=4) → pong
+msgId=19     Logout (comp=0x0001 cmd=0x0046 len=0)   ← the wall
+msgId=20     Ping
+<disconnect>
+```
+
+Also:
+- Game's second session (after reconnect) repeats the same sequence
+  starting at msgId=14 (so the client's msgId counter is shared).
+
+### FACT: IsOriginSDKConnected is hit every ~15ms
+The trace was completely dominated by this noise (900 of 1221 lines).
+**FIX applied:** only log on value change. Rebuilt script.
+
+### FACT: Real Origin SDK object IS created by the game
+`DAT_144b7c7a0 = 0x27a48f10` — this is a game-allocated heap object.
+Our DLL's fake SDK object at `DAT_144b86bf8 = 0x1D0000` (pinned in DllMain)
+is a DIFFERENT global pointer. Two separate things.
+
+**IMPORTANT:** The game HAS a real Origin SDK object at +0x27a48f10. Our
+DLL isn't replacing it. `IsOriginSDKConnected` returns true because the
+real object exists.
+
+### FACT: Server pushes `<Login IsLoggedIn="true"/>` but game still logs out
+Origin IPC flow completes perfectly:
+```
+Challenge/Response/Accepted
+GetConfig → Config="false"
+GetProfile → PersonaId=33068179, UserId=33068179
+GetSetting IS_IGO_ENABLED → "false"
+GetGameInfo FREETRIAL → "false"
+GetSetting ENVIRONMENT → "production"
+GetSetting IS_IGO_AVAILABLE → "false"
+IsProgressiveInstallationAvailable → Available="false"
+[Push] <Login IsLoggedIn="true"/>
+GetProfile (2nd call) → same data
+GetSetting LANGUAGE → "en_US"
+SetDownloaderUtilization → ErrorSuccess
+GetSetting ENVIRONMENT → "production"
+```
+
+Game accepts ALL of these, yet still sends Logout to Blaze.
+
+### FACT: DLL Patch 3 cave executed, auth code provided
+DLL log shows: `AUTH: >>> CAVE EXECUTED! Auth code provided!`
+`req[+0xd8]=0x99C9930 req[+0xe8]=1`
+
+So the authentication state in memory says "auth code ready" — but the
+game still chose Logout.
+
+### HYPOTHESIS UPGRADED: H2 is confirmed-plausible
+The fake auth code is available in memory, BUT the Origin SDK's internal
+"logged in" state never got the validation side-effects from a real
+GetAuthCode call. The online state machine sees the inconsistency
+("we have an auth code but we never actually authenticated with Origin")
+and logs out.
+
+### ISSUE: Frida hooks never visible in trace output
+The trace's "FRIDA FLOW TRACE (full)" section in the report contained
+literally just one line:
+```
+> 1  (DAT_144b7c7a0 = 0x27a48f10)
+```
+which is the end of a single `IsOriginSDKConnected` log line.
+
+This means ALL other hook output was eaten by the 60KB tail window.
+By the time the script tailed the output, `IsOriginSDKConnected` had
+fired ~10000 times and pushed all the important events out.
+
+**FIXED:** (a) rate-limit IsOriginSDKConnected to log only on change,
+(b) save the FULL frida output to `frida_trace_full.log`,
+(c) include BOTH first-30KB and last-60KB in the report.
+
+### TODO NEXT: Re-run flow_trace_test.ps1 with the fixed script
+Expected: we'll finally see the PreAuthHandler / LoginTypesProcessor /
+LoginCheck / LoginSender / LOGOUT SENT events with their stack traces.
