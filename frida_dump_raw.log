@@ -13,7 +13,7 @@ Attaching...
 [v2] FIFA17.exe base: 0x140000000
 [v2] Hooked PreAuth handler at 0x146e1cf10
 [v2] Hooked RPC decoder at 0x146db5d60
-[Local::PID::33640 ]-> 
+[Local::PID::110532 ]-> 
 [v2] Running memory scans...
 [v2] String at 0x48952f8: ""
 [v2] Member info table ptr at 0x4874a90 -> 0x144867628
@@ -33,8 +33,8 @@ Attaching...
 [PreAuth] resp+0x120 (login types field):
     0000: 10 9d 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
     0010: 0a 00 00 00 00 00 00 00 a0 9b 88 43 01 00 00 00 
-    0020: 00 00 00 80 00 00 00 00 50 a5 76 09 00 00 00 00 
-    0030: 68 53 b2 3e 00 00 00 00 13 00 00 00 01 00 00 00 
+    0020: 00 00 00 80 00 00 00 00 c0 a5 76 09 00 00 00 00 
+    0030: 68 53 aa 3e 00 00 00 00 13 00 00 00 01 00 00 00 
 [PreAuth] login types list: start=0x0 end=0x0
 [PreAuth] login types list is EMPTY (null pointers)
 [PreAuth] HANDLER RETURNED
