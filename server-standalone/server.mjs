@@ -1331,7 +1331,59 @@ function setupMainBlazeHandler(socket, session) {
           console.log(`[Main] S${sid}: -> Logout (ack with empty response)`);
           resp = buildReply(pkt, Buffer.alloc(0));
         }
-        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) { resp = handleLogin(session, pkt); }
+        else if ([0x0028, 0x00C8, 0x0032, 0x003C, 0x0098].includes(cmd)) {
+          resp = handleLogin(session, pkt);
+          
+          // Schedule post-login notifications after the response is sent
+          // These tell the game "you are authenticated" via notification handlers
+          // that don't need msgId matching
+          const notifSocket = socket;
+          const notifSession = session;
+          setTimeout(() => {
+            try {
+              // NotifyUserAdded (comp=0x7802, cmd=0x0002, type=notification)
+              const ua = new TdfEncoder();
+              ua.writeStructStart('USER');
+              ua.writeInteger('AID ', notifSession.nucleusId);
+              ua.writeInteger('ALOC', 1701729619);
+              ua.writeInteger('ID  ', notifSession.personaId);
+              ua.writeString('NAME', notifSession.displayName);
+              ua.writeStructEnd();
+              const uaBody = ua.build();
+              const uaHdr = encodeHeader({ length: uaBody.length, component: 0x7802, command: 0x0002, error: 0, notify: true });
+              notifSocket.write(Buffer.concat([uaHdr, uaBody]));
+              console.log(`[Main] S${sid}: >> NotifyUserAdded sent (${uaBody.length} bytes)`);
+            } catch(e) { console.log(`[Main] S${sid}: NotifyUserAdded error: ${e.message}`); }
+          }, 300);
+          
+          setTimeout(() => {
+            try {
+              // UserSessionExtendedDataUpdate (comp=0x7802, cmd=0x0001, type=notification)
+              const ue = new TdfEncoder();
+              ue.writeStructStart('DATA');
+              ue.writeInteger('ADDR', 0);  // network address union (simplified)
+              ue.writeStructEnd();
+              ue.writeInteger('USID', notifSession.personaId);
+              const ueBody = ue.build();
+              const ueHdr = encodeHeader({ length: ueBody.length, component: 0x7802, command: 0x0001, error: 0, notify: true });
+              notifSocket.write(Buffer.concat([ueHdr, ueBody]));
+              console.log(`[Main] S${sid}: >> UserSessionExtendedDataUpdate sent (${ueBody.length} bytes)`);
+            } catch(e) { console.log(`[Main] S${sid}: ExtendedDataUpdate error: ${e.message}`); }
+          }, 500);
+          
+          setTimeout(() => {
+            try {
+              // UserUpdated / NotifyUserUpdated (comp=0x7802, cmd=0x0005, type=notification)
+              const uu = new TdfEncoder();
+              uu.writeInteger('FLGS', 3);
+              uu.writeInteger('ID  ', notifSession.personaId);
+              const uuBody = uu.build();
+              const uuHdr = encodeHeader({ length: uuBody.length, component: 0x7802, command: 0x0005, error: 0, notify: true });
+              notifSocket.write(Buffer.concat([uuHdr, uuBody]));
+              console.log(`[Main] S${sid}: >> UserUpdated sent (${uuBody.length} bytes)`);
+            } catch(e) { console.log(`[Main] S${sid}: UserUpdated error: ${e.message}`); }
+          }, 700);
+        }
         else if (cmd === 0x001D) resp = buildReply(pkt, new TdfEncoder().build());
         else if (cmd === 0x0024) resp = buildReply(pkt, new TdfEncoder().writeString('AUTH', `tok_${sid}`).build());
         else if (cmd === 0x0030) { console.log(`[Main] S${sid}: -> ListPersonas`); resp = handleListPersona(session, pkt); }
