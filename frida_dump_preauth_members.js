@@ -91,7 +91,7 @@ var sendFn = null;
 try {
     var sendPtr = base.add(0x8e22400).readPointer();
     var recvPtr = base.add(0x8e223f8).readPointer();
-    sendFn = new NativeFunction(sendPtr, 'int', ['int', 'pointer', 'int', 'int'], 'stdcall');
+    sendFn = new NativeFunction(sendPtr, 'int', ['int', 'pointer', 'int', 'int'], 'win64');
     console.log('[v7] send() at ' + sendPtr);
 
     Interceptor.attach(recvPtr, {
