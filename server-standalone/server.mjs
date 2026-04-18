@@ -1992,8 +1992,8 @@ startHttpServer();
 // Without valid responses, the Login job never dispatches the Login RPC.
 import https from 'https';
 const qosHttpsServer = https.createServer({
-  key: fs.readFileSync(path.join(import.meta.dirname, 'key.pem')),
-  cert: fs.readFileSync(path.join(import.meta.dirname, 'cert.pem')),
+  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
 }, (req, res) => {
   console.log(`[QOS-HTTPS] ${req.method} ${req.url}`);
   
