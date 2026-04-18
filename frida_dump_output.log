@@ -14,22 +14,23 @@ Attaching...
 [v5] Hooked FUN_146e1c1f0 (injection point)
 [v5] No diagnostic hooks (they corrupt call stack). Using delayed state check instead.
 [v5] Ready. Waiting for PreAuth...
-[Local::PID::97448 ]-> [v5] FUN_146e1c1f0 returned. loginSM=0x3eae9da0
-[v5] Template entry at +0xE0: 0x3eae9ec0
+[Local::PID::99592 ]-> [v5] FUN_146e1c1f0 returned. loginSM=0x3eab9da0
+[v5] Template entry at +0xE0: 0x3eab9ec0
 [v5] Template bytes:
   f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
   04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
   00 00 00 80 00 00 00 00 07 00 00 00 00 00 00 00 
   16 b2 a8 c0 4b 0e 00 00 00 00 00 00 00 00 00 00 
   
-[v5] Allocated entry at: 0x107143540
+[v5] Allocated entry at: 0x1051844a0
 [v5] Copied template to entry
-[v5] Created config object at 0x107116510 with auth token and transport=1
-[v5] Entry bytes: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 04 00 00 00 00 00 00 00 10 65 11 07 01 00 00 00 
+[v5] Created config object at 0x10518eb50 with auth token and transport=1
+[v5] Entry bytes: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 04 00 00 00 00 00 00 00 50 eb 18 05 01 00 00 00 
 [v5] Before: +0x218=0x0 +0x220=0x0
-[v5] Reset +0x18 one-shot flag to 0
-[v5] After:  +0x218=0x107143540 +0x220=0x107143560
+[v5] After:  +0x218=0x1051844a0 +0x220=0x1051844c0
 [v5] Injected 1 login type entry!
-Process terminated
-
-Thank you for using Frida!
+[v5] STATE CHECK (T+5s):
+  +0x218=0x1051844a0 +0x220=0x1051844c0
+  +0x18 (job handle)=0x0
+  +0x10 (login started)=1
+  +0x1a3=1
