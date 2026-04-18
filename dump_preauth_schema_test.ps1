@@ -124,12 +124,12 @@ if (-not $fifaProc) {
     exit 1
 }
 $fifaPid = $fifaProc.Id
-Write-Host "  FIFA17 running (PID $fifaPid)" -ForegroundColor Green
+Write-Host "  FIFA17 running - PID $fifaPid" -ForegroundColor Green
 
 # ============================================================
 # STEP 6: Attach Frida EARLY (before menu navigation)
 # ============================================================
-Write-Host "[6/8] Attaching Frida (PID $fifaPid)..." -ForegroundColor Yellow
+Write-Host "[6/8] Attaching Frida - PID $fifaPid ..." -ForegroundColor Yellow
 $fridaProc = Start-Process -FilePath "frida" `
     -ArgumentList "-p $fifaPid -l `"$fridaScript`"" `
     -RedirectStandardOutput $fridaLogFile `
@@ -143,7 +143,7 @@ if ($fridaProc.HasExited) {
     $errContent = ""; if (Test-Path $fridaErrFile) { $errContent = Get-Content $fridaErrFile -Raw }
     Write-Host $errContent -ForegroundColor Red
 } else {
-    Write-Host "  Frida attached (PID $($fridaProc.Id))" -ForegroundColor Green
+    Write-Host "  Frida attached - PID $($fridaProc.Id)" -ForegroundColor Green
 }
 
 # ============================================================
@@ -157,7 +157,7 @@ FEnter; Start-Sleep 5
 FEnter
 
 # Wait for DLL patches + Origin IPC handshake + Blaze PreAuth
-Write-Host "  Waiting 35s for connection flow (DLL patches + PreAuth)..." -ForegroundColor DarkGray
+Write-Host "  Waiting 35s for connection flow - DLL patches + PreAuth ..." -ForegroundColor DarkGray
 Start-Sleep 35
 FEnter; Start-Sleep 2
 
