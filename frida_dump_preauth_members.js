@@ -90,7 +90,7 @@ setTimeout(function() {
     console.log('\n[v3] === DATA AT 0x4874a90 (table pointer region) ===');
     try {
         var ptrRegion = base.add(0x4874a90);
-        var raw2 = new Uint8Array(ptrRegion.readByteArray(256));
+        var raw2 = new Uint8Array(ptrRegion.readByteArray(672));
         for (var i = 0; i < raw2.length; i += 16) {
             var hex = '';
             for (var j = 0; j < 16 && i+j < raw2.length; j++) {
@@ -99,7 +99,7 @@ setTimeout(function() {
             console.log('  ' + i.toString(16).padStart(4,'0') + ': ' + hex);
         }
         // String scan
-        for (var off = 0; off < 256; off += 8) {
+        for (var off = 0; off < 672; off += 8) {
             var s = tryStr(ptrRegion.add(off));
             if (s) console.log('  str@' + off.toString(16) + ': "' + s + '"');
         }
