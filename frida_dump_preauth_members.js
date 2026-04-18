@@ -141,28 +141,9 @@ try {
 // Instead, use setTimeout to check state AFTER the flow completes
 console.log('[v5] No diagnostic hooks (they corrupt call stack). Using delayed state check instead.');
 
-// Hook PreAuth handler for timing
-try {
-    Interceptor.attach(base.add(0x6e1cf10), {
-        onEnter: function(args) {
-            console.log('[v5] PreAuth handler entered, err=' + args[2].toInt32());
-        }
-    });
-} catch(e) {}
+// Only hook FUN_146e1c1f0 for injection — no other hooks (they cause crashes)
 
-// Monitor RPC sends — parse the 16-byte Blaze header from the raw socket data
-// Hook the actual wire send to detect Login/CreateAccount/Logout
-try {
-    Interceptor.attach(base.add(0x6df0e80), {
-        onEnter: function(args) {
-            // Read component and command from the function's parameters
-            // FUN_146df0e80 params are complex — just log that it was called
-            console.log('[v5] RPC SEND called');
-        }
-    });
-} catch(e) {}
-
-// After injection, schedule a delayed check to see what happened
-// This runs 5 seconds after injection, outside any game call stack
+// NO hooks on RPC send — they cause crashes
+// The Blaze server log will show us if Login RPC arrives
 
 console.log('[v5] Ready. Waiting for PreAuth...');
