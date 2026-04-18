@@ -1,4 +1,4 @@
-﻿=== PreAuth Schema Dump 2026-04-18 11:41:40 ===
+﻿=== PreAuth Schema Dump 2026-04-18 11:47:01 ===
 RESULT: NO_DATA
 
 --- FRIDA OUTPUT (FULL) ---
@@ -10,12 +10,12 @@ RESULT: NO_DATA
    . . . .       object?   -> Display information about 'object'
    . . . .       exit/quit -> Exit
    . . . .
-   . . . .   More info at https://frida.re/docs/home/   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
    . . . .   Connected to Local System (id=local)
-
 Attaching...
 [v3] base: 0x140000000
-[Local::PID::106352 ]-> 
+[Local::PID::92712 ]-> 
 [v3] === MEMBER INFO TABLE RAW DUMP ===
 [v3] Table at: 0x144867628
 [v3] Expected 14 entries
@@ -32,8 +32,8 @@ Attaching...
   0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
   00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
   00b0: 28 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  (v.D............
-  00c0: 03 00 00 00 02 bf 4d a7 f0 4b 76 09 00 00 00 00  ......M..Kv.....
-  00d0: 90 4b 76 09 00 00 00 00 20 77 86 44 01 00 00 00  .Kv..... w.D....
+  00c0: 03 00 00 00 02 bf 4d a7 f0 4b 78 09 00 00 00 00  ......M..Kx.....
+  00d0: 90 4b 78 09 00 00 00 00 20 77 86 44 01 00 00 00  .Kx..... w.D....
   00e0: d0 91 da 46 01 00 00 00 28 76 86 44 01 00 00 00  ...F....(v.D....
   00f0: 03 00 00 00 00 00 00 00 50 0a 87 44 01 00 00 00  ........P..D....
   0100: b0 8f 86 44 01 00 00 00 00 00 00 00 00 00 00 00  ...D............
@@ -125,12 +125,46 @@ Attaching...
   00d0: 00 00 00 00 00 00 00 00 f0 b5 54 43 01 00 00 00 
   00e0: 00 a3 3c 97 41 00 00 00 28 02 00 00 00 00 00 00 
   00f0: 28 76 86 44 01 00 00 00 d8 1e 89 43 01 00 00 00 
+  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0110: 00 f4 ec a6 01 01 00 00 40 00 00 00 00 00 00 00 
+  0120: 68 d7 86 44 01 00 00 00 38 9a 88 43 01 00 00 00 
+  0130: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0140: 00 64 1a b6 00 00 00 00 40 02 00 00 00 00 00 00 
+  0150: f0 d6 86 44 01 00 00 00 40 5d 89 43 01 00 00 00 
+  0160: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0170: 00 b2 9b b6 00 00 00 00 20 02 00 00 00 00 00 00 
+  0180: 28 76 86 44 01 00 00 00 40 cd 88 43 01 00 00 00 
+  0190: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  01a0: 00 f0 1c ba 21 00 00 00 c0 01 00 00 00 00 00 00 
+  01b0: 28 76 86 44 01 00 00 00 58 5d 89 43 01 00 00 00 
+  01c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  01d0: 00 24 9b c2 41 00 00 00 08 02 00 00 00 00 00 00 
+  01e0: 28 76 86 44 01 00 00 00 88 ce 88 43 01 00 00 00 
+  01f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0200: 00 74 c8 c2 01 01 00 00 28 00 00 00 00 00 00 00 
+  0210: 20 e7 86 44 01 00 00 00 70 5d 89 43 01 00 00 00 
+  0220: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0230: 00 f3 fc c6 00 00 00 00 20 01 00 00 00 00 00 00 
+  0240: 28 76 86 44 01 00 00 00 80 5d 89 43 01 00 00 00 
+  0250: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0260: 00 a3 3c cb 41 00 00 00 f0 01 00 00 00 00 00 00 
+  0270: 28 76 86 44 01 00 00 00 98 5d 89 43 01 00 00 00 
+  0280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0290: 00 72 69 cf 01 01 00 00 10 00 00 00 00 00 00 00 
   str@8: "authenticationSource"
   str@38: "componentIds"
   str@68: "clientId"
   str@98: "config"
   str@c8: "entitlementSource"
   str@f8: "serviceName"
+  str@128: "machineId"
+  str@158: "underageSupported"
+  str@188: "personaNamespace"
+  str@1b8: "legalDocGameIdentifier"
+  str@1e8: "platform"
+  str@218: "qosSettings"
+  str@248: "registrationSource"
+  str@278: "serverVersion"
 
 [v3] === REGISTRATION DATA (0x4875600-0x4875660) ===
   0000: 0b 00 00 00 a1 d2 92 ad d8 52 89 43 01 00 00 00 
@@ -149,9 +183,9 @@ Attaching...
 
 --- ORIGIN IPC SERVER ---
 hm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
-[Origin] 127.0.0.1:52984 connected
-[Origin] -> Challenge (key=9440e7f93a7ce6ea621fcc832333eee1)
-[Origin] session seed=13924 key=8bd61c07820a784af05de9fd07cbc921
+[Origin] 127.0.0.1:53767 connected
+[Origin] -> Challenge (key=0be2c64b53ed34693837a301b182309b)
+[Origin] session seed=25188 key=3bb8a7d5c8275032e9620a0a8f24ee20
 [Origin] -> ChallengeAccepted (session ready)
 [Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
 [Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
@@ -193,13 +227,13 @@ eep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): 6b 3c b9 e6 5d 9d e0 45 aa fc 51 7f d8 e1 19 07 30 8c 5b 6f d6 25
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): eb bb a4 df 6b 17 0e b8 34 ce d7 cb 43 b2 bc 6f d0 db 14 89 b3 67
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:53031
+[Redirector-Raw] Disconnected: 127.0.0.1:53792
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:53032
+[Main] Session 1 connected: 127.0.0.1:53793
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
@@ -291,50 +325,51 @@ eep-alive
 [Main] S1: -> Ping (msgId=12), sending pong
 
 --- DLL LOG ---
-08 0C 00 00 49 89 D8 89
-[11:40:05.158]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[11:40:05.158]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[11:40:05.158] PREAUTH_HANDLER: Cave at 0000000000560000, 44 bytes (XOR R8D + trampoline)
-[11:40:05.158] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[11:40:05.158] CONNECT-HOOK: Patched DAT_148e223d8 at 672 ms (real=00007FFD6EB11A50)
-[11:40:05.158] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[11:40:05.158] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[11:40:05.158] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[11:40:05.158] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[11:40:05.158] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[11:40:05.158] PATCHED: FUN_145e280b0 (version compare) -> always match
-[11:40:05.329] PATCHED: Origin SDK check at 00000001470A8430
-[11:40:05.329] All patches in 843 ms
-[11:40:05.329] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[11:40:05.329] AUTH: Checking login gate globals...
-[11:40:05.329] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[11:40:05.329] AUTH: DAT_144b86bdf = 0 (error flag)
-[11:40:05.329] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[11:40:05.558] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[11:40:11.273] AUTH: Slot cleared at 5900 ms
-[11:40:11.273] AUTH: OnlineMgr=0x3EC33E70
-[11:40:11.273] AUTH: slot=0x0 cave=0
-[11:40:11.273] AUTH: Using fake vtable (real not captured)
-[11:40:11.273] AUTH: Injected fake request 000000005D3D0000 into slot
-[11:40:11.373] AUTH: cave=1 slot=0x0
-[11:40:11.373] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[11:40:11.373] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[11:40:11.373] AUTH: state=2. Auth ready.
-[11:40:11.373] AUTH: OnlineMgr+0xb10 = 0x3EC3A6E0
-[11:40:11.373] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC3A960
-[11:40:11.373] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[11:40:11.373] AUTH: Found 0 objects with vtables in BlazeHub
-[11:40:11.373] AUTH: BlazeHub(000000003EC3A960)+0x53f = 1
-[11:40:11.373] AUTH: Applying OSDK patches (post-load)...
-[11:40:11.373] PATCHED: GetProfileSync -> return 0 (post-load)
-[11:40:11.373] PATCHED: GetSettingSync -> return 0 (post-load)
-[11:40:11.373] PATCHED: SetPresence -> return 0 (post-load)
-[11:40:11.373] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[11:40:11.373] PATCHED: FUN_14717d5d0 (age check) -> always pass
-[11:40:11.373] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
-[11:40:37.826] LOGIN-INJECT: loginSM=0x3EAB9DA0 job=0x2A7D3060, array empty, injecting fake entry...
-[11:40:37.826] LOGIN-INJECT: Fake entry at 000000005D420000, config at 000000005D420020, auth='FAKEAUTHCODE1234567890'
-[11:40:37.826] LOGIN-INJECT: Set loginSM+0x218=0x5D420000, +0x220=0x5D420020
-[11:40:37.826] LOGIN-INJECT: Calling FUN_146e1eb70 directly...
-[11:40:37.826] LOGIN-INJECT: FUN_146e1eb70 returned 0x9917601
+ANDLER: first 128 bytes:
+[11:45:25.601]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[11:45:25.601]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[11:45:25.601]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[11:45:25.601]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[11:45:25.601]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[11:45:25.601]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[11:45:25.601]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[11:45:25.601]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[11:45:25.601] PREAUTH_HANDLER: Cave at 00000000004F0000, 44 bytes (XOR R8D + trampoline)
+[11:45:25.601] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[11:45:25.601] CONNECT-HOOK: Patched DAT_148e223d8 at 484 ms (real=00007FFD6EB11A50)
+[11:45:25.601] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[11:45:25.601] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[11:45:25.601] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[11:45:25.601] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[11:45:25.601] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[11:45:25.601] PATCHED: FUN_145e280b0 (version compare) -> always match
+[11:45:25.745] PATCHED: Origin SDK check at 00000001470A8430
+[11:45:25.745] All patches in 640 ms
+[11:45:25.745] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[11:45:25.745] AUTH: Checking login gate globals...
+[11:45:25.745] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[11:45:25.745] AUTH: DAT_144b86bdf = 0 (error flag)
+[11:45:25.745] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[11:45:26.001] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[11:45:31.588] AUTH: Slot cleared at 5800 ms
+[11:45:31.588] AUTH: OnlineMgr=0x3EC73E70
+[11:45:31.588] AUTH: slot=0x0 cave=0
+[11:45:31.588] AUTH: Using fake vtable (real not captured)
+[11:45:31.588] AUTH: Injected fake request 000000005D3D0000 into slot
+[11:45:31.689] AUTH: cave=1 slot=0x0
+[11:45:31.689] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[11:45:31.689] AUTH: req[+0xd8]=0x99EA0B0 req[+0xe8]=1
+[11:45:31.689] AUTH: state=2. Auth ready.
+[11:45:31.689] AUTH: OnlineMgr+0xb10 = 0x3EC7A6E0
+[11:45:31.689] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC7A960
+[11:45:31.689] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[11:45:31.689] AUTH: Found 0 objects with vtables in BlazeHub
+[11:45:31.689] AUTH: BlazeHub(000000003EC7A960)+0x53f = 1
+[11:45:31.689] AUTH: Applying OSDK patches (post-load)...
+[11:45:31.689] PATCHED: GetProfileSync -> return 0 (post-load)
+[11:45:31.689] PATCHED: GetSettingSync -> return 0 (post-load)
+[11:45:31.689] PATCHED: SetPresence -> return 0 (post-load)
+[11:45:31.689] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[11:45:31.689] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[11:45:31.689] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
