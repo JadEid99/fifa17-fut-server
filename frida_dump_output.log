@@ -11,8 +11,12 @@
    . . . .   Connected to Local System (id=local)
 Attaching...
 [v7] base: 0x140000000
-[v7] Socket setup failed: Error: invalid abi specified
+[v7] send() at 0x7ffd6eb02320
+[v7] Hooked recv() at 0x7ffd6eb11d90
 [v7] Replaced LoginCheck
 [v7] Ready. Waiting for Blaze connection + PreAuth...
-[Local::PID::92116 ]-> [v7] LoginCheck called. blazeSocket=null
-[v7] No socket or send function — cannot send Login
+[Local::PID::46988 ]-> [v7] Found Blaze socket: 4244
+[v7] LoginCheck called. blazeSocket=4244
+[v7] Sending SilentLogin packet (58 bytes) on socket 4244
+[v7] send() returned: 58
+[v7] >>> SILENTLOGIN SENT ON WIRE! <<<
