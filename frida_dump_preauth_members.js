@@ -1,18 +1,21 @@
-// Frida v5: INJECT login type entry into loginSM+0x218/+0x220
+// Frida v6: Replace LoginCheck to call LoginSender with proper job handle
 //
-// ROOT CAUSE: The QOSS wrapper's internal vector at +0x60 is empty.
-// The TDF copy skips it (member-by-member copy, not memcpy).
-// loginSM+0x218/+0x220 stays at default zeros.
+// Previous approach (v5): Inject entry into +0x218/+0x220 array
+//   Result: Crashes because tracking array at +0x38 isn't resized
 //
-// SOLUTION: After the TDF copy, write a login type entry into the
-// destination vector at loginSM+0x218/+0x220. Use the EXISTING
-// template entry from loginSM+0xE0 (which has proper vtables).
+// New approach: Don't touch the array. Instead, replace FUN_146e1dae0
+// (LoginCheck) entirely. Our replacement:
+//   1. Reads +0x18 (job handle) — if non-zero, calls LoginSender
+//   2. If +0x18 is zero, returns 0 (same as original)
 //
-// The entry at +0xE0 has:
-//   vtable=0x143888ff8, flags=0x80000000, type=4, inner_vtable=0x143888ea8
+// LoginSender (FUN_146e1eb70) needs:
+//   param_1 = loginSM
+//   param_2 = entry pointer (we use the template at +0xE0)
+//   param_3 = config pointer (*(entry+0x18)) — we create one with auth token
+//   param_4 = 1
 //
-// We allocate a 0x20-byte copy of this entry, then set the vector
-// pointers: start=entry, end=entry+0x20 (1 entry).
+// LoginSender checks: param_3 != 0 AND +0x18 != 0
+// If both true, it sends the Login RPC on the wire.
 
 'use strict';
 
@@ -21,134 +24,74 @@ try { base = Module.findBaseAddress('FIFA17.exe'); } catch(e) {}
 if (!base) {
     try { base = Process.enumerateModules()[0].base; } catch(e2) { base = ptr(0x140000000); }
 }
-console.log('[v5] base: ' + base);
+console.log('[v6] base: ' + base);
 
-var injected = false;
+var loginSenderAddr = base.add(0x6e1eb70);
+var loginSenderFn = new NativeFunction(loginSenderAddr, 'uint64', ['pointer', 'pointer', 'pointer', 'int'], 'win64');
 
-// Hook FUN_146e1c1f0 — called AFTER the TDF copy, BEFORE the loop
-// This is the perfect injection point
+// Create the config object once (persistent allocation)
+var config = Memory.alloc(0x40);
+var authToken = Memory.allocUtf8String('FAKEAUTHCODE1234567890');
+config.add(0x10).writePointer(authToken);
+config.add(0x28).writeU16(1);  // transport type 1 = SilentLogin
+console.log('[v6] Config object at ' + config + ' auth token at ' + authToken);
+
+var replaced = false;
+
+// Replace LoginCheck (FUN_146e1dae0)
 try {
-    Interceptor.attach(base.add(0x6e1c1f0), {
-        onEnter: function(args) {
-            this.loginSM = args[0];  // save param_1 before it gets clobbered
-        },
-        onLeave: function(retval) {
-            if (injected) return;
-
-            var loginSM = this.loginSM;
-            console.log('[v5] FUN_146e1c1f0 returned. loginSM=' + loginSM);
-
-            // Read the template entry at loginSM+0xE0
-            try {
-                var templatePtr = loginSM.add(0xE0).readPointer();
-                console.log('[v5] Template entry at +0xE0: ' + templatePtr);
-
-                if (templatePtr.isNull()) {
-                    console.log('[v5] Template is NULL — cannot inject');
-                    return;
-                }
-
-                // Read the template (first 0x40 bytes for safety)
-                var templateBytes = templatePtr.readByteArray(0x40);
-                var tArr = new Uint8Array(templateBytes);
-                var hex = '';
-                for (var i = 0; i < Math.min(0x40, tArr.length); i++) {
-                    hex += ('0' + tArr[i].toString(16)).slice(-2) + ' ';
-                    if ((i+1) % 16 === 0) hex += '\n  ';
-                }
-                console.log('[v5] Template bytes:\n  ' + hex);
-
-                // Allocate memory for ONE entry (0x20 bytes)
-                var entry = Memory.alloc(0x20);
-                console.log('[v5] Allocated entry at: ' + entry);
-
-                // Copy the template's first 0x20 bytes to our entry
-                Memory.copy(entry, templatePtr, 0x20);
-                console.log('[v5] Copied template to entry');
-
-                // The entry at +0x18 is read by LoginCheck as *(entry+0x18) = config ptr
-                // LoginSender reads config+0x10 = auth token string, config+0x28 = transport type
-                // The template has a vtable at +0x18, not a config pointer.
-                // We need to create a config object and point entry+0x18 to it.
-                var config = Memory.alloc(0x40);
-                // Write auth token string at config+0x10
-                var authToken = Memory.allocUtf8String('FAKEAUTHCODE1234567890');
-                config.add(0x10).writePointer(authToken);
-                // Write transport type at config+0x28 (0 = Login, 1 = SilentLogin, 2 = OriginLogin)
-                config.add(0x28).writeU16(1);  // SilentLogin
-                // Point entry+0x18 to our config
-                entry.add(0x18).writePointer(config);
-                console.log('[v5] Created config object at ' + config + ' with auth token and transport=1');
-
-                // Verify the copy
-                var copyBytes = entry.readByteArray(0x20);
-                var cArr = new Uint8Array(copyBytes);
-                hex = '';
-                for (var i = 0; i < cArr.length; i++) {
-                    hex += ('0' + cArr[i].toString(16)).slice(-2) + ' ';
-                }
-                console.log('[v5] Entry bytes: ' + hex);
-
-                // Set the vector pointers at loginSM+0x218 and +0x220
-                var vecStart = loginSM.add(0x218);
-                var vecEnd = loginSM.add(0x220);
-
-                console.log('[v5] Before: +0x218=' + vecStart.readPointer() + ' +0x220=' + vecEnd.readPointer());
-
-                vecStart.writePointer(entry);
-                vecEnd.writePointer(entry.add(0x20));
-
-                // DO NOT reset +0x18 — it holds an active job handle.
-                // Zeroing it crashes the job scheduler.
-
-                console.log('[v5] After:  +0x218=' + vecStart.readPointer() + ' +0x220=' + vecEnd.readPointer());
-                console.log('[v5] Injected 1 login type entry!');
-
-                // Check +0x18 immediately and at intervals to track the job handle
-                var savedSM = loginSM;
-                console.log('[v5] +0x18 IMMEDIATE = ' + savedSM.add(0x18).readPointer());
-                
-                setTimeout(function() {
-                    try {
-                        console.log('[v5] STATE T+1s: +0x18=' + savedSM.add(0x18).readPointer() + 
-                            ' +0x218=' + savedSM.add(0x218).readPointer() +
-                            ' +0x10=' + savedSM.add(0x10).readU8());
-                    } catch(e) { console.log('[v5] T+1s error: ' + e); }
-                }, 1000);
-                
-                setTimeout(function() {
-                    try {
-                        console.log('[v5] STATE T+3s: +0x18=' + savedSM.add(0x18).readPointer() +
-                            ' +0x218=' + savedSM.add(0x218).readPointer());
-                    } catch(e) { console.log('[v5] T+3s error: ' + e); }
-                }, 3000);
-                
-                setTimeout(function() {
-                    try {
-                        console.log('[v5] STATE T+8s: +0x18=' + savedSM.add(0x18).readPointer() +
-                            ' +0x218=' + savedSM.add(0x218).readPointer());
-                    } catch(e) { console.log('[v5] T+8s error: ' + e); }
-                }, 8000);
-
-                injected = true;
-
-            } catch(e) {
-                console.log('[v5] Injection error: ' + e);
-            }
+    Interceptor.replace(base.add(0x6e1dae0), new NativeCallback(function(loginSM) {
+        if (replaced) {
+            // Already ran once — return 0 to prevent re-entry
+            return 0;
         }
-    });
-    console.log('[v5] Hooked FUN_146e1c1f0 (injection point)');
+        replaced = true;
+
+        console.log('[v6] LoginCheck REPLACED. loginSM=' + loginSM);
+
+        // Check job handle at +0x18
+        var jobHandle = loginSM.add(0x18).readPointer();
+        console.log('[v6] +0x18 job handle = ' + jobHandle);
+
+        if (jobHandle.isNull()) {
+            console.log('[v6] No job handle — LoginSender would fail. Returning 0.');
+            return 0;
+        }
+
+        // Read the template entry at +0xE0
+        var templateEntry = loginSM.add(0xE0).readPointer();
+        console.log('[v6] Template entry at +0xE0 = ' + templateEntry);
+
+        if (templateEntry.isNull()) {
+            console.log('[v6] No template entry. Returning 0.');
+            return 0;
+        }
+
+        // Call LoginSender: FUN_146e1eb70(loginSM, entry, config, 1)
+        console.log('[v6] Calling LoginSender...');
+        try {
+            var result = loginSenderFn(loginSM, templateEntry, config, 1);
+            console.log('[v6] LoginSender returned: ' + result);
+            if (result != 0) {
+                console.log('[v6] >>> LOGIN RPC SENT! <<<');
+            }
+        } catch(e) {
+            console.log('[v6] LoginSender error: ' + e);
+        }
+
+        // Schedule state checks
+        setTimeout(function() {
+            try {
+                console.log('[v6] T+3s: +0x18=' + loginSM.add(0x18).readPointer());
+            } catch(e) {}
+        }, 3000);
+
+        return 1;  // Tell caller "login was sent"
+    }, 'uint64', ['pointer'], 'win64'));
+    console.log('[v6] Replaced LoginCheck at ' + base.add(0x6e1dae0));
 } catch(e) {
-    console.log('[v5] Hook error: ' + e);
+    console.log('[v6] Replace failed: ' + e);
 }
 
-// NO hooks on LoginCheck/LoginSender/LoginFallback — they cause crashes (test 12-13 pattern)
-// Instead, use setTimeout to check state AFTER the flow completes
-console.log('[v5] No diagnostic hooks (they corrupt call stack). Using delayed state check instead.');
-
-// Only hook FUN_146e1c1f0 for injection — no other hooks (they cause crashes)
-
-// NO hooks on RPC send — they cause crashes
-// The Blaze server log will show us if Login RPC arrives
-
-console.log('[v5] Ready. Waiting for PreAuth...');
+// Only hook FUN_146e1c1f0 for injection — no other hooks
+console.log('[v6] Ready. Waiting for PreAuth...');
