@@ -1779,7 +1779,18 @@ function handlePreAuth(pkt) {
     enc.writeStructStart('CONF').writeString('CONF', '{}').writeStructEnd();
     enc.writeString('INST', 'fifa17-fut-server').writeString('NASP', 'cem_ea_id').writeString('PILD', '').writeString('PLAT', 'pc');
     enc.writeStructStart('QOSS').writeStructStart('BWPS').writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'prod-sjc').writeStructEnd();
-    enc.writeInteger('LNP ', 10).writeStructStart('LTPS').writeStructEnd().writeInteger('SVID', 0x45410805).writeStructEnd();
+    enc.writeInteger('LNP ', 10).writeTagAndType('LTPS', 0x05);
+    // LTPS map: keyType=string(1), valueType=struct(3), count=1
+    enc.buffers.push(Buffer.from([0x01, 0x03]));
+    enc.buffers.push(enc.encodeVarInt(1));
+    const k1 = Buffer.from('bio-dub\0', 'utf-8');
+    enc.buffers.push(enc.encodeVarInt(k1.length));
+    enc.buffers.push(k1);
+    const v1 = new TdfEncoder();
+    v1.writeString('PSA ', '127.0.0.1').writeInteger('PSP ', 17502).writeString('SNA ', 'bio-prod-dub-common');
+    enc.buffers.push(v1.build());
+    enc.buffers.push(Buffer.from([0x00]));
+    enc.writeInteger('SVID', 0x45410805).writeStructEnd();
     enc.writeString('RSRC', 'fifa17-2016').writeString('SVER', 'Blaze 3.15.08.0 (CL# 1060080 / Jul 11 2016)');
     const body = enc.build();
     // This variant is now the same as buildReply since we fixed the header format
@@ -1831,7 +1842,24 @@ function handlePreAuth(pkt) {
   enc.writeString('SNA ', 'prod-sjc');
   enc.writeStructEnd(); // BWPS
   enc.writeInteger('LNP ', 10);
-  enc.writeMap('LTPS', {});                        // empty map (was empty struct — wrong type!)
+  // LTPS: Map<string, QosPingSiteInfo> — must have entries for QoS probes to work
+  // Each entry: key=site alias, value=struct{PSA(string), PSP(ushort), SNA(string)}
+  // Without LTPS entries, the game doesn't send QoS probes and Login job never dispatches
+  enc.writeTagAndType('LTPS', 0x05);  // map type
+  enc.buffers.push(Buffer.from([0x01, 0x03])); // keyType=string(1), valueType=struct(3)
+  enc.buffers.push(enc.encodeVarInt(1));        // 1 entry
+  // Key: "bio-dub" (site alias)
+  const ltpsKey = Buffer.from('bio-dub\0', 'utf-8');
+  enc.buffers.push(enc.encodeVarInt(ltpsKey.length));
+  enc.buffers.push(ltpsKey);
+  // Value: QosPingSiteInfo struct { PSA, PSP, SNA }
+  const ltpsValEnc = new TdfEncoder();
+  ltpsValEnc.writeString('PSA ', '127.0.0.1');
+  ltpsValEnc.writeInteger('PSP ', 17502);
+  ltpsValEnc.writeString('SNA ', 'bio-prod-dub-common');
+  const ltpsValBody = ltpsValEnc.build();
+  enc.buffers.push(ltpsValBody);
+  enc.buffers.push(Buffer.from([0x00])); // struct terminator
   enc.writeInteger('SVID', 0x45410805);
   enc.writeStructEnd(); // QOSS
   enc.writeString('RSRC', '303107');               // registration source
