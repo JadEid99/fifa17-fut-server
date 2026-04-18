@@ -2002,15 +2002,19 @@ for (const pair of [['server2048.key','server2048_sha1.crt'],['server.key','serv
   } catch(e) {}
 }
 if (!qosKeyData) {
-  // Generate ephemeral self-signed cert
-  console.log('[QOS-HTTPS] No cert files found — generating ephemeral keypair');
-  const kp = crypto.generateKeyPairSync('rsa', { modulusLength: 2048,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' } });
-  qosKeyData = kp.privateKey;
-  // Self-signed cert requires openssl — just use the key as both (will fail TLS but log attempts)
-  qosCertData = kp.publicKey;
+  // Generate self-signed cert at runtime using openssl
+  console.log('[QOS-HTTPS] No cert files found — generating self-signed cert');
+  try {
+    execSync('openssl req -x509 -newkey rsa:2048 -keyout qos_key.pem -out qos_cert.pem -days 365 -nodes -subj "/CN=127.0.0.1"', { cwd: __dirname, stdio: 'ignore' });
+    qosKeyData = fs.readFileSync(path.join(__dirname, 'qos_key.pem'));
+    qosCertData = fs.readFileSync(path.join(__dirname, 'qos_cert.pem'));
+    console.log('[QOS-HTTPS] Generated qos_key.pem + qos_cert.pem');
+  } catch(e) {
+    console.log('[QOS-HTTPS] openssl not available — QoS HTTPS server disabled');
+    console.log('[QOS-HTTPS] Error: ' + e.message);
+  }
 }
+if (qosKeyData && qosCertData) {
 const qosHttpsServer = https.createServer({
   key: qosKeyData, cert: qosCertData, rejectUnauthorized: false,
 }, (req, res) => {
@@ -2032,6 +2036,9 @@ const qosHttpsServer = https.createServer({
 });
 qosHttpsServer.on('error', (err) => console.log(`[QOS-HTTPS] Error: ${err.message}`));
 qosHttpsServer.listen(17502, '0.0.0.0', () => console.log('[QOS-HTTPS] Listening on HTTPS port 17502'));
+} else {
+  console.log('[QOS-HTTPS] QoS HTTPS server disabled (no certs)');
+}
 
 // Also keep UDP QoS server as fallback
 import dgram from 'dgram';
