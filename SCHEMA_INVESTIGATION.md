@@ -211,11 +211,87 @@ Possible causes:
    previous call.
 3. The job has a dependency on another job (QoS) that hasn't completed.
 
-## Next Step
+## BREAKTHROUGH: SilentLogin RPC on the Wire (v7.2)
 
-The Login job IS created. LoginSender succeeds. The RPC is queued.
-The remaining problem is job dispatch timing. We need to either:
-1. Ensure the job scheduler processes the Login job before Logout
-2. Prevent the Logout timer from firing
-3. Find and resolve the job's dispatch dependency
+**Date:** April 18, 2026
+**Result:** The server received a SilentLogin RPC from the game client for the FIRST TIME EVER.
+
+```
+[Main] S1: comp=0x0001 cmd=0x0032 len=42 msgId=100
+[Main] S1: -> Auth cmd=0x32 (SilentLogin)
+```
+
+**How it was achieved:**
+- Frida v7 replaces LoginCheck (`FUN_146e1dae0`) entirely
+- Instead of going through the BlazeSDK's job system (which gets stuck on QoS),
+  we build a raw SilentLogin TDF packet in memory and call `ws2_32!send()` directly
+  on the Blaze TCP socket (fd=4244, found by hooking `recv()`)
+- The packet: 16-byte Blaze header + TDF body with AUTH, PID, TYPE fields
+- `send()` returned 58 (all bytes sent successfully)
+- Server received it, decoded the TDF, and sent a Login response
+
+**What the server log shows (full sequence):**
+```
+PreAuth (comp=0x0009 cmd=0x0007) → response sent
+SilentLogin (comp=0x0001 cmd=0x0032 len=42 msgId=100) → LOGIN RESPONSE SENT  ← NEW!
+Ping → pong
+FetchClientConfig × 6 → responses sent
+Ping × 2
+Logout (comp=0x0001 cmd=0x0046)
+Ping × 2
+```
+
+**Why the game still sends Logout:**
+The SilentLogin was sent with msgId=100 (arbitrary). The BlazeSDK's RPC framework
+dispatches responses by matching msgId to pending requests. Since no request with
+msgId=100 was registered through the framework, the response is silently dropped.
+The game doesn't know it received a Login response.
+
+## Next Steps
+
+### Option A: Make the game process the Login response (highest probability)
+
+The server sends the Login response with msgId=100. The game's response dispatcher
+(`FUN_146db5a60`) looks up msgId=100 in the pending request table. Finding nothing,
+it drops the response.
+
+**Fix:** After sending the raw SilentLogin, also send the 4 post-login notifications
+from the SERVER side. Notifications don't need msgId matching — they're dispatched
+by component+command. The game has registered handlers for:
+- `NotifyUserAdded` (comp=0x7802, cmd=0x0002)
+- `UserSessionExtendedDataUpdate` (comp=0x7802, cmd=0x0001)
+
+If the server sends these notifications with proper session data (BUID, KEY, PDTL),
+the game's notification handlers will process them and update internal session state.
+Combined with the DLL's patches that force `connState=0` and `BlazeHub+0x53f=1`,
+this might be enough to transition the game to the authenticated state.
+
+**Implementation:**
+1. Modify `server.mjs` to detect the SilentLogin RPC (comp=0x0001, cmd=0x0032)
+2. After sending the Login response, send the 4 notifications on timed delays:
+   - T+300ms: NotifyUserAdded (comp=0x7802, cmd=0x0002, type=notification)
+   - T+500ms: UserSessionExtendedDataUpdate (comp=0x7802, cmd=0x0001, type=notification)
+   - T+700ms: UserUpdated (comp=0x7802, cmd=0x0005, type=notification)
+3. Use the BF4 emulator's notification format as the template
+
+### Option B: Register a fake pending request in the BlazeSDK
+
+Use Frida to write a fake entry in the BlazeSDK's pending request table for msgId=100.
+When the Login response arrives, the dispatcher finds the entry and calls the callback.
+This is more complex but would make the game process the response natively.
+
+### Option C: Use the game's own msgId
+
+Instead of msgId=100, use the NEXT msgId the game would naturally use. The game's
+msgId counter is at a known location. Read it, use that value, and the response
+might match a pending request. But this is risky — the pending request might not
+exist for a Login command.
+
+### Recommendation
+
+**Option A is the best path.** We already proved that notifications are dispatched
+by component+command without msgId matching (from the Ghidra analysis of
+`FUN_146db5a60`). The server just needs to send the right notifications after
+the Login response. This is a server-side change — no more Frida modifications needed.
+
 
