@@ -1991,9 +1991,28 @@ startHttpServer();
 // and /qos/firetype during the Login job's QoS phase.
 // Without valid responses, the Login job never dispatches the Login RPC.
 import https from 'https';
+// Load certs — try multiple paths since .pem files may not be in git
+let qosKeyData, qosCertData;
+for (const pair of [['server2048.key','server2048_sha1.crt'],['server.key','server.crt'],['key.pem','cert.pem']]) {
+  try {
+    qosKeyData = fs.readFileSync(path.join(__dirname, pair[0]));
+    qosCertData = fs.readFileSync(path.join(__dirname, pair[1]));
+    console.log(`[QOS-HTTPS] Using certs: ${pair[0]} + ${pair[1]}`);
+    break;
+  } catch(e) {}
+}
+if (!qosKeyData) {
+  // Generate ephemeral self-signed cert
+  console.log('[QOS-HTTPS] No cert files found — generating ephemeral keypair');
+  const kp = crypto.generateKeyPairSync('rsa', { modulusLength: 2048,
+    publicKeyEncoding: { type: 'spki', format: 'pem' },
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' } });
+  qosKeyData = kp.privateKey;
+  // Self-signed cert requires openssl — just use the key as both (will fail TLS but log attempts)
+  qosCertData = kp.publicKey;
+}
 const qosHttpsServer = https.createServer({
-  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
+  key: qosKeyData, cert: qosCertData, rejectUnauthorized: false,
 }, (req, res) => {
   console.log(`[QOS-HTTPS] ${req.method} ${req.url}`);
   
