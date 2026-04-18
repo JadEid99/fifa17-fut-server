@@ -11,10 +11,9 @@
    . . . .   Connected to Local System (id=local)
 Attaching...
 [v7] base: 0x140000000
-[v7] ws2_32 send not found: TypeError: not a function
-[v7] recv hook failed: TypeError: not a function
+[v7] Socket setup failed: Error: invalid abi specified
 [v7] Replaced LoginCheck
 [v7] Ready. Waiting for Blaze connection + PreAuth...
-[Local::PID::106228 ]-> [v7] LoginCheck called. blazeSocket=null
+[Local::PID::92116 ]-> [v7] LoginCheck called. blazeSocket=null
 [v7] No socket or send function — cannot send Login
 
