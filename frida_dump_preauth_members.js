@@ -97,43 +97,46 @@ try {
         console.log('[v8] +0x18 job handle = ' + jobHandle);
 
         if (!jobHandle.isNull()) {
-            // The job exists. It has sub-jobs at +0x28 (linked list).
-            // Each sub-job has state at +0x30.
-            // State 0 = initial, 1 = sending probes, 2 = waiting, 3 = error/complete
-            // If we set all sub-job states to 1 (complete/success), the job callback fires.
-            console.log('[v8] Attempting to force QoS job completion...');
+            console.log('[v8] Job handle dump (first 0x90 bytes):');
             try {
-                // The job structure: +0x20 = main transport, +0x28 = sub-job list head
-                var subjob = jobHandle.add(0x28).readPointer();
-                var count = 0;
-                while (!subjob.isNull() && count < 5) {
-                    var state = subjob.add(0x30).readU32();
-                    console.log('[v8] Sub-job ' + count + ' at ' + subjob + ' state=' + state);
-                    
-                    // Force state to 1 (FUN_1478abfa0 state 1 = send probes + complete)
-                    // Actually state 1 calls FUN_1478aa9c0 which sends more probes.
-                    // We want the job to think probes succeeded.
-                    // Set state to 2 (waiting for response) with a fake success
-                    // OR just set the transport ready flag
-                    
-                    var transport = subjob.add(0x08).readPointer();
-                    if (!transport.isNull()) {
-                        console.log('[v8] Sub-job transport: ' + transport);
-                        // Set the ready flag at transport+0x1088
-                        try {
-                            transport.add(0x1088).writeU8(1);
-                            console.log('[v8] Set transport+0x1088 = 1 (ready)');
-                        } catch(e) {
-                            console.log('[v8] Cannot write transport flag: ' + e);
-                        }
+                var jBytes = jobHandle.readByteArray(0x90);
+                var jArr = new Uint8Array(jBytes);
+                for (var row = 0; row < 0x90; row += 16) {
+                    var hex = '';
+                    for (var col = 0; col < 16 && row+col < 0x90; col++) {
+                        hex += ('0' + jArr[row+col].toString(16)).slice(-2) + ' ';
                     }
-                    
-                    subjob = subjob.readPointer(); // next in linked list
-                    count++;
+                    console.log('  ' + row.toString(16).padStart(3,'0') + ': ' + hex);
                 }
-            } catch(e) {
-                console.log('[v8] Job manipulation error: ' + e);
-            }
+            } catch(e) { console.log('[v8] Job dump error: ' + e); }
+
+            // Try to find sub-jobs by scanning the job structure for pointers
+            console.log('[v8] Scanning job for sub-job pointers...');
+            try {
+                for (var off = 0x20; off < 0x80; off += 8) {
+                    var p = jobHandle.add(off).readPointer();
+                    if (!p.isNull() && p.compare(ptr(0x10000)) > 0) {
+                        console.log('[v8] +0x' + off.toString(16) + ' = ' + p);
+                        // Check if this looks like a sub-job (has state at +0x30)
+                        try {
+                            var maybeState = p.add(0x30).readU32();
+                            if (maybeState <= 5) {
+                                console.log('[v8]   -> possible sub-job, state=' + maybeState);
+                                var maybeTransport = p.add(0x08).readPointer();
+                                if (!maybeTransport.isNull()) {
+                                    console.log('[v8]   -> transport=' + maybeTransport);
+                                    try {
+                                        var readyFlag = maybeTransport.add(0x1088).readU8();
+                                        console.log('[v8]   -> transport+0x1088 (ready)=' + readyFlag);
+                                        maybeTransport.add(0x1088).writeU8(1);
+                                        console.log('[v8]   -> SET transport+0x1088 = 1');
+                                    } catch(e3) { console.log('[v8]   -> cannot access transport+0x1088: ' + e3); }
+                                }
+                            }
+                        } catch(e2) {}
+                    }
+                }
+            } catch(e) { console.log('[v8] Scan error: ' + e); }
         }
 
         // Also send raw SilentLogin as backup
