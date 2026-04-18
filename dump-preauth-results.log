@@ -1,17 +1,210 @@
-﻿============================================================
-FIFA 17 â€” PreAuthResponse TDF Schema Dump
-Timestamp: 2026-04-18 07:48:31
-Verdict: 
-============================================================
+﻿=== PreAuth Schema Dump 2026-04-18 07:53:23 ===
+RESULT: NO_DATA
 
-=== FRIDA OUTPUT (FULL â€” 0 chars) ===
+--- FRIDA OUTPUT (FULL) ---
+     ____
+    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Local System (id=local)
+Attaching...
+[Local::PID::88164 ]-> 
 
+--- ORIGIN IPC SERVER ---
+hm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
+[Origin] 127.0.0.1:52045 connected
+[Origin] -> Challenge (key=8125c7faa3b8fc0dd58d702d218f4f60)
+[Origin] session seed=25396 key=e2cc4b46609f2ec89414ded465081053
+[Origin] -> ChallengeAccepted (session ready)
+[Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="3"><GetProfile index="0" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="3" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="33068179" AvatarId="" Country="US" CommerceCountr
+[Origin] <- DEC: <LSX><Request recipient="" id="4"><GetSetting SettingId="IS_IGO_ENABLED" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="4" sender=""><GetSettingResponse Setting="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="5"><GetGameInfo GameInfoId="FREETRIAL" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="5" sender=""><GetGameInfoResponse GameInfo="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="6"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="6" sender=""><GetSettingResponse Setting="production"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="7"><GetSetting SettingId="IS_IGO_AVAILABLE" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="7" sender=""><GetSettingResponse Setting="false"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="8"><IsProgressiveInstallationAvailable ItemId="" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="8" sender=""><IsProgressiveInstallationAvailableResponse ItemId="" Available="false"/></Response></LSX>
+[Origin] -> ENC: <LSX><Event sender="EALS"><Login IsLoggedIn="true"/></Event></LSX>
+[Origin] -> pushed Login event (IsLoggedIn=true)
+[Origin] <- DEC: <LSX><Request recipient="" id="9"><GetProfile index="0" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="9" sender="EbisuSDK"><GetProfileResponse IsSubscriber="true" PersonaId="33068179" AvatarId="" Country="US" CommerceCountr
+[Origin] <- DEC: <LSX><Request recipient="" id="10"><GetSetting SettingId="LANGUAGE" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="10" sender=""><GetSettingResponse Setting="en_US"/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="11"><SetDownloaderUtilization Utilization="1" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="11" sender=""><ErrorSuccess Code="0" Description=""/></Response></LSX>
+[Origin] <- DEC: <LSX><Request recipient="" id="12"><GetSetting SettingId="ENVIRONMENT" version="3"/></Request></LSX>
+[Origin] -> ENC: <LSX><Response id="12" sender=""><GetSettingResponse Setting="production"/></Response></LSX>
 
-=== ORIGIN IPC SERVER (last 3000 chars) ===
+--- BLAZE SERVER ---
+eep-alive
 
+<?xml version="1.0" encoding="UTF-8"?>
+<serverinstanceinfo>
+  <address member="0">
+    <valu>
+      <hostname>127.0.0.1</hostname>
+      <ip>2130706433</ip>
+      <port>10041</port>
+    </valu>
+  </address
+[HTTP-Blaze] Sent encrypted HTTP response
+[SSL-DATA] Received 27 bytes on socket (total pending: 27)
+[SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): c4 de 68 70 8e 15 0a 28 61 14 38 4c 0a 49 9f b7 43 bd 6a 12 ab f1
+[SSL] Alert decrypted: 01 00
+[SSL] Alert MAC match: true
+[SSL] Alert: level=1 desc=0
+[Redirector-Raw] Disconnected: 127.0.0.1:52087
+[SSL-CONN] Socket closed
+[Main] Session 1 connected: 127.0.0.1:52088
+[Main] S1: received 225 bytes (total: 225)
+[Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
+[Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
+[Main]   0020: d6 0c cf 68 ee 01 13 66 69 66 61 2d 32 30 31 37  ...h...fifa-2017
+[Main]   0030: 2d 70 63 2d 74 72 69 61 6c 00 d3 9c 25 00 00 00  -pc-trial...%...
+[Main] S1: Raw Blaze binary detected
+[Main] S1: comp=0x0009 cmd=0x0007 len=209 msgId=0
+[Main] S1: -> PreAuth
+[PreAuth] Variant: full
+[PreAuth] Request TDF:
+[PreAuth]   CDAT (struct) {
+[PreAuth]     IITO (int) = 0
+[PreAuth]     LANG (int) = 1701729619
+[PreAuth]     SVCN (str) = "fifa-2017-pc-trial"
+[PreAuth]     TYPE (int) = 0
+[PreAuth]   }
+[PreAuth]   CINF (struct) {
+[PreAuth]     BSDK (str) = "15.1.1.3.0"
+[PreAuth]     BTIM (str) = "Jun  9 2017 16:15:40"
+[PreAuth]     CLNT (str) = "FIFA17"
+[PreAuth]     CPFT (int) = 4
+[PreAuth]     CSKU (str) = "FIFAPC"
+[PreAuth]     CVER (str) = "3175939"
+[PreAuth]     DSDK (str) = "15.1.2.1.0"
+[PreAuth]     ENV  (str) = "prod"
+[PreAuth]     LOC  (int) = 1701729619
+[PreAuth]     PTVR (str) = "1.1"
+[PreAuth]   }
+[PreAuth]   FCCR (struct) {
+[PreAuth]     CFID (str) = "BlazeSDK"
+[PreAuth]   }
+[PreAuth]   LADD (int) = 380807360
+[PreAuth] Sending FIFA17 PreAuth response (641 bytes) ÔÇö Blaze3SDK schema
+[Main] S1: Sending response (657 bytes)
+[Main] S1: header: 00 00 02 81 00 00 00 09 00 07 00 00 00 20 00 00
+[Main] S1: Sending proactive SilentLogin notification after PreAuth
+[Main] S1: SilentLogin notification sent (164 bytes)
+[Main] S1: comp=0x0009 cmd=0x0002 len=0 msgId=1
+[Main] S1: Sending response (26 bytes)
+[Main] S1: header: 00 00 00 0a 00 00 00 09 00 02 00 00 01 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=15 msgId=2
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CORE"
+[FetchClientConfig] CFID="OSDK_CORE"
+[FetchClientConfig] Responding with 5 config entries
+[Main] S1: Sending response (151 bytes)
+[Main] S1: header: 00 00 00 87 00 00 00 09 00 01 00 00 02 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=17 msgId=3
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_CLIENT"
+[FetchClientConfig] CFID="OSDK_CLIENT"
+[FetchClientConfig] Responding with 4 config entries
+[Main] S1: Sending response (101 bytes)
+[Main] S1: header: 00 00 00 55 00 00 00 09 00 01 00 00 03 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=18 msgId=4
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_NUCLEUS"
+[FetchClientConfig] CFID="OSDK_NUCLEUS"
+[FetchClientConfig] Responding with 3 config entries
+[Main] S1: Sending response (137 bytes)
+[Main] S1: header: 00 00 00 79 00 00 00 09 00 01 00 00 04 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=19 msgId=5
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_WEBOFFER"
+[FetchClientConfig] CFID="OSDK_WEBOFFER"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (62 bytes)
+[Main] S1: header: 00 00 00 2e 00 00 00 09 00 01 00 00 05 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=26 msgId=6
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (35 bytes)
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 06 20 00 00
+[Main] S1: comp=0x0009 cmd=0x0001 len=30 msgId=7
+[Main] S1: -> FetchClientConfig: CFID (str) = "OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] CFID="OSDK_XMS_ABUSE_REPORTING"
+[FetchClientConfig] Responding with 1 config entries
+[Main] S1: Sending response (35 bytes)
+[Main] S1: header: 00 00 00 13 00 00 00 09 00 01 00 00 07 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=8
+[Main] S1: -> Ping (msgId=8), sending pong
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=9
+[Main] S1: -> Ping (msgId=9), sending pong
+[Main] S1: comp=0x0001 cmd=0x0046 len=0 msgId=10
+[Main] S1: -> Auth cmd=0x46 (Logout)
+[Main] S1: -> Logout (ack with empty response)
+[Main] S1: Sending response (16 bytes)
+[Main] S1: header: 00 00 00 00 00 00 00 01 00 46 00 00 0a 20 00 00
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=11
+[Main] S1: -> Ping (msgId=11), sending pong
+[Main] S1: comp=0x0000 cmd=0x0000 len=0 msgId=12
+[Main] S1: -> Ping (msgId=12), sending pong
 
-=== BLAZE SERVER (last 5000 chars) ===
-
-
-=== DLL LOG (last 3000 chars) ===
+--- DLL LOG ---
+UTH_HANDLER: first 128 bytes:
+[07:51:48.132]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[07:51:48.132]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[07:51:48.132]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[07:51:48.132]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[07:51:48.132]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[07:51:48.132]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[07:51:48.132]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[07:51:48.132]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[07:51:48.132] PREAUTH_HANDLER: Cave at 00000000001F0000, 44 bytes (XOR R8D + trampoline)
+[07:51:48.132] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[07:51:48.132] CONNECT-HOOK: Patched DAT_148e223d8 at 578 ms (real=00007FFD6EB11A50)
+[07:51:48.132] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[07:51:48.132] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[07:51:48.132] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[07:51:48.132] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[07:51:48.132] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[07:51:48.132] PATCHED: FUN_145e280b0 (version compare) -> always match
+[07:51:48.273] PATCHED: cert bypass at 000000014613244B
+[07:51:48.273] All patches in 719 ms
+[07:51:48.273] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[07:51:48.273] AUTH: Checking login gate globals...
+[07:51:48.273] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[07:51:48.273] AUTH: DAT_144b86bdf = 0 (error flag)
+[07:51:48.273] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[07:51:48.721] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[07:51:54.513] AUTH: Slot cleared at 6200 ms
+[07:51:54.513] AUTH: OnlineMgr=0x3EBD3E70
+[07:51:54.513] AUTH: slot=0x0 cave=0
+[07:51:54.513] AUTH: Using fake vtable (real not captured)
+[07:51:54.513] AUTH: Injected fake request 000000005D3D0000 into slot
+[07:51:54.613] AUTH: cave=1 slot=0x0
+[07:51:54.613] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[07:51:54.613] AUTH: req[+0xd8]=0x99CA0C8 req[+0xe8]=1
+[07:51:54.613] AUTH: state=2. Auth ready.
+[07:51:54.613] AUTH: OnlineMgr+0xb10 = 0x3EBDA6E0
+[07:51:54.613] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EBDA960
+[07:51:54.613] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[07:51:54.613] AUTH: Found 0 objects with vtables in BlazeHub
+[07:51:54.613] AUTH: BlazeHub(000000003EBDA960)+0x53f = 1
+[07:51:54.613] AUTH: Applying OSDK patches (post-load)...
+[07:51:54.613] PATCHED: GetProfileSync -> return 0 (post-load)
+[07:51:54.613] PATCHED: GetSettingSync -> return 0 (post-load)
+[07:51:54.613] PATCHED: SetPresence -> return 0 (post-load)
+[07:51:54.613] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[07:51:54.613] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[07:51:54.613] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
