@@ -67,7 +67,8 @@ if (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC
     $vcvars = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
 }
 Write-Host "[1/8] Building DLL..." -ForegroundColor Yellow
-cmd /c "`"$vcvars`" && cd /d `"$repoRoot\dll-proxy`" && cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib ws2_32.lib 2>&1" | Out-Null
+$buildCmd = """$vcvars"" && cd /d ""$repoRoot\dll-proxy"" && cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib ws2_32.lib 2>&1"
+cmd /c $buildCmd | Out-Null
 if (-not (Test-Path "$repoRoot\dll-proxy\dinput8.dll")) {
     Write-Host "[ERROR] DLL build failed!" -ForegroundColor Red
     exit 1
