@@ -66,6 +66,20 @@ try {
                 Memory.copy(entry, templatePtr, 0x20);
                 console.log('[v5] Copied template to entry');
 
+                // The entry at +0x18 is read by LoginCheck as *(entry+0x18) = config ptr
+                // LoginSender reads config+0x10 = auth token string, config+0x28 = transport type
+                // The template has a vtable at +0x18, not a config pointer.
+                // We need to create a config object and point entry+0x18 to it.
+                var config = Memory.alloc(0x40);
+                // Write auth token string at config+0x10
+                var authToken = Memory.allocUtf8String('FAKEAUTHCODE1234567890');
+                config.add(0x10).writePointer(authToken);
+                // Write transport type at config+0x28 (0 = Login, 1 = SilentLogin, 2 = OriginLogin)
+                config.add(0x28).writeU16(1);  // SilentLogin
+                // Point entry+0x18 to our config
+                entry.add(0x18).writePointer(config);
+                console.log('[v5] Created config object at ' + config + ' with auth token and transport=1');
+
                 // Verify the copy
                 var copyBytes = entry.readByteArray(0x20);
                 var cArr = new Uint8Array(copyBytes);
