@@ -107,6 +107,24 @@ try {
                 console.log('[v5] After:  +0x218=' + vecStart.readPointer() + ' +0x220=' + vecEnd.readPointer());
                 console.log('[v5] Injected 1 login type entry!');
 
+                // Schedule delayed state check — 5 seconds after injection
+                var savedSM = loginSM;
+                setTimeout(function() {
+                    try {
+                        var s218 = savedSM.add(0x218).readPointer();
+                        var s220 = savedSM.add(0x220).readPointer();
+                        var s18 = savedSM.add(0x18).readPointer();
+                        console.log('[v5] STATE CHECK (T+5s):');
+                        console.log('  +0x218=' + s218 + ' +0x220=' + s220);
+                        console.log('  +0x18 (job handle)=' + s18);
+                        console.log('  +0x10 (login started)=' + savedSM.add(0x10).readU8());
+                        // Check if LoginFallback was called by reading +0x1a3
+                        console.log('  +0x1a3=' + savedSM.add(0x1a3).readU8());
+                    } catch(e) {
+                        console.log('[v5] STATE CHECK error: ' + e);
+                    }
+                }, 5000);
+
                 injected = true;
 
             } catch(e) {
@@ -119,61 +137,9 @@ try {
     console.log('[v5] Hook error: ' + e);
 }
 
-// Hook LoginCheck to see if it now finds entries
-try {
-    Interceptor.attach(base.add(0x6e1dae0), {
-        onEnter: function(args) {
-            var sm = args[0];
-            var start = sm.add(0x218).readPointer();
-            var end = sm.add(0x220).readPointer();
-            var count = start.isNull() ? 0 : end.sub(start).toInt32() / 0x20;
-            console.log('[v5] LoginCheck ENTERED count=' + count + ' start=' + start + ' end=' + end);
-        },
-        onLeave: function(retval) {
-            console.log('[v5] LoginCheck RETURNED ' + retval + ' (1=login sent, 0=no login)');
-        }
-    });
-    console.log('[v5] Hooked LoginCheck');
-} catch(e) {
-    console.log('[v5] LoginCheck hook failed: ' + e);
-}
-
-// Hook LoginSender to see if it fires
-try {
-    Interceptor.attach(base.add(0x6e1eb70), {
-        onEnter: function(args) {
-            console.log('[v5] >>> LoginSender CALLED! param2=' + args[1] + ' param3=' + args[2] + ' param4=' + args[3]);
-            // param3 = config from *(entry+0x18)
-            try {
-                var cfg = args[2];
-                var authPtr = cfg.add(0x10).readPointer();
-                var transport = cfg.add(0x28).readU16();
-                var authStr = authPtr.isNull() ? '(null)' : authPtr.readCString();
-                console.log('[v5] >>> config: auth="' + authStr + '" transport=' + transport);
-            } catch(e) {
-                console.log('[v5] >>> config read error: ' + e);
-            }
-        },
-        onLeave: function(retval) {
-            console.log('[v5] >>> LoginSender RETURNED ' + retval);
-        }
-    });
-    console.log('[v5] Hooked LoginSender');
-} catch(e) {
-    console.log('[v5] LoginSender hook failed: ' + e);
-}
-
-// Hook LoginFallback to see if it fires instead
-try {
-    Interceptor.attach(base.add(0x6e19b30), {
-        onEnter: function() {
-            console.log('[v5] !!! LoginFallback_NoTypes CALLED — login types still empty!');
-        }
-    });
-    console.log('[v5] Hooked LoginFallback');
-} catch(e) {
-    console.log('[v5] LoginFallback hook failed: ' + e);
-}
+// NO hooks on LoginCheck/LoginSender/LoginFallback — they cause crashes (test 12-13 pattern)
+// Instead, use setTimeout to check state AFTER the flow completes
+console.log('[v5] No diagnostic hooks (they corrupt call stack). Using delayed state check instead.');
 
 // Hook PreAuth handler for timing
 try {
@@ -184,22 +150,19 @@ try {
     });
 } catch(e) {}
 
-// Monitor RPC sends to see if Login appears on the wire
+// Monitor RPC sends — parse the 16-byte Blaze header from the raw socket data
+// Hook the actual wire send to detect Login/CreateAccount/Logout
 try {
     Interceptor.attach(base.add(0x6df0e80), {
         onEnter: function(args) {
-            try {
-                var comp = this.context.r9.toInt32() & 0xFFFF;
-                var cmd = (this.context.r9.toInt32() >> 16) & 0xFFFF;
-                // Only log auth-related RPCs
-                if (comp === 1 || comp === 9) {
-                    console.log('[v5] RPC SEND comp=0x' + comp.toString(16) + ' cmd=0x' + cmd.toString(16));
-                }
-            } catch(e) {}
+            // Read component and command from the function's parameters
+            // FUN_146df0e80 params are complex — just log that it was called
+            console.log('[v5] RPC SEND called');
         }
     });
-} catch(e) {
-    console.log('[v5] RPC hook failed (non-critical): ' + e);
-}
+} catch(e) {}
+
+// After injection, schedule a delayed check to see what happened
+// This runs 5 seconds after injection, outside any game call stack
 
 console.log('[v5] Ready. Waiting for PreAuth...');
