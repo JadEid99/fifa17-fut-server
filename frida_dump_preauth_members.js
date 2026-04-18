@@ -121,15 +121,59 @@ try {
 
 // Hook LoginCheck to see if it now finds entries
 try {
-    Interceptor.attach(base.add(0x6e1c3f0), {
+    Interceptor.attach(base.add(0x6e1dae0), {
         onEnter: function(args) {
-            console.log('[v5] LoginTypesProcessor entered');
+            var sm = args[0];
+            var start = sm.add(0x218).readPointer();
+            var end = sm.add(0x220).readPointer();
+            var count = start.isNull() ? 0 : end.sub(start).toInt32() / 0x20;
+            console.log('[v5] LoginCheck ENTERED count=' + count + ' start=' + start + ' end=' + end);
         },
         onLeave: function(retval) {
-            console.log('[v5] LoginTypesProcessor returned');
+            console.log('[v5] LoginCheck RETURNED ' + retval + ' (1=login sent, 0=no login)');
         }
     });
-} catch(e) {}
+    console.log('[v5] Hooked LoginCheck');
+} catch(e) {
+    console.log('[v5] LoginCheck hook failed: ' + e);
+}
+
+// Hook LoginSender to see if it fires
+try {
+    Interceptor.attach(base.add(0x6e1eb70), {
+        onEnter: function(args) {
+            console.log('[v5] >>> LoginSender CALLED! param2=' + args[1] + ' param3=' + args[2] + ' param4=' + args[3]);
+            // param3 = config from *(entry+0x18)
+            try {
+                var cfg = args[2];
+                var authPtr = cfg.add(0x10).readPointer();
+                var transport = cfg.add(0x28).readU16();
+                var authStr = authPtr.isNull() ? '(null)' : authPtr.readCString();
+                console.log('[v5] >>> config: auth="' + authStr + '" transport=' + transport);
+            } catch(e) {
+                console.log('[v5] >>> config read error: ' + e);
+            }
+        },
+        onLeave: function(retval) {
+            console.log('[v5] >>> LoginSender RETURNED ' + retval);
+        }
+    });
+    console.log('[v5] Hooked LoginSender');
+} catch(e) {
+    console.log('[v5] LoginSender hook failed: ' + e);
+}
+
+// Hook LoginFallback to see if it fires instead
+try {
+    Interceptor.attach(base.add(0x6e19b30), {
+        onEnter: function() {
+            console.log('[v5] !!! LoginFallback_NoTypes CALLED — login types still empty!');
+        }
+    });
+    console.log('[v5] Hooked LoginFallback');
+} catch(e) {
+    console.log('[v5] LoginFallback hook failed: ' + e);
+}
 
 // Hook PreAuth handler for timing
 try {
