@@ -59,13 +59,11 @@ Write-Host ""
 # ============================================================
 # STEP 1: Build DLL
 # ============================================================
-$vcvars = ""
-if (Test-Path "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
-    $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-}
-if (Test-Path "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat") {
-    $vcvars = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-}
+$vcvars = ''
+$vcPath1 = 'C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat'
+$vcPath2 = 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat'
+if (Test-Path $vcPath1) { $vcvars = $vcPath1 }
+if (Test-Path $vcPath2) { $vcvars = $vcPath2 }
 Write-Host "[1/8] Building DLL..." -ForegroundColor Yellow
 $buildCmd = "`"$vcvars`" `& cd /d `"$repoRoot\dll-proxy`" `& cl /LD /O2 /EHsc dinput8_proxy.cpp /Fe:dinput8.dll /link /DEF:dinput8.def user32.lib ws2_32.lib"
 cmd /c $buildCmd 2>&1 | Out-Null
