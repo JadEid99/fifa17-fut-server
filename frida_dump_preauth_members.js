@@ -1,16 +1,14 @@
-// Frida v7: Send Login RPC directly on the Blaze TCP socket
+// Frida v8: Force the QoS job to complete so the Login callback fires naturally
 //
-// Previous approach (v6): LoginSender queues auth token in QoS job.
-// QoS job needs HTTPS probes to complete. HTTPS fails. Login never dispatches.
+// The Login flow: FUN_146e19720 creates a "qosapi" job at loginSM+0x18.
+// The job does QoS probes, then its callback (LAB_146e1d730) sends the
+// ACTUAL Login RPC through the BlazeSDK framework (with proper msgId).
+// The QoS probes fail because there's no HTTPS QoS server.
+// 
+// Fix: After the job is created, force its sub-job state to "complete"
+// so the callback fires without waiting for QoS.
 //
-// New approach: Skip LoginSender entirely. Build a raw SilentLogin packet
-// and write it directly to the Blaze TCP socket using Winsock send().
-// The server already has a working Login handler that returns session data.
-//
-// SilentLogin packet format (from PocketRelay):
-//   Header: 16 bytes [len:4][ext:2][comp:2][cmd:2][msgId:3][type:1][err:2]
-//   Body TDF: AUTH(string) + PID(int) + TYPE(int)
-//   comp=0x0001, cmd=0x0032, type=0 (request)
+// Also keep the raw SilentLogin send as a backup.
 
 'use strict';
 
@@ -19,21 +17,44 @@ try { base = Module.findBaseAddress('FIFA17.exe'); } catch(e) {}
 if (!base) {
     try { base = Process.enumerateModules()[0].base; } catch(e2) { base = ptr(0x140000000); }
 }
-console.log('[v7] base: ' + base);
+console.log('[v8] base: ' + base);
+
+// Get send function from game's stored pointer
+var sendFn = null;
+var blazeSocket = null;
+
+try {
+    var sendPtr = base.add(0x8e22400).readPointer();
+    var recvPtr = base.add(0x8e223f8).readPointer();
+    sendFn = new NativeFunction(sendPtr, 'int', ['int', 'pointer', 'int', 'int'], 'win64');
+    console.log('[v8] send() at ' + sendPtr);
+
+    Interceptor.attach(recvPtr, {
+        onEnter: function(args) { this.sock = args[0].toInt32(); this.buf = args[1]; },
+        onLeave: function(retval) {
+            if (blazeSocket || retval.toInt32() <= 0) return;
+            try {
+                if (this.buf.add(6).readU8() === 0x00 && this.buf.add(7).readU8() === 0x09) {
+                    blazeSocket = this.sock;
+                    console.log('[v8] Found Blaze socket: ' + blazeSocket);
+                }
+            } catch(e) {}
+        }
+    });
+    console.log('[v8] Hooked recv()');
+} catch(e) {
+    console.log('[v8] Socket setup failed: ' + e);
+}
 
 // TDF encoding helpers
 function encodeTdfTag(tag) {
     while (tag.length < 4) tag += ' ';
-    var c0 = tag.charCodeAt(0) - 0x20;
-    var c1 = tag.charCodeAt(1) - 0x20;
-    var c2 = tag.charCodeAt(2) - 0x20;
-    var c3 = tag.charCodeAt(3) - 0x20;
+    var c0 = tag.charCodeAt(0) - 0x20, c1 = tag.charCodeAt(1) - 0x20;
+    var c2 = tag.charCodeAt(2) - 0x20, c3 = tag.charCodeAt(3) - 0x20;
     return [(c0 << 2) | (c1 >> 4), ((c1 & 0xF) << 4) | (c2 >> 2), ((c2 & 0x3) << 6) | c3];
 }
-
 function encodeTdfVarInt(n) {
-    var bytes = [];
-    var first = true;
+    var bytes = [], first = true;
     do {
         var b = first ? (n & 0x3F) : (n & 0x7F);
         n = first ? (n >> 6) : (n >> 7);
@@ -43,110 +64,113 @@ function encodeTdfVarInt(n) {
     } while (n > 0);
     return bytes;
 }
-
 function buildSilentLoginPacket(msgId) {
-    // TDF body: AUTH(string) + PID(int) + TYPE(int)
     var body = [];
-    
-    // AUTH tag + type 0x01 (string)
-    var authTag = encodeTdfTag('AUTH');
-    body.push(authTag[0], authTag[1], authTag[2], 0x01);
-    var authStr = 'FAKEAUTHCODE1234567890\0';
-    var authBytes = [];
-    for (var i = 0; i < authStr.length; i++) authBytes.push(authStr.charCodeAt(i));
-    body = body.concat(encodeTdfVarInt(authBytes.length));
-    body = body.concat(authBytes);
-    
-    // PID tag + type 0x00 (integer)
-    var pidTag = encodeTdfTag('PID ');
-    body.push(pidTag[0], pidTag[1], pidTag[2], 0x00);
+    var t = encodeTdfTag('AUTH'); body.push(t[0],t[1],t[2],0x01);
+    var s = 'FAKEAUTHCODE1234567890\0';
+    var sb = []; for(var i=0;i<s.length;i++) sb.push(s.charCodeAt(i));
+    body = body.concat(encodeTdfVarInt(sb.length)).concat(sb);
+    t = encodeTdfTag('PID '); body.push(t[0],t[1],t[2],0x00);
     body = body.concat(encodeTdfVarInt(1000000001));
-    
-    // TYPE tag + type 0x00 (integer)  — 1 = SilentLogin
-    var typeTag = encodeTdfTag('TYPE');
-    body.push(typeTag[0], typeTag[1], typeTag[2], 0x00);
+    t = encodeTdfTag('TYPE'); body.push(t[0],t[1],t[2],0x00);
     body = body.concat(encodeTdfVarInt(1));
-    
-    // Blaze header: 16 bytes
     var len = body.length;
-    var header = [
-        (len >> 24) & 0xFF, (len >> 16) & 0xFF, (len >> 8) & 0xFF, len & 0xFF,  // length
-        0x00, 0x00,                                                                // ext
-        0x00, 0x01,                                                                // comp = 0x0001 (Authentication)
-        0x00, 0x32,                                                                // cmd = 0x0032 (SilentLogin)
-        (msgId >> 16) & 0xFF, (msgId >> 8) & 0xFF, msgId & 0xFF,                  // msgId
-        0x00,                                                                      // type=0 (request)
-        0x00, 0x00                                                                 // error=0
-    ];
-    
-    return header.concat(body);
+    var hdr = [(len>>24)&0xFF,(len>>16)&0xFF,(len>>8)&0xFF,len&0xFF,
+               0,0, 0,1, 0,0x32,
+               (msgId>>16)&0xFF,(msgId>>8)&0xFF,msgId&0xFF,
+               0x00, 0,0];
+    return hdr.concat(body);
 }
 
-// Find the Blaze TCP socket by hooking the send function
-var blazeSocket = null;
-var sendFn = null;
+var done = false;
 
-// Get send/recv from game's stored function pointers (Ghidra addresses)
-// DAT_148e22400 = send, DAT_148e223f8 = recv, DAT_148e223d8 = connect
-try {
-    var sendPtr = base.add(0x8e22400).readPointer();
-    var recvPtr = base.add(0x8e223f8).readPointer();
-    sendFn = new NativeFunction(sendPtr, 'int', ['int', 'pointer', 'int', 'int'], 'win64');
-    console.log('[v7] send() at ' + sendPtr);
-
-    Interceptor.attach(recvPtr, {
-        onEnter: function(args) { this.sock = args[0].toInt32(); this.buf = args[1]; },
-        onLeave: function(retval) {
-            if (blazeSocket || retval.toInt32() <= 0) return;
-            try {
-                if (this.buf.add(6).readU8() === 0x00 && this.buf.add(7).readU8() === 0x09) {
-                    blazeSocket = this.sock;
-                    console.log('[v7] Found Blaze socket: ' + blazeSocket);
-                }
-            } catch(e) {}
-        }
-    });
-    console.log('[v7] Hooked recv() at ' + recvPtr);
-} catch(e) {
-    console.log('[v7] Socket setup failed: ' + e);
-}
-
-// Replace LoginCheck — when called, send Login directly on the socket
-var sent = false;
+// Replace LoginCheck
 try {
     Interceptor.replace(base.add(0x6e1dae0), new NativeCallback(function(loginSM) {
-        if (sent) return 1;
-        
-        console.log('[v7] LoginCheck called. blazeSocket=' + blazeSocket);
-        
-        if (!blazeSocket || !sendFn) {
-            console.log('[v7] No socket or send function — cannot send Login');
-            return 0;
+        if (done) return 1;
+        done = true;
+
+        console.log('[v8] LoginCheck called. loginSM=' + loginSM);
+
+        // Read the job handle at +0x18
+        var jobHandle = loginSM.add(0x18).readPointer();
+        console.log('[v8] +0x18 job handle = ' + jobHandle);
+
+        if (!jobHandle.isNull()) {
+            // The job exists. It has sub-jobs at +0x28 (linked list).
+            // Each sub-job has state at +0x30.
+            // State 0 = initial, 1 = sending probes, 2 = waiting, 3 = error/complete
+            // If we set all sub-job states to 1 (complete/success), the job callback fires.
+            console.log('[v8] Attempting to force QoS job completion...');
+            try {
+                // The job structure: +0x20 = main transport, +0x28 = sub-job list head
+                var subjob = jobHandle.add(0x28).readPointer();
+                var count = 0;
+                while (!subjob.isNull() && count < 5) {
+                    var state = subjob.add(0x30).readU32();
+                    console.log('[v8] Sub-job ' + count + ' at ' + subjob + ' state=' + state);
+                    
+                    // Force state to 1 (FUN_1478abfa0 state 1 = send probes + complete)
+                    // Actually state 1 calls FUN_1478aa9c0 which sends more probes.
+                    // We want the job to think probes succeeded.
+                    // Set state to 2 (waiting for response) with a fake success
+                    // OR just set the transport ready flag
+                    
+                    var transport = subjob.add(0x08).readPointer();
+                    if (!transport.isNull()) {
+                        console.log('[v8] Sub-job transport: ' + transport);
+                        // Set the ready flag at transport+0x1088
+                        try {
+                            transport.add(0x1088).writeU8(1);
+                            console.log('[v8] Set transport+0x1088 = 1 (ready)');
+                        } catch(e) {
+                            console.log('[v8] Cannot write transport flag: ' + e);
+                        }
+                    }
+                    
+                    subjob = subjob.readPointer(); // next in linked list
+                    count++;
+                }
+            } catch(e) {
+                console.log('[v8] Job manipulation error: ' + e);
+            }
         }
-        
-        // Build SilentLogin packet with msgId=100 (unused by game)
-        var pktBytes = buildSilentLoginPacket(100);
-        var pktBuf = Memory.alloc(pktBytes.length);
-        for (var i = 0; i < pktBytes.length; i++) {
-            pktBuf.add(i).writeU8(pktBytes[i]);
+
+        // Also send raw SilentLogin as backup
+        if (blazeSocket && sendFn) {
+            var pkt = buildSilentLoginPacket(100);
+            var buf = Memory.alloc(pkt.length);
+            for (var i = 0; i < pkt.length; i++) buf.add(i).writeU8(pkt[i]);
+            var r = sendFn(blazeSocket, buf, pkt.length, 0);
+            console.log('[v8] Raw SilentLogin sent: ' + r + ' bytes');
         }
-        
-        console.log('[v7] Sending SilentLogin packet (' + pktBytes.length + ' bytes) on socket ' + blazeSocket);
-        var result = sendFn(blazeSocket, pktBuf, pktBytes.length, 0);
-        console.log('[v7] send() returned: ' + result);
-        
-        if (result > 0) {
-            console.log('[v7] >>> SILENTLOGIN SENT ON WIRE! <<<');
-            sent = true;
-        } else {
-            console.log('[v7] send() failed');
-        }
-        
+
+        // Check state after delays
+        var sm = loginSM;
+        setTimeout(function() {
+            try {
+                var jh = sm.add(0x18).readPointer();
+                console.log('[v8] T+2s: +0x18=' + jh);
+                if (!jh.isNull()) {
+                    var sj = jh.add(0x28).readPointer();
+                    if (!sj.isNull()) {
+                        console.log('[v8] T+2s: sub-job state=' + sj.add(0x30).readU32());
+                    }
+                }
+            } catch(e) {}
+        }, 2000);
+
+        setTimeout(function() {
+            try {
+                console.log('[v8] T+10s: +0x18=' + sm.add(0x18).readPointer());
+            } catch(e) {}
+        }, 10000);
+
         return 1;
     }, 'uint64', ['pointer'], 'win64'));
-    console.log('[v7] Replaced LoginCheck');
+    console.log('[v8] Replaced LoginCheck');
 } catch(e) {
-    console.log('[v7] Replace failed: ' + e);
+    console.log('[v8] Replace failed: ' + e);
 }
 
-console.log('[v7] Ready. Waiting for Blaze connection + PreAuth...');
+console.log('[v8] Ready.');
