@@ -1,4 +1,4 @@
-﻿=== PreAuth Schema Dump 2026-04-18 13:09:01 ===
+﻿=== PreAuth Schema Dump 2026-04-18 13:12:59 ===
 RESULT: NO_DATA
 
 --- FRIDA OUTPUT (FULL) ---
@@ -15,16 +15,16 @@ RESULT: NO_DATA
    . . . .   Connected to Local System (id=local)
 Attaching...
 [v6] base: 0x140000000
-[v6] Config object at 0x10b060930 auth token at 0x10b060c20
+[v6] Config object at 0x107120450 auth token at 0x10711e2a0
 [v6] Replaced LoginCheck at 0x146e1dae0
 [v6] Ready. Waiting for PreAuth...
-[Local::PID::107796 ]-> 
+[Local::PID::92188 ]-> 
 
 --- ORIGIN IPC SERVER ---
 hm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
-[Origin] 127.0.0.1:54767 connected
-[Origin] -> Challenge (key=1a50bc73d58c33049d9173fee7004cdc)
-[Origin] session seed=14649 key=cba90016b4a9072847d809bb0481ae25
+[Origin] 127.0.0.1:54840 connected
+[Origin] -> Challenge (key=b0c4c57270b2e7d959f1199f606c42cd)
+[Origin] session seed=13616 key=9d2947dbc9b1cd2b6e42dcfe317ed73d
 [Origin] -> ChallengeAccepted (session ready)
 [Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
 [Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
@@ -82,50 +82,50 @@ SECURITY WARNING: Reverting CVE-2023-46809: Marvin attack on PKCS#1 padding
 
 --- DLL LOG ---
 ANDLER: first 128 bytes:
-[13:07:25.230]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[13:07:25.230]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[13:07:25.230]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[13:07:25.230]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[13:07:25.230]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[13:07:25.230]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[13:07:25.230]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[13:07:25.230]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[13:07:25.230] PREAUTH_HANDLER: Cave at 00000000005D0000, 44 bytes (XOR R8D + trampoline)
-[13:07:25.230] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[13:07:25.230] CONNECT-HOOK: Patched DAT_148e223d8 at 469 ms (real=00007FFD6EB11A50)
-[13:07:25.230] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[13:07:25.230] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[13:07:25.230] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[13:07:25.230] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[13:07:25.230] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[13:07:25.230] PATCHED: FUN_145e280b0 (version compare) -> always match
-[13:07:25.371] PATCHED: Origin SDK check at 00000001470A8430
-[13:07:25.371] All patches in 609 ms
-[13:07:25.371] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[13:07:25.371] AUTH: Checking login gate globals...
-[13:07:25.371] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[13:07:25.371] AUTH: DAT_144b86bdf = 0 (error flag)
-[13:07:25.371] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[13:07:25.748] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[13:07:31.220] AUTH: Slot cleared at 5800 ms
-[13:07:31.220] AUTH: OnlineMgr=0x3ECB3E70
-[13:07:31.220] AUTH: slot=0x0 cave=0
-[13:07:31.220] AUTH: Using fake vtable (real not captured)
-[13:07:31.220] AUTH: Injected fake request 000000005D390000 into slot
-[13:07:31.321] AUTH: cave=1 slot=0x0
-[13:07:31.321] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[13:07:31.321] AUTH: req[+0xd8]=0x99C9930 req[+0xe8]=1
-[13:07:31.321] AUTH: state=2. Auth ready.
-[13:07:31.321] AUTH: OnlineMgr+0xb10 = 0x3ECBA6E0
-[13:07:31.321] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ECBA960
-[13:07:31.321] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[13:07:31.321] AUTH: Found 0 objects with vtables in BlazeHub
-[13:07:31.321] AUTH: BlazeHub(000000003ECBA960)+0x53f = 1
-[13:07:31.321] AUTH: Applying OSDK patches (post-load)...
-[13:07:31.321] PATCHED: GetProfileSync -> return 0 (post-load)
-[13:07:31.321] PATCHED: GetSettingSync -> return 0 (post-load)
-[13:07:31.321] PATCHED: SetPresence -> return 0 (post-load)
-[13:07:31.321] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[13:07:31.321] PATCHED: FUN_14717d5d0 (age check) -> always pass
-[13:07:31.321] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[13:11:23.686]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[13:11:23.686]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[13:11:23.686]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[13:11:23.686]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[13:11:23.686]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[13:11:23.686]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[13:11:23.686]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[13:11:23.686]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[13:11:23.686] PREAUTH_HANDLER: Cave at 0000000000A00000, 44 bytes (XOR R8D + trampoline)
+[13:11:23.686] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[13:11:23.686] CONNECT-HOOK: Patched DAT_148e223d8 at 563 ms (real=00007FFD6EB11A50)
+[13:11:23.686] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[13:11:23.686] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[13:11:23.686] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[13:11:23.686] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[13:11:23.686] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[13:11:23.686] PATCHED: FUN_145e280b0 (version compare) -> always match
+[13:11:23.845] PATCHED: Origin SDK check at 00000001470A8430
+[13:11:23.845] All patches in 719 ms
+[13:11:23.845] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[13:11:23.846] AUTH: Checking login gate globals...
+[13:11:23.846] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[13:11:23.846] AUTH: DAT_144b86bdf = 0 (error flag)
+[13:11:23.846] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[13:11:24.123] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[13:11:29.581] AUTH: Slot cleared at 5700 ms
+[13:11:29.581] AUTH: OnlineMgr=0x3EC03E70
+[13:11:29.581] AUTH: slot=0x0 cave=0
+[13:11:29.581] AUTH: Using fake vtable (real not captured)
+[13:11:29.581] AUTH: Injected fake request 000000005D3E0000 into slot
+[13:11:29.682] AUTH: cave=1 slot=0x0
+[13:11:29.682] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[13:11:29.682] AUTH: req[+0xd8]=0x99CA0B0 req[+0xe8]=1
+[13:11:29.682] AUTH: state=2. Auth ready.
+[13:11:29.682] AUTH: OnlineMgr+0xb10 = 0x3EC0A6E0
+[13:11:29.682] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC0A960
+[13:11:29.682] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[13:11:29.682] AUTH: Found 0 objects with vtables in BlazeHub
+[13:11:29.682] AUTH: BlazeHub(000000003EC0A960)+0x53f = 1
+[13:11:29.682] AUTH: Applying OSDK patches (post-load)...
+[13:11:29.682] PATCHED: GetProfileSync -> return 0 (post-load)
+[13:11:29.682] PATCHED: GetSettingSync -> return 0 (post-load)
+[13:11:29.682] PATCHED: SetPresence -> return 0 (post-load)
+[13:11:29.682] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[13:11:29.682] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[13:11:29.682] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
