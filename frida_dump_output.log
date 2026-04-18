@@ -10,13 +10,15 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-[v7] base: 0x140000000
-[v7] send() at 0x7ffd6eb02320
-[v7] Hooked recv() at 0x7ffd6eb11d90
-[v7] Replaced LoginCheck
-[v7] Ready. Waiting for Blaze connection + PreAuth...
-[Local::PID::102528 ]-> [v7] Found Blaze socket: 4320
-[v7] LoginCheck called. blazeSocket=4320
-[v7] Sending SilentLogin packet (58 bytes) on socket 4320
-[v7] send() returned: 58
-[v7] >>> SILENTLOGIN SENT ON WIRE! <<<
+[v8] base: 0x140000000
+[v8] send() at 0x7ffd6eb02320
+[v8] Hooked recv()
+[v8] Replaced LoginCheck
+[v8] Ready.
+[Local::PID::98396 ]-> [v8] Found Blaze socket: 4288
+[v8] LoginCheck called. loginSM=0x3ea89da0
+[v8] +0x18 job handle = 0x2a7d20a0
+[v8] Attempting to force QoS job completion...
+[v8] Raw SilentLogin sent: 58 bytes
+[v8] T+2s: +0x18=0x2a7d20a0
+[v8] T+10s: +0x18=0x2a7d20a0
