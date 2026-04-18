@@ -197,20 +197,25 @@ at its default-constructed empty state.
 
 ### What This Means
 
-The login types are encoded WITHIN the QOSS TDF binary data, but they're
-not a named TDF field with their own tag. They're part of the QOSS struct's
-serialized representation — possibly as an unnamed/internal field, or as
-part of one of the existing fields (LTPS map?) that we're encoding incorrectly.
+The Login job is queued successfully (LoginSender returns non-zero, job handle
+persists at T+3s). But the RPC never appears on the wire. The job scheduler
+doesn't dispatch it before the 30-second Logout timer fires.
 
-### Next Step
+Possible causes:
+1. The job scheduler runs on the game's main thread during the online tick.
+   The DLL's Patch 14 forces connState=0 continuously, which might prevent
+   the online tick from processing the job queue.
+2. The Logout timer (30s from LoginFallback) fires before the job scheduler
+   gets to the Login job. Our replaced LoginCheck returns 1 (preventing
+   LoginFallback), but the timer might have already been started by a
+   previous call.
+3. The job has a dependency on another job (QoS) that hasn't completed.
 
-Compare our QOSS TDF binary output with BF4's QOSS binary output byte-by-byte.
-BF4's QOSS is 591 bytes and contains a full LTPS map with 7 QoS sites.
-Our QOSS has an empty LTPS map. The LTPS map entries might contain login
-type data that gets extracted into the internal list during deserialization.
+## Next Step
 
-Alternatively, the QOSS struct might have MORE than 4 fields in FIFA 17's
-version — the registration says 4, but the C++ class might have additional
-fields that are serialized/deserialized through a custom codec, not through
-the standard TDF member info table.
+The Login job IS created. LoginSender succeeds. The RPC is queued.
+The remaining problem is job dispatch timing. We need to either:
+1. Ensure the job scheduler processes the Login job before Logout
+2. Prevent the Logout timer from firing
+3. Find and resolve the job's dispatch dependency
 
