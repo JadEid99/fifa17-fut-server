@@ -86,41 +86,29 @@ function buildSilentLoginPacket(msgId) {
 var blazeSocket = null;
 var sendFn = null;
 
-// Get ws2_32.dll send function
+// Get send/recv from game's stored function pointers (Ghidra addresses)
+// DAT_148e22400 = send, DAT_148e223f8 = recv, DAT_148e223d8 = connect
 try {
-    var ws2 = Module.findExportByName('ws2_32.dll', 'send');
-    if (ws2) {
-        sendFn = new NativeFunction(ws2, 'int', ['int', 'pointer', 'int', 'int'], 'stdcall');
-        console.log('[v7] Found ws2_32!send at ' + ws2);
-    }
-} catch(e) {
-    console.log('[v7] ws2_32 send not found: ' + e);
-}
+    var sendPtr = base.add(0x8e22400).readPointer();
+    var recvPtr = base.add(0x8e223f8).readPointer();
+    sendFn = new NativeFunction(sendPtr, 'int', ['int', 'pointer', 'int', 'int'], 'stdcall');
+    console.log('[v7] send() at ' + sendPtr);
 
-// Hook recv to find the Blaze socket (it receives FetchClientConfig responses)
-var recvHooked = false;
-try {
-    var recvAddr = Module.findExportByName('ws2_32.dll', 'recv');
-    if (recvAddr) {
-        Interceptor.attach(recvAddr, {
-            onLeave: function(retval) {
-                if (blazeSocket || retval.toInt32() <= 0) return;
-                // Check if this recv returned Blaze data (look for comp=0x0009 in header)
-                try {
-                    var buf = this.context.rdx;  // buffer pointer (2nd arg)
-                    var b6 = buf.add(6).readU8();
-                    var b7 = buf.add(7).readU8();
-                    if (b6 === 0x00 && b7 === 0x09) {  // comp = 0x0009 (Util)
-                        blazeSocket = this.context.rcx.toInt32();  // socket fd (1st arg)
-                        console.log('[v7] Found Blaze socket: ' + blazeSocket);
-                    }
-                } catch(e) {}
-            }
-        });
-        console.log('[v7] Hooked recv to find Blaze socket');
-    }
+    Interceptor.attach(recvPtr, {
+        onEnter: function(args) { this.sock = args[0].toInt32(); this.buf = args[1]; },
+        onLeave: function(retval) {
+            if (blazeSocket || retval.toInt32() <= 0) return;
+            try {
+                if (this.buf.add(6).readU8() === 0x00 && this.buf.add(7).readU8() === 0x09) {
+                    blazeSocket = this.sock;
+                    console.log('[v7] Found Blaze socket: ' + blazeSocket);
+                }
+            } catch(e) {}
+        }
+    });
+    console.log('[v7] Hooked recv() at ' + recvPtr);
 } catch(e) {
-    console.log('[v7] recv hook failed: ' + e);
+    console.log('[v7] Socket setup failed: ' + e);
 }
 
 // Replace LoginCheck — when called, send Login directly on the socket
