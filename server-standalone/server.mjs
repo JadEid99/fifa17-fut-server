@@ -1986,25 +1986,43 @@ startRedirector();
 startMainServer();
 startHttpServer();
 
-// UDP QoS server on port 17502
-// The game sends QoS bandwidth probes via UDP after PreAuth.
-// The Login RPC is queued behind a QoS job (7000ms timeout).
-// If QoS fails, the timeout handler triggers Logout instead of Login.
-// We need to respond to QoS probes so the job completes successfully.
+// HTTPS QoS server on port 17502
+// The game sends HTTPS requests to https://<BWPS_address>:<BWPS_port>/qos/firewall
+// and /qos/firetype during the Login job's QoS phase.
+// Without valid responses, the Login job never dispatches the Login RPC.
+import https from 'https';
+const qosHttpsServer = https.createServer({
+  key: fs.readFileSync(path.join(import.meta.dirname, 'key.pem')),
+  cert: fs.readFileSync(path.join(import.meta.dirname, 'cert.pem')),
+}, (req, res) => {
+  console.log(`[QOS-HTTPS] ${req.method} ${req.url}`);
+  
+  if (req.url.includes('/qos/firewall')) {
+    console.log('[QOS-HTTPS] Firewall check — responding OK');
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ok');
+  } else if (req.url.includes('/qos/firetype')) {
+    console.log('[QOS-HTTPS] Firetype check — responding OK');
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ok');
+  } else {
+    console.log(`[QOS-HTTPS] Unknown request: ${req.url}`);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ok');
+  }
+});
+qosHttpsServer.on('error', (err) => console.log(`[QOS-HTTPS] Error: ${err.message}`));
+qosHttpsServer.listen(17502, '0.0.0.0', () => console.log('[QOS-HTTPS] Listening on HTTPS port 17502'));
+
+// Also keep UDP QoS server as fallback
 import dgram from 'dgram';
 const qosServer = dgram.createSocket('udp4');
 qosServer.on('message', (msg, rinfo) => {
   console.log(`[QOS-UDP] Received ${msg.length} bytes from ${rinfo.address}:${rinfo.port}`);
-  const hex = Array.from(msg.subarray(0, Math.min(32, msg.length))).map(b => b.toString(16).padStart(2,'0')).join(' ');
-  console.log(`[QOS-UDP] Data: ${hex}`);
-  // Echo the probe back — QoS measurement just needs a response
-  qosServer.send(msg, rinfo.port, rinfo.address, (err) => {
-    if (err) console.log(`[QOS-UDP] Send error: ${err.message}`);
-    else console.log(`[QOS-UDP] Echoed ${msg.length} bytes back`);
-  });
+  qosServer.send(msg, rinfo.port, rinfo.address);
 });
 qosServer.on('error', (err) => console.log(`[QOS-UDP] Error: ${err.message}`));
-qosServer.bind(17502, '0.0.0.0', () => console.log('[QOS-UDP] Listening on UDP port 17502'));
+qosServer.bind(17503, '0.0.0.0', () => console.log('[QOS-UDP] Listening on UDP port 17503'));
 
 // Also revert CreateAccount to success response (error 0x0F didn't help)
 // and restore Logout response (ignoring didn't help — game disconnects anyway)
