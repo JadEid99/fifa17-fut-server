@@ -104,23 +104,31 @@ try {
                 console.log('[v5] After:  +0x218=' + vecStart.readPointer() + ' +0x220=' + vecEnd.readPointer());
                 console.log('[v5] Injected 1 login type entry!');
 
-                // Schedule delayed state check — 5 seconds after injection
+                // Check +0x18 immediately and at intervals to track the job handle
                 var savedSM = loginSM;
+                console.log('[v5] +0x18 IMMEDIATE = ' + savedSM.add(0x18).readPointer());
+                
                 setTimeout(function() {
                     try {
-                        var s218 = savedSM.add(0x218).readPointer();
-                        var s220 = savedSM.add(0x220).readPointer();
-                        var s18 = savedSM.add(0x18).readPointer();
-                        console.log('[v5] STATE CHECK (T+5s):');
-                        console.log('  +0x218=' + s218 + ' +0x220=' + s220);
-                        console.log('  +0x18 (job handle)=' + s18);
-                        console.log('  +0x10 (login started)=' + savedSM.add(0x10).readU8());
-                        // Check if LoginFallback was called by reading +0x1a3
-                        console.log('  +0x1a3=' + savedSM.add(0x1a3).readU8());
-                    } catch(e) {
-                        console.log('[v5] STATE CHECK error: ' + e);
-                    }
-                }, 5000);
+                        console.log('[v5] STATE T+1s: +0x18=' + savedSM.add(0x18).readPointer() + 
+                            ' +0x218=' + savedSM.add(0x218).readPointer() +
+                            ' +0x10=' + savedSM.add(0x10).readU8());
+                    } catch(e) { console.log('[v5] T+1s error: ' + e); }
+                }, 1000);
+                
+                setTimeout(function() {
+                    try {
+                        console.log('[v5] STATE T+3s: +0x18=' + savedSM.add(0x18).readPointer() +
+                            ' +0x218=' + savedSM.add(0x218).readPointer());
+                    } catch(e) { console.log('[v5] T+3s error: ' + e); }
+                }, 3000);
+                
+                setTimeout(function() {
+                    try {
+                        console.log('[v5] STATE T+8s: +0x18=' + savedSM.add(0x18).readPointer() +
+                            ' +0x218=' + savedSM.add(0x218).readPointer());
+                    } catch(e) { console.log('[v5] T+8s error: ' + e); }
+                }, 8000);
 
                 injected = true;
 
