@@ -10,14 +10,10 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-[v6] base: 0x140000000
-[v6] Config object at 0x1090e0af0 auth token at 0x1090e0a00
-[v6] Replaced LoginCheck at 0x146e1dae0
-[v6] Ready. Waiting for PreAuth...
-[Local::PID::46928 ]-> [v6] LoginCheck REPLACED. loginSM=0x3eaf9da0
-[v6] +0x18 job handle = 0x2a7d27f0
-[v6] Template entry at +0xE0 = 0x3eaf9ec0
-[v6] Calling LoginSender...
-[v6] LoginSender returned: 160659201
-[v6] >>> LOGIN RPC SENT! <<<
-[v6] T+3s: +0x18=0x2a7d27f0
+[v7] base: 0x140000000
+[v7] ws2_32 send not found: TypeError: not a function
+[v7] recv hook failed: TypeError: not a function
+[v7] Replaced LoginCheck
+[v7] Ready. Waiting for Blaze connection + PreAuth...
+[Local::PID::106228 ]-> [v7] LoginCheck called. blazeSocket=null
+[v7] No socket or send function — cannot send Login
