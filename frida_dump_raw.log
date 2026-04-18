@@ -11,7 +11,14 @@
    . . . .   Connected to Local System (id=local)
 Attaching...
 [v6] base: 0x140000000
-[v6] Config object at 0x107b70bb0 auth token at 0x107b70f90
+[v6] Config object at 0x1090e0af0 auth token at 0x1090e0a00
 [v6] Replaced LoginCheck at 0x146e1dae0
 [v6] Ready. Waiting for PreAuth...
-[Local::PID::78400 ]-> 
+[Local::PID::46928 ]-> [v6] LoginCheck REPLACED. loginSM=0x3eaf9da0
+[v6] +0x18 job handle = 0x2a7d27f0
+[v6] Template entry at +0xE0 = 0x3eaf9ec0
+[v6] Calling LoginSender...
+[v6] LoginSender returned: 160659201
+[v6] >>> LOGIN RPC SENT! <<<
+[v6] T+3s: +0x18=0x2a7d27f0
+
