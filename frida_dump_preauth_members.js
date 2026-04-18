@@ -16,14 +16,30 @@
 
 'use strict';
 
-const base = Module.findBaseAddress('FIFA17.exe') || ptr(0x140000000);
+var base = null;
+try {
+    base = Module.findBaseAddress('FIFA17.exe');
+} catch(e) {
+    console.log('[DUMP] Module.findBaseAddress failed: ' + e);
+}
+if (!base) {
+    try {
+        var mod = Process.enumerateModules()[0];
+        base = mod.base;
+        console.log('[DUMP] Using first module: ' + mod.name + ' at ' + base);
+    } catch(e2) {
+        base = ptr(0x140000000);
+        console.log('[DUMP] Fallback to hardcoded base: ' + base);
+    }
+}
 console.log('[DUMP] FIFA17.exe base: ' + base);
 
 // ============================================================
 // KNOWN ADDRESSES (Ghidra base 0x140000000)
 // ============================================================
-const ADDR = {
+var ADDR = {
     memberInfoTablePtr: base.add(0x4874a90),   // PTR_DAT_144874a90 — pointer to member info array
+    memberInfoTableAlt: base.add(0x4867628),   // Alternate address found in live dump (April 17)
     fieldCount:         base.add(0x4875638),   // DAT_144875638 — count = 14
     preAuthRegFn:       base.add(0x6df6160),   // FUN_146df6160 — PreAuthResponse registration
     preAuthHandler:     base.add(0x6e1cf10),   // FUN_146e1cf10 — PreAuth response handler
@@ -120,9 +136,12 @@ function dumpMemberInfoTable() {
             console.log('  Error: ' + e);
         }
 
-        // Interpretation B: PTR_DAT is the table itself (flat array of structs)
-        console.log('\n--- Interpretation B: Flat struct array ---');
+        // Interpretation B: Flat struct array ---
+        // Try BOTH addresses: Ghidra's PTR_DAT_144874a90 and live dump's 0x144867628
+        console.log('\n--- Interpretation B: Flat struct array at both addresses ---');
+        for (const tableAddr of [rawTablePtr, ADDR.memberInfoTableAlt]) {
         try {
+            console.log('\n  Table address: ' + tableAddr);
             // Each entry might be 24, 32, 40, or 48 bytes
             for (let stride of [24, 32, 40, 48]) {
                 console.log('\n  Stride=' + stride + ':');
@@ -145,13 +164,16 @@ function dumpMemberInfoTable() {
         } catch(e) {
             console.log('  Error: ' + e);
         }
+        } // end for tableAddr
 
         // Interpretation C: Scan a wide region around the table pointer for tag patterns
         console.log('\n--- Interpretation C: Wide scan around table address ---');
         try {
-            // Scan 2KB before and after the table pointer address
-            const scanStart = rawTablePtr.sub(256);
-            const scanLen = 2048;
+            // Scan around BOTH known addresses (Ghidra + live dump from April 17)
+            for (const scanAddr of [rawTablePtr, ADDR.memberInfoTableAlt]) {
+                console.log('  Scanning around ' + scanAddr + ':');
+                const scanStart = scanAddr.sub(256);
+                const scanLen = 2048;
             const scanBytes = new Uint8Array(scanStart.readByteArray(scanLen));
             let found = [];
             for (let off = 0; off < scanBytes.length - 5; off++) {
@@ -175,6 +197,7 @@ function dumpMemberInfoTable() {
             } else {
                 console.log('  No Taggi-format entries found in scan range');
             }
+            } // end for scanAddr
         } catch(e) {
             console.log('  Scan error: ' + e);
         }
@@ -372,6 +395,7 @@ function scanBinaryForTags() {
         const scanRegions = [
             { start: ADDR.preAuthResponseStr.sub(0x2000), len: 0x4000, name: 'around PreAuthResponse string' },
             { start: ADDR.memberInfoTablePtr.sub(0x1000), len: 0x3000, name: 'around member info table ptr' },
+            { start: ADDR.memberInfoTableAlt.sub(0x1000), len: 0x3000, name: 'around alt table addr 0x4867628' },
             { start: base.add(0x4874000), len: 0x2000, name: 'rdata 0x4874000-0x4876000' },
         ];
 
