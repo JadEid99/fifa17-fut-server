@@ -29,10 +29,13 @@ var injected = false;
 // This is the perfect injection point
 try {
     Interceptor.attach(base.add(0x6e1c1f0), {
+        onEnter: function(args) {
+            this.loginSM = args[0];  // save param_1 before it gets clobbered
+        },
         onLeave: function(retval) {
             if (injected) return;
 
-            var loginSM = this.context.rcx;  // param_1 = loginSM (first arg, in rcx on x64)
+            var loginSM = this.loginSM;
             console.log('[v5] FUN_146e1c1f0 returned. loginSM=' + loginSM);
 
             // Read the template entry at loginSM+0xE0
