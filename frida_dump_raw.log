@@ -13,21 +13,22 @@ Attaching...
 [v5] base: 0x140000000
 [v5] Hooked FUN_146e1c1f0 (injection point)
 [v5] Ready. Waiting for PreAuth...
-[Local::PID::110092 ]-> [v5] PreAuth handler entered, err=0
+[Local::PID::105608 ]-> [v5] PreAuth handler entered, err=0
 [v5] LoginTypesProcessor entered
-[v5] FUN_146e1c1f0 returned. loginSM=0x3ea69da0
-[v5] Template entry at +0xE0: 0x3ea69ec0
+[v5] FUN_146e1c1f0 returned. loginSM=0x3eaf9da0
+[v5] Template entry at +0xE0: 0x3eaf9ec0
 [v5] Template bytes:
   f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
   04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
   00 00 00 80 00 00 00 00 07 00 00 00 00 00 00 00 
   16 b2 a8 c0 4b 0e 00 00 00 00 00 00 00 00 00 00 
   
-[v5] Allocated entry at: 0x10713e600
+[v5] Allocated entry at: 0x1071223b0
 [v5] Copied template to entry
-[v5] Entry bytes: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
+[v5] Created config object at 0x107579f70 with auth token and transport=1
+[v5] Entry bytes: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 04 00 00 00 00 00 00 00 70 9f 57 07 01 00 00 00 
 [v5] Before: +0x218=0x0 +0x220=0x0
-[v5] After:  +0x218=0x10713e600 +0x220=0x10713e620
+[v5] After:  +0x218=0x1071223b0 +0x220=0x1071223d0
 [v5] Injected 1 login type entry!
 [v5] LoginTypesProcessor returned
 [v5] RPC SEND comp=0x1 cmd=0x0
