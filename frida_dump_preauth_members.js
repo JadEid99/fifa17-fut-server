@@ -98,11 +98,8 @@ try {
                 vecStart.writePointer(entry);
                 vecEnd.writePointer(entry.add(0x20));
 
-                // Also reset the one-shot flag at loginSM+0x18
-                // FUN_146e19720 checks this and returns if non-zero.
-                // The DLL's background LOGIN-INJECT may have already set it.
-                loginSM.add(0x18).writePointer(ptr(0));
-                console.log('[v5] Reset +0x18 one-shot flag to 0');
+                // DO NOT reset +0x18 — it holds an active job handle.
+                // Zeroing it crashes the job scheduler.
 
                 console.log('[v5] After:  +0x218=' + vecStart.readPointer() + ' +0x220=' + vecEnd.readPointer());
                 console.log('[v5] Injected 1 login type entry!');
