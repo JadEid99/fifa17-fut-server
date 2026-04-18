@@ -10,26 +10,14 @@
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-[v5] base: 0x140000000
-[v5] Hooked FUN_146e1c1f0 (injection point)
-[v5] No diagnostic hooks (they corrupt call stack). Using delayed state check instead.
-[v5] Ready. Waiting for PreAuth...
-[Local::PID::94624 ]-> [v5] FUN_146e1c1f0 returned. loginSM=0x3eb09da0
-[v5] Template entry at +0xE0: 0x3eb09ec0
-[v5] Template bytes:
-  f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
-  04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
-  00 00 00 80 00 00 00 00 07 00 00 00 00 00 00 00 
-  16 b2 a8 c0 4b 0e 00 00 00 00 00 00 00 00 00 00 
-  
-[v5] Allocated entry at: 0x10ace5340
-[v5] Copied template to entry
-[v5] Created config object at 0x109420990 with auth token and transport=1
-[v5] Entry bytes: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 04 00 00 00 00 00 00 00 90 09 42 09 01 00 00 00 
-[v5] Before: +0x218=0x0 +0x220=0x0
-[v5] After:  +0x218=0x10ace5340 +0x220=0x10ace5360
-[v5] Injected 1 login type entry!
-[v5] +0x18 IMMEDIATE = 0x0
-Process terminated
-
-Thank you for using Frida!
+[v6] base: 0x140000000
+[v6] Config object at 0x107120ae0 auth token at 0x10710e3d0
+[v6] Replaced LoginCheck at 0x146e1dae0
+[v6] Ready. Waiting for PreAuth...
+[Local::PID::69776 ]-> [v6] LoginCheck REPLACED. loginSM=0x3eaa9da0
+[v6] +0x18 job handle = 0x2a7d2fd0
+[v6] Template entry at +0xE0 = 0x3eaa9ec0
+[v6] Calling LoginSender...
+[v6] LoginSender returned: 160528129
+[v6] >>> LOGIN RPC SENT! <<<
+[v6] T+3s: +0x18=0x2a7d2fd0
