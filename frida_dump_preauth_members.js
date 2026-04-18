@@ -1,455 +1,261 @@
-// Frida script: Dump FIFA 17 PreAuthResponse TDF member info table
-// Goal: Find the unknown TDF tag at field offset +0x120 (login types)
+// Frida script v2: Find the unknown PreAuthResponse TDF tag
 //
-// Known from Ghidra:
-//   - PreAuthResponse registration: FUN_146df6160
-//   - Member info table pointer: PTR_DAT_144874a90
-//   - Field count: DAT_144875638 = 0x0E (14)
-//   - PreAuth handler reads param_2+0x120 as login types list
-//   - NHL has 13 fields, FIFA 17 has 14 — the extra one is the target
+// APPROACH: Hook the TDF wire decoder to log every tag it reads
+// during PreAuth response processing. The decoder reads 3-byte tags
+// from the wire and looks them up in the member info table.
+// By logging every tag the decoder encounters, we get the complete
+// list of tags the game EXPECTS (even if our server doesn't send them all).
 //
-// Strategy:
-//   1. Read the member info table at multiple interpretations
-//   2. Hook the PreAuth response handler to dump the live response object
-//   3. Hook the TDF decoder to log every tag it processes during PreAuth decode
-//   4. Scan memory around known addresses for TDF tag byte patterns
+// From Ghidra: The TDF decoder reads tags via a function that extracts
+// 3 bytes from the stream and decodes them into a 4-char tag string.
+// We hook this function and log every tag.
 
 'use strict';
 
 var base = null;
-try {
-    base = Module.findBaseAddress('FIFA17.exe');
-} catch(e) {
-    console.log('[DUMP] Module.findBaseAddress failed: ' + e);
-}
+try { base = Module.findBaseAddress('FIFA17.exe'); } catch(e) {}
 if (!base) {
     try {
         var mod = Process.enumerateModules()[0];
         base = mod.base;
-        console.log('[DUMP] Using first module: ' + mod.name + ' at ' + base);
     } catch(e2) {
         base = ptr(0x140000000);
-        console.log('[DUMP] Fallback to hardcoded base: ' + base);
     }
 }
-console.log('[DUMP] FIFA17.exe base: ' + base);
-
-// ============================================================
-// KNOWN ADDRESSES (Ghidra base 0x140000000)
-// ============================================================
-var ADDR = {
-    memberInfoTablePtr: base.add(0x4874a90),   // PTR_DAT_144874a90 — pointer to member info array
-    memberInfoTableAlt: base.add(0x4867628),   // Alternate address found in live dump (April 17)
-    fieldCount:         base.add(0x4875638),   // DAT_144875638 — count = 14
-    preAuthRegFn:       base.add(0x6df6160),   // FUN_146df6160 — PreAuthResponse registration
-    preAuthHandler:     base.add(0x6e1cf10),   // FUN_146e1cf10 — PreAuth response handler
-    loginTypesProc:     base.add(0x6e1c3f0),   // FUN_146e1c3f0 — LoginTypesProcessor
-    tdfRegisterType:    base.add(0x79ab1e0),   // FUN_1479ab1e0 — TDF type registration
-    preAuthDecoder:     base.add(0x6df24e0),   // LAB_146df24e0 — PreAuth TDF decoder label
-    preAuthResponseStr: base.add(0x48952d8),   // s_Blaze::Util::PreAuthResponse
-    preAuthResponseStr2:base.add(0x48952f8),   // s_PreAuthResponse
-};
+console.log('[v2] FIFA17.exe base: ' + base);
 
 function decodeTdfTag(b0, b1, b2) {
-    const c0 = String.fromCharCode((b0 >> 2) + 0x20);
-    const c1 = String.fromCharCode(((b0 & 0x03) << 4 | (b1 >> 4)) + 0x20);
-    const c2 = String.fromCharCode(((b1 & 0x0F) << 2 | (b2 >> 6)) + 0x20);
-    const c3 = String.fromCharCode((b2 & 0x3F) + 0x20);
+    var c0 = String.fromCharCode((b0 >> 2) + 0x20);
+    var c1 = String.fromCharCode(((b0 & 0x03) << 4 | (b1 >> 4)) + 0x20);
+    var c2 = String.fromCharCode(((b1 & 0x0F) << 2 | (b2 >> 6)) + 0x20);
+    var c3 = String.fromCharCode((b2 & 0x3F) + 0x20);
     return (c0 + c1 + c2 + c3).trim();
-}
-
-function isValidTag(tag) {
-    return /^[A-Z][A-Z0-9 ]{0,3}$/.test(tag);
 }
 
 function hexDump(addr, len) {
     try {
-        const bytes = addr.readByteArray(len);
-        const arr = new Uint8Array(bytes);
-        let lines = [];
-        for (let i = 0; i < arr.length; i += 16) {
-            let hex = '';
-            let ascii = '';
-            for (let j = 0; j < 16 && i + j < arr.length; j++) {
+        var bytes = addr.readByteArray(len);
+        var arr = new Uint8Array(bytes);
+        var lines = [];
+        for (var i = 0; i < arr.length; i += 16) {
+            var hex = '';
+            for (var j = 0; j < 16 && i + j < arr.length; j++) {
                 hex += ('0' + arr[i+j].toString(16)).slice(-2) + ' ';
-                ascii += (arr[i+j] >= 0x20 && arr[i+j] < 0x7f) ? String.fromCharCode(arr[i+j]) : '.';
             }
-            lines.push(('    ' + (i).toString(16).padStart(4,'0') + ': ' + hex.padEnd(49) + ascii));
+            lines.push('    ' + i.toString(16).padStart(4,'0') + ': ' + hex);
         }
         return lines.join('\n');
-    } catch(e) {
-        return '    (unreadable: ' + e + ')';
-    }
-}
-
-function tryReadString(addr) {
-    try {
-        const p = addr.readPointer();
-        // Check if pointer is in a reasonable range (game image or heap)
-        if (p.isNull()) return null;
-        const s = p.readCString();
-        if (s && s.length > 1 && s.length < 200 && /^[a-zA-Z_:]/.test(s)) return s;
-    } catch(e) {}
-    return null;
+    } catch(e) { return '    unreadable: ' + e; }
 }
 
 // ============================================================
-// APPROACH 1: Direct table read with multiple interpretations
+// APPROACH A: Hook PreAuth handler + LoginTypesProcessor
+// to confirm the field at +0x120 and dump its contents
 // ============================================================
-function dumpMemberInfoTable() {
-    console.log('\n' + '='.repeat(70));
-    console.log('[APPROACH 1] Direct member info table read');
-    console.log('='.repeat(70));
+var preAuthActive = false;
 
-    try {
-        const count = ADDR.fieldCount.readU32();
-        console.log('Field count at ' + ADDR.fieldCount + ': ' + count);
-
-        // The table pointer itself
-        const rawTablePtr = ADDR.memberInfoTablePtr;
-        console.log('Table pointer location: ' + rawTablePtr);
-
-        // Interpretation A: PTR_DAT is a pointer TO a pointer array
-        console.log('\n--- Interpretation A: Array of pointers ---');
-        try {
-            const tableBase = rawTablePtr.readPointer();
-            console.log('Table base (deref): ' + tableBase);
-            for (let i = 0; i < Math.min(count, 20); i++) {
-                const entryPtr = tableBase.add(i * 8).readPointer();
-                console.log('\n[' + i + '] ptr=' + entryPtr);
-                console.log(hexDump(entryPtr, 80));
-                // Try tag decode at various offsets
-                for (let off of [0, 4, 8, 12, 16, 20, 24]) {
-                    try {
-                        const b = new Uint8Array(entryPtr.add(off).readByteArray(3));
-                        const tag = decodeTdfTag(b[0], b[1], b[2]);
-                        if (isValidTag(tag)) console.log('    tag@' + off + ': ' + tag);
-                    } catch(e) {}
-                }
-                // Try string pointers at various offsets
-                for (let off of [0, 8, 16, 24, 32, 40, 48, 56, 64]) {
-                    const s = tryReadString(entryPtr.add(off));
-                    if (s) console.log('    str@' + off + ': "' + s + '"');
-                }
-            }
-        } catch(e) {
-            console.log('  Error: ' + e);
-        }
-
-        // Interpretation B: Flat struct array ---
-        // Try BOTH addresses: Ghidra's PTR_DAT_144874a90 and live dump's 0x144867628
-        console.log('\n--- Interpretation B: Flat struct array at both addresses ---');
-        for (const tableAddr of [rawTablePtr, ADDR.memberInfoTableAlt]) {
-        try {
-            console.log('\n  Table address: ' + tableAddr);
-            // Each entry might be 24, 32, 40, or 48 bytes
-            for (let stride of [24, 32, 40, 48]) {
-                console.log('\n  Stride=' + stride + ':');
-                let validCount = 0;
-                for (let i = 0; i < count; i++) {
-                    const entryAddr = rawTablePtr.add(i * stride);
-                    for (let off of [0, 4, 8, 12, 16]) {
-                        try {
-                            const b = new Uint8Array(entryAddr.add(off).readByteArray(3));
-                            const tag = decodeTdfTag(b[0], b[1], b[2]);
-                            if (isValidTag(tag)) {
-                                console.log('    [' + i + '] @' + off + ': ' + tag);
-                                validCount++;
-                            }
-                        } catch(e) {}
-                    }
-                }
-                if (validCount >= 5) console.log('  >>> ' + validCount + ' valid tags found with stride ' + stride);
-            }
-        } catch(e) {
-            console.log('  Error: ' + e);
-        }
-        } // end for tableAddr
-
-        // Interpretation C: Scan a wide region around the table pointer for tag patterns
-        console.log('\n--- Interpretation C: Wide scan around table address ---');
-        try {
-            // Scan around BOTH known addresses (Ghidra + live dump from April 17)
-            for (const scanAddr of [rawTablePtr, ADDR.memberInfoTableAlt]) {
-                console.log('  Scanning around ' + scanAddr + ':');
-                const scanStart = scanAddr.sub(256);
-                const scanLen = 2048;
-            const scanBytes = new Uint8Array(scanStart.readByteArray(scanLen));
-            let found = [];
-            for (let off = 0; off < scanBytes.length - 5; off++) {
-                const tag = decodeTdfTag(scanBytes[off], scanBytes[off+1], scanBytes[off+2]);
-                // Check separator byte (should be 0x00 or 0x01)
-                if (isValidTag(tag) && (scanBytes[off+3] === 0x00 || scanBytes[off+3] === 0x01)) {
-                    const typeB = scanBytes[off+4];
-                    const nextB = scanBytes[off+5];
-                    // Reasonable type byte (0x00-0x20) and next byte (0 or 4-64)
-                    if (typeB <= 0x20 && (nextB === 0 || (nextB >= 4 && nextB <= 64))) {
-                        found.push({ off: off - 256, tag, type: typeB, next: nextB });
-                    }
-                }
-            }
-            if (found.length > 0) {
-                console.log('  Found ' + found.length + ' Taggi-format entries:');
-                for (const f of found) {
-                    console.log('    @' + (f.off >= 0 ? '+' : '') + f.off + ': ' + f.tag + 
-                        ' type=0x' + f.type.toString(16) + ' next=' + f.next);
-                }
-            } else {
-                console.log('  No Taggi-format entries found in scan range');
-            }
-            } // end for scanAddr
-        } catch(e) {
-            console.log('  Scan error: ' + e);
-        }
-
-    } catch(e) {
-        console.log('[APPROACH 1] Fatal error: ' + e);
-    }
-}
-
-// ============================================================
-// APPROACH 2: Hook PreAuth handler, dump response object at +0x120
-// ============================================================
-function hookPreAuthHandler() {
-    console.log('\n' + '='.repeat(70));
-    console.log('[APPROACH 2] Hook PreAuth handler — dump response+0x120');
-    console.log('='.repeat(70));
-
-    try {
-        Interceptor.attach(ADDR.preAuthHandler, {
-            onEnter: function(args) {
-                this.param1 = args[0];
-                this.param2 = args[1];
-                this.param3 = args[2];
-                const err = args[2].toInt32();
-                console.log('\n[PreAuthHandler] ENTERED');
-                console.log('  param1 (this)=' + args[0] + ' param2 (resp)=' + args[1] + ' param3 (err)=' + err);
-
-                if (err === 0) {
-                    const resp = args[1];
-                    // Dump the response object around offset 0x120
-                    console.log('  resp+0x100..0x180:');
-                    console.log(hexDump(resp.add(0x100), 128));
-
-                    // The field at +0x120 is a TDF list/struct object
-                    // Read its vtable and internal pointers
-                    try {
-                        const fieldAddr = resp.add(0x120);
-                        const vtable = fieldAddr.readPointer();
-                        console.log('  resp+0x120 vtable: ' + vtable);
-                        console.log('  resp+0x120 dump (96 bytes):');
-                        console.log(hexDump(fieldAddr, 96));
-
-                        // The list's start/end pointers might be at internal offsets
-                        // From analysis: the list object at +0x1b8 in loginSM has
-                        // array pointers at +0x60 and +0x68 relative to the list start
-                        // So resp+0x120+0x60 and resp+0x120+0x68 might have the array
-                        for (let off of [0x18, 0x20, 0x28, 0x30, 0x38, 0x40, 0x48, 0x50, 0x58, 0x60, 0x68]) {
-                            try {
-                                const val = fieldAddr.add(off).readPointer();
-                                if (!val.isNull()) {
-                                    console.log('  resp+0x120+0x' + off.toString(16) + ': ' + val);
-                                }
-                            } catch(e) {}
-                        }
-
-                        // Try to read the tag from the vtable area
-                        // The vtable might have a getName() or getTag() method
-                        if (!vtable.isNull()) {
-                            console.log('  vtable dump:');
-                            console.log(hexDump(vtable, 64));
-                        }
-                    } catch(e) {
-                        console.log('  Error reading resp+0x120: ' + e);
-                    }
-
-                    // Also dump the FULL response object to find all field boundaries
-                    console.log('\n  Full response object (first 0x250 bytes):');
-                    console.log(hexDump(resp, 0x250));
-                }
-            },
-            onLeave: function(retval) {
-                console.log('[PreAuthHandler] RETURNED');
-            }
-        });
-        console.log('  PreAuth handler hooked at ' + ADDR.preAuthHandler);
-    } catch(e) {
-        console.log('  Hook error: ' + e);
-    }
-}
-
-// ============================================================
-// APPROACH 3: Hook LoginTypesProcessor to see what it reads
-// ============================================================
-function hookLoginTypesProcessor() {
-    console.log('\n' + '='.repeat(70));
-    console.log('[APPROACH 3] Hook LoginTypesProcessor — trace +0x120 access');
-    console.log('='.repeat(70));
-
-    try {
-        Interceptor.attach(ADDR.loginTypesProc, {
-            onEnter: function(args) {
-                const loginSM = args[0];
-                const respField = args[1];  // This is resp+0x120
-                console.log('\n[LoginTypesProc] ENTERED');
-                console.log('  loginSM=' + loginSM + ' respField(resp+0x120)=' + respField);
-
-                // Dump the field object passed as param_2
-                console.log('  respField dump (128 bytes):');
-                console.log(hexDump(respField, 128));
-
-                // Read the vtable
+try {
+    Interceptor.attach(base.add(0x6e1cf10), {
+        onEnter: function(args) {
+            var err = args[2].toInt32();
+            console.log('\n[PreAuth] HANDLER ENTERED err=' + err);
+            if (err === 0) {
+                preAuthActive = true;
+                var resp = args[1];
+                // Dump field at +0x120 (login types)
+                console.log('[PreAuth] resp+0x120 (login types field):');
+                console.log(hexDump(resp.add(0x120), 64));
+                // Check if the list at +0x120 has any entries
+                // The list's internal array is at field+0x60 and field+0x68
                 try {
-                    const vtable = respField.readPointer();
-                    console.log('  respField vtable: ' + vtable);
-
-                    // Try calling vtable+0x10 (getName or getTypeInfo)
-                    // This is risky but might give us the type name
-                    try {
-                        const getInfoFn = vtable.add(0x10).readPointer();
-                        console.log('  vtable+0x10 (getInfo?): ' + getInfoFn);
-                    } catch(e) {}
-                } catch(e) {}
-
-                this.loginSM = loginSM;
-            },
-            onLeave: function(retval) {
-                // After processing, check the login types array
-                try {
-                    const start = this.loginSM.add(0x218).readPointer();
-                    const end = this.loginSM.add(0x220).readPointer();
-                    const count = start.isNull() ? 0 : end.sub(start).toInt32() / 0x20;
-                    console.log('[LoginTypesProc] RETURNED — array count=' + count +
-                        ' start=' + start + ' end=' + end);
+                    var listStart = resp.add(0x120 + 0x60).readPointer();
+                    var listEnd = resp.add(0x120 + 0x68).readPointer();
+                    console.log('[PreAuth] login types list: start=' + listStart + ' end=' + listEnd);
+                    if (!listStart.isNull() && !listEnd.isNull()) {
+                        var count = listEnd.sub(listStart).toInt32() / 0x20;
+                        console.log('[PreAuth] login types count: ' + count);
+                    } else {
+                        console.log('[PreAuth] login types list is EMPTY (null pointers)');
+                    }
                 } catch(e) {
-                    console.log('[LoginTypesProc] RETURNED — error reading array: ' + e);
+                    console.log('[PreAuth] error reading list: ' + e);
                 }
             }
-        });
-        console.log('  LoginTypesProcessor hooked at ' + ADDR.loginTypesProc);
-    } catch(e) {
-        console.log('  Hook error: ' + e);
-    }
+        },
+        onLeave: function() {
+            preAuthActive = false;
+            console.log('[PreAuth] HANDLER RETURNED');
+        }
+    });
+    console.log('[v2] Hooked PreAuth handler at ' + base.add(0x6e1cf10));
+} catch(e) {
+    console.log('[v2] Failed to hook PreAuth handler: ' + e);
 }
 
 // ============================================================
-// APPROACH 4: Hook TDF type registration to catch PreAuthResponse members
+// APPROACH B: Scan the PreAuth response TDF wire bytes for tags
+// The server sends TDF-encoded data. The game receives it and
+// decodes it. We can read the raw TDF bytes from the response
+// body BEFORE decoding and extract all tags ourselves.
+//
+// Hook the RPC response dispatcher to capture the raw PreAuth
+// response bytes as they arrive from the server.
 // ============================================================
-function hookTdfRegistration() {
-    console.log('\n' + '='.repeat(70));
-    console.log('[APPROACH 4] Hook FUN_1479ab1e0 — TDF type registration');
-    console.log('='.repeat(70));
 
-    let preAuthSeen = false;
-
-    try {
-        Interceptor.attach(ADDR.tdfRegisterType, {
-            onEnter: function(args) {
-                // FUN_1479ab1e0(dest, typeCode, hash, nameStr, ...)
-                // args[0] = destination address
-                // args[1] = type code
-                // args[2] = hash
-                // args[3] = name string pointer
-                try {
-                    const dest = args[0];
-                    const typeCode = args[1].toInt32();
-                    const hash = '0x' + args[2].toString(16);
-                    let name = '';
-                    try { name = args[3].readCString(); } catch(e) {}
-
-                    // Only log PreAuthResponse-related registrations
-                    if (name.indexOf('PreAuthResponse') >= 0 || name.indexOf('PreAuth') >= 0) {
-                        console.log('[TdfReg] ' + name + ' type=' + typeCode + ' hash=' + hash + ' dest=' + dest);
-                        preAuthSeen = true;
-                    }
-
-                    // After PreAuthResponse is registered, log the next ~20 registrations
-                    // (these are likely the member fields)
-                    if (preAuthSeen) {
-                        console.log('[TdfReg] dest=' + dest + ' type=' + typeCode + ' hash=' + hash + ' name="' + name + '"');
-                    }
-                } catch(e) {}
+// FUN_146db5d60 is called to decode RPC responses
+// It receives the raw TDF body bytes
+try {
+    Interceptor.attach(base.add(0x6db5d60), {
+        onEnter: function(args) {
+            // param_2 = error code, param_3 = data pointer, param_4 = data object
+            // We need to find the raw bytes. Let me log all params.
+            if (preAuthActive) {
+                console.log('\n[RpcDecode] Called during PreAuth!');
+                console.log('  param1=' + args[0] + ' param2=' + args[1]);
+                console.log('  param3=' + args[2] + ' param4=' + args[3]);
             }
-        });
-        console.log('  TDF registration hooked at ' + ADDR.tdfRegisterType);
-    } catch(e) {
-        console.log('  Hook error: ' + e);
-    }
+        }
+    });
+    console.log('[v2] Hooked RPC decoder at ' + base.add(0x6db5d60));
+} catch(e) {
+    console.log('[v2] Failed to hook RPC decoder: ' + e);
 }
 
 // ============================================================
-// APPROACH 5: Scan the binary for Taggi-format entries near PreAuth strings
+// APPROACH C: Scan the .rdata section for the member info table
+// using a MUCH wider scan and looking for the specific pattern
+// of TDF field descriptors that reference known PreAuthResponse
+// string addresses.
+//
+// From the Ghidra dump, we know these string addresses:
+// s_PreAuthResponse = 0x1438952f8
+// s_Blaze::Util::PreAuthResponse = 0x1438952d8
+// The member info entries should reference field name strings
+// that are near these addresses in the string table.
 // ============================================================
-function scanBinaryForTags() {
-    console.log('\n' + '='.repeat(70));
-    console.log('[APPROACH 5] Binary scan for Taggi-format TDF entries');
-    console.log('='.repeat(70));
 
-    // Known PreAuthResponse tags from NHL (for validation)
-    const knownTags = new Set(['ASRC','CIDS','CONF','EEFA','ESRC','INST','MINR','NASP','PILD','PLAT','QOSS','RSRC','SVER',
-                               'ANON','CNGN','PTAG']);  // Also Blaze3SDK standard
+setTimeout(function() {
+    console.log('\n[v2] Running memory scans...');
 
+    // Scan for the PreAuthResponse string to verify our base address
     try {
-        // Scan the .rdata section around the PreAuthResponse string addresses
-        // The member info table should be near these strings
-        const scanRegions = [
-            { start: ADDR.preAuthResponseStr.sub(0x2000), len: 0x4000, name: 'around PreAuthResponse string' },
-            { start: ADDR.memberInfoTablePtr.sub(0x1000), len: 0x3000, name: 'around member info table ptr' },
-            { start: ADDR.memberInfoTableAlt.sub(0x1000), len: 0x3000, name: 'around alt table addr 0x4867628' },
-            { start: base.add(0x4874000), len: 0x2000, name: 'rdata 0x4874000-0x4876000' },
+        var strAddr = base.add(0x48952f8);
+        var str = strAddr.readCString();
+        console.log('[v2] String at 0x48952f8: "' + str + '"');
+    } catch(e) {
+        console.log('[v2] Cannot read string at 0x48952f8: ' + e);
+    }
+
+    // Read the member info table pointer
+    try {
+        var tablePtr = base.add(0x4874a90);
+        var tableBase = tablePtr.readPointer();
+        console.log('[v2] Member info table ptr at 0x4874a90 -> ' + tableBase);
+        var count = base.add(0x4875638).readU32();
+        console.log('[v2] Field count: ' + count);
+
+        // The table at 0x144867628 is NOT an array of pointers to individual entries.
+        // From the previous dump, entries [0] through [13] had mostly invalid pointers.
+        // The table might be a flat array of INLINE structs.
+        //
+        // From Taggi source, each entry is 6 bytes: [tag:3][sep:1][type:1][next:1]
+        // But that's the ON-DISK format. In memory, the BlazeSDK uses a different
+        // representation with vtables and pointers.
+        //
+        // Let me try reading the table as 6-byte Taggi entries directly from the
+        // BINARY IMAGE (not the runtime data). The binary image is mapped at base.
+        // The Taggi entries would be in the .rdata section.
+        //
+        // From the NHL Taggi output, the PreAuthResponse entries start at offset
+        // 0x01B451EC in the NHL binary. For FIFA 17, the offset would be different
+        // but the PATTERN is the same: a sequence of 6-byte entries with valid tags.
+        //
+        // Let me scan a HUGE range of the .rdata section for sequences of valid
+        // Taggi entries that include known PreAuthResponse tags.
+
+        console.log('\n[v2] === WIDE BINARY SCAN FOR TAGGI ENTRIES ===');
+        
+        // Scan the entire .rdata section (typically 0x143500000 to 0x144900000)
+        // That's too large. Let me scan around known string addresses.
+        // PreAuthResponse strings are at 0x1438952xx.
+        // Member info data is at 0x144867xxx to 0x144875xxx.
+        // Let me scan 0x14386xxxx to 0x14390xxxx (about 640KB)
+        
+        var scanRanges = [
+            // Around the PreAuth-related strings
+            { start: base.add(0x3880000), len: 0x20000, name: '.rdata 0x3880000' },
+            { start: base.add(0x38A0000), len: 0x20000, name: '.rdata 0x38A0000' },
+            // Around the member info table
+            { start: base.add(0x4860000), len: 0x20000, name: '.rdata 0x4860000' },
         ];
-
-        for (const region of scanRegions) {
-            console.log('\n  Scanning ' + region.name + ' (' + region.start + ', ' + region.len + ' bytes)');
+        
+        var knownTags = ['ASRC','CIDS','CONF','EEFA','ESRC','INST','MINR','NASP',
+                         'PILD','PLAT','QOSS','RSRC','SVER','ANON','CNGN','PTAG'];
+        var knownSet = {};
+        for (var k = 0; k < knownTags.length; k++) knownSet[knownTags[k]] = true;
+        
+        for (var ri = 0; ri < scanRanges.length; ri++) {
+            var range = scanRanges[ri];
+            console.log('\n  Scanning ' + range.name + ' (' + range.len + ' bytes)...');
             try {
-                const bytes = new Uint8Array(region.start.readByteArray(region.len));
-                let groups = [];
-                let currentGroup = [];
-
-                for (let off = 0; off < bytes.length - 5; off++) {
-                    const tag = decodeTdfTag(bytes[off], bytes[off+1], bytes[off+2]);
-                    const sep = bytes[off+3];
-                    const typeB = bytes[off+4];
-                    const nextB = bytes[off+5];
-
-                    if (isValidTag(tag) && (sep === 0x00 || sep === 0x01) && typeB <= 0x20) {
-                        const entry = { off, tag, sep, type: typeB, next: nextB, 
-                                       addr: region.start.add(off) };
-
-                        if (nextB === 0) {
-                            // End of group
-                            currentGroup.push(entry);
-                            if (currentGroup.length >= 8) {
-                                groups.push([...currentGroup]);
-                            }
-                            currentGroup = [];
-                        } else if (nextB >= 4 && nextB <= 64) {
-                            currentGroup.push(entry);
-                            // Verify chain: next entry should be at off+nextB
-                            if (off + nextB < bytes.length - 5) {
-                                const nextTag = decodeTdfTag(bytes[off+nextB], bytes[off+nextB+1], bytes[off+nextB+2]);
-                                if (!isValidTag(nextTag)) {
-                                    currentGroup = [];
-                                }
-                            }
-                        } else {
-                            currentGroup = [];
-                        }
+                var scanBytes = new Uint8Array(range.start.readByteArray(range.len));
+                
+                // Look for chains of valid Taggi entries
+                for (var off = 0; off < scanBytes.length - 6; off++) {
+                    var tag = decodeTdfTag(scanBytes[off], scanBytes[off+1], scanBytes[off+2]);
+                    var sep = scanBytes[off+3];
+                    var typeB = scanBytes[off+4];
+                    var nextB = scanBytes[off+5];
+                    
+                    // Check if this looks like a valid Taggi entry
+                    if (!/^[A-Z][A-Z0-9 ]{0,3}$/.test(tag)) continue;
+                    if (sep !== 0x00 && sep !== 0x01) continue;
+                    if (typeB > 0x20) continue;
+                    
+                    // Check if it's a known PreAuthResponse tag
+                    if (!knownSet[tag]) continue;
+                    
+                    // Found a known tag! Now follow the chain
+                    var chain = [];
+                    var chainOff = off;
+                    while (chainOff < scanBytes.length - 6) {
+                        var ct = decodeTdfTag(scanBytes[chainOff], scanBytes[chainOff+1], scanBytes[chainOff+2]);
+                        var cs = scanBytes[chainOff+3];
+                        var cty = scanBytes[chainOff+4];
+                        var cn = scanBytes[chainOff+5];
+                        
+                        if (!/^[A-Z][A-Z0-9 ]{0,3}$/.test(ct)) break;
+                        if (cs !== 0x00 && cs !== 0x01) break;
+                        if (cty > 0x20) break;
+                        
+                        chain.push({ off: chainOff, tag: ct, type: cty, next: cn });
+                        
+                        if (cn === 0) break; // end of chain
+                        if (cn < 6 || cn > 64) break; // invalid next
+                        chainOff += cn;
                     }
-                }
-
-                // Print groups that look like PreAuthResponse (have known tags)
-                for (const group of groups) {
-                    const tags = group.map(e => e.tag);
-                    const knownCount = tags.filter(t => knownTags.has(t)).length;
-                    if (knownCount >= 5) {
-                        console.log('\n  >>> CANDIDATE PreAuthResponse schema (' + group.length + ' fields, ' + knownCount + ' known):');
-                        for (const e of group) {
-                            const marker = knownTags.has(e.tag) ? '' : ' <<<< UNKNOWN';
-                            console.log('    ' + e.addr + ': ' + e.tag + 
+                    
+                    // Only report chains with 8+ entries that contain multiple known tags
+                    var knownCount = 0;
+                    for (var ci = 0; ci < chain.length; ci++) {
+                        if (knownSet[chain[ci].tag]) knownCount++;
+                    }
+                    
+                    if (chain.length >= 8 && knownCount >= 5) {
+                        var addr = range.start.add(off);
+                        console.log('\n  >>> CANDIDATE SCHEMA at ' + addr + ' (' + chain.length + ' fields, ' + knownCount + ' known):');
+                        for (var ci = 0; ci < chain.length; ci++) {
+                            var e = chain[ci];
+                            var marker = knownSet[e.tag] ? '' : ' <<<< UNKNOWN';
+                            console.log('    ' + range.start.add(e.off) + ': ' + e.tag + 
                                 ' type=0x' + e.type.toString(16).padStart(2,'0') + 
                                 ' next=' + e.next + marker);
                         }
+                    }
+                    
+                    // Skip past this chain to avoid duplicate reports
+                    if (chain.length >= 8) {
+                        off = chain[chain.length-1].off;
                     }
                 }
             } catch(e) {
@@ -457,27 +263,8 @@ function scanBinaryForTags() {
             }
         }
     } catch(e) {
-        console.log('[APPROACH 5] Error: ' + e);
+        console.log('[v2] Table read error: ' + e);
     }
-}
 
-// ============================================================
-// RUN ALL APPROACHES
-// ============================================================
-console.log('\n[DUMP] Starting PreAuthResponse member info dump...');
-console.log('[DUMP] Timestamp: ' + new Date().toISOString());
-
-// Approaches 2-4 are hooks — set them up immediately
-hookPreAuthHandler();
-hookLoginTypesProcessor();
-hookTdfRegistration();
-
-// Approaches 1 and 5 read memory — run after a delay to ensure game is initialized
-setTimeout(function() {
-    console.log('\n[DUMP] Running memory reads (T+15s)...');
-    dumpMemberInfoTable();
-    scanBinaryForTags();
-    console.log('\n[DUMP] === ALL APPROACHES COMPLETE ===');
-    console.log('[DUMP] Look for "CANDIDATE PreAuthResponse schema" or "UNKNOWN" tags above.');
-    console.log('[DUMP] The unknown tag between NASP and PILD is the login types field.');
+    console.log('\n[v2] === SCAN COMPLETE ===');
 }, 15000);
