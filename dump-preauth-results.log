@@ -1,4 +1,4 @@
-﻿=== PreAuth Schema Dump 2026-04-18 11:47:01 ===
+﻿=== PreAuth Schema Dump 2026-04-18 11:55:02 ===
 RESULT: NO_DATA
 
 --- FRIDA OUTPUT (FULL) ---
@@ -14,178 +14,100 @@ RESULT: NO_DATA
    . . . .
    . . . .   Connected to Local System (id=local)
 Attaching...
-[v3] base: 0x140000000
-[Local::PID::92712 ]-> 
-[v3] === MEMBER INFO TABLE RAW DUMP ===
-[v3] Table at: 0x144867628
-[v3] Expected 14 entries
-
-  0000: 06 00 00 00 06 00 00 00 b4 12 55 43 01 00 00 00  ..........UC....
-  0010: b4 12 55 43 01 00 00 00 a0 76 86 44 01 00 00 00  ..UC.....v.D....
-  0020: 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0060: 00 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  .v.D............
-  0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  00b0: 28 76 86 44 01 00 00 00 01 00 00 00 00 00 00 00  (v.D............
-  00c0: 03 00 00 00 02 bf 4d a7 f0 4b 78 09 00 00 00 00  ......M..Kx.....
-  00d0: 90 4b 78 09 00 00 00 00 20 77 86 44 01 00 00 00  .Kx..... w.D....
-  00e0: d0 91 da 46 01 00 00 00 28 76 86 44 01 00 00 00  ...F....(v.D....
-  00f0: 03 00 00 00 00 00 00 00 50 0a 87 44 01 00 00 00  ........P..D....
-  0100: b0 8f 86 44 01 00 00 00 00 00 00 00 00 00 00 00  ...D............
-  0110: 00 00 00 00 00 00 00 00 70 86 89 44 01 00 00 00  ........p..D....
-  0120: 78 86 89 44 01 00 00 00 10 ed c0 44 01 00 00 00  x..D.......D....
-  0130: e8 76 86 44 01 00 00 00 00 8e 92 8b 00 00 00 00  .v.D............
-  0140: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  0150: 90 8a 8f 87 82 95 86 80 84 83 88 01 94 85 8d 01  ................
-  0160: 89 91 00 81 93 01 8c 00 01 00 00 00 00 00 00 00  ................
-  0170: 80 1c c2 44 01 00 00 00 a0 11 c1 44 01 00 00 00  ...D.......D....
-  0180: 90 36 c0 44 01 00 00 00 50 ed b8 44 01 00 00 00  .6.D....P..D....
-  0190: a0 c9 b8 44 01 00 00 00 40 32 c0 44 01 00 00 00  ...D....@2.D....
-  01a0: 90 0a 8a 44 01 00 00 00 10 14 8a 44 01 00 00 00  ...D.......D....
-  01b0: f0 85 b8 44 01 00 00 00 50 7e 89 44 01 00 00 00  ...D....P~.D....
-  01c0: 90 13 8a 44 01 00 00 00 d0 13 c0 44 01 00 00 00  ...D.......D....
-  01d0: 20 c7 b8 44 01 00 00 00 70 1a c1 44 01 00 00 00   ..D....p..D....
-  01e0: 00 62 88 44 01 00 00 00 20 28 c0 44 01 00 00 00  .b.D.... (.D....
-  01f0: 50 82 89 44 01 00 00 00 20 9b b8 44 01 00 00 00  P..D.... ..D....
-  0200: 40 ce c0 44 01 00 00 00 50 7c 89 44 01 00 00 00  @..D....P|.D....
-  0210: 40 cf c0 44 01 00 00 00 f0 ea c0 44 01 00 00 00  @..D.......D....
-  0220: 90 20 8a 44 01 00 00 00 40 92 b8 44 01 00 00 00  . .D....@..D....
-  0230: f0 0b 87 44 01 00 00 00 90 88 b8 44 01 00 00 00  ...D.......D....
-  0240: 00 4c 8a 44 01 00 00 00 80 f9 c0 44 01 00 00 00  .L.D.......D....
-  0250: d0 14 c0 44 01 00 00 00 d0 16 c0 44 01 00 00 00  ...D.......D....
-  0260: f0 d5 bf 44 01 00 00 00 10 db bf 44 01 00 00 00  ...D.......D....
-  0270: c0 f8 c0 44 01 00 00 00 80 2e c0 44 01 00 00 00  ...D.......D....
-  0280: f0 d3 c0 44 01 00 00 00 c0 d1 c0 44 01 00 00 00  ...D.......D....
-  0290: d0 7e 89 44 01 00 00 00 c0 c8 c0 44 01 00 00 00  .~.D.......D....
-  02a0: 70 2d c0 44 01 00 00 00 c0 cc c0 44 01 00 00 00  p-.D.......D....
-  02b0: e0 21 c0 44 01 00 00 00 d0 19 c0 44 01 00 00 00  .!.D.......D....
-  02c0: 60 2e c2 44 01 00 00 00 e0 dd bf 44 01 00 00 00  `..D.......D....
-  02d0: 00 4d 8a 44 01 00 00 00 60 d2 c0 44 01 00 00 00  .M.D....`..D....
-  02e0: f0 51 8a 44 01 00 00 00 20 cb b8 44 01 00 00 00  .Q.D.... ..D....
-  02f0: 30 3a 87 44 01 00 00 00 d0 80 89 44 01 00 00 00  0:.D.......D....
-  0300: 30 1a c2 44 01 00 00 00 a0 3a c0 44 01 00 00 00  0..D.....:.D....
-  0310: 10 1c 8a 44 01 00 00 00 50 15 c0 44 01 00 00 00  ...D....P..D....
-  0320: 70 12 c1 44 01 00 00 00 30 d4 c0 44 01 00 00 00  p..D....0..D....
-  0330: b0 4a 8a 44 01 00 00 00 90 26 c0 44 01 00 00 00  .J.D.....&.D....
-  0340: d0 7d 89 44 01 00 00 00 10 0b 8a 44 01 00 00 00  .}.D.......D....
-  0350: 90 18 8a 44 01 00 00 00 50 26 c0 44 01 00 00 00  ...D....P&.D....
-  0360: d0 18 c0 44 01 00 00 00 10 89 b8 44 01 00 00 00  ...D.......D....
-  0370: c0 cf c0 44 01 00 00 00 50 19 c0 44 01 00 00 00  ...D....P..D....
-  0380: 30 2d c0 44 01 00 00 00 e0 2d c2 44 01 00 00 00  0-.D.....-.D....
-  0390: 60 df 87 44 01 00 00 00 c0 c6 c0 44 01 00 00 00  `..D.......D....
-  03a0: 40 8f b8 44 01 00 00 00 d0 7b 89 44 01 00 00 00  @..D.....{.D....
-  03b0: 10 0e 8a 44 01 00 00 00 10 1e 8a 44 01 00 00 00  ...D.......D....
-  03c0: 10 38 88 44 01 00 00 00 40 fb c0 44 01 00 00 00  .8.D....@..D....
-  03d0: 90 95 b8 44 01 00 00 00 c0 e9 b8 44 01 00 00 00  ...D.......D....
-  03e0: 10 18 8a 44 01 00 00 00 d0 d2 8a 44 01 00 00 00  ...D.......D....
-  03f0: 90 1d 8a 44 01 00 00 00 10 1b 8a 44 01 00 00 00  ...D.......D....
-
-[v3] === TAG SCAN (every offset) ===
-  @0c5: OTVG [bf 4d a7]
-  @13a: DHL [92 8b 0]
-
-[v3] === STRING POINTER SCAN ===
-  @008: "string"
-  @010: "string"
-  @0c8: "list<string>"
-  @0d0: "list<string>"
-  @0d8: "P
-\ufffdD"
-  @0e0: "H\ufffdt$WH\ufffd\ufffd H\ufffd\ufffdH\ufffd\ufffdM\ufffd\ufffd\ufffd\ufffd"
-  @170: "p\u057fD"
-  @210: "pK\ufffdD"
-  @258: "P_\ufffdD"
-  @260: "P\ufffd\ufffdD"
-  @290: "p\ufffdD"
-  @2d0: "pw\ufffdD"
-  @2f8: "p
-\ufffdD"
-  @398: "Pv\ufffdD"
-  @3a0: "P\ufffd\ufffdD"
-
-[v3] === DATA AT 0x4874a90 (table pointer region) ===
-  0000: 28 76 86 44 01 00 00 00 f0 5c 89 43 01 00 00 00 
-  0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0020: 00 a3 3c 87 41 00 00 00 d8 01 00 00 00 00 00 00 
-  0030: f0 5e 87 44 01 00 00 00 08 5d 89 43 01 00 00 00 
-  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0050: 00 33 99 8e 00 00 00 00 70 00 00 00 00 00 00 00 
-  0060: 28 76 86 44 01 00 00 00 18 5d 89 43 01 00 00 00 
-  0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0080: 00 64 ca 8e 01 01 00 00 58 00 00 00 00 00 00 00 
-  0090: e0 52 87 44 01 00 00 00 c8 5b 89 43 01 00 00 00 
-  00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  00b0: 00 a6 fb 8e 00 00 00 00 b8 00 00 00 00 00 00 00 
-  00c0: 28 76 86 44 01 00 00 00 28 5d 89 43 01 00 00 00 
-  00d0: 00 00 00 00 00 00 00 00 f0 b5 54 43 01 00 00 00 
-  00e0: 00 a3 3c 97 41 00 00 00 28 02 00 00 00 00 00 00 
-  00f0: 28 76 86 44 01 00 00 00 d8 1e 89 43 01 00 00 00 
-  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0110: 00 f4 ec a6 01 01 00 00 40 00 00 00 00 00 00 00 
-  0120: 68 d7 86 44 01 00 00 00 38 9a 88 43 01 00 00 00 
-  0130: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0140: 00 64 1a b6 00 00 00 00 40 02 00 00 00 00 00 00 
-  0150: f0 d6 86 44 01 00 00 00 40 5d 89 43 01 00 00 00 
-  0160: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0170: 00 b2 9b b6 00 00 00 00 20 02 00 00 00 00 00 00 
-  0180: 28 76 86 44 01 00 00 00 40 cd 88 43 01 00 00 00 
-  0190: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  01a0: 00 f0 1c ba 21 00 00 00 c0 01 00 00 00 00 00 00 
-  01b0: 28 76 86 44 01 00 00 00 58 5d 89 43 01 00 00 00 
-  01c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  01d0: 00 24 9b c2 41 00 00 00 08 02 00 00 00 00 00 00 
-  01e0: 28 76 86 44 01 00 00 00 88 ce 88 43 01 00 00 00 
-  01f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0200: 00 74 c8 c2 01 01 00 00 28 00 00 00 00 00 00 00 
-  0210: 20 e7 86 44 01 00 00 00 70 5d 89 43 01 00 00 00 
-  0220: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0230: 00 f3 fc c6 00 00 00 00 20 01 00 00 00 00 00 00 
-  0240: 28 76 86 44 01 00 00 00 80 5d 89 43 01 00 00 00 
-  0250: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0260: 00 a3 3c cb 41 00 00 00 f0 01 00 00 00 00 00 00 
-  0270: 28 76 86 44 01 00 00 00 98 5d 89 43 01 00 00 00 
-  0280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0290: 00 72 69 cf 01 01 00 00 10 00 00 00 00 00 00 00 
-  str@8: "authenticationSource"
-  str@38: "componentIds"
-  str@68: "clientId"
-  str@98: "config"
-  str@c8: "entitlementSource"
-  str@f8: "serviceName"
-  str@128: "machineId"
-  str@158: "underageSupported"
-  str@188: "personaNamespace"
-  str@1b8: "legalDocGameIdentifier"
-  str@1e8: "platform"
-  str@218: "qosSettings"
-  str@248: "registrationSource"
-  str@278: "serverVersion"
-
-[v3] === REGISTRATION DATA (0x4875600-0x4875660) ===
-  0000: 0b 00 00 00 a1 d2 92 ad d8 52 89 43 01 00 00 00 
-  0010: e5 52 89 43 01 00 00 00 20 3d 87 44 01 00 00 00 
-  0020: e0 24 df 46 01 00 00 00 f8 52 89 43 01 00 00 00 
-  0030: 90 4a 87 44 01 00 00 00 0e 00 00 00 00 00 00 00 
-  0040: 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-  str@8: "Blaze::Util::PreAuthResponse"
-  str@10: "PreAuthResponse"
-  str@28: "PreAuthResponse"
-
-[v3] === DONE ===
+[v4] base: 0x140000000
+[v4] Hooked LoginTypesProcessor
+[v4] Hooked FUN_146e1c1f0
+[v4] Hooked PreAuth handler
+[v4] All hooks set. Waiting for PreAuth...
+[Local::PID::90072 ]-> 
 [PreAuth] err=0
+
+[LoginTypesProc] loginSM=0x3eb69da0 respField=0x3ee76010
+
+[loginSM] +0x80 to +0x100:
+  0000: 00 00 00 00 00 00 00 00 f8 9a 88 43 01 00 00 00 
+  0010: 00 00 00 80 00 00 00 00 08 00 00 00 00 00 00 00 
+  0020: 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0030: 00 00 00 00 00 00 00 00 f0 91 88 43 01 00 00 00 
+  0040: 00 00 00 80 00 00 00 00 90 b5 86 44 01 00 00 00 
+  0050: 60 2d 88 43 01 00 00 00 60 db 86 44 01 00 00 00 
+  0060: c0 9e b6 3e 00 00 00 00 01 00 00 00 00 00 00 00 
+  0070: 68 53 b6 3e 00 00 00 00 c0 9e b6 3e 00 00 00 00 
+
+[loginSM] +0xC8 = 0x14486b590
+[loginSM] +0xC8 points to:
+  0000: 60 db 86 44 01 00 00 00 c8 9a 88 43 01 00 00 00 
+  0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0020: 00 35 1b da 00 00 00 00 00 00 00 00 00 00 00 00 
+  0030: c0 da 86 44 01 00 00 00 d8 9a 88 43 01 00 00 00 
+[loginSM] +0xE0 = 0x3eb69ec0
+[loginSM] +0xE0 points to:
+  0000: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
+  0010: 04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
+  0020: 00 00 00 80 00 00 00 00 07 00 00 00 00 00 00 00 
+  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+[loginSM] +0xB8 vtable = 0x1438891f0
+[loginSM] +0x08 parent = 0x3eb67330
+[loginSM] parent+0x53f = 1
+[loginSM] parent+0x53c = 3659
+[loginSM] +0x1A0 = 0
+
+[loginSM] FULL DUMP +0x00 to +0x2A0:
+  0000: c8 07 8a 43 01 00 00 00 30 73 b6 3e 00 00 00 00 
+  0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0020: 00 00 00 00 00 00 00 00 60 9e 88 43 01 00 00 00 
+  0030: 00 00 00 80 00 00 00 00 b8 9d 88 43 01 00 00 00 
+  0040: 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 
+  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0060: 00 00 00 00 00 00 00 00 68 53 b6 3e 00 00 00 00 
+  0070: 00 00 00 00 00 00 00 00 f0 b5 54 43 01 00 00 00 
+  0080: 00 00 00 00 00 00 00 00 f8 9a 88 43 01 00 00 00 
+  0090: 00 00 00 80 00 00 00 00 08 00 00 00 00 00 00 00 
+  00a0: 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  00b0: 00 00 00 00 00 00 00 00 f0 91 88 43 01 00 00 00 
+  00c0: 00 00 00 80 00 00 00 00 90 b5 86 44 01 00 00 00 
+  00d0: 60 2d 88 43 01 00 00 00 60 db 86 44 01 00 00 00 
+  00e0: c0 9e b6 3e 00 00 00 00 01 00 00 00 00 00 00 00 
+  00f0: 68 53 b6 3e 00 00 00 00 c0 9e b6 3e 00 00 00 00 
+  0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0110: c0 9e b6 3e 00 00 00 00 01 00 00 00 00 00 00 00 
+  0120: f8 8f 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
+  0130: 04 00 00 00 00 00 00 00 a8 8e 88 43 01 00 00 00 
+  0140: 00 00 00 80 00 00 00 00 07 00 00 00 00 00 00 00 
+  0150: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0160: a8 8e 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
+  0170: 07 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0190: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  01a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  01b0: 00 00 00 00 00 00 00 00 10 9d 88 43 01 00 00 00 
+  01c0: 00 00 00 80 00 00 00 00 0a 00 00 00 00 00 00 00 
+  01d0: a0 9b 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
+  01e0: b0 76 bd 44 01 00 00 00 68 53 b6 3e 00 00 00 00 
+  01f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0200: 48 9c 88 43 01 00 00 00 00 00 00 80 00 00 00 00 
+  0210: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0220: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0230: 68 53 b6 3e 00 00 00 00 00 00 00 00 00 00 00 00 
+  0240: f0 b5 54 43 01 00 00 00 00 00 00 00 00 00 00 00 
+  0250: 40 4b 4c 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0260: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0270: 68 53 b6 3e 00 00 00 00 01 00 00 00 00 00 00 00 
+  0280: 98 0a 8a 43 01 00 00 00 00 00 00 00 00 00 00 00 
+  0290: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+
+[FUN_146e1c1f0] ENTERED loginSM=0x3eb69da0
+  +0xC8 = 0x14486b590
+  +0xB8 vtable = 0x1438891f0
+[FUN_146e1c1f0] RETURNED
+[LoginTypesProc] RETURNED
 
 
 --- ORIGIN IPC SERVER ---
 hm: seed = ASCII(accepted[0..1]), key = deriveKey(seed)
-[Origin] 127.0.0.1:53767 connected
-[Origin] -> Challenge (key=0be2c64b53ed34693837a301b182309b)
-[Origin] session seed=25188 key=3bb8a7d5c8275032e9620a0a8f24ee20
+[Origin] 127.0.0.1:53902 connected
+[Origin] -> Challenge (key=cd024cfa70254fc34c5b4cdb6e8dba43)
+[Origin] session seed=13361 key=5dbee38a814d8202574f301fcccd5de0
 [Origin] -> ChallengeAccepted (session ready)
 [Origin] <- DEC: <LSX><Request recipient="EbisuSDK" id="2"><GetConfig version="3"/></Request></LSX>
 [Origin] -> ENC: <LSX><Response id="2" sender="EbisuSDK"><GetConfigResponse Config="false"/></Response></LSX>
@@ -227,13 +149,13 @@ eep-alive
 [HTTP-Blaze] Sent encrypted HTTP response
 [SSL-DATA] Received 27 bytes on socket (total pending: 27)
 [SSL] TLS record: type=0x15 ver=0x303 len=22 (pending: 27)
-[SSL] Record type 0x15 (alert?), raw body (22 bytes): eb bb a4 df 6b 17 0e b8 34 ce d7 cb 43 b2 bc 6f d0 db 14 89 b3 67
+[SSL] Record type 0x15 (alert?), raw body (22 bytes): f6 e3 49 fa 6b 44 99 82 fb 53 01 ab 5d c7 92 0e 4d e8 01 57 9f c8
 [SSL] Alert decrypted: 01 00
 [SSL] Alert MAC match: true
 [SSL] Alert: level=1 desc=0
-[Redirector-Raw] Disconnected: 127.0.0.1:53792
+[Redirector-Raw] Disconnected: 127.0.0.1:53924
 [SSL-CONN] Socket closed
-[Main] Session 1 connected: 127.0.0.1:53793
+[Main] Session 1 connected: 127.0.0.1:53925
 [Main] S1: received 225 bytes (total: 225)
 [Main]   0000: 00 00 00 d1 00 00 00 09 00 07 00 00 00 00 00 00  ................
 [Main]   0010: 8e 48 74 03 a6 9d 2f 00 00 b2 1b a7 00 93 d5 f2  .Ht.../.........
@@ -326,50 +248,50 @@ eep-alive
 
 --- DLL LOG ---
 ANDLER: first 128 bytes:
-[11:45:25.601]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
-[11:45:25.601]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
-[11:45:25.601]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
-[11:45:25.601]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
-[11:45:25.601]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
-[11:45:25.601]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
-[11:45:25.601]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
-[11:45:25.601]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
-[11:45:25.601] PREAUTH_HANDLER: Cave at 00000000004F0000, 44 bytes (XOR R8D + trampoline)
-[11:45:25.601] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
-[11:45:25.601] CONNECT-HOOK: Patched DAT_148e223d8 at 484 ms (real=00007FFD6EB11A50)
-[11:45:25.601] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
-[11:45:25.601] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
-[11:45:25.601] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
-[11:45:25.601] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
-[11:45:25.601] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
-[11:45:25.601] PATCHED: FUN_145e280b0 (version compare) -> always match
-[11:45:25.745] PATCHED: Origin SDK check at 00000001470A8430
-[11:45:25.745] All patches in 640 ms
-[11:45:25.745] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
-[11:45:25.745] AUTH: Checking login gate globals...
-[11:45:25.745] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
-[11:45:25.745] AUTH: DAT_144b86bdf = 0 (error flag)
-[11:45:25.745] AUTH: Polling for slot to clear + forcing 0x53f flag...
-[11:45:26.001] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
-[11:45:31.588] AUTH: Slot cleared at 5800 ms
-[11:45:31.588] AUTH: OnlineMgr=0x3EC73E70
-[11:45:31.588] AUTH: slot=0x0 cave=0
-[11:45:31.588] AUTH: Using fake vtable (real not captured)
-[11:45:31.588] AUTH: Injected fake request 000000005D3D0000 into slot
-[11:45:31.689] AUTH: cave=1 slot=0x0
-[11:45:31.689] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
-[11:45:31.689] AUTH: req[+0xd8]=0x99EA0B0 req[+0xe8]=1
-[11:45:31.689] AUTH: state=2. Auth ready.
-[11:45:31.689] AUTH: OnlineMgr+0xb10 = 0x3EC7A6E0
-[11:45:31.689] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3EC7A960
-[11:45:31.689] AUTH: Scanning BlazeHub for ConnectionManager pointers...
-[11:45:31.689] AUTH: Found 0 objects with vtables in BlazeHub
-[11:45:31.689] AUTH: BlazeHub(000000003EC7A960)+0x53f = 1
-[11:45:31.689] AUTH: Applying OSDK patches (post-load)...
-[11:45:31.689] PATCHED: GetProfileSync -> return 0 (post-load)
-[11:45:31.689] PATCHED: GetSettingSync -> return 0 (post-load)
-[11:45:31.689] PATCHED: SetPresence -> return 0 (post-load)
-[11:45:31.689] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
-[11:45:31.689] PATCHED: FUN_14717d5d0 (age check) -> always pass
-[11:45:31.689] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
+[11:53:26.955]   +00: 48 89 5C 24 08 48 89 74 24 10 55 57 41 56 48 8D
+[11:53:26.955]   +10: 6C 24 B9 48 81 EC 90 00 00 00 44 89 C6 49 89 D6
+[11:53:26.955]   +20: 48 89 CB 45 85 C0 74 4A 48 8B 41 10 48 83 C1 10
+[11:53:26.955]   +30: FF 50 10 84 C0 0F 84 CE 02 00 00 48 8B 4B 08 31
+[11:53:26.955]   +40: FF 4C 8D 0D A8 CA FF FF 89 7C 24 38 48 89 5C 24
+[11:53:26.955]   +50: 30 48 8D 55 F7 48 81 C1 08 0C 00 00 49 89 D8 89
+[11:53:26.955]   +60: 74 24 28 89 74 24 20 E8 F4 B1 FF FF E9 98 02 00
+[11:53:26.955]   +70: 00 88 80 65 F7 FC 48 8D 8A B8 00 00 00 4C 8D 45
+[11:53:26.955] PREAUTH_HANDLER: Cave at 00000000009D0000, 44 bytes (XOR R8D + trampoline)
+[11:53:26.955] PATCHED: FUN_146e1cf10 -> XOR R8D,R8D trampoline (always success path)
+[11:53:26.955] CONNECT-HOOK: Patched DAT_148e223d8 at 484 ms (real=00007FFD6EB11A50)
+[11:53:26.955] ORIGIN_CHECK_ONLINE: addr=00000001470E0390 bytes=41 56 48 83
+[11:53:26.955] PATCHED: FUN_1470e0390 (OriginCheckOnline) -> always online
+[11:53:26.955] GET_GAME_VERSION: addr=00000001470DA720 bytes=48 89 5C 24
+[11:53:26.955] PATCHED: FUN_1470da720 (GetGameVersion) -> return 0
+[11:53:26.955] VERSION_CMP: addr=0000000145E280B0 bytes=49 89 D1 49
+[11:53:26.955] PATCHED: FUN_145e280b0 (version compare) -> always match
+[11:53:27.100] PATCHED: Origin SDK check at 00000001470A8430
+[11:53:27.100] All patches in 625 ms
+[11:53:27.100] patches: 9 (cert=1 orig=1 auth=1 flag=1 login=2)
+[11:53:27.100] AUTH: Checking login gate globals...
+[11:53:27.100] AUTH: DAT_144b86bf8 = 0x1D0000 (Origin SDK manager)
+[11:53:27.101] AUTH: DAT_144b86bdf = 0 (error flag)
+[11:53:27.101] AUTH: Polling for slot to clear + forcing 0x53f flag...
+[11:53:27.363] CONNECT-HOOK: Redirecting 127.0.0.1:4216 -> 127.0.0.1:3216
+[11:53:32.841] AUTH: Slot cleared at 5700 ms
+[11:53:32.841] AUTH: OnlineMgr=0x3ECE3E70
+[11:53:32.841] AUTH: slot=0x0 cave=0
+[11:53:32.841] AUTH: Using fake vtable (real not captured)
+[11:53:32.841] AUTH: Injected fake request 000000005D3C0000 into slot
+[11:53:32.941] AUTH: cave=1 slot=0x0
+[11:53:32.941] AUTH: >>> CAVE EXECUTED! Auth code provided! <<<
+[11:53:32.941] AUTH: req[+0xd8]=0x9A29930 req[+0xe8]=1
+[11:53:32.941] AUTH: state=2. Auth ready.
+[11:53:32.941] AUTH: OnlineMgr+0xb10 = 0x3ECEA6E0
+[11:53:32.941] AUTH: +0xb10+0xf8 (BlazeHub) = 0x3ECEA960
+[11:53:32.941] AUTH: Scanning BlazeHub for ConnectionManager pointers...
+[11:53:32.941] AUTH: Found 0 objects with vtables in BlazeHub
+[11:53:32.941] AUTH: BlazeHub(000000003ECEA960)+0x53f = 1
+[11:53:32.941] AUTH: Applying OSDK patches (post-load)...
+[11:53:32.941] PATCHED: GetProfileSync -> return 0 (post-load)
+[11:53:32.941] PATCHED: GetSettingSync -> return 0 (post-load)
+[11:53:32.941] PATCHED: SetPresence -> return 0 (post-load)
+[11:53:32.941] PATCHED: FUN_1472d62a0 (OSDK Logout) -> RET
+[11:53:32.941] PATCHED: FUN_14717d5d0 (age check) -> always pass
+[11:53:32.941] AUTH: Starting continuous flag enforcer (+0x53f + connState)...
 
