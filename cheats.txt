@@ -1,0 +1,2122 @@
+
+UnknownCheats - Leading the game hacking and cheat development scene since 2000	
+UnKnoWnCheaTs Game Hacking Portal	UnKnoWnCheaTs Game Hacking Forum – Cheats, Hacks, and Tutorials	Download Game Hacks, Cheats and Hacking Tools – UnKnoWnCheaTs	Game Hacking Wiki – Tutorials and Guides on UnKnoWnCheaTs	Toggle Dark Mode	Register at UnKnoWnCheaTs – Join the Greatest Game Hacking Community
+
+
+Go Back	 	UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats
+First-Person Shooters
+Battlefield Series
+Battlefield 3
+Reload this Page [Question] Blaze Backend Relations
+advertisements
+User Name:
+Password:
+Remember Me?	
+
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook	
+Page 1 of 3	1	2	3	>	
+ 
+Thread Tools 
+Blaze Backend Relations
+Old 20th May 2014, 01:40 PM	  #1
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+Blaze Backend Relations
+hi there,
+
+I know this subsection is for battlefield 3 but its also the section I found most information about the blaze backend. referring to this:
+
+http://www.unknowncheats.me/forum/ba...er-server.html
+
+I understand that this might be outdated, also that there is some kind of "competion" between groups to release stable emus, so I dont expect to get much answers. looking at the files I see 3, maybe 4 binarys (backend, master, slaver, monitor) But still id like to try my luck and ask, even if ill eventually find it out when I continue reversing the binarys and the packets, maybe someone can already enlighten me on how the relation between them are.
+
+http://www.unknowncheats.me/forum/876197-post31.html
+http://www.unknowncheats.me/forum/877883-post45.html
+
+from this I get that some game (my game is mass effect 3, but nvm) connects to the "blaze" server from which it gets somehow redirected to actual game server, so they can connect from multiple platforms(xbox,ps,pc,etc) to the same dedicated server. also I get that I can reverse the packet formats with ida and the typeinformation in the binarys
+
+so this is how I imagine the inner working sofar (id like to know if this is correct or how the correct way would look like, partwise for RE, partwise because id like to know how "professionals" do it, as I play with the idea to go into real game dev)
+
+
+
+also got the binarys loaded into ida64 and it looks good  can someone maybe tell me how to find packet defs (tldfs?! dunno), before I have to analyze each interesting sounding function?^^
+
+
+
+TL;DR:
+1)How do Master/Slave/Backend "server" relate to each other, in what order are the called? (or in what order should I RE them?)
+2)I heard about packet definitions (tldfs) for blaze, is there a nice way to find them, or do I have to analyze my way through all functions that might use them?
+
+thanks for any input and time reading this
+
+greetz wwwc
+wwwc is offline
+ 
+
+Old 24th May 2014, 03:11 PM	  #2
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+yay, some progress^^ @Admins, im not sure, if im allowed to post links here, if not, I can repost the content here again too
+
+http://me3explorer.freeforums.org/post10170.html#p10170
+
+the first thing I always see is the accessing of the redirector, well now I found the function chain, that produces it, at least it makes more sense now for me 
+
+greetz wwwc
+wwwc is offline
+ 
+Old 25th May 2014, 10:25 PM	  #3
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+as byproduct I made a tool to clone ssl certificates from wireshark dumps (automating it), so you can easier make MITM attacks (if you have the client emulated to ignore signing), and still have the correct informations like algorithm and such used, should I upload it here? is that useful to you guys?
+
+(here a demo vid)
+
+greetz WV
+Last edited by OLD_Anonymous; 26th May 2014 at 05:52 AM.
+wwwc is offline
+ 
+Old 26th May 2014, 07:34 AM	  #4
+zlofenix
+Member
+
+
+zlofenix's Avatar
+
+Join Date: Dec 2013
+Posts: 71
+Reputation: 738
+Rep Power: 301
+zlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demon
+Points: 4,902, Level: 7
+Points: 4,902, Level: 7	Points: 4,902, Level: 7	Points: 4,902, Level: 7
+Level up: 45%, 498 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+1. Just use 1 binary for all, its obvious.
+2. -Blaze.LogLevel 3 in server config
+
+Also can you send source of binkw32 crack and me3dbg?
+Last edited by zlofenix; 26th May 2014 at 07:36 AM.
+zlofenix is offline
+ 
+Old 26th May 2014, 10:26 AM	  #5
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+here you go  binkw32 source me3dbg source but beware of my ugly code :P btw different binaries have different parts of the blaze sdk used, so I dunno if I should stick to just one. "Blaze.LogLevel 3" only helps if I can run something, I cant as this is for mass effect, so all I can do is static RE
+
+greetz wwwc
+wwwc is offline
+ 
+Old 26th May 2014, 06:42 PM	  #6
+zlofenix
+Member
+
+
+zlofenix's Avatar
+
+Join Date: Dec 2013
+Posts: 71
+Reputation: 738
+Rep Power: 301
+zlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demon
+Points: 4,902, Level: 7
+Points: 4,902, Level: 7	Points: 4,902, Level: 7	Points: 4,902, Level: 7
+Level up: 45%, 498 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+I need this just for remove ssl check and change redirector server in bf3/4 clear exe.
+zlofenix is offline
+ 
+Old 26th May 2014, 10:42 PM	  #7
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+
+
+found this in:
+
+VoipUserT *__cdecl dynamic_initializer_for__Blaze__Redirector__ServerInstanceRequest__SERVERINSTANCEREQUEST_TDF_MEMBER_INFO__()
+
+this is a typical redirector request and how its mapped into the exe. that 4th byte seems to determine the type of the field, which can be determined by looking at Blaze::Tdf::Visit(...)
+
+greetz WV
+Last edited by wwwc; 26th May 2014 at 10:45 PM. Reason: forgot typdefs
+wwwc is offline
+ 
+Old 27th May 2014, 06:14 AM	  #8
+zlofenix
+Member
+
+
+zlofenix's Avatar
+
+Join Date: Dec 2013
+Posts: 71
+Reputation: 738
+Rep Power: 301
+zlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demon
+Points: 4,902, Level: 7
+Points: 4,902, Level: 7	Points: 4,902, Level: 7	Points: 4,902, Level: 7
+Level up: 45%, 498 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+Nope, looks like blaze v3, so:
+First 3 bytes - encoded string(96ed80 = ENV, as i remember).
+Next one - field type(0-int,1-string,6-union,etc), next field value: int - some [removed]-encoded if > 7F, string - int(string length) + string.
+Look in my bf3 emu threads.
+Last edited by zlofenix; 27th May 2014 at 06:23 AM.
+zlofenix is offline
+ 
+Old 27th May 2014, 07:32 AM	  #9
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+in none of your post I found anything about packet defs, you wrote one about battlelog and all other posts are in the topic I linked at the beginning, sooooo.... where?
+
+EDIT: did you mean this and this?
+
+greetz wwwc
+Last edited by wwwc; 27th May 2014 at 07:59 AM.
+wwwc is offline
+ 
+Old 27th May 2014, 10:56 AM	  #10
+zlofenix
+Member
+
+
+zlofenix's Avatar
+
+Join Date: Dec 2013
+Posts: 71
+Reputation: 738
+Rep Power: 301
+zlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demon
+Points: 4,902, Level: 7
+Points: 4,902, Level: 7	Points: 4,902, Level: 7	Points: 4,902, Level: 7
+Level up: 45%, 498 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+Oh, maybe removed/on another forum.
+
+Well, packet defs - madness, 1 byte more in some string - fail, int can be 1 byte or 8 byte long, so you cant use just offsets.
+Use dynamic packet structure, like in http://www.unknowncheats.me/forum/880790-post85.html just magic of pointers, maps, and vectors.
+Last edited by zlofenix; 27th May 2014 at 11:00 AM.
+zlofenix is offline
+ 
+Old 27th May 2014, 11:17 AM	  #11
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+well, yeah, magic^^
+I dunno where I should start asking there...
+-how do I define what you coded there in C/C++ anyway? (im still learning how highlevel code relates to the generated assembly, even if the decompiler helps alot already)
+-how do you know f.e. 96ed80 = ENV?
+-how can I make a reader first?
+-I mean, do I really need to figure out for any 3 byte combo, what it actually represents or is there some pattern/map/table that I can use?
+-why to some packets have something like headers that are 12 byte long and others are as short as 5 bytes? (17 03 XX XX XX f.e. is freaking me out, as my MITM server doesnt seem to work if attached after redirector, I can easily see packets transmitted and can read them, but after a while it simply pings out with server/client sending only these 5 byte packets like this)
+
+EDIT: well according to this the "type" table looks alot different than what you said and what I see in the packets, so I guess this version is really TOO old?
+
+
+well I send you a PM, so if you like, we can chat 
+
+greetz wwwc
+Last edited by wwwc; 27th May 2014 at 02:28 PM. Reason: more information
+wwwc is offline
+ 
+Old 30th May 2014, 11:25 AM	  #12
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+well I got the MITM work now, turns out the 5 byte packets are leftovers from the ([removed]) underlying ssl implementation of C#. so now I can finally focus on just the content, thanks for the help so far. +1 rep
+
+
+
+
+greetz wwwc
+wwwc is offline
+ 
+Old 4th June 2014, 09:29 PM	  #13
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+now decoded... 
+
+
+
+
+greetz wwwc
+wwwc is offline
+ 
+Old 8th June 2014, 05:38 PM	  #14
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+takes ages, but my game accepts my server, even without inet, lol. and this is just a cheap replay attack^^
+
+
+
+greetz wwwc
+wwwc is offline
+ 
+Old 17th June 2014, 04:43 AM	  #15
+the1domo
+Founder of EvilSource
+
+the1domo's Avatar
+
+Join Date: Jun 2010
+Location: Portland, Oregon
+Posts: 296
+Reputation: 10122
+Rep Power: 398
+the1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server spacethe1domo 's rep takes up 1 gig of server space
+Recognitions
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (2)
+Points: 44,760, Level: 32
+Points: 44,760, Level: 32	Points: 44,760, Level: 32	Points: 44,760, Level: 32
+Level up: 5%, 3,240 Points needed
+Level up: 5%	Level up: 5%	Level up: 5%
+Activity: 10.0%
+Activity: 10.0%	Activity: 10.0%	Activity: 10.0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+this includes everything you need for doing blaze emulation
+http://www.unknowncheats.me/forum/do...=file&id=11880
+@wwwc by the way this is really nice work I can really use someone like you on my team
+Last edited by the1domo; 17th June 2014 at 04:45 AM.
+the1domo is online now
+ 
+Old 17th June 2014, 02:00 PM	  #16
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+wow, you?^^ I tried to contact you before  well, thanks for the code, that makes looking things up alot easier, but unfortunately I already wrote my own class (here its c#, as im lazy when prototyping^^) so it wont be much use anymore.
+Zlo explained me abit how the packets are madeup, the de/compression algos I figured out with IDA and some bit banging, and now I can already create packets/tdfs on the fly and expose all content to config files, so I can play around with it later.
+Then I already try to write some kind of player manager, so when my game looks for hosted games, I can supply the infos of other connected players (and hopefully have LAN^^ it already works that my game connects to my server on another pc)
+
+greetz WV
+
+PS: if you check your pms, I send you my IM before, but will do again now 
+wwwc is offline
+ 
+Old 17th June 2014, 03:47 PM	  #17
+zlofenix
+Member
+
+
+zlofenix's Avatar
+
+Join Date: Dec 2013
+Posts: 71
+Reputation: 738
+Rep Power: 301
+zlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demonzlofenix is a Rep Demon
+Points: 4,902, Level: 7
+Points: 4,902, Level: 7	Points: 4,902, Level: 7	Points: 4,902, Level: 7
+Level up: 45%, 498 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+Quote:
+Originally Posted by the1domo View Post
+this includes everything you need for doing blaze emulation
+http://www.unknowncheats.me/forum/do...=file&id=11880
+@wwwc by the way this is really nice work I can really use someone like you on my team
+And now i name you: world biggest [removed]et. Why you show something AFTER someone already done it?
+Also why such shitcode?
+1. Boost
+2. Cryptopp
+3. Strings as buffers in bf3
+4. BlazeStrategy::GetHeaderSize - top lel, header size not const.
+zlofenix is offline
+ 
+Old 18th June 2014, 08:54 AM	  #18
+krakman
+1337 H4x0!2
+
+
+krakman's Avatar
+
+Join Date: Feb 2013
+Posts: 123
+Reputation: 343
+Rep Power: 323
+krakman is Probably Abusing the Rep Systemkrakman is Probably Abusing the Rep Systemkrakman is Probably Abusing the Rep Systemkrakman is Probably Abusing the Rep System
+Points: 4,423, Level: 6
+Points: 4,423, Level: 6	Points: 4,423, Level: 6	Points: 4,423, Level: 6
+Level up: 92%, 77 Points needed
+Level up: 92%	Level up: 92%	Level up: 92%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Blaze Backend RelationsBlaze Backend Relations
+Quote:
+Originally Posted by zlofenix View Post
+And now i name you: world biggest [removed]et. Why you show something AFTER someone already done it? Also why such shitcode? 1. Boost 2. Cryptopp 3. Strings as buffers in bf3 4. BlazeStrategy::GetHeaderSize - top lel, header size not const.
+the1domo disgraced?
+krakman is offline
+ 
+Old 18th June 2014, 09:13 PM	  #19
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+dunno if you guys are still interested, but I made some more progress:
+it doesnt login correct yet (working on that) but boots fine into mainmenu, just this time, everything is created on the fly (!) from config files, also I have a basic playerlist 
+
+
+
+
+if you wanna have a big laugh at my [removed] code, here it is 
+source&bin
+
+greetz wwwc
+Last edited by OLD_Anonymous; 20th June 2014 at 06:13 PM.
+wwwc is offline
+ 
+Old 20th June 2014, 12:10 PM	  #20
+wwwc
+Hacker Supreme
+
+
+wwwc's Avatar
+
+Threadstarter
+Join Date: Aug 2012
+Posts: 221
+Reputation: 7687
+Rep Power: 342
+wwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATSwwwc DEFINES UNKNOWNCHEATS
+Points: 25,988, Level: 23
+Points: 25,988, Level: 23	Points: 25,988, Level: 23	Points: 25,988, Level: 23
+Level up: 29%, 1,212 Points needed
+Level up: 29%	Level up: 29%	Level up: 29%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+Blaze Backend RelationsBlaze Backend RelationsBlaze Backend RelationsBlaze Backend Relations
+seems im on the right track here, finally I can enter MP mode OFFLINE, yay!
+
+
+
+greetz WV
+wwwc is offline
+ 
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook	
+Page 1 of 3	1	2	3	>	
+
+
+
+collapse similar threadsSimilar Threads
+Thread	Thread Starter	Forum	Replies	Last Post
+[Release] Blaze Master Server	billyolak7	Battlefield 3	95	1st February 2014 04:25 PM
+[Discuss] Backend Editor Best Practices?	Quicktime	PHP	5	4th July 2009 10:28 PM
+
+Tags
+backend, blaze, relations
+
+« Previous Thread | Next Thread »
+
+Forum Jump
+
+        Battlefield 3
+
+
+All times are GMT. The time now is 09:40 AM.
+Copyright ©2000-2026, Unknowncheats™
+DMCA - Contact
+Terms of Use - Privacy Policy - Forum Rules
+
+
+
+
+UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats (https://www.unknowncheats.me/forum/index.php)
+-   Battlefield 4 (https://www.unknowncheats.me/forum/battlefield-4-a/)
+-   -   [Help] How to read this TDF? (https://www.unknowncheats.me/forum/battlefield-4-a/182756-read-tdf.html)
+
+wwwc	18th July 2016 06:23 AM
+How to read this TDF?
+ 
+hi there, I came across a packet that really annoys me, I mean i could hardcode some exception as I dont need the contents, but Id rather like to read it properly
+
+http://i.imgur.com/ob0yJ1K.png
+
+so this is a "Map" or "Dictionary" or "TDFMap" to be precise, anyway, its type 5, it has type 1 as key, aka a string, and it has type 3 as values, aka structs, which terminate in 0x00 and it has 1 entry. sofar so good, the string means "soldier" and the struct seems to be empty.
+what now follows, I dont know how, but the 0x01 is leftover and after that its a compressed integer. then follows normal tdfs again...
+my theories so far:
+1)the second type is actually 4, tdf list, so the 0 is the type of item (integer) and the 1 the count
+2)the struct actually ends with the zero and the additional 0x01 and the integer have to be explained somehow extra
+3)the 3 means some kind of count and not struct, and its expected to be integers, so it reads 0,1,theInteger
+
+has anyone ever encounter such a construct? what is the proper way to read it? I can verify that this packet happens each time the player logs into blaze for mp (its the gamemanger::joingame packet), that the wtf part contains a known ID, its always send this way and its hardcoded in bf4.exe ... I attempted to send it to the bf4 server in hopes it would print it out for me, but it ignores it/drops it
+
+any help?
+
+greetz
+
+Noperd010xx	18th July 2016 09:40 PM
+So far through all the games I've encountered, RRST is the only such packet with this structure.
+I doubt it would be anything but a map. I believe theory 2 is the closest.
+
+I don't see any way this information is used by the Blaze server, at the moment anyway, so for now I think it's not needed.
+
+I've just got it hard coded at the moment with read two integers after decoding the map.
+
+Hardline Join Game RRST
+Code:
+cb 2c f4 05 01 03 01
+        08 736f6c6469657200 00 01 a2
+       
+9edaa6 01
+
+wwwc	19th July 2016 03:53 AM
+for now my strategy is to catch the packet before its processed by any code and fix the 3 to a 4 and implement list reading (type, count, items). this way it makes sense and works. I could have edited the bf4.exe but I think this is easier. anyway, thanks, thats useful to know :)
+
+greetz
+
+
+All times are GMT. The time now is 09:40 AM.	
+
+
+
+UnknownCheats - Leading the game hacking and cheat development scene since 2000	
+UnKnoWnCheaTs Game Hacking Portal	UnKnoWnCheaTs Game Hacking Forum – Cheats, Hacks, and Tutorials	Download Game Hacks, Cheats and Hacking Tools – UnKnoWnCheaTs	Game Hacking Wiki – Tutorials and Guides on UnKnoWnCheaTs	Toggle Dark Mode	Register at UnKnoWnCheaTs – Join the Greatest Game Hacking Community
+
+Go Back	 	UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats
+First-Person Shooters
+Battlefield Series
+Battlefield 4
+Reload this Page [Release] BF4ServerInstaller
+advertisements
+User Name:
+Password:
+Remember Me?	
+
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook	
+Page 1 of 5	1	2	3	4	5	>	
+ 
+Thread Tools 
+BF4ServerInstaller
+Old 23rd June 2016, 07:28 PM	  #1
+HoVerFlopZ
+A Legend
+
+
+HoVerFlopZ's Avatar
+
+Join Date: Jan 2014
+Location: Germany
+Posts: 262
+Reputation: 6452
+Rep Power: 306
+HoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATS
+Points: 22,309, Level: 20
+Points: 22,309, Level: 20	Points: 22,309, Level: 20	Points: 22,309, Level: 20
+Level up: 95%, 91 Points needed
+Level up: 95%	Level up: 95%	Level up: 95%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+BF4ServerInstaller
+1.0
+
+1.1+
+
+
+Downloads: (Use this with your own risk!)
+Version 1.0 | https://www.unknowncheats.me/forum/d...=file&id=17658
+Version 1.1 | https://www.unknowncheats.me/forum/d...=file&id=17697
+Version 1.2 | https://www.unknowncheats.me/forum/d...=file&id=18801
+Version 1.3 | https://www.unknowncheats.me/forum/d...=file&id=22754
+Version 1.4 | https://www.unknowncheats.me/forum/d...=file&id=22827
+
+How to use it?
+Move or copy all files in the same folder or path as the BF4ServerInstaller and run it.
+
+
+
+
+
+Links:
+Python:
+https://www.python.org/ftp/python/2....hon-2.7.11.msi (32-Bit)
+https://www.python.org/ftp/python/2....7.11.amd64.msi (64-Bit)
+ 
+Microsoft Visual C++ Compiler for Python 2.7:
+https://download.microsoft.com/downl...orPython27.msi
+ 
+Visual C++ Redistributable for Visual Studio 2012 Update 4:
+https://download.microsoft.com/downl...redist_x64.exe
+ 
+Visual C++ Redistributable for Visual Studio 2015:
+https://download.microsoft.com/downl...redist.x64.exe
+ 
+Blaze:
+https://www.unknowncheats.me/forum/d...=file&id=16963
+ 
+Redirector:
+https://www.unknowncheats.me/forum/d...=file&id=19750 (Fix [Version 2] for the latest patch)
+https://www.unknowncheats.me/forum/d...=file&id=19746 (Fix [Version 1] for the latest patch)
+https://www.unknowncheats.me/forum/d...=file&id=16964 (Before the latest patch)
+ 
+ProviderID:
+https://www.unknowncheats.me/forum/d...o=file&id=6553
+ 
+Server Files:
+R55 (Source)
+R56 (Source)
+R57 (Source)
+R58 (Source)
+R60 (Source)
+R63 (Source)
+
+Ports:
+HOST (TCP): 10041, 10071, 42127, 443
+HOST (UDP): 25200
+GUEST (UDP): 3659
+
+Credits:
+
+@[removed]010xx (Battlefield 4 Blaze Emulator)
+
+@buchacho (Fixed Inventory.py), @RozenMaiden (Fixed dinput8.dll for latest patch) and @Fedell (List of Commands)
+__________________
+ 
+I'm not active currently, don't expect any reaction from me. I'll answer to your messages as soon as I'm active again.
+
+      ~ HVFZ
+Last edited by HoVerFlopZ; 10th April 2019 at 01:58 PM.
+HoVerFlopZ is offline
+ 
+
+Old 24th June 2016, 01:16 AM	  #2
+xenocidewiki
+nyaa is my waifu
+
+xenocidewiki's Avatar
+
+Join Date: Nov 2013
+Location: Norway
+Posts: 3,620
+Reputation: 85516
+Rep Power: 423
+xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!
+Recognitions
+Award symbolizing a retired staff member who dedicated a notable amount of time and effort to their past staff position. Former Staff
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (11)
+Awarded to members who have donated 10 times or more. Gratuity (1)
+Points: 150,761, Level: 55
+Points: 150,761, Level: 55	Points: 150,761, Level: 55	Points: 150,761, Level: 55
+Level up: 45%, 3,239 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstallerBF4ServerInstallerBF4ServerInstaller
+File Approved
+BF4ServerInstaller
+SHA256: BF4ServerInstaller_[unknowncheats.me]_.exe - 6d983ab1b6bf5e6bb65e6fb5002c39a3a58a8a2c10d6ae4b12c4a95dbffb2f21
+Interested in how we analyze files? Click here to find out.
+
+
+NOTE: This obviously has network connectivity.
+__________________
+Rules ~ UnKnoWnCheaTs Wiki ~ UC FAQ
+
+xenocidewiki is offline
+ 
+Old 24th June 2016, 02:11 AM	  #3
+allangati
+Junior Member
+
+
+allangati's Avatar
+
+Join Date: Jun 2015
+Location: USA, but i'm BR
+Posts: 51
+Reputation: 1296
+Rep Power: 0
+allangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for meallangati -- Punk buster made a most wanted list for me
+interesting 
+allangati is offline
+ 
+Old 24th June 2016, 04:21 AM	  #4
+cerraosso
+Master Contributor
+
+cerraosso's Avatar
+
+Join Date: Jun 2008
+Posts: 1,030
+Reputation: 31261
+Rep Power: 477
+cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!cerraosso has reputation that takes up 2GB of server space!
+Recognitions
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (3)
+Points: 93,366, Level: 44
+Points: 93,366, Level: 44	Points: 93,366, Level: 44	Points: 93,366, Level: 44
+Level up: 48%, 1,934 Points needed
+Level up: 48%	Level up: 48%	Level up: 48%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstallerBF4ServerInstallerBF4ServerInstaller
+very nice
+cerraosso is offline
+ 
+Old 25th June 2016, 11:41 AM	  #5
+DikkeVetteMert
+1337 H4x0!2
+
+
+DikkeVetteMert's Avatar
+
+Join Date: Jul 2014
+Posts: 134
+Reputation: 473
+Rep Power: 287
+DikkeVetteMert is a preacher of ownage - listen and learnDikkeVetteMert is a preacher of ownage - listen and learnDikkeVetteMert is a preacher of ownage - listen and learnDikkeVetteMert is a preacher of ownage - listen and learnDikkeVetteMert is a preacher of ownage - listen and learn
+Recognitions
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (1)
+Points: 5,967, Level: 8
+Points: 5,967, Level: 8	Points: 5,967, Level: 8	Points: 5,967, Level: 8
+Level up: 52%, 533 Points needed
+Level up: 52%	Level up: 52%	Level up: 52%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+Well done, especially at this time. +Rep
+DikkeVetteMert is offline
+ 
+Old 26th June 2016, 02:04 PM	  #6
+bloodyedward
+n00bie
+
+
+bloodyedward's Avatar
+
+Join Date: Jun 2016
+Posts: 4
+Reputation: 10
+Rep Power: 239
+bloodyedward has made posts that are generally average in quality
+hello any one know the fix for this issue ?
+
+http://www8.0zz0.com/2016/06/26/17/602792538.png
+
+http://www8.0zz0.com/2016/06/26/17/137614135.png
+bloodyedward is offline
+ 
+Old 26th June 2016, 05:08 PM	  #7
+HoVerFlopZ
+A Legend
+
+
+HoVerFlopZ's Avatar
+
+Threadstarter
+Join Date: Jan 2014
+Location: Germany
+Posts: 262
+Reputation: 6452
+Rep Power: 306
+HoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATS
+Points: 22,309, Level: 20
+Points: 22,309, Level: 20	Points: 22,309, Level: 20	Points: 22,309, Level: 20
+Level up: 95%, 91 Points needed
+Level up: 95%	Level up: 95%	Level up: 95%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+Quote:
+Originally Posted by bloodyedward View Post
+hello any one know the fix for this issue ?
+
+http://www8.0zz0.com/2016/06/26/17/602792538.png
+
+http://www8.0zz0.com/2016/06/26/17/137614135.png
+Did the installer moved / created all files in the selected paths?
+How have you set up the folder with the BF4ServerInstaller?
+
+Try to install it again and if this not work, try to install the files in another paths.
+__________________
+ 
+I'm not active currently, don't expect any reaction from me. I'll answer to your messages as soon as I'm active again.
+
+      ~ HVFZ
+Last edited by disabilitor; 13th July 2016 at 03:36 AM. Reason: Restored by disabilitor
+HoVerFlopZ is offline
+ 
+Old 28th June 2016, 03:31 PM	  #8
+Daax
+Hacked North Korea
+
+Daax's Avatar
+
+Join Date: Jul 2013
+Posts: 2,059
+Reputation: 112776
+Rep Power: 443
+Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!Daax has a huge epeen!
+Recognitions
+The UC Member of the Month award is a prestigious award given to a single community member on a monthly basis. Based on a vote from community members, the award is given to the forum member that has shown exemplary achievement and potential in the UnKnoWnCheaTs community, and has shown great commitment to upholding the principles upon which UnKnoWnCheaTs stands for. A member who has been awarded the Member of the Month award has been distinguished as an asset to the UnKnoWnCheaTs community. Member of the Month (2)
+Award symbolizing a retired staff member who dedicated a notable amount of time and effort to their past staff position. Former Staff
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (4)
+Points: 134,459, Level: 52
+Points: 134,459, Level: 52	Points: 134,459, Level: 52	Points: 134,459, Level: 52
+Level up: 54%, 2,541 Points needed
+Level up: 54%	Level up: 54%	Level up: 54%
+Activity: 2.5%
+Activity: 2.5%	Activity: 2.5%	Activity: 2.5%
+Last Achievements
+BF4ServerInstallerBF4ServerInstallerBF4ServerInstallerBF4ServerInstallerBF4ServerInstaller
+Approved, thanks for sharing.
+
+Code:
+BF4ServerInstaller.exe -> SHA256 [c964eb1fcfcdfcf8feb4251787332230dd5d70dab22e09cb8a5f4d0df43b6607]
+All files installed are safe.
+Daax is offline
+ 
+Old 29th June 2016, 11:14 AM	  #9
+oxotnik007
+n00bie
+
+
+oxotnik007's Avatar
+
+Join Date: May 2016
+Posts: 2
+Reputation: 10
+Rep Power: 242
+oxotnik007 has made posts that are generally average in quality
+where can I download? BF4_PC_Server_56_177035_Binaries and ProviderID.dat
+oxotnik007 is offline
+ 
+Old 30th June 2016, 11:15 AM	  #10
+HoVerFlopZ
+A Legend
+
+
+HoVerFlopZ's Avatar
+
+Threadstarter
+Join Date: Jan 2014
+Location: Germany
+Posts: 262
+Reputation: 6452
+Rep Power: 306
+HoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATS
+Points: 22,309, Level: 20
+Points: 22,309, Level: 20	Points: 22,309, Level: 20	Points: 22,309, Level: 20
+Level up: 95%, 91 Points needed
+Level up: 95%	Level up: 95%	Level up: 95%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+Quote:
+Originally Posted by oxotnik007 View Post
+where can I download? BF4_PC_Server_56_177035_Binaries and ProviderID.dat
+Search for them on google.
+
+"bf4 server files r56" / "bf3 providerid.dat"
+__________________
+ 
+I'm not active currently, don't expect any reaction from me. I'll answer to your messages as soon as I'm active again.
+
+      ~ HVFZ
+HoVerFlopZ is offline
+ 
+Old 30th June 2016, 12:49 PM	  #11
+xxzxx0011
+n00bie
+
+
+xxzxx0011's Avatar
+
+Join Date: Aug 2014
+Posts: 2
+Reputation: 10
+Rep Power: 285
+xxzxx0011 has made posts that are generally average in quality
+Points: 4,673, Level: 7
+Points: 4,673, Level: 7	Points: 4,673, Level: 7	Points: 4,673, Level: 7
+Level up: 20%, 727 Points needed
+Level up: 20%	Level up: 20%	Level up: 20%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+Thank you
+xxzxx0011 is offline
+ 
+Old 30th June 2016, 02:56 PM	  #12
+th3hack3d
+n00bie
+
+
+th3hack3d's Avatar
+
+Join Date: Oct 2014
+Posts: 4
+Reputation: 10
+Rep Power: 280
+th3hack3d has made posts that are generally average in quality
+Hi there could you please help obtaining bf4webhelper.exe and bf4x86webhelper.exe. Thanks in advance
+
+Quote:
+Originally Posted by oxotnik007 View Post
+where can I download? BF4_PC_Server_56_177035_Binaries and ProviderID.dat
+All you need is right here: http://bf3lan.ru/news/49-server-4.html
+th3hack3d is offline
+ 
+Old 30th June 2016, 05:40 PM	  #13
+HoVerFlopZ
+A Legend
+
+
+HoVerFlopZ's Avatar
+
+Threadstarter
+Join Date: Jan 2014
+Location: Germany
+Posts: 262
+Reputation: 6452
+Rep Power: 306
+HoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATSHoVerFlopZ DEFINES UNKNOWNCHEATS
+Points: 22,309, Level: 20
+Points: 22,309, Level: 20	Points: 22,309, Level: 20	Points: 22,309, Level: 20
+Level up: 95%, 91 Points needed
+Level up: 95%	Level up: 95%	Level up: 95%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+REMOVED.
+__________________
+ 
+I'm not active currently, don't expect any reaction from me. I'll answer to your messages as soon as I'm active again.
+
+      ~ HVFZ
+Last edited by HoVerFlopZ; 30th June 2016 at 05:44 PM.
+HoVerFlopZ is offline
+ 
+Old 1st July 2016, 11:41 PM	  #14
+3699n
+n00bie
+
+
+3699n's Avatar
+
+Join Date: Aug 2014
+Posts: 3
+Reputation: 10
+Rep Power: 284
+3699n has made posts that are generally average in quality
+Any Idea how to solve this problem?
+
+C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze>Init.py
+[SSL REACTOR] GOSREDIRECTOR STARTED [42127]
+[TCP REACTOR] BLAZE CLIENT [10041]
+[TCP REACTOR] BLAZE SERVER [10071]
+Traceback (most recent call last):
+File "C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze\Init.py", line 46, in <module>
+Start()
+File "C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze\Init.py", line 40, in Start
+reactor.listenSSL(443, sites, SSLInfo)
+File "C:\Python27\lib\site-packages\twisted\internet\posixbase.py", line 505, in listenSSL
+port = self.listenTCP(port, tlsFactory, backlog, interface)
+File "C:\Python27\lib\site-packages\twisted\internet\posixbase.py", line 478, in listenTCP
+p.startListening()
+File "C:\Python27\lib\site-packages\twisted\internet\tcp.py", line 984, in startListening
+raise CannotListenError(self.interface, self.port, le)
+twisted.internet.error.CannotListenError: Couldn't listen on any:443: [Errno 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted.
+
+Thanks
+3699n is offline
+ 
+Old 4th July 2016, 07:15 PM	  #15
+throwawayacc123
+n00bie
+
+
+throwawayacc123's Avatar
+
+Join Date: Jul 2016
+Posts: 1
+Reputation: 10
+Rep Power: 239
+throwawayacc123 has made posts that are generally average in quality
+Quote:
+Originally Posted by 3699n View Post
+Any Idea how to solve this problem?
+
+C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze>Init.py
+[SSL REACTOR] GOSREDIRECTOR STARTED [42127]
+[TCP REACTOR] BLAZE CLIENT [10041]
+[TCP REACTOR] BLAZE SERVER [10071]
+Traceback (most recent call last):
+File "C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze\Init.py", line 46, in <module>
+Start()
+File "C:\Program Files (x86)\Origin Games\Battlefield 4\Server\Blaze\Init.py", line 40, in Start
+reactor.listenSSL(443, sites, SSLInfo)
+File "C:\Python27\lib\site-packages\twisted\internet\posixbase.py", line 505, in listenSSL
+port = self.listenTCP(port, tlsFactory, backlog, interface)
+File "C:\Python27\lib\site-packages\twisted\internet\posixbase.py", line 478, in listenTCP
+p.startListening()
+File "C:\Python27\lib\site-packages\twisted\internet\tcp.py", line 984, in startListening
+raise CannotListenError(self.interface, self.port, le)
+twisted.internet.error.CannotListenError: Couldn't listen on any:443: [Errno 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted.
+
+Thanks
+Seems port 443 is already in use. could be skype using port 443?
+throwawayacc123 is offline
+ 
+Old 5th July 2016, 01:10 PM	  #16
+Rancos
+n00bie
+
+
+Rancos's Avatar
+
+Join Date: Jun 2014
+Posts: 5
+Reputation: 10
+Rep Power: 290
+Rancos has made posts that are generally average in quality
+Points: 6,234, Level: 8
+Points: 6,234, Level: 8	Points: 6,234, Level: 8	Points: 6,234, Level: 8
+Level up: 76%, 266 Points needed
+Level up: 76%	Level up: 76%	Level up: 76%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstaller
+What is this ?
+What is it used for ?
+Rancos is offline
+ 
+Old 5th July 2016, 04:20 PM	  #17
+KappaMan30
+Super l337
+
+
+KappaMan30's Avatar
+
+Join Date: Jul 2014
+Posts: 215
+Reputation: -1466
+Rep Power: 0
+KappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these partsKappaMan30 is infamous around these parts
+Recognitions
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (1)
+Points: 3,633, Level: 6
+Points: 3,633, Level: 6	Points: 3,633, Level: 6	Points: 3,633, Level: 6
+Level up: 4%, 867 Points needed
+Level up: 4%	Level up: 4%	Level up: 4%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+One question before I download:
+
+Is it possible to set XP bonus and such on here?
+Like, exploit Battlefield 4?
+
+Also, does XP, unlocks, etc actually work in normal matches?
+__________________
+lol my rep is just a meme at this point
+KappaMan30 is offline
+ 
+Old 19th July 2016, 03:50 AM	  #18
+zhouyut001
+God-Like
+
+
+zhouyut001's Avatar
+
+Join Date: Jun 2015
+Location: USA
+Posts: 162
+Reputation: 375
+Rep Power: 265
+zhouyut001 has learned Kazaa is not a third world countryzhouyut001 has learned Kazaa is not a third world countryzhouyut001 has learned Kazaa is not a third world countryzhouyut001 has learned Kazaa is not a third world country
+Points: 9,631, Level: 11
+Points: 9,631, Level: 11	Points: 9,631, Level: 11	Points: 9,631, Level: 11
+Level up: 85%, 169 Points needed
+Level up: 85%	Level up: 85%	Level up: 85%
+Activity: 3.0%
+Activity: 3.0%	Activity: 3.0%	Activity: 3.0%
+Last Achievements
+BF4ServerInstallerBF4ServerInstallerBF4ServerInstallerBF4ServerInstaller
+3Q,BUT HOW TO OPEN BOT MODE?
+zhouyut001 is offline
+ 
+Old 19th July 2016, 08:36 AM	  #19
+youdlike
+Posting Well
+
+
+youdlike's Avatar
+
+Join Date: Jul 2016
+Posts: 25
+Reputation: -152
+Rep Power: 0
+youdlike is nearly a complete Unknown Asshatyoudlike is nearly a complete Unknown Asshat
+what's this? i'm new to the community, i don't know what this should work for
+youdlike is offline
+ 
+Old 19th July 2016, 08:41 AM	  #20
+whatever1234567
+Super H4x0r
+
+
+whatever1234567's Avatar
+
+Join Date: Jan 2016
+Location: No such thing
+Posts: 345
+Reputation: 3278
+Rep Power: 0
+whatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating communitywhatever1234567 is a legend in the cheating community
+Quote:
+Originally Posted by youdlike View Post
+what's this? i'm new to the community, i don't know what this should work for
+This is an installer for the "Blaze Server" which is like a bots lobby from cod. You can use it to play against bots or friends offline, currently we are working on freeing bf4 from origin, @wwwc has released some of his work, if you are interested, be sure to check it out. Just a note, be sure to look at a specific packet during handshake 
+whatever1234567 is offline
+ 
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook	
+Page 1 of 5	1	2	3	4	5	>	
+
+
+Tags
+blaze, folder, advanced, inside, buttons, setup, customize, issues, [release], module
+
+« Previous Thread | Next Thread »
+
+Forum Jump
+
+        Battlefield 4
+
+
+All times are GMT. The time now is 09:40 AM.
+Copyright ©2000-2026, Unknowncheats™
+DMCA - Contact
+Terms of Use - Privacy Policy - Forum Rules
+
+
+
+UnknownCheats - Leading the game hacking and cheat development scene since 2000	
+UnKnoWnCheaTs Game Hacking Portal	UnKnoWnCheaTs Game Hacking Forum – Cheats, Hacks, and Tutorials	Download Game Hacks, Cheats and Hacking Tools – UnKnoWnCheaTs	Game Hacking Wiki – Tutorials and Guides on UnKnoWnCheaTs	Toggle Dark Mode	Register at UnKnoWnCheaTs – Join the Greatest Game Hacking Community
+
+Go Back	 	UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats
+First-Person Shooters
+Battlefield Series
+Battlefield 3
+Reload this Page [Source] Battlefield 3 R38 dedicated server Blaze log dump
+advertisements
+User Name:
+Password:
+Remember Me?	
+
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook
+ 
+Thread Tools 
+Battlefield 3 R38 dedicated server Blaze log dump
+Old 27th April 2015, 04:06 PM	  #1
+win32
+n00bie
+
+
+win32's Avatar
+
+Join Date: Sep 2014
+Posts: 7
+Reputation: 10
+Rep Power: 282
+win32 has made posts that are generally average in quality
+Battlefield 3 R38 dedicated server Blaze log dump
+Download:
+
+Tutorial:
+Add -Blaze.LogLevel 2 to your Win32Game.cfg after the -dedicated flag.
+
+Example:
+Code:
+[ServiceResolver:F9070300].onGetServerInstance: remove onResolveTimeoutJob job(2)
+Connecting to blaze server: 357250-gosstapp023.rspc-lhr.ea.com
+[ConnectionManager:F8FF53B0].makeBlazeConnection: disconnecting in 20000 ms if fails to connect
+[BlazeConnection:F8FF5528].BlazeConnection: Connecting to secure 357250-gosstapp023.rspc-lhr.ea.com:10981
+[ConnectionManager:F8FF53B0].onBlazeConnect: removing connection timeout job(4)
+-> req: ID[0], UtilComponent::preAuth [0x0009::0x0007]
+  PreAuthRequest = {
+    CDAT = {
+      IITO = false
+      LANG = 1701729619 (0x656E5553)
+      SVCN = "battlefield-3-pc"
+      TYPE = CLIENT_TYPE_DEDICATED_SERVER (2) (0x00000002)
+    }
+    CINF = {
+      BSDK = "3.15.2.0"
+      BTIM = "Feb 15 2013 13:49:15"
+      CLNT = "bf3 server"
+      CSKU = "pc"
+      CVER = "VeniceXpack51149977final-1.0-67"
+      DSDK = "8.14.2.0"
+      ENV = "stest"
+      LOC = 1701729619 (0x656E5553)
+      MAC = "00:11:0a:5c:4c:69"
+      PLAT = "Windows"
+    }
+    FCCR = {
+      CFID = "BlazeSDK"
+    }
+  }
+<- resp: ID[0], UtilComponent::preAuth [0x0009::0x0007]
+  PreAuthResponse = {
+    ANON = false
+    ASRC = "123071"
+    CIDS = [
+      [0] = 1 (0x0001)
+      [1] = 25 (0x0019)
+      [2] = 4 (0x0004)
+      [3] = 27 (0x001B)
+      [4] = 28 (0x001C)
+      [5] = 6 (0x0006)
+      [6] = 7 (0x0007)
+      [7] = 9 (0x0009)
+      [8] = 10 (0x000A)
+      [9] = 11 (0x000B)
+      [10] = 30720 (0x7800)
+      [11] = 30721 (0x7801)
+      [12] = 30722 (0x7802)
+      [13] = 30723 (0x7803)
+      [14] = 20 (0x0014)
+      [15] = 30725 (0x7805)
+      [16] = 30726 (0x7806)
+      [17] = 2000 (0x07D0)
+    ]
+    CNGN = ""
+    CONF = {
+      CONF = [
+        ("connIdleTimeout", "90s")
+        ("defaultRequestTimeout", "80s")
+        ("pingPeriod", "20s")
+        ("voipHeadsetUpdateRate", "1000")
+        ("xlspConnectionIdleTimeout", "300")
+      ]
+    }
+    INST = "battlefield-3-pc"
+    MINR = false
+    NASP = "cem_ea_id"
+    PILD = ""
+    PLAT = "pc"
+    PTAG = ""
+    QOSS = {
+      BWPS = {
+        PSA = "gosgvastest-qos01.beta.ea.com"
+        PSP = 17502 (0x445E)
+        SNA = "biodubbf3"
+      }
+      LNP = 10 (0x000A)
+      LTPS = [
+        ("ams", {
+          PSA = "gosgvastest-qos01.beta.ea.com"
+          PSP = 17502 (0x445E)
+          SNA = "biodubbf3"
+        })
+        ("iad", {
+          PSA = "gosiadstest-qos01.beta.ea.com"
+          PSP = 17502 (0x445E)
+          SNA = "bioiadbf3"
+        })
+        ("lax", {
+          PSA = "gossjcstest-qos01.beta.ea.com"
+          PSP = 17502 (0x445E)
+          SNA = "biosjcbf3"
+        })
+        ("nrt", {
+          PSA = "gosgvastest-qos01.beta.ea.com"
+          PSP = 17502 (0x445E)
+          SNA = "i3d-prod-nrt-bf3"
+        })
+        ("syd", {
+          PSA = "gosgvastest-qos01.beta.ea.com"
+          PSP = 17502 (0x445E)
+          SNA = "biosydbf3"
+        })
+      ]
+      SVID = 1161889797 (0x45410805)
+    }
+    RSRC = "123071"
+    SVER = "Blaze 3.15.08.0 (CL# 1060080)
+"
+  }
+win32 is offline
+ 
+
+Old 28th April 2015, 11:24 AM	  #2
+win32
+n00bie
+
+
+win32's Avatar
+
+Threadstarter
+Join Date: Sep 2014
+Posts: 7
+Reputation: 10
+Rep Power: 282
+win32 has made posts that are generally average in quality
+Download link:
+http://www.unknowncheats.me/forum/do...=file&id=14413
+win32 is offline
+ 
+Old 28th April 2015, 11:37 AM	  #3
+xenocidewiki
+nyaa is my waifu
+
+xenocidewiki's Avatar
+
+Join Date: Nov 2013
+Location: Norway
+Posts: 3,620
+Reputation: 85516
+Rep Power: 423
+xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!xenocidewiki has a huge epeen!
+Recognitions
+Award symbolizing a retired staff member who dedicated a notable amount of time and effort to their past staff position. Former Staff
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (11)
+Awarded to members who have donated 10 times or more. Gratuity (1)
+Points: 150,761, Level: 55
+Points: 150,761, Level: 55	Points: 150,761, Level: 55	Points: 150,761, Level: 55
+Level up: 45%, 3,239 Points needed
+Level up: 45%	Level up: 45%	Level up: 45%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+Battlefield 3 R38 dedicated server Blaze log dumpBattlefield 3 R38 dedicated server Blaze log dumpBattlefield 3 R38 dedicated server Blaze log dumpBattlefield 3 R38 dedicated server Blaze log dump
+ Moderator note (xenocidewiki)
+Battlefield 3 R38 dedicated server Blaze log dump
+Approved, thanks for sharing!
+__________________
+Rules ~ UnKnoWnCheaTs Wiki ~ UC FAQ
+
+xenocidewiki is offline
+ 
+Reply Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook
+
+
+
+collapse similar threadsSimilar Threads
+Thread	Thread Starter	Forum	Replies	Last Post
+[Information] dump server files R38	krakman	Battlefield 3	3	28th March 2015 12:35 PM
+[Question] Battlefield 3 blaze server connection	SniperViper	Battlefield 3	5	14th September 2014 11:49 AM
+[Help] Battlefield 3 R38 Server error	lowca3213	Battlefield 3	4	10th April 2014 09:59 AM
+[Release] Blaze Master Server	billyolak7	Battlefield 3	95	1st February 2014 04:25 PM
+[Release] BF3 R38 Server Release	billyolak7	Battlefield 3	237	27th January 2014 08:12 AM
+
+Tags
+blaze, dedicated, dump, log, r38, server
+
+« Previous Thread | Next Thread »
+
+Forum Jump
+
+        Battlefield 3
+
+
+All times are GMT. The time now is 09:40 AM.
+Copyright ©2000-2026, Unknowncheats™
+DMCA - Contact
+Terms of Use - Privacy Policy - Forum Rules
+
+
+
+UnknownCheats - Leading the game hacking and cheat development scene since 2000	
+UnKnoWnCheaTs Game Hacking Portal	UnKnoWnCheaTs Game Hacking Forum – Cheats, Hacks, and Tutorials	Download Game Hacks, Cheats and Hacking Tools – UnKnoWnCheaTs	Game Hacking Wiki – Tutorials and Guides on UnKnoWnCheaTs	Toggle Dark Mode	Register at UnKnoWnCheaTs – Join the Greatest Game Hacking Community
+
+Go Back	 	UnKnoWnCheaTs - Multiplayer Game Hacking and Cheats
+Anti-Cheat Software & Programming
+Game Engine Programming
+FrostBite
+Reload this Page [Help] tdf fix in me3 private server emu
+advertisements
+User Name:
+Password:
+Remember Me?	
+
+Closed Thread Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook
+ 
+Thread Tools 
+tdf fix in me3 private server emu
+Old 30th September 2014, 08:09 PM	  #1
+moha4pc
+Posting Well
+
+
+moha4pc's Avatar
+
+Join Date: Jul 2013
+Location: iraq
+Posts: 34
+Reputation: -155
+Rep Power: 0
+moha4pc is nearly a complete Unknown Asshatmoha4pc is nearly a complete Unknown Asshat
+Points: 5,053, Level: 7
+Points: 5,053, Level: 7	Points: 5,053, Level: 7	Points: 5,053, Level: 7
+Level up: 62%, 347 Points needed
+Level up: 62%	Level up: 62%	Level up: 62%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+tdf fix in me3 private server emutdf fix in me3 private server emu
+tdf fix in me3 private server emu
+Unknown Tdf Type: 21 @:38F this the fix
+can i remove tdf
+but what is tdf and what did it do
+this is emu for bf3 please i get it in lan it go to no_game in server and emu *create game*
+Last edited by moha4pc; 30th September 2014 at 09:33 PM.
+moha4pc is offline
+ 
+
+Old 2nd October 2014, 12:58 AM	  #2
+Mahnatoe
+1337 H4x0!2
+
+
+Mahnatoe's Avatar
+
+Join Date: Feb 2012
+Posts: 126
+Reputation: 400
+Rep Power: 347
+Mahnatoe has stol33n The c0d3Mahnatoe has stol33n The c0d3Mahnatoe has stol33n The c0d3Mahnatoe has stol33n The c0d3Mahnatoe has stol33n The c0d3
+Points: 9,603, Level: 11
+Points: 9,603, Level: 11	Points: 9,603, Level: 11	Points: 9,603, Level: 11
+Level up: 83%, 197 Points needed
+Level up: 83%	Level up: 83%	Level up: 83%
+Activity: 2.4%
+Activity: 2.4%	Activity: 2.4%	Activity: 2.4%
+Last Achievements
+tdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emu
+This isn't MW3 section.
+Mahnatoe is online now
+ 
+Old 2nd October 2014, 02:34 AM	  #3
+IChooseYou
+ICY
+
+IChooseYou's Avatar
+
+Join Date: Jun 2005
+Posts: 3,461
+Reputation: 176542
+Rep Power: 718
+IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!IChooseYou has a huge epeen!
+Recognitions
+The UC Member of the Month award is a prestigious award given to a single community member on a monthly basis. Based on a vote from community members, the award is given to the forum member that has shown exemplary achievement and potential in the UnKnoWnCheaTs community, and has shown great commitment to upholding the principles upon which UnKnoWnCheaTs stands for. A member who has been awarded the Member of the Month award has been distinguished as an asset to the UnKnoWnCheaTs community. Member of the Month (6)
+Award symbolizing a retired staff member who dedicated a notable amount of time and effort to their past staff position. Former Staff
+Points: 270,748, Level: 59
+Points: 270,748, Level: 59	Points: 270,748, Level: 59	Points: 270,748, Level: 59
+Level up: 31%, 223,252 Points needed
+Level up: 31%	Level up: 31%	Level up: 31%
+Activity: 2.3%
+Activity: 2.3%	Activity: 2.3%	Activity: 2.3%
+Last Achievements
+tdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emu
+Award-Showcase
+tdf fix in me3 private server emu
+Quote:
+Originally Posted by moha4pc View Post
+Unknown Tdf Type: 21 @:38F this the fix
+can i remove tdf
+but what is tdf and what did it do
+this is emu for bf3 please i get it in lan it go to no_game in server and emu *create game*
+Intelligence 0/10
+IChooseYou is offline
+ 
+Old 2nd October 2014, 09:45 AM	  #4
+moha4pc
+Posting Well
+
+
+moha4pc's Avatar
+
+Threadstarter
+Join Date: Jul 2013
+Location: iraq
+Posts: 34
+Reputation: -155
+Rep Power: 0
+moha4pc is nearly a complete Unknown Asshatmoha4pc is nearly a complete Unknown Asshat
+Points: 5,053, Level: 7
+Points: 5,053, Level: 7	Points: 5,053, Level: 7	Points: 5,053, Level: 7
+Level up: 62%, 347 Points needed
+Level up: 62%	Level up: 62%	Level up: 62%
+Activity: 0%
+Activity: 0%	Activity: 0%	Activity: 0%
+Last Achievements
+tdf fix in me3 private server emutdf fix in me3 private server emu
+sorry me3
+
+please close it i get fix
+moha4pc is offline
+ 
+Old 14th October 2014, 08:22 AM	  #5
+SAMARHAN
+n00bie
+
+
+SAMARHAN's Avatar
+
+Join Date: Feb 2013
+Posts: 8
+Reputation: 7
+Rep Power: 0
+SAMARHAN has a near-average in quality posting ability
+take me it fix
+
+Quote:
+4 08:47:51.559] BlazeSDK(0): "GameLoop": Info: <- resp: ID[5], UserSessions::updateNetworkInfo [0x7802::0x0014]
+[UTC 10/14/2014 08:47:51.559] BlazeSDK(0): "GameLoop": Info: <- resp: ID[6], UtilComponent::fetchClientConfig [0x0009::0x0001], ERR[UTIL_CONFIG_NOT_FOUND (0x640009)]
+[UTC 10/14/2014 08:47:51.559] BlazeSDK(0): "GameLoop": Info: <- resp: ID[7], UtilComponent::getTelemetryServer [0x0009::0x0005], ERR[UTIL_TELEMETRY_NO_SERVERS_AVAILABLE (0x960009)]
+[UTC 10/14/2014 08:47:51.559] BF/Server/Online/Blaze/BlazeServerBackend.cpp(1141): "GameLoop": Warning: Failed to get telemetry token: UTIL_TELEMETRY_NO_SERVERS_AVAILABLE
+[UTC 10/14/2014 08:47:51.559] BlazeSDK(0): "GameLoop": Info: <- resp: ID[8], GameManager::createGame [0x0004::0x0001], ERR[ERR_AUTHORIZATION_REQUIRED (0x40080000)]
+[UTC 10/14/2014 08:47:51.559] BF/Server/Online/Blaze/BlazeServerGameManager.cpp(2011): "GameLoop": Warning: Blaze error: 1074266112, ERR_AUTHORIZATION_REQUIRED
+[UTC 10/14/2014 08:47:51.560] BF/Server/Online/Blaze/BlazeServerGameManager.cpp(2013): "GameLoop": Info: Disconnecting from backend due to game creation failure
+[UTC 10/14/2014 08:47:51.560] BlazeSDK(0): "GameLoop": Info: [GMGR] GameManagerAPI:nBlazeStateChange (AUTHENTICATED=>CONNECT_TRANSITION)
+[UTC 10/14/2014 08:47:51.560] BlazeSDK(0): "GameLoop": Info: [CANA] destroy(0)
+[UTC 10/14/2014 08:47:51.560] BlazeSDK(0): "GameLoop": Info: [CANA] releaseResources()
+[UTC 10/14/2014 08:47:51.560] BlazeSDK(0): "GameLoop": Info: [GMGR] createGameJob(18): Game creation failed with ERR_AUTHORIZATION_REQUIRED.
+Server cant finish AUTHORIZATION.How do you fix it?
+Last edited by SAMARHAN; 14th October 2014 at 08:52 AM.
+SAMARHAN is offline
+ 
+Old 16th October 2014, 08:09 AM	  #6
+Geertje123
+Hacked North Korea
+
+Geertje123's Avatar
+
+Join Date: Aug 2012
+Posts: 2,682
+Reputation: 66685
+Rep Power: 426
+Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!Geertje123 has a huge epeen!
+Recognitions
+Members who have contributed financial support towards UnKnoWnCheaTs. Donator (11)
+Award symbolizing a retired staff member who dedicated a notable amount of time and effort to their past staff position. Former Staff
+Awarded to members who have donated 10 times or more. Gratuity (1)
+Points: 146,019, Level: 54
+Points: 146,019, Level: 54	Points: 146,019, Level: 54	Points: 146,019, Level: 54
+Level up: 62%, 2,181 Points needed
+Level up: 62%	Level up: 62%	Level up: 62%
+Activity: 2.9%
+Activity: 2.9%	Activity: 2.9%	Activity: 2.9%
+Last Achievements
+tdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emutdf fix in me3 private server emu
+This thread makes no sense at all, but it seems the OP fixed his issue. Thread closed.
+__________________
+
+Geertje123 is offline
+ 
+Closed Thread Submit Thread to Reddit RedditSubmit Thread to Twitter TwitterSubmit Thread to Facebook Facebook
+
+collapse similar threadsSimilar Threads
+Thread	Thread Starter	Forum	Replies	Last Post
+[Help] Domo's Hack for ME3	AimSpams	Unreal Engine 3	8	31st December 2014 06:55 PM
+[Help] Banned From a emu server	tonyori9	ISS Emulators	4	10th September 2014 08:52 AM
+[Release] WarZ "Checking For New Updater - TRY" FIX ! Play WarZ ASAP - January 7th! VIDEO FIX	UnknownCoder	Infestation Survivor Stories Series	5	9th January 2013 05:32 PM
+[Request] Battlefield 2 v1.50 - Dedicated Private Windows Server fix	ch4rly	Battlefield 2	7	5th September 2009 04:52 PM
+Can someone fix this private(sort of) opengl hack?	pilotCHUP	CounterStrike 1.5, 1.6 and Mods	21	9th April 2004 07:30 AM
+
+Tags
+emu, fix, mw3, private, server, tdf
+
+« Previous Thread | Next Thread »
+
+Forum Jump
+
+        FrostBite
+
+
+All times are GMT. The time now is 09:40 AM.
+Copyright ©2000-2026, Unknowncheats™
+DMCA - Contact
+Terms of Use - Privacy Policy - Forum Rules
+
+
+This website uses cookies to ensure you get the best experience on our website. Learn more
+Got it!
+FearLess Cheat Engine
+Community Cheat Tables of Cheat Engine
+
+Skip to content
+
+Search…
+Quick linksFAQLoginRegister
+Board indexCheat Engine DownloadsTables
+FIFA 18 - Career mode Cheat Table
+
+Search this topic…
+610 posts  1     …  
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Wed Sep 27, 2017 3:24 pm
+
+
+FIFA 18 - Career mode Cheat Table
+
+Special thanks to gaelyoh for sharing the game with me.
+
+Image
+
+Cheat table for FIFA 18. Designed to improve your experience with Career game mode.
+To run this tool you need to install [Link]. What is Cheat Engine?
+Working only on PC.
+
+Features:
+
+ONLINE
+Alt + Tab Disconnect bypass
+Unique Player Movement
+Unique Run Style
+Sterling
+Robben
+Messi
+Fernando Torres
+Yaya Toure
+Jordi Alba
+Luis Suarez
+Kante
+Unique Sprint Style
+Messi
+Cristiano Ronaldo
+Robben
+Yaya Toure
+Bale
+Neymar/Jordi Alba
+Editing Database
+Players table
+Editable OVR/POT/POS/NATIONALITY etc.
+Editable Attributes
+Editable Traits
+Editable Appearance
+Editable Skill moves & Weeakfoot
+Teamkits Table
+Editable Kit font style
+Manager Table
+Editable manager head id
+Editing Player
+Unlock "Edit Player" in career menu
+Edit Player
+Editable Playername/birthdate
+Editable Physical attributes
+Editable Personality
+Player Training
+Remove countdown
+More efficient training
+Unlimited Training Sessions
+Training Everyday
+Training sim - A
+Club Finances
+Transfer budget pointer
+Free & Unlimited Releasing Players
+Player Contract
+Disable negotiation status checks
+Editable contract details during negotiation
+Edit Job Offer
+Ability to edit existing job offer and choose club/national team you want to manage
+Transfer HUB
+Change Release Clause value to 1$ (only for players with release clause)
+Allow Transfer approach (hire players which are "unwilling to relocate")
+Transfer Window Configuration
+Editable Transfer.ini & Transfers.ini
+Sim Match Settings
+Max_cards = 0
+Max_injuries = 0
+Don't lose stamina
+Match Settings
+Change Stadium
+Time of Day
+Weather
+Half Length (min. 1minute - max. 30minutes)
+Side Changer
+CPU vs CPU
+Control Home Team
+Control Away Team
+Morale
+Disable Morale
+MORALE_LEVELS (more happier players)
+Scouts Management
+Free 5/5 Scout
+Global Transfer Network
+Reveal player data (scouting players not needed)
+Youth Academy
+SCOUT_REPORT_PLAYERS = 15 (15 players in every scout report)
+Reveal ovr and pot
+PRIMARY_ATTRIBUTES_RANGE = [10, 20] (higher primary attributes)
+SECONDARY_ATTRIBUTES_RANGE = [10, 20](higher secondary attributes)
+100% chance for 5* weak foot
+100% chance for 5* skill moves
+MIN_PLAYER_AGE_FOR_PROMOTION = 12
+YOUTH_PLAYER_AGE_RANGE = [12, 16]
+95 Potential
+Set up multiple scouting networks in the same country
+Send scout to any country
+In-Game Hacks
+Manipulate Match Timer
+Unlimited Substitutions
+Disable Substitutions
+5 stars skill moves
+Injured/Never Injured players
+Tired/Never Tired players
+Manipulate Match score
+You can send a donation, if you want to:
+[Link]
+
+[Link]
+[Link]
+
+F.A.Q:
+https://github.com/xAranaktu/FIFA-18--- ... DME.md#faq
+
+Video tutorial by Und3rcov3r Nerd
+Code: Select all
+
+https://www.youtube.com/playlist?list=PLx3DZm1ifjQw5exchXxcZpj0oN7_eDy-Q
+
+
+How to use this cheat table?
+Install Cheat Engine
+Double-click the .CT file in order to open it.
+Click the PC icon in Cheat Engine in order to select the game process.
+Keep the list.
+Activate the trainer options by checking boxes or setting values from 0 to 1
+Last edited by Aranaktu on Mon Feb 26, 2018 10:14 am, edited 10 times in total.
+Top
+meqq3
+What is cheating?
+What is cheating?
+Posts: 4
+Joined: Mon Sep 25, 2017 6:53 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by meqq3 » Wed Sep 27, 2017 4:04 pm
+
+WOW AMAZING THX
+Top
+hardy116
+What is cheating?
+What is cheating?
+Posts: 1
+Joined: Wed Sep 27, 2017 4:51 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by hardy116 » Wed Sep 27, 2017 4:54 pm
+
+thanks for your great affort once again. Loved your fifa 17 table.
+But i can't activate the first script "activateitfirst". i executed the lua script and cheat engine successfully found the fifa18_trial.exe but it simply cant be activated. Any ideas?
+Top
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+Re: FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Wed Sep 27, 2017 5:33 pm
+
+hardy116 wrote: ↑Wed Sep 27, 2017 4:54 pm
+thanks for your great affort once again. Loved your fifa 17 table.
+But i can't activate the first script "activateitfirst". i executed the lua script and cheat engine successfully found the fifa18_trial.exe but it simply cant be activated. Any ideas?
+This should work.
+[Link]
+
+If it will still not work, join discord channel: [Link] I'll be able to help you faster, and I'll have everything in one place. :P
+Top
+sturri86
+What is cheating?
+What is cheating?
+Posts: 2
+Joined: Wed Sep 27, 2017 7:37 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by sturri86 » Wed Sep 27, 2017 7:40 pm
+
+Hi, can we assign boots to players with this cheat table?
+Top
+sturri86
+What is cheating?
+What is cheating?
+Posts: 2
+Joined: Wed Sep 27, 2017 7:37 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by sturri86 » Wed Sep 27, 2017 7:44 pm
+
+Hi how are you? Thanks for the table. Anyway we can assign boots and edit players with this table?
+Top
+Eminan
+Noobzor
+Noobzor
+Posts: 10
+Joined: Wed Sep 13, 2017 7:50 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by Eminan » Wed Sep 27, 2017 9:03 pm
+
+Thank you very much for this. I don´t have the game yet but i would like to know if in this version you can edit the player body type and running animation like in the 17. It's a very important feature for my character creations.
+Top
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+Re: FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Wed Sep 27, 2017 9:13 pm
+
+Eminan wrote: ↑Wed Sep 27, 2017 9:03 pm
+Thank you very much for this. I don´t have the game yet but i would like to know if in this version you can edit the player body type and running animation like in the 17. It's a very important feature for my character creations.
+Not yet.
+sturri86 wrote: ↑Wed Sep 27, 2017 7:44 pm
+Hi how are you? Thanks for the table. Anyway we can assign boots and edit players with this table?
+Acitvate "Unlock Edit player" and... edit player. You should be able to change player boots there. Editing player stats will be available soon.
+Top
+iShorty
+Cheater
+Cheater
+Posts: 34
+Joined: Tue Apr 04, 2017 6:59 am
+Reputation: 2
+Re: FIFA 18 - Career mode Cheat Table
+Post by iShorty » Thu Sep 28, 2017 9:34 am
+
+Oh. i just asked in FIFA 17 thread and see this. It has 2 tables, may i ask which one for main game? i already download PreLoad and waiting for my key deliver tomorrow.
+Top
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+Re: FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Thu Sep 28, 2017 10:13 am
+
+FIFA18_Trial is for ppl who have Origin access. The second one is for full version.
+Top
+iShorty
+Cheater
+Cheater
+Posts: 34
+Joined: Tue Apr 04, 2017 6:59 am
+Reputation: 2
+Re: FIFA 18 - Career mode Cheat Table
+Post by iShorty » Thu Sep 28, 2017 11:10 am
+
+Another question is with edit player options active, can we edit player stats also?
+Top
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+Re: FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Thu Sep 28, 2017 1:42 pm
+
+Nope
+Top
+NoSanaNoLife
+Noobzor
+Noobzor
+Posts: 7
+Joined: Wed Aug 30, 2017 1:50 pm
+Reputation: 0
+Re: FIFA 18 - Career mode Cheat Table
+Post by NoSanaNoLife » Thu Sep 28, 2017 2:34 pm
+
+Hey Aranaktu, love your work! These tables are the best tools I've ever found for any FIFA.
+
+I have a request - at some stage, do you think you could find the energy/stamina value for individual players? Either between matches or during? I'd like my virtual pro to start each game with full stamina, but I don't like playing with full team infinite stamina - it stops the manager from rotating the squad in player career.
+
+It's okay if that's not possible, just thought I'd ask! Thanks in advance.
+Top
+iShorty
+Cheater
+Cheater
+Posts: 34
+Joined: Tue Apr 04, 2017 6:59 am
+Reputation: 2
+Re: FIFA 18 - Career mode Cheat Table
+Post by iShorty » Thu Sep 28, 2017 2:58 pm
+
+So we need to wait for later tables? Will you continue do develop the tables? :)
+Top
+User avatar
+Aranaktu
+Table Makers
+Table Makers
+Posts: 544
+Joined: Mon Mar 06, 2017 11:54 am
+Reputation: 643
+Re: FIFA 18 - Career mode Cheat Table
+Post by Aranaktu » Thu Sep 28, 2017 3:16 pm
+
+iShorty wrote: ↑Thu Sep 28, 2017 2:58 pm
+So we need to wait for later tables? Will you continue do develop the tables? :)
+Yes, you need wait. I'll add option to edit player stats soon.
+NoSanaNoLife wrote: ↑Thu Sep 28, 2017 2:34 pm
+Hey Aranaktu, love your work! These tables are the best tools I've ever found for any FIFA.
+
+I have a request - at some stage, do you think you could find the energy/stamina value for individual players? Either between matches or during? I'd like my virtual pro to start each game with full stamina, but I don't like playing with full team infinite stamina - it stops the manager from rotating the squad in player career.
+
+It's okay if that's not possible, just thought I'd ask! Thanks in advance.
+It should be possible. I'll try to add it, but it might take some time.
+Top
+610 posts  1     …  
+Return to “Tables”
+Who is online
+Users browsing this forum: admantx, Aregemoth, Baka_Kyuubi84, balenaucigasa, bl4ckfyr3, Carriva, David LionHeart, DotBot, fisheggCracker, Fwooshness, Google [Bot], schoolofmonkey, Straputsky
+
+Board indexAll times are UTCDelete cookiesMembersThe team
+
+Privacy and cookie settings
+Managed by Google. Complies with IAB TCF. CMP ID: 300
